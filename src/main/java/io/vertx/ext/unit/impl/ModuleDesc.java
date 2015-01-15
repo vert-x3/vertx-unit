@@ -13,19 +13,19 @@ import java.util.List;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class ModuleImpl implements Module {
+public class ModuleDesc implements Module {
 
   boolean threadCheckEnabled = true;
   final String desc;
   final List<Handler<Void>> beforeCallbacks = new ArrayList<>();
   final List<Handler<Void>> afterCallbacks = new ArrayList<>();
-  private final List<TestImpl> tests = new ArrayList<>();
+  private final List<TestDesc> tests = new ArrayList<>();
 
-  public ModuleImpl() {
+  public ModuleDesc() {
     this(null);
   }
 
-  public ModuleImpl(String desc) {
+  public ModuleDesc(String desc) {
     this.desc = desc;
   }
 
@@ -33,7 +33,7 @@ public class ModuleImpl implements Module {
     return threadCheckEnabled;
   }
 
-  public ModuleImpl setThreadCheckEnabled(boolean threadCheckEnabled) {
+  public ModuleDesc setThreadCheckEnabled(boolean threadCheckEnabled) {
     this.threadCheckEnabled = threadCheckEnabled;
     return this;
   }
@@ -52,13 +52,13 @@ public class ModuleImpl implements Module {
 
   @Override
   public Module test(String desc, Handler<Test> handler) {
-    tests.add(new TestImpl(this, desc, false, handler));
+    tests.add(new TestDesc(this, desc, false, handler));
     return this;
   }
 
   @Override
   public Module asyncTest(String desc, Handler<Test> handler) {
-    tests.add(new TestImpl(this, desc, true, handler));
+    tests.add(new TestDesc(this, desc, true, handler));
     return this;
   }
 
@@ -70,13 +70,13 @@ public class ModuleImpl implements Module {
   @Override
   public void execute(Handler<ModuleExec> handler) {
 
-    class ModuleTask extends Task implements ModuleExec {
+    class ModuleExecImpl implements ModuleExec {
 
       private final Handler<ModuleExec> moduleHandler;
       private Handler<Void> endHandler;
       private Handler<TestExec> testHandler;
 
-      public ModuleTask(Handler<ModuleExec> moduleHandler) {
+      public ModuleExecImpl(Handler<ModuleExec> moduleHandler) {
         this.moduleHandler = moduleHandler;
       }
 
@@ -107,17 +107,17 @@ public class ModuleImpl implements Module {
         return this;
       }
 
-      public void run(Runnable next) {
+      public void run() {
         if (moduleHandler != null) {
           moduleHandler.handle(this);
         }
-        run(tests.toArray(new TestImpl[tests.size()]), 0);
+        run(tests.toArray(new TestDesc[tests.size()]), 0);
       }
 
-      private void run(TestImpl[] tests, int index) {
+      private void run(TestDesc[] tests, int index) {
         if (tests.length > index) {
-          Task task = tests[index].exec(testHandler);
-          task.run(() -> run(tests, index + 1));
+          Runnable task = tests[index].exec(testHandler, () -> run(tests, index + 1));
+          task.run();
         } else {
           if (endHandler != null) {
             endHandler.handle(null);
@@ -126,9 +126,7 @@ public class ModuleImpl implements Module {
       }
     }
 
-    ModuleTask exec = new ModuleTask(handler);
-    exec.run(() -> {
-      // Done
-    });
+    ModuleExecImpl exec = new ModuleExecImpl(handler);
+    exec.run();
   }
 }

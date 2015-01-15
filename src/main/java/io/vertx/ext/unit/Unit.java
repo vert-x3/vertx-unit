@@ -2,7 +2,7 @@ package io.vertx.ext.unit;
 
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
-import io.vertx.ext.unit.impl.ModuleImpl;
+import io.vertx.ext.unit.impl.ModuleDesc;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -11,11 +11,11 @@ import io.vertx.ext.unit.impl.ModuleImpl;
 public interface Unit {
 
   static Module module() {
-    return new ModuleImpl();
+    return new ModuleDesc();
   }
 
   static Module module(String desc) {
-    return new ModuleImpl(desc);
+    return new ModuleDesc(desc);
   }
 
   static Module asyncTest(String desc, Handler<Test> handler) {

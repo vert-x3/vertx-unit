@@ -6,6 +6,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -122,9 +124,33 @@ public class UnitTest {
     assertSame(failure.get(), result.failure());
   }
 
+  @Test
+  public void asyncTestAsyncFailure() throws Exception {
+    asyncTestAsyncFailure(SYNC);
+  }
+
+  @Test
+  public void asyncTestAsyncFailureAsync() throws Exception {
+    asyncTestAsyncFailure(ASYNC);
+  }
+
+  private void asyncTestAsyncFailure(Executor executor) throws Exception {
+    BlockingQueue<io.vertx.ext.unit.Test> queue = new ArrayBlockingQueue<>(1);
+    Module module = Unit.asyncTest("my_test", queue::add);
+    Reporter reporter = new Reporter();
+    executor.execute(() -> module.execute(reporter));
+    assertFalse(reporter.completed());
+    io.vertx.ext.unit.Test test = queue.poll(2, TimeUnit.SECONDS);
+    try {
+      test.fail("the_message");
+    } catch (AssertionError ignore) {
+    }
+    assertTrue(reporter.completed());
+  }
+
   static class Reporter implements Handler<ModuleExec> {
     private final CountDownLatch latch = new CountDownLatch(1);
-    final List<TestResult> results = Collections.synchronizedList(new ArrayList<TestResult>());
+    final List<TestResult> results = Collections.synchronizedList(new ArrayList<>());
     @Override
     public void handle(ModuleExec event) {
       event.handler(exec -> {
@@ -140,6 +166,9 @@ public class UnitTest {
       } catch (InterruptedException e) {
         throw new AssertionError(e);
       }
+    }
+    boolean completed() {
+      return latch.getCount() == 0;
     }
   }
 }
