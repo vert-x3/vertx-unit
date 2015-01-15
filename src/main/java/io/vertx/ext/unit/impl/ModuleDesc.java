@@ -15,7 +15,6 @@ import java.util.List;
  */
 public class ModuleDesc implements Module {
 
-  boolean threadCheckEnabled = true;
   final String desc;
   final List<Handler<Void>> beforeCallbacks = new ArrayList<>();
   final List<Handler<Void>> afterCallbacks = new ArrayList<>();
@@ -27,15 +26,6 @@ public class ModuleDesc implements Module {
 
   public ModuleDesc(String desc) {
     this.desc = desc;
-  }
-
-  public boolean isThreadCheckEnabled() {
-    return threadCheckEnabled;
-  }
-
-  public ModuleDesc setThreadCheckEnabled(boolean threadCheckEnabled) {
-    this.threadCheckEnabled = threadCheckEnabled;
-    return this;
   }
 
   @Override

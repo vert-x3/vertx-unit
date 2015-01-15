@@ -68,7 +68,7 @@ public class UnitTest {
         asyncTest("my_test", test -> {
           count.compareAndSet(0, 1);
           test.complete();
-        }).setThreadCheckEnabled(false);
+        });
     Reporter reporter = new Reporter();
     executor.execute(() -> module.execute(reporter));
     reporter.await();

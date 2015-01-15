@@ -10,11 +10,6 @@ import io.vertx.core.Handler;
 @VertxGen
 public interface Module {
 
-  boolean isThreadCheckEnabled();
-
-  @Fluent
-  Module setThreadCheckEnabled(boolean threadCheckEnabled);
-
   @Fluent
   Module before(Handler<Void> callback);
 

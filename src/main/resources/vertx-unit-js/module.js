@@ -35,33 +35,6 @@ var Module = function(j_val) {
   /**
 
    @public
-
-   @return {boolean}
-   */
-  this.isThreadCheckEnabled = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      return j_module.isThreadCheckEnabled();
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param threadCheckEnabled {boolean} 
-   @return {Module}
-   */
-  this.setThreadCheckEnabled = function(threadCheckEnabled) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] ==='boolean') {
-      j_module.setThreadCheckEnabled(threadCheckEnabled);
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
    @param callback {function} 
    @return {Module}
    */
