@@ -52,23 +52,20 @@ public class ModuleDesc implements Module {
     return this;
   }
 
+/*
   @Override
   public void execute() {
     execute(new ConsoleReporter());
   }
+*/
 
   @Override
-  public void execute(Handler<ModuleExec> handler) {
+  public ModuleExec exec() {
 
     class ModuleExecImpl implements ModuleExec {
 
-      private final Handler<ModuleExec> moduleHandler;
       private Handler<Void> endHandler;
       private Handler<TestExec> testHandler;
-
-      public ModuleExecImpl(Handler<ModuleExec> moduleHandler) {
-        this.moduleHandler = moduleHandler;
-      }
 
       @Override
       public ReadStream<TestExec> exceptionHandler(Handler<Throwable> handler) {
@@ -98,9 +95,6 @@ public class ModuleDesc implements Module {
       }
 
       public void run() {
-        if (moduleHandler != null) {
-          moduleHandler.handle(this);
-        }
         run(tests.toArray(new TestDesc[tests.size()]), 0);
       }
 
@@ -116,7 +110,6 @@ public class ModuleDesc implements Module {
       }
     }
 
-    ModuleExecImpl exec = new ModuleExecImpl(handler);
-    exec.run();
+    return new ModuleExecImpl();
   }
 }

@@ -17,7 +17,7 @@ public class ConsoleReporter implements Handler<ModuleExec> {
     module.handler(test -> {
       System.out.println("Starting test " + test.description());
       run.incrementAndGet();
-      test.completeHandler(result -> {
+      test.completionHandler(result -> {
         if (result.succeeded()) {
           System.out.println("Passed " + test.description());
         } else {

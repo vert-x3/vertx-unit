@@ -41,7 +41,7 @@ public class UnitTest {
           count.compareAndSet(0, 1);
         });
     Reporter reporter = new Reporter();
-    executor.execute(() -> module.execute(reporter));
+    reporter.run(module);
     reporter.await();
     assertEquals(1, count.get());
     assertEquals(1, reporter.results.size());
@@ -70,7 +70,7 @@ public class UnitTest {
           test.complete();
         });
     Reporter reporter = new Reporter();
-    executor.execute(() -> module.execute(reporter));
+    reporter.run(module);
     reporter.await();
     assertEquals(1, count.get());
     assertEquals(1, reporter.results.size());
@@ -113,7 +113,7 @@ public class UnitTest {
           }
         });
     Reporter reporter = new Reporter();
-    executor.execute(() -> module.execute(reporter));
+    reporter.run(module);
     reporter.await();
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
@@ -138,7 +138,7 @@ public class UnitTest {
     BlockingQueue<io.vertx.ext.unit.Test> queue = new ArrayBlockingQueue<>(1);
     Module module = Unit.asyncTest("my_test", queue::add);
     Reporter reporter = new Reporter();
-    executor.execute(() -> module.execute(reporter));
+    reporter.run(module);
     assertFalse(reporter.completed());
     io.vertx.ext.unit.Test test = queue.poll(2, TimeUnit.SECONDS);
     try {
@@ -148,18 +148,21 @@ public class UnitTest {
     assertTrue(reporter.completed());
   }
 
-  static class Reporter implements Handler<ModuleExec> {
+  static class Reporter{
     private final CountDownLatch latch = new CountDownLatch(1);
     final List<TestResult> results = Collections.synchronizedList(new ArrayList<>());
-    @Override
-    public void handle(ModuleExec event) {
-      event.handler(exec -> {
-        exec.completeHandler(results::add);
+
+    void run(Module module) {
+      ModuleExec moduleExec = module.exec();
+      moduleExec.handler(testExec -> {
+        testExec.completionHandler(results::add);
       });
-      event.endHandler(v -> {
+      moduleExec.endHandler(done -> {
         latch.countDown();
       });
+      moduleExec.run();
     }
+
     void await() {
       try {
         latch.await(10, TimeUnit.SECONDS);

@@ -139,7 +139,7 @@ class TestExecImpl implements TestExec, Runnable {
   }
 
   @Override
-  public void completeHandler(Handler<TestResult> handler) {
+  public void completionHandler(Handler<TestResult> handler) {
     if (completeHandler == null) {
       completeHandler = handler;
       if (result != null) {

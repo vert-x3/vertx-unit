@@ -98,15 +98,12 @@ var Module = function(j_val) {
 
    @public
 
+   @return {ModuleExec}
    */
-  this.execute = function() {
+  this.exec = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      j_module.execute();
-    }  else if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_module.execute(function(jVal) {
-      __args[0](new ModuleExec(jVal));
-    });
+      return new ModuleExec(j_module.exec());
     } else utils.invalidArgs();
   };
 

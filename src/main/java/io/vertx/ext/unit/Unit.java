@@ -5,6 +5,8 @@ import io.vertx.core.Handler;
 import io.vertx.ext.unit.impl.ModuleDesc;
 
 /**
+ * The factory for creating module or individual tests.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen

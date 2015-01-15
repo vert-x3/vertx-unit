@@ -9,8 +9,16 @@ import io.vertx.core.Handler;
 @VertxGen
 public interface TestExec {
 
+  /**
+   * @return the test exec description
+   */
   String description();
 
-  void completeHandler(Handler<TestResult> handler);
+  /**
+   * Set a callback for completion, the specified {@code handler} is invoked when the test exec has completed.
+   *
+   * @param handler the completion handler
+   */
+  void completionHandler(Handler<TestResult> handler);
 
 }

@@ -8,4 +8,10 @@ import io.vertx.core.streams.ReadStream;
  */
 @VertxGen
 public interface ModuleExec extends ReadStream<TestExec> {
+
+  /**
+   * Run the module exec.
+   */
+  void run();
+
 }
