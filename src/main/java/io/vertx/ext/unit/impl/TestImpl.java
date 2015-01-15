@@ -6,9 +6,7 @@ import io.vertx.ext.unit.TestExec;
 import io.vertx.ext.unit.TestResult;
 import org.junit.Assert;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -27,25 +25,34 @@ public class TestImpl {
     this.handler = handler;
   }
 
-  class Exec implements TestExec {
+  class ExecTask extends Task implements TestExec {
 
+    final Handler<TestExec> execHandler;
     volatile Handler<TestResult> completeHandler;
     volatile TestResult result;
-    volatile boolean completed;
+    final AtomicBoolean completed = new AtomicBoolean();
     volatile boolean invoking;
     volatile Throwable failed;
+
+    public ExecTask(Handler<TestExec> execHandler) {
+      this.execHandler = execHandler;
+    }
 
     @Override
     public String description() {
       return desc;
     }
+
     void run(Runnable next) {
+
+      if (execHandler != null) {
+        execHandler.handle(this);
+      }
 
       Test test = new Test() {
 
         public void complete() {
-          if (!completed) {
-            completed = true;
+          if (completed.compareAndSet(false, true)) {
             if (!invoking) {
               try {
                 for (Handler<Void> after : module.afterCallbacks) {
@@ -57,53 +64,7 @@ public class TestImpl {
                 }
               }
             }
-            if (failed == null) {
-              result = new TestResult() {
-                @Override
-                public String description() {
-                  return desc;
-                }
-                @Override
-                public long time() {
-                  return 0;
-                }
-                @Override
-                public Throwable failure() {
-                  return null;
-                }
-                @Override
-                public boolean succeeded() {
-                  return true;
-                }
-                @Override
-                public boolean failed() {
-                  return false;
-                }
-              };
-            } else {
-              result = new TestResult() {
-                @Override
-                public String description() {
-                  return desc;
-                }
-                @Override
-                public long time() {
-                  return 0;
-                }
-                @Override
-                public Throwable failure() {
-                  return failed;
-                }
-                @Override
-                public boolean succeeded() {
-                  return false;
-                }
-                @Override
-                public boolean failed() {
-                  return true;
-                }
-              };
-            }
+            result = new TestResultImpl(desc, 0, failed);
             if (completeHandler != null) {
               completeHandler.handle(result);
             }
@@ -138,16 +99,15 @@ public class TestImpl {
         }
       };
 
-      //
       try {
         for (Handler<Void> before : module.beforeCallbacks) {
           before.handle(null);
         }
       } catch (Throwable e) {
-        completed = true;
+        completed.set(true);
         failed = e;
       }
-      if (!completed) {
+      if (!completed.get()) {
         invoking = true;
         try {
           handler.handle(test);
@@ -159,9 +119,7 @@ public class TestImpl {
           invoking = false;
         }
       }
-
-      //
-      if (!async && !completed) {
+      if (!async && !completed.get()) {
         test.complete();
       }
     }
@@ -177,8 +135,7 @@ public class TestImpl {
     }
   }
 
-  public TestImpl.Exec exec() {
-    return new Exec();
+  public Task exec(Handler<TestExec> handler) {
+    return new ExecTask(handler);
   }
-
 }

@@ -69,18 +69,25 @@ public class ModuleImpl implements Module {
 
   @Override
   public void execute(Handler<ModuleExec> handler) {
-    class ModuleExecImpl implements ModuleExec {
 
+    class ModuleTask extends Task implements ModuleExec {
+
+      private final Handler<ModuleExec> moduleHandler;
       private Handler<Void> endHandler;
-      private Handler<TestExec> handler;
+      private Handler<TestExec> testHandler;
+
+      public ModuleTask(Handler<ModuleExec> moduleHandler) {
+        this.moduleHandler = moduleHandler;
+      }
 
       @Override
       public ReadStream<TestExec> exceptionHandler(Handler<Throwable> handler) {
         return this;
       }
+
       @Override
       public ReadStream<TestExec> handler(Handler<TestExec> handler) {
-        this.handler = handler;
+        this.testHandler = handler;
         return this;
       }
 
@@ -100,17 +107,17 @@ public class ModuleImpl implements Module {
         return this;
       }
 
-      public void run() {
+      public void run(Runnable next) {
+        if (moduleHandler != null) {
+          moduleHandler.handle(this);
+        }
         run(tests.toArray(new TestImpl[tests.size()]), 0);
       }
 
       private void run(TestImpl[] tests, int index) {
         if (tests.length > index) {
-          TestImpl.Exec exec = tests[index].exec();
-          if (handler != null) {
-            handler.handle(exec);
-          }
-          exec.run(() -> run(tests, index + 1));
+          Task task = tests[index].exec(testHandler);
+          task.run(() -> run(tests, index + 1));
         } else {
           if (endHandler != null) {
             endHandler.handle(null);
@@ -119,13 +126,9 @@ public class ModuleImpl implements Module {
       }
     }
 
-    ModuleExecImpl exec = new ModuleExecImpl();
-
-    if (handler != null) {
-      handler.handle(exec);
-    }
-
-    exec.run();
-
+    ModuleTask exec = new ModuleTask(handler);
+    exec.run(() -> {
+      // Done
+    });
   }
 }
