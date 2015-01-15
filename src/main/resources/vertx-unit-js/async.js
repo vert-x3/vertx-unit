@@ -14,66 +14,39 @@
  * under the License.
  */
 
-/** @module vertx-unit-js/test */
+/** @module vertx-unit-js/async */
 var utils = require('vertx-js/util/utils');
-var Async = require('vertx-unit-js/async');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTest = io.vertx.ext.unit.Test;
+var JAsync = io.vertx.ext.unit.Async;
 
 /**
- The test interface allows the test code to report test completion or failures.
 
  @class
 */
-var Test = function(j_val) {
+var Async = function(j_val) {
 
-  var j_test = j_val;
+  var j_async = j_val;
   var that = this;
 
   /**
 
    @public
 
-   @return {Async}
    */
-  this.async = function() {
+  this.complete = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return new Async(j_test.async());
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param b {boolean} 
-   */
-  this.assertTrue = function(b) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] ==='boolean') {
-      j_test.assertTrue(b);
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param s {string} 
-   */
-  this.fail = function(s) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'string') {
-      j_test.fail(s);
+      j_async.complete();
     } else utils.invalidArgs();
   };
 
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
-  this._jdel = j_test;
+  this._jdel = j_async;
 };
 
 // We export the Constructor function
-module.exports = Test;
+module.exports = Async;

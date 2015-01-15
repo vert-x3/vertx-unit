@@ -1,6 +1,7 @@
 package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
+import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestExec;
 import io.vertx.ext.unit.TestResult;
@@ -11,17 +12,14 @@ import org.junit.Assert;
 */
 class TestExecImpl implements TestExec, Runnable {
 
-  enum Status {
-    IN_PROGRESS, COMPLETED, ENDED
-  }
-
   private final Runnable next;
   private final TestDesc testDesc;
   private final Handler<TestExec> execHandler;
   private volatile Handler<TestResult> completeHandler;
-  private volatile TestResult result;
-  private volatile Status status = Status.IN_PROGRESS;
+  private volatile boolean completed;
   private volatile boolean running;
+  private volatile int asyncCount;
+  private volatile TestResult result;
   private volatile Throwable failed;
 
   public TestExecImpl(TestDesc testDesc, Handler<TestExec> execHandler, Runnable next) {
@@ -36,8 +34,8 @@ class TestExecImpl implements TestExec, Runnable {
   }
 
   private void tryEnd() {
-    if (status == Status.COMPLETED && !running) {
-      status = Status.ENDED;
+    if (asyncCount == 0 && !completed) {
+      completed = true;
       try {
         for (Handler<Void> after : testDesc.module.afterCallbacks) {
           after.handle(null);
@@ -55,26 +53,13 @@ class TestExecImpl implements TestExec, Runnable {
     }
   }
 
-  private boolean complete() {
-    if (status == Status.IN_PROGRESS) {
-      status = Status.COMPLETED;
-      tryEnd();
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   private void failed(Throwable t) {
-    switch (status) {
-      case IN_PROGRESS:
-        failed = t;
-        status = Status.COMPLETED;
+    if (asyncCount > 0) {
+      failed = t;
+      asyncCount = 0;
+      if (!running) {
         tryEnd();
-        break;
-      case COMPLETED:
-        failed = t;
-        break;
+      }
     }
   }
 
@@ -86,10 +71,23 @@ class TestExecImpl implements TestExec, Runnable {
 
     Test test = new Test() {
 
-      public void complete() {
-        if (!TestExecImpl.this.complete()) {
-          fail("Already completed");
-        }
+      @Override
+      public Async async() {
+        asyncCount++;
+        return new Async() {
+          boolean called = false;
+          @Override
+          public void complete() {
+            if (!called) {
+              called = true;
+              if (--asyncCount == 0 && !running) {
+                tryEnd();
+              }
+            } else {
+              throw new IllegalStateException("Already completed");
+            }
+          }
+        };
       }
 
       public void assertTrue(boolean condition) {
@@ -116,15 +114,14 @@ class TestExecImpl implements TestExec, Runnable {
         before.handle(null);
       }
     } catch (Throwable e) {
-      status = Status.COMPLETED;
       failed = e;
     }
-    if (status != Status.COMPLETED) {
+
+    if (failed == null) {
       running = true;
       try {
         testDesc.handler.handle(test);
       } catch (Throwable t) {
-        status = Status.COMPLETED;
         if (failed == null) {
           failed = t;
         }
@@ -132,9 +129,8 @@ class TestExecImpl implements TestExec, Runnable {
         running = false;
       }
     }
-    if (!testDesc.async) {
-      complete();
-    }
+
+    //
     tryEnd();
   }
 

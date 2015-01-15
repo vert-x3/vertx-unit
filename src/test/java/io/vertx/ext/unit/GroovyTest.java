@@ -2,14 +2,12 @@ package io.vertx.ext.unit;
 
 import io.vertx.core.Vertx;
 import io.vertx.test.core.AsyncTestBase;
-
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class JavaScriptTest extends AsyncTestBase {
+public class GroovyTest extends AsyncTestBase {
 
   @Test
   public void testTimer() {
@@ -17,10 +15,9 @@ public class JavaScriptTest extends AsyncTestBase {
     vertx.eventBus().consumer("test").handler(msg -> {
       testComplete();
     });
-    vertx.deployVerticle("js:timer", ar -> {
+    vertx.deployVerticle("timer.groovy", ar -> {
       assertTrue(ar.succeeded());
     });
     await();
   }
-
 }

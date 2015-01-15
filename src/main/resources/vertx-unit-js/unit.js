@@ -24,6 +24,7 @@ var JsonObject = io.vertx.core.json.JsonObject;
 var JUnit = io.vertx.ext.unit.Unit;
 
 /**
+ The factory for creating module or individual tests.
 
  @class
 */
@@ -50,22 +51,6 @@ Unit.module = function() {
     return new Module(JUnit.module());
   }else if (__args.length === 1 && typeof __args[0] === 'string') {
     return new Module(JUnit.module(__args[0]));
-  } else utils.invalidArgs();
-};
-
-/**
-
- @memberof module:vertx-unit-js/unit
- @param desc {string} 
- @param handler {function} 
- @return {Module}
- */
-Unit.asyncTest = function(desc, handler) {
-  var __args = arguments;
-  if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-    return new Module(JUnit.asyncTest(desc, function(jVal) {
-    handler(new Test(jVal));
-  }));
   } else utils.invalidArgs();
 };
 

@@ -12,11 +12,9 @@ class TestDesc {
   final ModuleDesc module;
   final String desc;
   final Handler<Test> handler;
-  final boolean async;
 
-  TestDesc(ModuleDesc module, String desc, boolean async, Handler<Test> handler) {
+  TestDesc(ModuleDesc module, String desc, Handler<Test> handler) {
     this.module = module;
-    this.async = async;
     this.desc = desc;
     this.handler = handler;
   }

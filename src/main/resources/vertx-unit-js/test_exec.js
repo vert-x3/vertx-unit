@@ -32,7 +32,7 @@ var TestExec = function(j_val) {
   var that = this;
 
   /**
-
+  
    @public
 
    @return {string}
@@ -45,14 +45,14 @@ var TestExec = function(j_val) {
   };
 
   /**
-
+  
    @public
    @param handler {function} 
    */
-  this.completeHandler = function(handler) {
+  this.completionHandler = function(handler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testExec.completeHandler(function(jVal) {
+      j_testExec.completionHandler(function(jVal) {
       handler(new TestResult(jVal));
     });
     } else utils.invalidArgs();

@@ -20,10 +20,6 @@ public interface Unit {
     return new ModuleDesc(desc);
   }
 
-  static Module asyncTest(String desc, Handler<Test> handler) {
-    return module(null).asyncTest(desc, handler);
-  }
-
   static Module test(String desc, Handler<Test> handler) {
     return module(null).test(desc, handler);
   }

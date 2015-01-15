@@ -108,6 +108,7 @@ var ModuleExec = function(j_val) {
   };
 
   /**
+   Run the module exec.
 
    @public
 

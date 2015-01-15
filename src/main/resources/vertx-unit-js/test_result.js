@@ -22,6 +22,7 @@ var JsonObject = io.vertx.core.json.JsonObject;
 var JTestResult = io.vertx.ext.unit.TestResult;
 
 /**
+ The result of a test.
 
  @class
 */
@@ -59,20 +60,6 @@ var TestResult = function(j_val) {
   };
 
   /**
-   An exception describing failure. This will be null if the test succeeded.
-
-   @public
-
-   @return {todo}
-   */
-  this.failure = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      return utils.convReturnTypeUnknown(j_testResult.failure());
-    } else utils.invalidArgs();
-  };
-
-  /**
    Did it succeed?
 
    @public
@@ -97,6 +84,20 @@ var TestResult = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return j_testResult.failed();
+    } else utils.invalidArgs();
+  };
+
+  /**
+   An exception describing failure, null if the test succeeded.
+
+   @public
+
+   @return {todo}
+   */
+  this.failure = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      return utils.convReturnTypeUnknown(j_testResult.failure());
     } else utils.invalidArgs();
   };
 

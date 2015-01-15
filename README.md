@@ -13,7 +13,7 @@ Proof of concept
 ~~~
 Unit.test("my test", test -> {
   test.assertTrue(true);
-}).execute();
+}).exec().run();
 ~~~
 
 ### Async test
@@ -22,8 +22,9 @@ Unit.test("my test", test -> {
 
 ~~~
 Unit.asyncTest("my test", test -> {
-  vertx.setTimer(50, id -> test.complete());
-}).execute();
+  Async async = test.async();
+  vertx.setTimer(50, id -> async.complete());
+}).exec().run();
 ~~~
 
 #### JavaScript
@@ -31,8 +32,21 @@ Unit.asyncTest("my test", test -> {
 ~~~
 var Unit = require('vertx-unit-js/unit')
 Unit.asyncTest("Timer test", function(test) {
+    var async = test.async();
     vertx.setTimer(50, function() {
-       test.complete();
+       async.complete();
     });
-}).execute();
+}).exec().run();
+~~~
+
+#### Groovy
+
+~~~
+def module = Unit.test "Timer test", { test ->
+  def async = test.async()
+  vertx.setTimer 50, {
+    async.complete()
+  }
+}
+module.exec().run();
 ~~~

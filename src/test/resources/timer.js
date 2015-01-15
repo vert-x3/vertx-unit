@@ -1,8 +1,9 @@
 var Unit = require('vertx-unit-js/unit')
 
-var module = Unit.asyncTest("Timer test", function(test) {
+var module = Unit.test("Timer test", function(test) {
+    var async = test.async();
     vertx.setTimer(50, function() {
-       test.complete();
+       async.complete();
     });
 });
 

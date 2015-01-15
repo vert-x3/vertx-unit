@@ -19,9 +19,6 @@ public interface Module {
   @Fluent
   Module test(String desc, Handler<Test> handler);
 
-  @Fluent
-  Module asyncTest(String desc, Handler<Test> handler);
-
   ModuleExec exec();
 
 }

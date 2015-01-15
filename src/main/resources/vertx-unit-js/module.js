@@ -80,23 +80,6 @@ var Module = function(j_val) {
   /**
 
    @public
-   @param desc {string} 
-   @param handler {function} 
-   @return {Module}
-   */
-  this.asyncTest = function(desc, handler) {
-    var __args = arguments;
-    if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-      j_module.asyncTest(desc, function(jVal) {
-      handler(new Test(jVal));
-    });
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
 
    @return {ModuleExec}
    */

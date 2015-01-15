@@ -42,22 +42,9 @@ public class ModuleDesc implements Module {
 
   @Override
   public Module test(String desc, Handler<Test> handler) {
-    tests.add(new TestDesc(this, desc, false, handler));
+    tests.add(new TestDesc(this, desc, handler));
     return this;
   }
-
-  @Override
-  public Module asyncTest(String desc, Handler<Test> handler) {
-    tests.add(new TestDesc(this, desc, true, handler));
-    return this;
-  }
-
-/*
-  @Override
-  public void execute() {
-    execute(new ConsoleReporter());
-  }
-*/
 
   @Override
   public ModuleExec exec() {

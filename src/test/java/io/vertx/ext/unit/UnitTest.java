@@ -41,7 +41,7 @@ public class UnitTest {
           count.compareAndSet(0, 1);
         });
     Reporter reporter = new Reporter();
-    reporter.run(module);
+    executor.execute(() -> reporter.run(module));
     reporter.await();
     assertEquals(1, count.get());
     assertEquals(1, reporter.results.size());
@@ -53,26 +53,30 @@ public class UnitTest {
   }
 
   @Test
-  public void testRunAsyncTest() {
+  public void testRunAsyncTest() throws Exception {
     runAsyncTest(SYNC);
   }
 
   @Test
-  public void testRunAsyncTestAsync() {
+  public void testRunAsyncTestAsync() throws Exception {
     runAsyncTest(ASYNC);
   }
 
-  private void runAsyncTest(Executor executor) {
+  private void runAsyncTest(Executor executor) throws Exception {
+    BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
     AtomicInteger count = new AtomicInteger();
     Module module = Unit.
-        asyncTest("my_test", test -> {
+        test("my_test", test -> {
           count.compareAndSet(0, 1);
-          test.complete();
+          queue.add(test.async());
         });
     Reporter reporter = new Reporter();
-    reporter.run(module);
-    reporter.await();
+    executor.execute(() -> reporter.run(module));
+    Async async = queue.poll(2, TimeUnit.SECONDS);
     assertEquals(1, count.get());
+    assertFalse(reporter.completed());
+    async.complete();
+    assertTrue(reporter.completed());
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
     assertEquals("my_test", result.description());
@@ -113,7 +117,7 @@ public class UnitTest {
           }
         });
     Reporter reporter = new Reporter();
-    reporter.run(module);
+    executor.execute(() -> reporter.run(module));
     reporter.await();
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
@@ -136,15 +140,19 @@ public class UnitTest {
 
   private void asyncTestAsyncFailure(Executor executor) throws Exception {
     BlockingQueue<io.vertx.ext.unit.Test> queue = new ArrayBlockingQueue<>(1);
-    Module module = Unit.asyncTest("my_test", queue::add);
+    Module module = Unit.test("my_test", test -> {
+      test.async();
+      queue.add(test);
+    });
     Reporter reporter = new Reporter();
-    reporter.run(module);
+    executor.execute(() -> reporter.run(module));
     assertFalse(reporter.completed());
     io.vertx.ext.unit.Test test = queue.poll(2, TimeUnit.SECONDS);
     try {
       test.fail("the_message");
     } catch (AssertionError ignore) {
     }
+    reporter.await();
     assertTrue(reporter.completed());
   }
 

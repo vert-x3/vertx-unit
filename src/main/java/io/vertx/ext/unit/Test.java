@@ -10,10 +10,10 @@ import io.vertx.codegen.annotations.VertxGen;
 @VertxGen
 public interface Test {
 
+  Async async();
+
   void assertTrue(boolean b);
 
   void fail(String s);
-
-  void complete();
 
 }
