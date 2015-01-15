@@ -31,7 +31,7 @@ public class ModuleDesc implements Module {
   @Override
   public Module before(Handler<Void> callback) {
     beforeCallbacks.add(callback);
-    return null;
+    return this;
   }
 
   @Override
