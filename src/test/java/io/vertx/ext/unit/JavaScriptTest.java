@@ -14,6 +14,9 @@ public class JavaScriptTest extends AsyncTestBase {
   @Test
   public void testSimple() {
     Vertx vertx = Vertx.vertx();
+    vertx.eventBus().consumer("test").handler(msg -> {
+      testComplete();
+    });
     vertx.deployVerticle("js:timer", ar -> {
       assertTrue(ar.succeeded());
     });

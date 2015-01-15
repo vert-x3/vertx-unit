@@ -4,4 +4,8 @@ Unit.asyncTest("Timer test", function(test) {
     vertx.setTimer(50, function() {
        test.complete();
     });
-}).execute();
+}).execute(function(moduleExec) {
+    moduleExec.endHandler(function() {
+       vertx.eventBus().send("test", "done");
+    });
+});
