@@ -1,14 +1,14 @@
 import io.vertx.ext.unit.Unit
 
-def module = Unit.test "Timer test", { test ->
+def suite = Unit.test "Timer test", { test ->
   def async = test.async()
   vertx.setTimer 50, {
     async.complete()
   }
 }
 
-def exec = module.exec()
-exec.endHandler {
+def runner = suite.runner()
+runner.endHandler {
   vertx.eventBus().send("test", "done")
 }
-exec.run()
+runner.run()

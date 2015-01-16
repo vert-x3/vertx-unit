@@ -11,7 +11,7 @@ import io.vertx.core.Handler;
 public interface Suite {
 
   @Fluent
-  Suite before(Handler<Void> callback);
+  Suite before(Handler<Test> before);
 
   @Fluent
   Suite after(Handler<Void> callback);
@@ -19,6 +19,6 @@ public interface Suite {
   @Fluent
   Suite test(String desc, Handler<Test> handler);
 
-  SuiteRunner exec();
+  SuiteRunner runner();
 
 }

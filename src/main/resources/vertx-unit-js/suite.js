@@ -35,13 +35,15 @@ var Suite = function(j_val) {
   /**
 
    @public
-   @param callback {function} 
+   @param before {function} 
    @return {Suite}
    */
-  this.before = function(callback) {
+  this.before = function(before) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_suite.before(callback);
+      j_suite.before(function(jVal) {
+      before(new Test(jVal));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -83,10 +85,10 @@ var Suite = function(j_val) {
 
    @return {SuiteRunner}
    */
-  this.exec = function() {
+  this.runner = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return new SuiteRunner(j_suite.exec());
+      return new SuiteRunner(j_suite.runner());
     } else utils.invalidArgs();
   };
 
