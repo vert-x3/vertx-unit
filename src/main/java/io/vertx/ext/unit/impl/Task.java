@@ -8,7 +8,7 @@ import org.junit.Assert;
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
-class Task implements Runnable {
+class Task implements Runnable, Handler<Throwable> {
 
   private final Handler<Throwable> next;
   private final Handler<Test> test;
@@ -39,7 +39,12 @@ class Task implements Runnable {
     }
   }
 
+  @Override
   public void run() {
+    handle(null);
+  }
+
+  public void handle(Throwable failure) {
 
     Test test = new Test() {
 
@@ -81,17 +86,16 @@ class Task implements Runnable {
       }
     };
 
-    if (failed == null) {
-      running = true;
-      try {
-        Task.this.test.handle(test);
-      } catch (Throwable t) {
-        if (failed == null) {
-          failed = t;
-        }
-      } finally {
-        running = false;
+    failed = failure;
+    running = true;
+    try {
+      Task.this.test.handle(test);
+    } catch (Throwable t) {
+      if (failed == null) {
+        failed = t;
       }
+    } finally {
+      running = false;
     }
 
     //

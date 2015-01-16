@@ -5,12 +5,10 @@ import io.vertx.core.streams.ReadStream;
 import io.vertx.ext.unit.Suite;
 import io.vertx.ext.unit.SuiteRunner;
 import io.vertx.ext.unit.Test;
-import io.vertx.ext.unit.TestResult;
 import io.vertx.ext.unit.TestRunner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -19,7 +17,7 @@ public class SuiteDesc implements Suite {
 
   final String desc;
   private volatile Handler<Test> before;
-  final List<Handler<Void>> afterCallbacks = new ArrayList<>();
+  private volatile Handler<Test> after;
   private final List<TestDesc> tests = new ArrayList<>();
 
   public SuiteDesc() {
@@ -37,8 +35,8 @@ public class SuiteDesc implements Suite {
   }
 
   @Override
-  public Suite after(Handler<Void> callback) {
-    afterCallbacks.add(callback);
+  public Suite after(Handler<Test> after) {
+    this.after = after;
     return this;
   }
 
@@ -87,50 +85,12 @@ public class SuiteDesc implements Suite {
         if (tests.length > index) {
           Runnable next = build(tests, index + 1);
           TestDesc test = tests[index];
-
-          class TestRunnerImpl implements TestRunner {
-
-            volatile Handler<TestResult> completionHandler;
-
-            final Task runnerTask = new Task(test.handler, t -> {
-              TestResultImpl tr = new TestResultImpl(test.desc, 0, t);
-              if (completionHandler != null) {
-                completionHandler.handle(tr);
-              }
-              next.run();
-            });
-            final Task beforeTask = before == null ? null : new Task(before, t -> {
-              if (t != null) {
-                if (completionHandler != null) {
-                  completionHandler.handle(new TestResultImpl(test.desc, 0, t));
-                  next.run();
-                }
-              } else {
-                runnerTask.run();
-              }
-            });
-
-            @Override
-            public String description() {
-              return test.desc;
-            }
-
-            @Override
-            public void completionHandler(Handler<TestResult> handler) {
-              completionHandler = handler;
-            }
-          }
-
-          TestRunnerImpl runner = new TestRunnerImpl();
+          TestRunnerImpl runner = new TestRunnerImpl(test.desc, before, test.handler, after, next);
           return () -> {
             if (testHandler != null) {
               testHandler.handle(runner);
             }
-            if (runner.beforeTask != null) {
-              runner.beforeTask.run();
-            } else {
-              runner.runnerTask.run();
-            }
+            runner.task.run();
           };
         } else {
           return () -> {

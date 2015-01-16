@@ -57,7 +57,9 @@ var Suite = function(j_val) {
   this.after = function(callback) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_suite.after(callback);
+      j_suite.after(function(jVal) {
+      callback(new Test(jVal));
+    });
       return that;
     } else utils.invalidArgs();
   };

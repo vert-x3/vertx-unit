@@ -229,6 +229,84 @@ public class UnitTest {
     assertEquals(0, count.get());
   }
 
+  @Test
+  public void afterSync() throws Exception {
+    after(SYNC);
+  }
+
+  @Test
+  public void afterAsync() throws Exception {
+    after(ASYNC);
+  }
+
+  private void after(Executor executor) throws Exception {
+    AtomicInteger count = new AtomicInteger();
+    BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
+    Suite suite = Unit.test("my_test", test -> {
+      count.compareAndSet(0, 1);
+    }).after(test -> {
+      count.compareAndSet(1, 2);
+      queue.add(test.async());
+    });
+    Reporter reporter = new Reporter();
+    executor.execute(() -> reporter.run(suite));
+    Async async = queue.poll(2, TimeUnit.SECONDS);
+    assertFalse(reporter.completed());
+    assertEquals(2, count.get());
+    async.complete();
+    reporter.await();
+  }
+
+  @Test
+  public void asyncAfterSync() throws Exception {
+    asyncAfter(SYNC);
+  }
+
+  @Test
+  public void asyncAfterAsync() throws Exception {
+    asyncAfter(ASYNC);
+  }
+
+  private void asyncAfter(Executor executor) throws Exception {
+    AtomicInteger count = new AtomicInteger();
+
+    Suite suite = Unit.test("my_test", test -> {
+      count.compareAndSet(0, 1);
+    }).after(test -> {
+      count.compareAndSet(1, 2);
+    });
+    Reporter reporter = new Reporter();
+    executor.execute(() -> reporter.run(suite));
+    reporter.await();
+    assertEquals(2, count.get());
+  }
+
+  @Test
+  public void failAfterSync() throws Exception {
+    failAfter(SYNC);
+  }
+
+  @Test
+  public void failAfterAsync() throws Exception {
+    failAfter(ASYNC);
+  }
+
+  private void failAfter(Executor executor) throws Exception {
+    AtomicInteger count = new AtomicInteger();
+    Suite suite = Unit.test("my_test", test -> {
+      count.compareAndSet(0, 1);
+      test.fail("the_message");
+    }).after(test -> {
+      count.compareAndSet(1, 2);
+    });
+    Reporter reporter = new Reporter();
+    executor.execute(() -> reporter.run(suite));
+    reporter.await();
+    assertEquals(2, count.get());
+    assertTrue(reporter.results.get(0).failed());
+    assertEquals("the_message", reporter.results.get(0).failure().getMessage());
+  }
+
   static class Reporter{
     private final CountDownLatch latch = new CountDownLatch(1);
     final List<TestResult> results = Collections.synchronizedList(new ArrayList<>());

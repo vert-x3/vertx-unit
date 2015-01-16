@@ -14,7 +14,7 @@ public interface Suite {
   Suite before(Handler<Test> before);
 
   @Fluent
-  Suite after(Handler<Void> callback);
+  Suite after(Handler<Test> callback);
 
   @Fluent
   Suite test(String desc, Handler<Test> handler);
