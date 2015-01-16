@@ -14,21 +14,21 @@
  * under the License.
  */
 
-/** @module vertx-unit-js/test_exec */
+/** @module vertx-unit-js/test_runner */
 var utils = require('vertx-js/util/utils');
 var TestResult = require('vertx-unit-js/test_result');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestExec = io.vertx.ext.unit.TestExec;
+var JTestRunner = io.vertx.ext.unit.TestRunner;
 
 /**
 
  @class
 */
-var TestExec = function(j_val) {
+var TestRunner = function(j_val) {
 
-  var j_testExec = j_val;
+  var j_testRunner = j_val;
   var that = this;
 
   /**
@@ -40,7 +40,7 @@ var TestExec = function(j_val) {
   this.description = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_testExec.description();
+      return j_testRunner.description();
     } else utils.invalidArgs();
   };
 
@@ -52,7 +52,7 @@ var TestExec = function(j_val) {
   this.completionHandler = function(handler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testExec.completionHandler(function(jVal) {
+      j_testRunner.completionHandler(function(jVal) {
       handler(new TestResult(jVal));
     });
     } else utils.invalidArgs();
@@ -61,8 +61,8 @@ var TestExec = function(j_val) {
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
-  this._jdel = j_testExec;
+  this._jdel = j_testRunner;
 };
 
 // We export the Constructor function
-module.exports = TestExec;
+module.exports = TestRunner;

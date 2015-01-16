@@ -7,7 +7,7 @@ import io.vertx.core.streams.ReadStream;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface ModuleExec extends ReadStream<TestExec> {
+public interface SuiteRunner extends ReadStream<TestRunner> {
 
   /**
    * Run the module exec.
