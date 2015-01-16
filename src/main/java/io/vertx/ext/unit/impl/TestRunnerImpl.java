@@ -3,18 +3,18 @@ package io.vertx.ext.unit.impl;
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.Test;
-import io.vertx.ext.unit.TestExec;
+import io.vertx.ext.unit.TestRunner;
 import io.vertx.ext.unit.TestResult;
 import org.junit.Assert;
 
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
-class TestExecImpl implements TestExec, Runnable {
+class TestRunnerImpl implements TestRunner, Runnable {
 
   private final Runnable next;
   private final TestDesc testDesc;
-  private final Handler<TestExec> execHandler;
+  private final Handler<TestRunner> execHandler;
   private volatile Handler<TestResult> completeHandler;
   private volatile boolean completed;
   private volatile boolean running;
@@ -22,7 +22,7 @@ class TestExecImpl implements TestExec, Runnable {
   private volatile TestResult result;
   private volatile Throwable failed;
 
-  public TestExecImpl(TestDesc testDesc, Handler<TestExec> execHandler, Runnable next) {
+  public TestRunnerImpl(TestDesc testDesc, Handler<TestRunner> execHandler, Runnable next) {
     this.testDesc = testDesc;
     this.execHandler = execHandler;
     this.next = next;
@@ -94,7 +94,7 @@ class TestExecImpl implements TestExec, Runnable {
         try {
           Assert.assertTrue(condition);
         } catch (AssertionError err) {
-          TestExecImpl.this.failed(err);
+          TestRunnerImpl.this.failed(err);
           throw err;
         }
       }
@@ -103,7 +103,7 @@ class TestExecImpl implements TestExec, Runnable {
         try {
           Assert.fail(message);
         } catch (AssertionError err) {
-          TestExecImpl.this.failed(err);
+          TestRunnerImpl.this.failed(err);
           throw err;
         }
       }

@@ -36,12 +36,12 @@ public class UnitTest {
 
   private void runTest(Executor executor) {
     AtomicInteger count = new AtomicInteger();
-    Module module = Unit.
+    Suite suite = Unit.
         test("my_test", test -> {
           count.compareAndSet(0, 1);
         });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(module));
+    executor.execute(() -> reporter.run(suite));
     reporter.await();
     assertEquals(1, count.get());
     assertEquals(1, reporter.results.size());
@@ -65,13 +65,13 @@ public class UnitTest {
   private void runAsyncTest(Executor executor) throws Exception {
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
     AtomicInteger count = new AtomicInteger();
-    Module module = Unit.
+    Suite suite = Unit.
         test("my_test", test -> {
           count.compareAndSet(0, 1);
           queue.add(test.async());
         });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(module));
+    executor.execute(() -> reporter.run(suite));
     Async async = queue.poll(2, TimeUnit.SECONDS);
     assertEquals(1, count.get());
     assertFalse(reporter.completed());
@@ -107,7 +107,7 @@ public class UnitTest {
 
   private void failTest(Executor executor, Handler<io.vertx.ext.unit.Test> thrower) {
     AtomicReference<Throwable> failure = new AtomicReference<>();
-    Module module = Unit.
+    Suite suite = Unit.
         test("my_test", test -> {
           try {
             thrower.handle(test);
@@ -117,7 +117,7 @@ public class UnitTest {
           }
         });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(module));
+    executor.execute(() -> reporter.run(suite));
     reporter.await();
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
@@ -140,12 +140,12 @@ public class UnitTest {
 
   private void asyncTestAsyncFailure(Executor executor) throws Exception {
     BlockingQueue<io.vertx.ext.unit.Test> queue = new ArrayBlockingQueue<>(1);
-    Module module = Unit.test("my_test", test -> {
+    Suite suite = Unit.test("my_test", test -> {
       test.async();
       queue.add(test);
     });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(module));
+    executor.execute(() -> reporter.run(suite));
     assertFalse(reporter.completed());
     io.vertx.ext.unit.Test test = queue.poll(2, TimeUnit.SECONDS);
     try {
@@ -160,8 +160,8 @@ public class UnitTest {
     private final CountDownLatch latch = new CountDownLatch(1);
     final List<TestResult> results = Collections.synchronizedList(new ArrayList<>());
 
-    void run(Module module) {
-      ModuleExec moduleExec = module.exec();
+    void run(Suite suite) {
+      SuiteRunner moduleExec = suite.exec();
       moduleExec.handler(testExec -> {
         testExec.completionHandler(results::add);
       });

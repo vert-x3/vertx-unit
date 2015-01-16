@@ -7,7 +7,7 @@ import io.vertx.core.Handler;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface TestExec {
+public interface TestRunner {
 
   /**
    * @return the test exec description

@@ -8,17 +8,17 @@ import io.vertx.core.Handler;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface Module {
+public interface Suite {
 
   @Fluent
-  Module before(Handler<Void> callback);
+  Suite before(Handler<Void> callback);
 
   @Fluent
-  Module after(Handler<Void> callback);
+  Suite after(Handler<Void> callback);
 
   @Fluent
-  Module test(String desc, Handler<Test> handler);
+  Suite test(String desc, Handler<Test> handler);
 
-  ModuleExec exec();
+  SuiteRunner exec();
 
 }

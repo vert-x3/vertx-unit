@@ -16,7 +16,7 @@
 
 /** @module vertx-unit-js/unit */
 var utils = require('vertx-js/util/utils');
-var Module = require('vertx-unit-js/module');
+var Suite = require('vertx-unit-js/suite');
 var Test = require('vertx-unit-js/test');
 
 var io = Packages.io;
@@ -43,14 +43,14 @@ var Unit = function(j_val) {
 
  @memberof module:vertx-unit-js/unit
 
- @return {Module}
+ @return {Suite}
  */
-Unit.module = function() {
+Unit.suite = function() {
   var __args = arguments;
   if (__args.length === 0) {
-    return new Module(JUnit.module());
+    return new Suite(JUnit.suite());
   }else if (__args.length === 1 && typeof __args[0] === 'string') {
-    return new Module(JUnit.module(__args[0]));
+    return new Suite(JUnit.suite(__args[0]));
   } else utils.invalidArgs();
 };
 
@@ -59,12 +59,12 @@ Unit.module = function() {
  @memberof module:vertx-unit-js/unit
  @param desc {string} 
  @param handler {function} 
- @return {Module}
+ @return {Suite}
  */
 Unit.test = function(desc, handler) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-    return new Module(JUnit.test(desc, function(jVal) {
+    return new Suite(JUnit.test(desc, function(jVal) {
     handler(new Test(jVal));
   }));
   } else utils.invalidArgs();
