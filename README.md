@@ -50,3 +50,7 @@ def module = Unit.test "Timer test", { test ->
 }
 module.exec().run();
 ~~~
+
+## Todo
+
+- allow also execution with runOnContext for chaining tasks
