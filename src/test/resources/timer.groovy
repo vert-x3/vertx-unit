@@ -11,4 +11,4 @@ def runner = suite.runner()
 runner.endHandler {
   vertx.eventBus().send("test", "done")
 }
-runner.run()
+runner.runOnContext()

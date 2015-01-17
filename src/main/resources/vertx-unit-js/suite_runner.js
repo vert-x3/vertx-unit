@@ -18,6 +18,7 @@
 var utils = require('vertx-js/util/utils');
 var ReadStream = require('vertx-js/read_stream');
 var TestRunner = require('vertx-unit-js/test_runner');
+var Context = require('vertx-js/context');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
@@ -108,7 +109,7 @@ var SuiteRunner = function(j_val) {
   };
 
   /**
-   Run the module exec.
+   Run the suite in the current thread.
 
    @public
 
@@ -117,6 +118,21 @@ var SuiteRunner = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       j_suiteRunner.run();
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Run the suite on current vertx context.
+
+   @public
+
+   */
+  this.runOnContext = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      j_suiteRunner.runOnContext();
+    }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
+      j_suiteRunner.runOnContext(__args[0]._jdel);
     } else utils.invalidArgs();
   };
 

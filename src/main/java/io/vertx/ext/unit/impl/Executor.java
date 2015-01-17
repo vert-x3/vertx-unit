@@ -3,8 +3,8 @@ package io.vertx.ext.unit.impl;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-interface Task<T> {
-
-  void run(T t, Executor executor);
+interface Executor {
+  
+  <T> void execute(Task<T> task, T value);
 
 }
