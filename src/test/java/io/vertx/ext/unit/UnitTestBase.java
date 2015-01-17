@@ -5,10 +5,11 @@ import org.junit.Test;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
@@ -17,22 +18,28 @@ import static org.junit.Assert.*;
  */
 public abstract class UnitTestBase {
 
-  final Executor executor;
+  protected Consumer<SuiteRunner> executor;
 
-  public UnitTestBase(Executor executor) {
-    this.executor = executor;
+  public UnitTestBase() {
+  }
+
+  protected boolean checkContext() {
+    return true;
   }
 
   @Test
   public void runTest() {
     AtomicInteger count = new AtomicInteger();
+    AtomicBoolean sameContext = new AtomicBoolean();
     Suite suite = Unit.
         test("my_test", test -> {
+          sameContext.set(checkContext());
           count.compareAndSet(0, 1);
         });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(suite));
+    executor.accept(reporter.runner(suite));
     reporter.await();
+    assertTrue(sameContext.get());
     assertEquals(1, count.get());
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
@@ -52,11 +59,12 @@ public abstract class UnitTestBase {
           queue.add(test.async());
         });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(suite));
+    executor.accept(reporter.runner(suite));
     Async async = queue.poll(2, TimeUnit.SECONDS);
     assertEquals(1, count.get());
     assertFalse(reporter.completed());
     async.complete();
+    reporter.await();
     assertTrue(reporter.completed());
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
@@ -88,7 +96,7 @@ public abstract class UnitTestBase {
           }
         });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(suite));
+    executor.accept(reporter.runner(suite));
     reporter.await();
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
@@ -107,7 +115,7 @@ public abstract class UnitTestBase {
       queue.add(test);
     });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(suite));
+    executor.accept(reporter.runner(suite));
     assertFalse(reporter.completed());
     io.vertx.ext.unit.Test test = queue.poll(2, TimeUnit.SECONDS);
     try {
@@ -121,33 +129,39 @@ public abstract class UnitTestBase {
   @Test
   public void runBefore() throws Exception {
     AtomicInteger count = new AtomicInteger();
+    AtomicBoolean sameContext = new AtomicBoolean();
     Suite suite = Unit.test("my_test", test -> {
+      sameContext.set(checkContext());
       count.compareAndSet(1, 2);
     }).before(test -> {
       count.compareAndSet(0, 1);
     });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(suite));
+    executor.accept(reporter.runner(suite));
     reporter.await();
     assertEquals(2, count.get());
+    assertTrue(sameContext.get());
   }
 
   @Test
   public void runBeforeWithAsyncCompletion() throws Exception {
     AtomicInteger count = new AtomicInteger();
+    AtomicBoolean sameContext = new AtomicBoolean();
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
     Suite suite = Unit.test("my_test", test -> {
       count.compareAndSet(1, 2);
+      sameContext.set(checkContext());
     }).before(test -> {
       count.compareAndSet(0, 1);
       queue.add(test.async());
     });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(suite));
+    executor.accept(reporter.runner(suite));
     Async async = queue.poll(2, TimeUnit.SECONDS);
     async.complete();
     reporter.await();
     assertEquals(2, count.get());
+    assertTrue(sameContext.get());
   }
 
   @Test
@@ -159,13 +173,13 @@ public abstract class UnitTestBase {
       throw new RuntimeException();
     });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(suite));
+    executor.accept(reporter.runner(suite));
     reporter.await();
     assertEquals(0, count.get());
   }
 
   @Test
-  public void runAfter() throws Exception {
+  public void runAfterWithAsyncCompletion() throws Exception {
     AtomicInteger count = new AtomicInteger();
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
     Suite suite = Unit.test("my_test", test -> {
@@ -175,7 +189,7 @@ public abstract class UnitTestBase {
       queue.add(test.async());
     });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(suite));
+    executor.accept(reporter.runner(suite));
     Async async = queue.poll(2, TimeUnit.SECONDS);
     assertFalse(reporter.completed());
     assertEquals(2, count.get());
@@ -184,18 +198,20 @@ public abstract class UnitTestBase {
   }
 
   @Test
-  public void runAfterWithAsyncCompletion() throws Exception {
+  public void runAfter() throws Exception {
     AtomicInteger count = new AtomicInteger();
-
+    AtomicBoolean sameContext = new AtomicBoolean();
     Suite suite = Unit.test("my_test", test -> {
       count.compareAndSet(0, 1);
     }).after(test -> {
+      sameContext.set(checkContext());
       count.compareAndSet(1, 2);
     });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(suite));
+    executor.accept(reporter.runner(suite));
     reporter.await();
     assertEquals(2, count.get());
+    assertTrue(sameContext.get());
   }
 
   @Test
@@ -208,7 +224,7 @@ public abstract class UnitTestBase {
       count.compareAndSet(1, 2);
     });
     Reporter reporter = new Reporter();
-    executor.execute(() -> reporter.run(suite));
+    executor.accept(reporter.runner(suite));
     reporter.await();
     assertEquals(2, count.get());
     assertTrue(reporter.results.get(0).failed());

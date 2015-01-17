@@ -11,7 +11,7 @@ import io.vertx.ext.unit.TestRunner;
 class TestRunnerImpl implements TestRunner {
 
   private final String desc;
-  final Task task;
+  final TestTask task;
   volatile Handler<TestResult> completionHandler;
 
   public TestRunnerImpl(
@@ -19,27 +19,27 @@ class TestRunnerImpl implements TestRunner {
       Handler<Test> before,
       Handler<Test> test,
       Handler<Test> after,
-      Runnable next) {
+      Task<?> next) {
 
-    final Handler<Throwable> completeTask = failure -> {
+    final Task<Throwable> completeTask = (failure,executor) -> {
       if (completionHandler != null) {
         completionHandler.handle(new TestResultImpl(desc, 0, failure));
       }
-      next.run();
+      executor.execute(next, null);
     };
-    final Task afterTask = after == null ? null : new Task(after, completeTask);
-    final Task runnerTask = new Task(test, failure -> {
+    final TestTask afterTask = after == null ? null : new TestTask(after, completeTask);
+    final TestTask runnerTask = new TestTask(test, (failure,executor) -> {
       if (afterTask != null) {
-        afterTask.handle(failure);
+        executor.execute(afterTask, failure);
       } else {
-        completeTask.handle(failure);
+        executor.execute(completeTask, failure);
       }
     });
-    task = before == null ? runnerTask : new Task(before, failure -> {
+    task = before == null ? runnerTask : new TestTask(before, (failure,executor) -> {
       if (failure != null) {
-        completeTask.handle(failure);
+        executor.execute(completeTask, failure);
       } else {
-        runnerTask.run();
+        executor.execute(runnerTask, null);
       }
     });
 

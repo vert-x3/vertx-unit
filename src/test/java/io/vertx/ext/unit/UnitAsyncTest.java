@@ -6,6 +6,7 @@ package io.vertx.ext.unit;
 public class UnitAsyncTest extends UnitTestBase {
 
   public UnitAsyncTest() {
-    super(command -> new Thread(command).start());
+    super();
+    executor = runner -> new Thread(runner::run).start();
   }
 }

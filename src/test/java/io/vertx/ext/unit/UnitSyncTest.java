@@ -6,6 +6,7 @@ package io.vertx.ext.unit;
 public class UnitSyncTest extends UnitTestBase {
 
   public UnitSyncTest() {
-    super(Runnable::run);
+    super();
+    executor = SuiteRunner::run;
   }
 }

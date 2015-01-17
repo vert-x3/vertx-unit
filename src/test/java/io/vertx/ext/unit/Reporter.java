@@ -13,15 +13,15 @@ class Reporter {
   private final CountDownLatch latch = new CountDownLatch(1);
   final List<TestResult> results = Collections.synchronizedList(new ArrayList<>());
 
-  void run(Suite suite) {
-    SuiteRunner moduleExec = suite.runner();
-    moduleExec.handler(testExec -> {
+  SuiteRunner runner(Suite suite) {
+    SuiteRunner runner = suite.runner();
+    runner.handler(testExec -> {
       testExec.completionHandler(results::add);
     });
-    moduleExec.endHandler(done -> {
+    runner.endHandler(done -> {
       latch.countDown();
     });
-    moduleExec.run();
+    return runner;
   }
 
   void await() {

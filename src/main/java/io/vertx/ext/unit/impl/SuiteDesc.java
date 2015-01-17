@@ -1,6 +1,8 @@
 package io.vertx.ext.unit.impl;
 
+import io.vertx.core.Context;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.ext.unit.Suite;
 import io.vertx.ext.unit.SuiteRunner;
@@ -49,7 +51,7 @@ public class SuiteDesc implements Suite {
   @Override
   public SuiteRunner runner() {
 
-    class ModuleExecImpl implements SuiteRunner {
+    class SuiteRunnerImpl implements SuiteRunner {
 
       private Handler<Void> endHandler;
       private Handler<TestRunner> testHandler;
@@ -81,19 +83,19 @@ public class SuiteDesc implements Suite {
         return this;
       }
 
-      private Runnable build(TestDesc[] tests, int index) {
+      private Task<?> build(TestDesc[] tests, int index) {
         if (tests.length > index) {
-          Runnable next = build(tests, index + 1);
+          Task<?> next = build(tests, index + 1);
           TestDesc test = tests[index];
           TestRunnerImpl runner = new TestRunnerImpl(test.desc, before, test.handler, after, next);
-          return () -> {
+          return (o, executor) -> {
             if (testHandler != null) {
               testHandler.handle(runner);
             }
-            runner.task.run();
+            executor.execute(runner.task, null);
           };
         } else {
-          return () -> {
+          return (o, executor) -> {
             if (endHandler != null) {
               endHandler.handle(null);
             }
@@ -101,11 +103,37 @@ public class SuiteDesc implements Suite {
         }
       }
 
+      private Task<?> build() {
+        return build(tests.toArray(new TestDesc[tests.size()]), 0);
+      }
+
       public void run() {
-        build(tests.toArray(new TestDesc[tests.size()]), 0).run();
+        build().run(null, new Executor() {
+          @Override
+          public <T> void execute(Task<T> task, T value) {
+            task.run(value, this);
+          }
+        });
+      }
+
+      @Override
+      public void runOnContext() {
+        runOnContext(Vertx.currentContext());
+      }
+
+      @Override
+      public void runOnContext(Context context) {
+        build().run(null, new Executor() {
+          @Override
+          public <T> void execute(Task<T> task, T value) {
+            context.runOnContext(v -> {
+              task.run(value, this);
+            });
+          }
+        });
       }
     }
 
-    return new ModuleExecImpl();
+    return new SuiteRunnerImpl();
   }
 }
