@@ -1,6 +1,5 @@
 package io.vertx.ext.unit;
 
-import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import org.junit.After;
 import org.junit.Before;
@@ -8,25 +7,24 @@ import org.junit.Before;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class UnitEventLoopTest extends UnitTestBase {
+public class ProvidedVertxUnitTest extends UnitTestBase {
 
   private Vertx vertx;
-  private Context context;
 
-  public UnitEventLoopTest() {
+  public ProvidedVertxUnitTest() {
     super();
-    executor = runner -> runner.runOnContext(context);
+    runSuite = runner -> vertx.runOnContext(v -> runner.run());
+    completeAsync = async -> vertx.runOnContext(v -> async.complete());
   }
 
   @Override
-  protected boolean checkContext() {
-    return Vertx.currentContext() == context;
+  protected boolean checkTest(Test test) {
+    return Vertx.currentContext() != null && test.vertx() == null;
   }
 
   @Before
   public void setUp() {
     vertx = Vertx.vertx();
-    context = vertx.getOrCreateContext();
   }
 
   @After
@@ -36,6 +34,4 @@ public class UnitEventLoopTest extends UnitTestBase {
       vertx = null;
     }
   }
-
-
 }

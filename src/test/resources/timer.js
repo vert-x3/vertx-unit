@@ -11,4 +11,4 @@ var runner = suite.runner();
 runner.endHandler(function() {
     vertx.eventBus().send("test", "done");
 });
-runner.runOnContext();
+runner.run(vertx);

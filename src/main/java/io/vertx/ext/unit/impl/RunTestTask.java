@@ -19,21 +19,21 @@ class RunTestTask {
       Task<TestResult> next) {
 
     final Task<Throwable> completeTask = (failure,executor) -> {
-      executor.execute(next, new TestResultImpl(desc, 0, failure));
+      executor.run(next, new TestResultImpl(desc, 0, failure));
     };
     final InvokeTask afterTask = after == null ? null : new InvokeTask(after, completeTask);
     final InvokeTask runnerTask = new InvokeTask(test, (failure,executor) -> {
       if (afterTask != null) {
-        executor.execute(afterTask, failure);
+        executor.run(afterTask, failure);
       } else {
-        executor.execute(completeTask, failure);
+        executor.run(completeTask, failure);
       }
     });
     task = before == null ? runnerTask : new InvokeTask(before, (failure,executor) -> {
       if (failure != null) {
-        executor.execute(completeTask, failure);
+        executor.run(completeTask, failure);
       } else {
-        executor.execute(runnerTask, null);
+        executor.run(runnerTask, null);
       }
     });
   }

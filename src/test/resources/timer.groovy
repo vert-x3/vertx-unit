@@ -1,4 +1,4 @@
-import io.vertx.ext.unit.Unit
+import io.vertx.groovy.ext.unit.Unit
 
 def suite = Unit.test "Timer test", { test ->
   def async = test.async()
@@ -11,4 +11,4 @@ def runner = suite.runner()
 runner.endHandler {
   vertx.eventBus().send("test", "done")
 }
-runner.runOnContext()
+runner.run(vertx)

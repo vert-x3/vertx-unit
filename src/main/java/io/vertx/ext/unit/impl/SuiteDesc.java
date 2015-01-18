@@ -1,6 +1,5 @@
 package io.vertx.ext.unit.impl;
 
-import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.streams.ReadStream;
@@ -107,18 +106,18 @@ public class SuiteDesc implements Suite {
         return build(tests.toArray(new TestDesc[tests.size()]), 0);
       }
 
+      // For unit testing
+      public void run(Context context) {
+        context.run(build());
+      }
+
       public void run() {
-        Executor.create().execute(build());
+        Context.create().run(build());
       }
 
       @Override
-      public void runOnContext() {
-        runOnContext(Vertx.currentContext());
-      }
-
-      @Override
-      public void runOnContext(Context context) {
-        Executor.create(context).execute(build());
+      public void run(Vertx vertx) {
+        Context.create(vertx).run(build());
       }
     }
 
@@ -145,12 +144,12 @@ public class SuiteDesc implements Suite {
           Vertx vertx = Vertx.vertx();
           RunTestTask runner = new RunTestTask(test.desc, before, test.handler, after, new Task<TestResult>() {
             @Override
-            public void run(TestResult testResult, Executor executor) {
+            public void run(TestResult testResult, Context executor) {
               latch.add(testResult);
             }
           });
           testResult.startTest(this);
-          Executor.create(vertx.getOrCreateContext()).execute(runner.task);
+          Context.create(vertx).run(runner.task);
           try {
             TestResult result = latch.poll(timeout, unit);
             if (result != null) {

@@ -6,14 +6,14 @@ Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
 
 Proof of concept
 
-## How does it look like ?
+## Running in a Verticle
 
 ### Simple test
 
 ~~~
 Unit.test("my test", test -> {
   test.assertTrue(true);
-}).exec().run();
+}).runner().run();
 ~~~
 
 ### Async test
@@ -24,7 +24,7 @@ Unit.test("my test", test -> {
 Unit.asyncTest("my test", test -> {
   Async async = test.async();
   vertx.setTimer(50, id -> async.complete());
-}).exec().run();
+}).runner().run();
 ~~~
 
 #### JavaScript
@@ -36,21 +36,41 @@ Unit.asyncTest("Timer test", function(test) {
     vertx.setTimer(50, function() {
        async.complete();
     });
-}).exec().run();
+}).runner().run();
 ~~~
 
 #### Groovy
 
 ~~~
-def module = Unit.test "Timer test", { test ->
+def suite = Unit.test "Timer test", { test ->
   def async = test.async()
   vertx.setTimer 50, {
     async.complete()
   }
 }
-module.exec().run();
+suite.runner().run();
+~~~
+
+## Running with JUnit
+
+A JUnit testsuite can be created from a Vert.x unit suite.
+
+~~~
+@RunWith(AllTests.class)
+public class JUnitTestSuite {
+
+  public static TestSuite suite() {
+    return Unit.suite().
+      test("test 1", test -> {
+        test.assertTrue(true);
+      }).
+      test("test 2", test -> {
+        // Test 2
+      }).toJUnitSuite();
+  }
+}
 ~~~
 
 ## Todo
 
-- allow also execution with runOnContext for chaining tasks
+- reporting to console via event bus

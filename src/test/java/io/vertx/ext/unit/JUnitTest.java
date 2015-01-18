@@ -20,8 +20,8 @@ public class JUnitTest {
 
   @org.junit.Test
   public void testRun() {
-    AtomicReference<Context> current = new AtomicReference<>();
-    Result result = run(test -> current.set(Vertx.currentContext()));
+    AtomicReference<Vertx> current = new AtomicReference<>();
+    Result result = run(test -> current.set(test.vertx()));
     assertEquals(1, result.getRunCount());
     assertEquals(0, result.getFailureCount());
     assertNotNull(current.get());

@@ -1,6 +1,7 @@
 package io.vertx.ext.unit;
 
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.Vertx;
 
 /**
  * The test interface allows the test code to report test completion or failures.
@@ -9,6 +10,8 @@ import io.vertx.codegen.annotations.VertxGen;
  */
 @VertxGen
 public interface Test {
+
+  Vertx vertx();
 
   Async async();
 

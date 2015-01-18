@@ -32,11 +32,11 @@ public class TestRunnerImpl implements TestRunner, Task<Void> {
   }
 
   @Override
-  public void run(Void aVoid, Executor executor) {
+  public void run(Void aVoid, Context executor) {
     if (testHandler != null) {
       testHandler.handle(this);
     }
-    executor.execute(task.task, null);
+    executor.run(task.task, null);
   }
 
   @Override

@@ -36,6 +36,19 @@ var Test = function(j_val) {
 
    @public
 
+   @return {Vertx}
+   */
+  this.vertx = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      return new Vertx(j_test.vertx());
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+
    @return {Async}
    */
   this.async = function() {

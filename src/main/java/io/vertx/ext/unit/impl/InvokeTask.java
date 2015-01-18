@@ -1,6 +1,7 @@
 package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.Test;
 import org.junit.Assert;
@@ -19,7 +20,7 @@ class InvokeTask implements Task<Throwable> {
   }
 
   @Override
-  public void run(Throwable failure, Executor executor) {
+  public void run(Throwable failure, Context executor) {
 
     class TestImpl implements Test {
 
@@ -31,7 +32,7 @@ class InvokeTask implements Task<Throwable> {
       private void tryEnd() {
         if (asyncCount == 0 && !completed) {
           completed = true;
-          executor.execute(next, failed);
+          executor.run(next, failed);
         }
       }
 
@@ -43,6 +44,11 @@ class InvokeTask implements Task<Throwable> {
             tryEnd();
           }
         }
+      }
+
+      @Override
+      public Vertx vertx() {
+        return executor.vertx();
       }
 
       @Override
