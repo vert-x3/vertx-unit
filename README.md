@@ -53,6 +53,17 @@ suite.runner().run();
 
 ## Running with JUnit
 
+### JUnit assertion
+
+Run a single test and blocks until it pass or fails, failures are rethrown by the `assertSuccess()` method.
+
+~~~
+Unit.test("my_test", test -> { test.assertTrue(true) }).runner().assertSuccess();
+~~~
+
+
+### JUnit test suite
+
 A JUnit testsuite can be created from a Vert.x unit suite.
 
 ~~~
