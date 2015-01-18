@@ -8,12 +8,12 @@ import org.junit.Assert;
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
-class TestTask implements Task<Throwable> {
+class InvokeTask implements Task<Throwable> {
 
   private final Task<Throwable> next;
   private final Handler<Test> test;
 
-  public TestTask(Handler<Test> test, Task<Throwable> next) {
+  public InvokeTask(Handler<Test> test, Task<Throwable> next) {
     this.test = test;
     this.next = next;
   }
@@ -89,7 +89,7 @@ class TestTask implements Task<Throwable> {
     test.failed = failure;
     test.running = true;
     try {
-      TestTask.this.test.handle(test);
+      InvokeTask.this.test.handle(test);
     } catch (Throwable t) {
       if (test.failed == null) {
         test.failed = t;

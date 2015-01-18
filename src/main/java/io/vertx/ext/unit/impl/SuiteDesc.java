@@ -7,10 +7,16 @@ import io.vertx.core.streams.ReadStream;
 import io.vertx.ext.unit.Suite;
 import io.vertx.ext.unit.SuiteRunner;
 import io.vertx.ext.unit.Test;
+import io.vertx.ext.unit.TestResult;
 import io.vertx.ext.unit.TestRunner;
+import junit.framework.TestSuite;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -87,13 +93,7 @@ public class SuiteDesc implements Suite {
         if (tests.length > index) {
           Task<?> next = build(tests, index + 1);
           TestDesc test = tests[index];
-          TestRunnerImpl runner = new TestRunnerImpl(test.desc, before, test.handler, after, next);
-          return (o, executor) -> {
-            if (testHandler != null) {
-              testHandler.handle(runner);
-            }
-            executor.execute(runner.task, null);
-          };
+          return new TestRunnerImpl(testHandler, test.desc, before, test.handler, after, next);
         } else {
           return (o, executor) -> {
             if (endHandler != null) {
@@ -108,12 +108,7 @@ public class SuiteDesc implements Suite {
       }
 
       public void run() {
-        build().run(null, new Executor() {
-          @Override
-          public <T> void execute(Task<T> task, T value) {
-            task.run(value, this);
-          }
-        });
+        Executor.create().execute(build());
       }
 
       @Override
@@ -123,17 +118,57 @@ public class SuiteDesc implements Suite {
 
       @Override
       public void runOnContext(Context context) {
-        build().run(null, new Executor() {
-          @Override
-          public <T> void execute(Task<T> task, T value) {
-            context.runOnContext(v -> {
-              task.run(value, this);
-            });
-          }
-        });
+        Executor.create(context).execute(build());
       }
     }
 
     return new SuiteRunnerImpl();
+  }
+
+  @Override
+  public TestSuite toJUnitSuite() {
+    return toJUnitSuite(2, TimeUnit.MINUTES);
+  }
+
+  @Override
+  public TestSuite toJUnitSuite(long timeout, TimeUnit unit) {
+    TestSuite suite = new TestSuite();
+    for (TestDesc test : tests) {
+      suite.addTest(new junit.framework.Test() {
+        @Override
+        public int countTestCases() {
+          return 1;
+        }
+        @Override
+        public void run(junit.framework.TestResult testResult) {
+          BlockingQueue<TestResult> latch = new ArrayBlockingQueue<>(1);
+          Vertx vertx = Vertx.vertx();
+          RunTestTask runner = new RunTestTask(test.desc, before, test.handler, after, new Task<TestResult>() {
+            @Override
+            public void run(TestResult testResult, Executor executor) {
+              latch.add(testResult);
+            }
+          });
+          testResult.startTest(this);
+          Executor.create(vertx.getOrCreateContext()).execute(runner.task);
+          try {
+            TestResult result = latch.poll(timeout, unit);
+            if (result != null) {
+              Throwable failure = result.failure();
+              if (failure != null) {
+                testResult.addError(this, failure);
+              }
+            } else {
+              testResult.addError(this, new TimeoutException("Timed out in waiting for test complete"));
+            }
+          } catch (InterruptedException e) {
+            testResult.addError(this, e);
+          }
+          vertx.close();
+          testResult.endTest(this);
+        }
+      });
+    }
+    return suite;
   }
 }

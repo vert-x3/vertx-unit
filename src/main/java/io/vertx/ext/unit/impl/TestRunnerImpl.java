@@ -8,44 +8,36 @@ import io.vertx.ext.unit.TestRunner;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-class TestRunnerImpl implements TestRunner {
+public class TestRunnerImpl implements TestRunner, Task<Void> {
 
+  private final Handler<TestRunner> testHandler;
   private final String desc;
-  final TestTask task;
-  volatile Handler<TestResult> completionHandler;
+  private final RunTestTask task;
+  private volatile Handler<TestResult> completionHandler;
 
-  public TestRunnerImpl(
-      String desc,
-      Handler<Test> before,
-      Handler<Test> test,
-      Handler<Test> after,
-      Task<?> next) {
-
-    final Task<Throwable> completeTask = (failure,executor) -> {
-      if (completionHandler != null) {
-        completionHandler.handle(new TestResultImpl(desc, 0, failure));
-      }
-      executor.execute(next, null);
-    };
-    final TestTask afterTask = after == null ? null : new TestTask(after, completeTask);
-    final TestTask runnerTask = new TestTask(test, (failure,executor) -> {
-      if (afterTask != null) {
-        executor.execute(afterTask, failure);
-      } else {
-        executor.execute(completeTask, failure);
-      }
-    });
-    task = before == null ? runnerTask : new TestTask(before, (failure,executor) -> {
-      if (failure != null) {
-        executor.execute(completeTask, failure);
-      } else {
-        executor.execute(runnerTask, null);
-      }
-    });
-
+  public TestRunnerImpl(Handler<TestRunner> testHandler,
+                        String desc,
+                        Handler<Test> before,
+                        Handler<Test> test,
+                        Handler<Test> after,
+                        Task<?> next) {
+    this.testHandler = testHandler;
     this.desc = desc;
+    this.task = new RunTestTask(desc, before, test, after, (testResult, executor) -> {
+      if (completionHandler != null) {
+        completionHandler.handle(testResult);
+      }
+      next.run(null, executor);
+    });
   }
 
+  @Override
+  public void run(Void aVoid, Executor executor) {
+    if (testHandler != null) {
+      testHandler.handle(this);
+    }
+    executor.execute(task.task, null);
+  }
 
   @Override
   public String description() {
