@@ -2,19 +2,26 @@ package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.Test;
+import io.vertx.ext.unit.TestDef;
+import io.vertx.ext.unit.TestRunner;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-class TestDesc {
+public class TestDesc implements TestDef {
 
-  final SuiteDesc module;
   final String desc;
   final Handler<Test> handler;
 
-  TestDesc(SuiteDesc module, String desc, Handler<Test> handler) {
-    this.module = module;
+  public TestDesc(String desc, Handler<Test> handler) {
     this.desc = desc;
     this.handler = handler;
+  }
+
+  @Override
+  public TestRunner runner() {
+    return new TestRunnerImpl(desc, null, handler, null, (o, executor) -> {
+      // ?
+    });
   }
 }

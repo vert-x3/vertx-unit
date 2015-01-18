@@ -2,6 +2,7 @@ package io.vertx.ext.unit;
 
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -20,5 +21,9 @@ public interface TestRunner {
    * @param handler the completion handler
    */
   void completionHandler(Handler<TestResult> handler);
+
+  void run();
+
+  void run(Vertx vertx);
 
 }

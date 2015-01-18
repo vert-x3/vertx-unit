@@ -7,19 +7,19 @@ import org.junit.Before;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class VertxUnitTest extends UnitTestBase {
+public class SuiteDefProvidedVertxTest extends SuiteDefTestBase {
 
   private Vertx vertx;
 
-  public VertxUnitTest() {
+  public SuiteDefProvidedVertxTest() {
     super();
-    runSuite = runner -> runner.run(vertx);
-    completeAsync = Async::complete;
+    runSuite = runner -> vertx.runOnContext(v -> runner.run());
+    completeAsync = async -> vertx.runOnContext(v -> async.complete());
   }
 
   @Override
   protected boolean checkTest(Test test) {
-    return Vertx.currentContext() != null && test.vertx() != null;
+    return Vertx.currentContext() != null && test.vertx() == null;
   }
 
   @Before

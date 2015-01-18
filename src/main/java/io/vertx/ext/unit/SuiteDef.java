@@ -12,16 +12,16 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface Suite {
+public interface SuiteDef {
 
   @Fluent
-  Suite before(Handler<Test> before);
+  SuiteDef before(Handler<Test> before);
 
   @Fluent
-  Suite after(Handler<Test> callback);
+  SuiteDef after(Handler<Test> callback);
 
   @Fluent
-  Suite test(String desc, Handler<Test> handler);
+  SuiteDef test(String desc, Handler<Test> handler);
 
   SuiteRunner runner();
 

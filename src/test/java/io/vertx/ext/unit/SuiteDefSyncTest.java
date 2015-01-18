@@ -5,9 +5,9 @@ import io.vertx.core.Vertx;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class UnitSyncTest extends UnitTestBase {
+public class SuiteDefSyncTest extends SuiteDefTestBase {
 
-  public UnitSyncTest() {
+  public SuiteDefSyncTest() {
     super();
     runSuite = SuiteRunner::run;
     completeAsync = Async::complete;

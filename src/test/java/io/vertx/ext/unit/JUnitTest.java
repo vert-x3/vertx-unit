@@ -1,6 +1,5 @@
 package io.vertx.ext.unit;
 
-import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import org.junit.runner.JUnitCore;
@@ -50,7 +49,7 @@ public class JUnitTest {
 
   @org.junit.Test
   public void testTimeout() {
-    Result result = new JUnitCore().run(Unit.test("test test", Test::async).toJUnitSuite(100, TimeUnit.MILLISECONDS));
+    Result result = new JUnitCore().run(Unit.suite().test("test test", Test::async).toJUnitSuite(100, TimeUnit.MILLISECONDS));
     assertEquals(1, result.getRunCount());
     assertEquals(1, result.getFailureCount());
     Failure failure = result.getFailures().get(0);
@@ -58,6 +57,6 @@ public class JUnitTest {
   }
 
   private Result run(Handler<Test> test) {
-    return new JUnitCore().run(Unit.test("test test", test).toJUnitSuite());
+    return new JUnitCore().run(Unit.suite().test("test test", test).toJUnitSuite());
   }
 }

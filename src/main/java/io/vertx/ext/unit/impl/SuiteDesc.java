@@ -2,12 +2,10 @@ package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.streams.ReadStream;
-import io.vertx.ext.unit.Suite;
+import io.vertx.ext.unit.SuiteDef;
 import io.vertx.ext.unit.SuiteRunner;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestResult;
-import io.vertx.ext.unit.TestRunner;
 import junit.framework.TestSuite;
 
 import java.util.ArrayList;
@@ -20,9 +18,9 @@ import java.util.concurrent.TimeoutException;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class SuiteDesc implements Suite {
+public class SuiteDesc implements SuiteDef {
 
-  final String desc;
+  private final String desc;
   private volatile Handler<Test> before;
   private volatile Handler<Test> after;
   private final List<TestDesc> tests = new ArrayList<>();
@@ -36,92 +34,28 @@ public class SuiteDesc implements Suite {
   }
 
   @Override
-  public Suite before(Handler<Test> before) {
+  public SuiteDef before(Handler<Test> before) {
     this.before = before;
     return this;
   }
 
   @Override
-  public Suite after(Handler<Test> after) {
+  public SuiteDef after(Handler<Test> after) {
     this.after = after;
     return this;
   }
 
   @Override
-  public Suite test(String desc, Handler<Test> handler) {
-    tests.add(new TestDesc(this, desc, handler));
+  public SuiteDef test(String desc, Handler<Test> handler) {
+    tests.add(new TestDesc(desc, handler));
     return this;
   }
 
   @Override
   public SuiteRunner runner() {
 
-    class SuiteRunnerImpl implements SuiteRunner {
 
-      private Handler<Void> endHandler;
-      private Handler<TestRunner> testHandler;
-
-      @Override
-      public ReadStream<TestRunner> exceptionHandler(Handler<Throwable> handler) {
-        return this;
-      }
-
-      @Override
-      public ReadStream<TestRunner> handler(Handler<TestRunner> handler) {
-        this.testHandler = handler;
-        return this;
-      }
-
-      @Override
-      public ReadStream<TestRunner> pause() {
-        return this;
-      }
-
-      @Override
-      public ReadStream<TestRunner> resume() {
-        return this;
-      }
-
-      @Override
-      public ReadStream<TestRunner> endHandler(Handler<Void> handler) {
-        endHandler = handler;
-        return this;
-      }
-
-      private Task<?> build(TestDesc[] tests, int index) {
-        if (tests.length > index) {
-          Task<?> next = build(tests, index + 1);
-          TestDesc test = tests[index];
-          return new TestRunnerImpl(testHandler, test.desc, before, test.handler, after, next);
-        } else {
-          return (o, executor) -> {
-            if (endHandler != null) {
-              endHandler.handle(null);
-            }
-          };
-        }
-      }
-
-      private Task<?> build() {
-        return build(tests.toArray(new TestDesc[tests.size()]), 0);
-      }
-
-      // For unit testing
-      public void run(Context context) {
-        context.run(build());
-      }
-
-      public void run() {
-        Context.create().run(build());
-      }
-
-      @Override
-      public void run(Vertx vertx) {
-        Context.create(vertx).run(build());
-      }
-    }
-
-    return new SuiteRunnerImpl();
+    return new SuiteRunnerImpl(before, tests, after);
   }
 
   @Override

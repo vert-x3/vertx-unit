@@ -1,6 +1,7 @@
 package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestResult;
 import io.vertx.ext.unit.TestRunner;
@@ -10,20 +11,19 @@ import io.vertx.ext.unit.TestRunner;
  */
 public class TestRunnerImpl implements TestRunner, Task<Void> {
 
-  private final Handler<TestRunner> testHandler;
   private final String desc;
   private final RunTestTask task;
   private volatile Handler<TestResult> completionHandler;
+  private volatile TestResult result;
 
-  public TestRunnerImpl(Handler<TestRunner> testHandler,
-                        String desc,
+  public TestRunnerImpl(String desc,
                         Handler<Test> before,
                         Handler<Test> test,
                         Handler<Test> after,
                         Task<?> next) {
-    this.testHandler = testHandler;
     this.desc = desc;
     this.task = new RunTestTask(desc, before, test, after, (testResult, executor) -> {
+      result = testResult;
       if (completionHandler != null) {
         completionHandler.handle(testResult);
       }
@@ -32,11 +32,10 @@ public class TestRunnerImpl implements TestRunner, Task<Void> {
   }
 
   @Override
-  public void run(Void aVoid, Context executor) {
-    if (testHandler != null) {
-      testHandler.handle(this);
+  public void run(Void v, Context executor) {
+    if (result == null) {
+      executor.run(task.task, null);
     }
-    executor.run(task.task, null);
   }
 
   @Override
@@ -47,5 +46,18 @@ public class TestRunnerImpl implements TestRunner, Task<Void> {
   @Override
   public void completionHandler(Handler<TestResult> handler) {
     completionHandler = handler;
+    if (completionHandler != null && result != null) {
+      completionHandler.handle(result);
+    }
+  }
+
+  @Override
+  public void run() {
+    task.task.run(null, Context.create());
+  }
+
+  @Override
+  public void run(Vertx vertx) {
+    task.task.run(null, Context.create(vertx));
   }
 }

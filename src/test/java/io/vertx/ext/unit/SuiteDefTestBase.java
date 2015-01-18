@@ -16,12 +16,12 @@ import static org.junit.Assert.*;
 /**
  * @author <a href="mailto:nscavell@redhat.com">Nick Scavelli</a>
  */
-public abstract class UnitTestBase {
+public abstract class SuiteDefTestBase {
 
   protected Consumer<SuiteRunner> runSuite;
   protected Consumer<Async> completeAsync;
 
-  public UnitTestBase() {
+  public SuiteDefTestBase() {
   }
 
   protected boolean checkTest(io.vertx.ext.unit.Test test) {
@@ -32,7 +32,7 @@ public abstract class UnitTestBase {
   public void runTest() {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
-    Suite suite = Unit.
+    SuiteDef suite = Unit.suite().
         test("my_test", test -> {
           sameContext.set(checkTest(test));
           count.compareAndSet(0, 1);
@@ -54,7 +54,7 @@ public abstract class UnitTestBase {
   public void runTestWithAsyncCompletion() throws Exception {
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
     AtomicInteger count = new AtomicInteger();
-    Suite suite = Unit.
+    SuiteDef suite = Unit.suite().
         test("my_test", test -> {
           count.compareAndSet(0, 1);
           queue.add(test.async());
@@ -87,7 +87,7 @@ public abstract class UnitTestBase {
 
   private void failTest(Handler<io.vertx.ext.unit.Test> thrower) {
     AtomicReference<Throwable> failure = new AtomicReference<>();
-    Suite suite = Unit.
+    SuiteDef suite = Unit.suite().
         test("my_test", test -> {
           try {
             thrower.handle(test);
@@ -111,7 +111,7 @@ public abstract class UnitTestBase {
   @Test
   public void runTestWithAsyncFailure() throws Exception {
     BlockingQueue<io.vertx.ext.unit.Test> queue = new ArrayBlockingQueue<>(1);
-    Suite suite = Unit.test("my_test", test -> {
+    SuiteDef suite = Unit.suite().test("my_test", test -> {
       test.async();
       queue.add(test);
     });
@@ -131,7 +131,7 @@ public abstract class UnitTestBase {
   public void runBefore() throws Exception {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
-    Suite suite = Unit.test("my_test", test -> {
+    SuiteDef suite = Unit.suite().test("my_test", test -> {
       sameContext.set(checkTest(test));
       count.compareAndSet(1, 2);
     }).before(test -> {
@@ -149,7 +149,7 @@ public abstract class UnitTestBase {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
-    Suite suite = Unit.test("my_test", test -> {
+    SuiteDef suite = Unit.suite().test("my_test", test -> {
       count.compareAndSet(1, 2);
       sameContext.set(checkTest(test));
     }).before(test -> {
@@ -168,7 +168,7 @@ public abstract class UnitTestBase {
   @Test
   public void runBeforeWithFailure() throws Exception {
     AtomicInteger count = new AtomicInteger();
-    Suite suite = Unit.test("my_test", test -> {
+    SuiteDef suite = Unit.suite().test("my_test", test -> {
       count.incrementAndGet();
     }).before(test -> {
       throw new RuntimeException();
@@ -183,7 +183,7 @@ public abstract class UnitTestBase {
   public void runAfterWithAsyncCompletion() throws Exception {
     AtomicInteger count = new AtomicInteger();
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
-    Suite suite = Unit.test("my_test", test -> {
+    SuiteDef suite = Unit.suite().test("my_test", test -> {
       count.compareAndSet(0, 1);
     }).after(test -> {
       count.compareAndSet(1, 2);
@@ -202,7 +202,7 @@ public abstract class UnitTestBase {
   public void runAfter() throws Exception {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
-    Suite suite = Unit.test("my_test", test -> {
+    SuiteDef suite = Unit.suite().test("my_test", test -> {
       count.compareAndSet(0, 1);
     }).after(test -> {
       sameContext.set(checkTest(test));
@@ -218,7 +218,7 @@ public abstract class UnitTestBase {
   @Test
   public void runAfterWithFailure() throws Exception {
     AtomicInteger count = new AtomicInteger();
-    Suite suite = Unit.test("my_test", test -> {
+    SuiteDef suite = Unit.suite().test("my_test", test -> {
       count.compareAndSet(0, 1);
       test.fail("the_message");
     }).after(test -> {
