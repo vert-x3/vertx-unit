@@ -85,3 +85,4 @@ public class JUnitTestSuite {
 ## Todo
 
 - reporting to console via event bus
+- assertion api (http://joel-costigliola.github.io/assertj/)
