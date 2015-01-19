@@ -37,7 +37,7 @@ public abstract class SuiteDefTestBase {
           sameContext.set(checkTest(test));
           count.compareAndSet(0, 1);
         });
-    Reporter reporter = new Reporter();
+    TestReporter reporter = new TestReporter();
     runSuite.accept(reporter.runner(suite));
     reporter.await();
     assertTrue(sameContext.get());
@@ -59,7 +59,7 @@ public abstract class SuiteDefTestBase {
           count.compareAndSet(0, 1);
           queue.add(test.async());
         });
-    Reporter reporter = new Reporter();
+    TestReporter reporter = new TestReporter();
     runSuite.accept(reporter.runner(suite));
     Async async = queue.poll(2, TimeUnit.SECONDS);
     assertEquals(1, count.get());
@@ -96,7 +96,7 @@ public abstract class SuiteDefTestBase {
             throw e;
           }
         });
-    Reporter reporter = new Reporter();
+    TestReporter reporter = new TestReporter();
     runSuite.accept(reporter.runner(suite));
     reporter.await();
     assertEquals(1, reporter.results.size());
@@ -115,7 +115,7 @@ public abstract class SuiteDefTestBase {
       test.async();
       queue.add(test);
     });
-    Reporter reporter = new Reporter();
+    TestReporter reporter = new TestReporter();
     runSuite.accept(reporter.runner(suite));
     assertFalse(reporter.completed());
     io.vertx.ext.unit.Test test = queue.poll(2, TimeUnit.SECONDS);
@@ -137,7 +137,7 @@ public abstract class SuiteDefTestBase {
     }).before(test -> {
       count.compareAndSet(0, 1);
     });
-    Reporter reporter = new Reporter();
+    TestReporter reporter = new TestReporter();
     runSuite.accept(reporter.runner(suite));
     reporter.await();
     assertEquals(2, count.get());
@@ -156,7 +156,7 @@ public abstract class SuiteDefTestBase {
       count.compareAndSet(0, 1);
       queue.add(test.async());
     });
-    Reporter reporter = new Reporter();
+    TestReporter reporter = new TestReporter();
     runSuite.accept(reporter.runner(suite));
     Async async = queue.poll(2, TimeUnit.SECONDS);
     completeAsync.accept(async);
@@ -173,7 +173,7 @@ public abstract class SuiteDefTestBase {
     }).before(test -> {
       throw new RuntimeException();
     });
-    Reporter reporter = new Reporter();
+    TestReporter reporter = new TestReporter();
     runSuite.accept(reporter.runner(suite));
     reporter.await();
     assertEquals(0, count.get());
@@ -189,7 +189,7 @@ public abstract class SuiteDefTestBase {
       count.compareAndSet(1, 2);
       queue.add(test.async());
     });
-    Reporter reporter = new Reporter();
+    TestReporter reporter = new TestReporter();
     runSuite.accept(reporter.runner(suite));
     Async async = queue.poll(2, TimeUnit.SECONDS);
     assertFalse(reporter.completed());
@@ -208,7 +208,7 @@ public abstract class SuiteDefTestBase {
       sameContext.set(checkTest(test));
       count.compareAndSet(1, 2);
     });
-    Reporter reporter = new Reporter();
+    TestReporter reporter = new TestReporter();
     runSuite.accept(reporter.runner(suite));
     reporter.await();
     assertEquals(2, count.get());
@@ -224,7 +224,7 @@ public abstract class SuiteDefTestBase {
     }).after(test -> {
       count.compareAndSet(1, 2);
     });
-    Reporter reporter = new Reporter();
+    TestReporter reporter = new TestReporter();
     runSuite.accept(reporter.runner(suite));
     reporter.await();
     assertEquals(2, count.get());

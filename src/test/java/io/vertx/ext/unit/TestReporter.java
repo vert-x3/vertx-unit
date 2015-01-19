@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
-class Reporter {
+class TestReporter {
   private final CountDownLatch latch = new CountDownLatch(1);
   final List<TestResult> results = Collections.synchronizedList(new ArrayList<>());
 
