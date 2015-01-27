@@ -16,7 +16,7 @@ public class VerticleTest extends AsyncTestBase {
     vertx.eventBus().consumer("test").handler(msg -> {
       testComplete();
     });
-    vertx.deployVerticle("js:coordinated/test", ar -> {
+    vertx.deployVerticle("js:verticle/coordinated/test", ar -> {
       assertTrue(ar.succeeded());
     });
     await();
@@ -28,7 +28,7 @@ public class VerticleTest extends AsyncTestBase {
     vertx.eventBus().consumer("test").handler(msg -> {
       testComplete();
     });
-    vertx.deployVerticle("js:timer", ar -> {
+    vertx.deployVerticle("js:verticle/timer", ar -> {
       assertTrue(ar.succeeded());
     });
     await();
@@ -40,7 +40,7 @@ public class VerticleTest extends AsyncTestBase {
     vertx.eventBus().consumer("test").handler(msg -> {
       testComplete();
     });
-    vertx.deployVerticle("timer.groovy", ar -> {
+    vertx.deployVerticle("verticle/timer.groovy", ar -> {
       assertTrue(ar.succeeded());
     });
     await();

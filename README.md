@@ -6,7 +6,9 @@ Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
 
 Proof of concept
 
-## Running in a Verticle
+## Run directly
+
+Vert.x unit can be executed directly from your language and use Vert.x
 
 ### Simple test
 
@@ -21,6 +23,7 @@ Unit.test("my test", test -> {
 #### Java
 
 ~~~
+Vertx vertx = Vertx.vertx();
 Unit.asyncTest("my test", test -> {
   Async async = test.async();
   vertx.setTimer(50, id -> async.complete());
@@ -31,27 +34,30 @@ Unit.asyncTest("my test", test -> {
 
 ~~~
 var Unit = require('vertx-unit-js/unit')
+var Vertx = require('vertx-js')
+var vertx = Vertx.vertx();
 Unit.asyncTest("Timer test", function(test) {
     var async = test.async();
     vertx.setTimer(50, function() {
        async.complete();
     });
-}).runner().run();
+}).runner().run(vertx);
 ~~~
 
 #### Groovy
 
 ~~~
+def vertx = Vertx.vertx();
 def suite = Unit.test "Timer test", { test ->
   def async = test.async()
   vertx.setTimer 50, {
     async.complete()
   }
 }
-suite.runner().run();
+suite.runner().run(vertx);
 ~~~
 
-## Running with JUnit
+## Run from JUnit
 
 ### JUnit assertion
 

@@ -1,3 +1,5 @@
+package verticle
+
 import io.vertx.groovy.ext.unit.Unit
 
 def suite = Unit.suite().test "Timer test", { test ->
