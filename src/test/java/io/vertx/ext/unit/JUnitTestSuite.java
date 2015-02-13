@@ -13,7 +13,7 @@ import org.junit.runners.AllTests;
 public class JUnitTestSuite {
 
   public static TestSuite suite() {
-    return Unit.suite().
+    return io.vertx.ext.unit.TestSuite.create().
         test("test 1", test -> {
           test.assertTrue(true);
         }).

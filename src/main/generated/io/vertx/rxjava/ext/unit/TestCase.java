@@ -19,6 +19,7 @@ package io.vertx.rxjava.ext.unit;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.core.Handler;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -36,6 +37,15 @@ public class TestCase {
 
   public Object getDelegate() {
     return delegate;
+  }
+
+  public static TestCase create(String desc, Handler<Test> handler) {
+    TestCase ret= TestCase.newInstance(io.vertx.ext.unit.TestCase.create(desc, new Handler<io.vertx.ext.unit.Test>() {
+      public void handle(io.vertx.ext.unit.Test event) {
+        handler.handle(new Test(event));
+      }
+    }));
+    return ret;
   }
 
   public TestCaseRunner runner() {

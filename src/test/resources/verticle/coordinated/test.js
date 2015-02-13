@@ -1,6 +1,6 @@
-var Unit = require('vertx-unit-js/unit');
+var TestSuite = require('vertx-unit-js/test_suite');
 
-var suite = Unit.suite().
+var suite = TestSuite.create().
     before(function(test) {
         var async = test.async();
         vertx.deployVerticle("coordinated/server.js", function(id, err) {

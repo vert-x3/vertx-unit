@@ -39,6 +39,16 @@ public class TestSuite {
     return delegate;
   }
 
+  public static TestSuite create() {
+    TestSuite ret= TestSuite.newInstance(io.vertx.ext.unit.TestSuite.create());
+    return ret;
+  }
+
+  public static TestSuite create(String desc) {
+    TestSuite ret= TestSuite.newInstance(io.vertx.ext.unit.TestSuite.create(desc));
+    return ret;
+  }
+
   public TestSuite before(Handler<Test> before) {
     this.delegate.before(new Handler<io.vertx.ext.unit.Test>() {
       public void handle(io.vertx.ext.unit.Test event) {

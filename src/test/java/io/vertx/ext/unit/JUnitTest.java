@@ -51,7 +51,7 @@ public class JUnitTest {
 
   @org.junit.Test
   public void testSuiteTimeout() {
-    Result result = new JUnitCore().run(Unit.suite().test("test test", Test::async).toJUnitSuite(100, TimeUnit.MILLISECONDS));
+    Result result = new JUnitCore().run(TestSuite.create().test("test test", Test::async).toJUnitSuite(100, TimeUnit.MILLISECONDS));
     assertEquals(1, result.getRunCount());
     assertEquals(1, result.getFailureCount());
     Failure failure = result.getFailures().get(0);
@@ -66,7 +66,7 @@ public class JUnitTest {
       @Override
       public void run() {
         try {
-          Result result = new JUnitCore().run(Unit.suite().test("test test", Test::async).toJUnitSuite());
+          Result result = new JUnitCore().run(TestSuite.create().test("test test", Test::async).toJUnitSuite());
           resultRef.set(result);
         } finally {
           latch.countDown();
@@ -90,18 +90,19 @@ public class JUnitTest {
   }
 
   private Result run(Handler<Test> test) {
-    return new JUnitCore().run(Unit.suite().test("test test", test).toJUnitSuite());
+    return new JUnitCore().run(TestSuite.create().test("test test", test).toJUnitSuite());
   }
 
   @org.junit.Test
   public void testAssert() {
-    Unit.test("my_test", test -> {}).assertSuccess();
+    TestCase.create("my_test", test -> {
+    }).assertSuccess();
   }
 
   @org.junit.Test
   public void testAssertFailure() {
     try {
-      Unit.test("my_test", test -> test.fail("the_failure")).assertSuccess();
+      TestCase.create("my_test", test -> test.fail("the_failure")).assertSuccess();
       fail();
     } catch (AssertionError err) {
       assertEquals("the_failure", err.getMessage());
@@ -112,7 +113,9 @@ public class JUnitTest {
   public void testAssertRuntimeException() {
     RuntimeException failure = new RuntimeException();
     try {
-      Unit.test("my_test", test -> { throw failure; } ).assertSuccess();
+      TestCase.create("my_test", test -> {
+        throw failure;
+      }).assertSuccess();
       fail();
     } catch (RuntimeException err) {
       assertSame(failure, err);
@@ -122,7 +125,7 @@ public class JUnitTest {
   @org.junit.Test
   public void testAssertTimeout() {
     try {
-      Unit.test("my_test", Test::async).assertSuccess(300, TimeUnit.MILLISECONDS);
+      TestCase.create("my_test", Test::async).assertSuccess(300, TimeUnit.MILLISECONDS);
       fail();
     } catch (IllegalStateException ignore) {
     }
@@ -136,7 +139,7 @@ public class JUnitTest {
       @Override
       public void run() {
         try {
-          Unit.test("my_test", Test::async).assertSuccess();
+          TestCase.create("my_test", Test::async).assertSuccess();
         } catch (IllegalStateException e) {
           ise.set(true);
         } finally {

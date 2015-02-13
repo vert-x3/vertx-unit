@@ -1,8 +1,8 @@
 package verticle
 
-import io.vertx.groovy.ext.unit.Unit
+import io.vertx.groovy.ext.unit.TestSuite
 
-def suite = Unit.suite().test "Timer test", { test ->
+def suite = TestSuite.create().test "Timer test", { test ->
   def async = test.async()
   vertx.setTimer 50, {
     async.complete()

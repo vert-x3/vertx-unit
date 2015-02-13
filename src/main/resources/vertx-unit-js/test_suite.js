@@ -100,5 +100,20 @@ var TestSuite = function(j_val) {
   this._jdel = j_testSuite;
 };
 
+/**
+
+ @memberof module:vertx-unit-js/test_suite
+ @param desc {string} 
+ @return {TestSuite}
+ */
+TestSuite.create = function() {
+  var __args = arguments;
+  if (__args.length === 0) {
+    return new TestSuite(JTestSuite.create());
+  }else if (__args.length === 1 && typeof __args[0] === 'string') {
+    return new TestSuite(JTestSuite.create(__args[0]));
+  } else utils.invalidArgs();
+};
+
 // We export the Constructor function
 module.exports = TestSuite;

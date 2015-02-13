@@ -32,7 +32,7 @@ public abstract class TestSuiteTestBase {
   public void runTest() {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
-    TestSuite suite = Unit.suite().
+    TestSuite suite = TestSuite.create().
         test("my_test", test -> {
           sameContext.set(checkTest(test));
           count.compareAndSet(0, 1);
@@ -54,7 +54,7 @@ public abstract class TestSuiteTestBase {
   public void runTestWithAsyncCompletion() throws Exception {
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
     AtomicInteger count = new AtomicInteger();
-    TestSuite suite = Unit.suite().
+    TestSuite suite = TestSuite.create().
         test("my_test", test -> {
           count.compareAndSet(0, 1);
           queue.add(test.async());
@@ -87,7 +87,7 @@ public abstract class TestSuiteTestBase {
 
   private void failTest(Handler<io.vertx.ext.unit.Test> thrower) {
     AtomicReference<Throwable> failure = new AtomicReference<>();
-    TestSuite suite = Unit.suite().
+    TestSuite suite = TestSuite.create().
         test("my_test", test -> {
           try {
             thrower.handle(test);
@@ -111,7 +111,7 @@ public abstract class TestSuiteTestBase {
   @Test
   public void runTestWithAsyncFailure() throws Exception {
     BlockingQueue<io.vertx.ext.unit.Test> queue = new ArrayBlockingQueue<>(1);
-    TestSuite suite = Unit.suite().test("my_test", test -> {
+    TestSuite suite = TestSuite.create().test("my_test", test -> {
       test.async();
       queue.add(test);
     });
@@ -131,7 +131,7 @@ public abstract class TestSuiteTestBase {
   public void runBefore() throws Exception {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
-    TestSuite suite = Unit.suite().test("my_test", test -> {
+    TestSuite suite = TestSuite.create().test("my_test", test -> {
       sameContext.set(checkTest(test));
       count.compareAndSet(1, 2);
     }).before(test -> {
@@ -149,7 +149,7 @@ public abstract class TestSuiteTestBase {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
-    TestSuite suite = Unit.suite().test("my_test", test -> {
+    TestSuite suite = TestSuite.create().test("my_test", test -> {
       count.compareAndSet(1, 2);
       sameContext.set(checkTest(test));
     }).before(test -> {
@@ -168,7 +168,7 @@ public abstract class TestSuiteTestBase {
   @Test
   public void runBeforeWithFailure() throws Exception {
     AtomicInteger count = new AtomicInteger();
-    TestSuite suite = Unit.suite().test("my_test", test -> {
+    TestSuite suite = TestSuite.create().test("my_test", test -> {
       count.incrementAndGet();
     }).before(test -> {
       throw new RuntimeException();
@@ -183,7 +183,7 @@ public abstract class TestSuiteTestBase {
   public void runAfterWithAsyncCompletion() throws Exception {
     AtomicInteger count = new AtomicInteger();
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
-    TestSuite suite = Unit.suite().test("my_test", test -> {
+    TestSuite suite = TestSuite.create().test("my_test", test -> {
       count.compareAndSet(0, 1);
     }).after(test -> {
       count.compareAndSet(1, 2);
@@ -202,7 +202,7 @@ public abstract class TestSuiteTestBase {
   public void runAfter() throws Exception {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
-    TestSuite suite = Unit.suite().test("my_test", test -> {
+    TestSuite suite = TestSuite.create().test("my_test", test -> {
       count.compareAndSet(0, 1);
     }).after(test -> {
       sameContext.set(checkTest(test));
@@ -218,7 +218,7 @@ public abstract class TestSuiteTestBase {
   @Test
   public void runAfterWithFailure() throws Exception {
     AtomicInteger count = new AtomicInteger();
-    TestSuite suite = Unit.suite().test("my_test", test -> {
+    TestSuite suite = TestSuite.create().test("my_test", test -> {
       count.compareAndSet(0, 1);
       test.fail("the_message");
     }).after(test -> {

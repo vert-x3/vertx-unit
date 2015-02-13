@@ -17,6 +17,7 @@
 /** @module vertx-unit-js/test_case */
 var utils = require('vertx-js/util/utils');
 var TestCaseRunner = require('vertx-unit-js/test_case_runner');
+var Test = require('vertx-unit-js/test');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
@@ -48,6 +49,22 @@ var TestCase = function(j_val) {
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
   this._jdel = j_testCase;
+};
+
+/**
+
+ @memberof module:vertx-unit-js/test_case
+ @param desc {string} 
+ @param handler {function} 
+ @return {TestCase}
+ */
+TestCase.create = function(desc, handler) {
+  var __args = arguments;
+  if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
+    return new TestCase(JTestCase.create(desc, function(jVal) {
+    handler(new Test(jVal));
+  }));
+  } else utils.invalidArgs();
 };
 
 // We export the Constructor function
