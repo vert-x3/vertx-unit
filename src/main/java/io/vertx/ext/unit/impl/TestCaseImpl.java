@@ -24,8 +24,7 @@ public class TestCaseImpl implements TestCase {
     this.handler = handler;
   }
 
-  @Override
-  public TestCaseRunner runner() {
+  TestCaseRunner runner() {
     return new TestCaseRunnerImpl(desc, null, handler, null, (o, executor) -> {
       // ?
     });

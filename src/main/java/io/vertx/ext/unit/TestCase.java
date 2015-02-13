@@ -18,8 +18,6 @@ public interface TestCase {
     return new TestCaseImpl(desc, handler);
   }
 
-  TestCaseRunner runner();
-
   @GenIgnore
   void assertSuccess();
 

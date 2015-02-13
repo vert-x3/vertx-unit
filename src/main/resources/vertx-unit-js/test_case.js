@@ -16,7 +16,6 @@
 
 /** @module vertx-unit-js/test_case */
 var utils = require('vertx-js/util/utils');
-var TestCaseRunner = require('vertx-unit-js/test_case_runner');
 var Test = require('vertx-unit-js/test');
 
 var io = Packages.io;
@@ -31,19 +30,6 @@ var TestCase = function(j_val) {
 
   var j_testCase = j_val;
   var that = this;
-
-  /**
-
-   @public
-
-   @return {TestCaseRunner}
-   */
-  this.runner = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      return new TestCaseRunner(j_testCase.runner());
-    } else utils.invalidArgs();
-  };
 
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.

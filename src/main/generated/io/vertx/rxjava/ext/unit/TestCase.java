@@ -48,11 +48,6 @@ public class TestCase {
     return ret;
   }
 
-  public TestCaseRunner runner() {
-    TestCaseRunner ret= TestCaseRunner.newInstance(this.delegate.runner());
-    return ret;
-  }
-
 
   public static TestCase newInstance(io.vertx.ext.unit.TestCase arg) {
     return new TestCase(arg);

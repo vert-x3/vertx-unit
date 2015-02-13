@@ -24,15 +24,6 @@ class TestReporter {
     return runner;
   }
 
-  TestCaseRunner runner(TestCase suite) {
-    TestCaseRunner runner = suite.runner();
-    runner.endHandler(result -> {
-      results.add(result);
-      latch.countDown();
-    });
-    return runner;
-  }
-
   void await() {
     try {
       latch.await(10, TimeUnit.SECONDS);
