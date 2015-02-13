@@ -25,9 +25,9 @@ interface Context {
       public <T> void run(Task<T> task, T value) {
         io.vertx.core.Context context = Vertx.currentContext();
         if (context != null) {
-          context.runOnContext(v -> task.run(value, this));
+          context.runOnContext(v -> task.execute(value, this));
         } else {
-          task.run(value, this);
+          task.execute(value, this);
         }
       }
     };
@@ -41,7 +41,7 @@ interface Context {
       }
       @Override
       public <T> void run(Task<T> task, T value) {
-        vertx.runOnContext(v -> task.run(value, this));
+        vertx.runOnContext(v -> task.execute(value, this));
       }
     };
   }

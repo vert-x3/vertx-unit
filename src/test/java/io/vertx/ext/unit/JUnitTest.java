@@ -95,13 +95,13 @@ public class JUnitTest {
 
   @org.junit.Test
   public void testAssert() {
-    Unit.test("my_test", test -> {}).runner().assertSuccess();
+    Unit.test("my_test", test -> {}).assertSuccess();
   }
 
   @org.junit.Test
   public void testAssertFailure() {
     try {
-      Unit.test("my_test", test -> test.fail("the_failure")).runner().assertSuccess();
+      Unit.test("my_test", test -> test.fail("the_failure")).assertSuccess();
       fail();
     } catch (AssertionError err) {
       assertEquals("the_failure", err.getMessage());
@@ -112,7 +112,7 @@ public class JUnitTest {
   public void testAssertRuntimeException() {
     RuntimeException failure = new RuntimeException();
     try {
-      Unit.test("my_test", test -> { throw failure; } ).runner().assertSuccess();
+      Unit.test("my_test", test -> { throw failure; } ).assertSuccess();
       fail();
     } catch (RuntimeException err) {
       assertSame(failure, err);
@@ -122,7 +122,7 @@ public class JUnitTest {
   @org.junit.Test
   public void testAssertTimeout() {
     try {
-      Unit.test("my_test", Test::async).runner().assertSuccess(300, TimeUnit.MILLISECONDS);
+      Unit.test("my_test", Test::async).assertSuccess(300, TimeUnit.MILLISECONDS);
       fail();
     } catch (IllegalStateException ignore) {
     }
@@ -136,7 +136,7 @@ public class JUnitTest {
       @Override
       public void run() {
         try {
-          Unit.test("my_test", Test::async).runner().assertSuccess();
+          Unit.test("my_test", Test::async).assertSuccess();
         } catch (IllegalStateException e) {
           ise.set(true);
         } finally {

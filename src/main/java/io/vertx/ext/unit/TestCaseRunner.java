@@ -23,28 +23,6 @@ public interface TestCaseRunner {
    *
    * @param handler the completion handler
    */
-  void completionHandler(Handler<TestResult> handler);
+  void endHandler(Handler<TestResult> handler);
 
-  void run();
-
-  void run(Vertx vertx);
-
-  @GenIgnore
-  void assertSuccess();
-
-  @GenIgnore
-  void assertSuccess(long timeout, TimeUnit unit);
-
-  @GenIgnore
-  void assertSuccess(Vertx vertx);
-
-  /**
-   * Run the test and assert it is a success.
-   *
-   * @param vertx the provided vertx
-   * @param timeout the timeout value
-   * @param unit the timeout unit
-   */
-  @GenIgnore
-  void assertSuccess(Vertx vertx, long timeout, TimeUnit unit);
 }

@@ -52,8 +52,6 @@ public class TestSuiteImpl implements TestSuite {
 
   @Override
   public TestSuiteRunner runner() {
-
-
     return new TestSuiteRunnerImpl(before, tests, after);
   }
 
@@ -75,14 +73,11 @@ public class TestSuiteImpl implements TestSuite {
         public void run(junit.framework.TestResult testResult) {
           BlockingQueue<TestResult> latch = new ArrayBlockingQueue<>(1);
           Vertx vertx = Vertx.vertx();
-          RunTestTask runner = new RunTestTask(test.desc, before, test.handler, after, new Task<TestResult>() {
-            @Override
-            public void run(TestResult testResult, Context executor) {
-              latch.add(testResult);
-            }
+          InvokeTask task = InvokeTask.runTestTask(test.desc, before, test.handler, after, (testResult1, executor) -> {
+            latch.add(testResult1);
           });
           testResult.startTest(this);
-          Context.create(vertx).run(runner.task);
+          Context.create(vertx).run(task);
           try {
             TestResult result = latch.poll(timeout, unit);
             if (result != null) {

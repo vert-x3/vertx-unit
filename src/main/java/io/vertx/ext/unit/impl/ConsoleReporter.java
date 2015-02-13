@@ -17,7 +17,7 @@ public class ConsoleReporter implements Handler<TestSuiteRunner> {
     module.handler(test -> {
       System.out.println("Starting test " + test.description());
       run.incrementAndGet();
-      test.completionHandler(result -> {
+      test.endHandler(result -> {
         if (result.succeeded()) {
           System.out.println("Passed " + test.description());
         } else {

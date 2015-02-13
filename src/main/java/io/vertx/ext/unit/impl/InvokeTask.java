@@ -4,6 +4,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.Test;
+import io.vertx.ext.unit.TestResult;
 import org.junit.Assert;
 
 /**
@@ -20,7 +21,7 @@ class InvokeTask implements Task<Throwable> {
   }
 
   @Override
-  public void run(Throwable failure, Context executor) {
+  public void execute(Throwable failure, Context executor) {
 
     class TestImpl implements Test {
 
@@ -106,5 +107,32 @@ class InvokeTask implements Task<Throwable> {
 
     //
     test.tryEnd();
+  }
+
+  static InvokeTask runTestTask(
+      String desc,
+      Handler<Test> before,
+      Handler<Test> test,
+      Handler<Test> after,
+      Task<TestResult> next) {
+
+    Task<Throwable> completeTask = (failure,executor) -> {
+      executor.run(next, new TestResultImpl(desc, 0, failure));
+    };
+    InvokeTask afterTask = after == null ? null : new InvokeTask(after, completeTask);
+    InvokeTask runnerTask = new InvokeTask(test, (failure,executor) -> {
+      if (afterTask != null) {
+        executor.run(afterTask, failure);
+      } else {
+        executor.run(completeTask, failure);
+      }
+    });
+    return before == null ? runnerTask : new InvokeTask(before, (failure,executor) -> {
+      if (failure != null) {
+        executor.run(completeTask, failure);
+      } else {
+        executor.run(runnerTask, null);
+      }
+    });
   }
 }

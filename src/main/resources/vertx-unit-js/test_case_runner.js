@@ -51,26 +51,12 @@ var TestCaseRunner = function(j_val) {
    @public
    @param handler {function} the completion handler 
    */
-  this.completionHandler = function(handler) {
+  this.endHandler = function(handler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testCaseRunner.completionHandler(function(jVal) {
+      j_testCaseRunner.endHandler(function(jVal) {
       handler(new TestResult(jVal));
     });
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param vertx {Vertx} 
-   */
-  this.run = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      j_testCaseRunner.run();
-    }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_testCaseRunner.run(__args[0]._jdel);
     } else utils.invalidArgs();
   };
 

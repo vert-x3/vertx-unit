@@ -16,7 +16,7 @@ class TestReporter {
   TestSuiteRunner runner(TestSuite suite) {
     TestSuiteRunner runner = suite.runner();
     runner.handler(testExec -> {
-      testExec.completionHandler(results::add);
+      testExec.endHandler(results::add);
     });
     runner.endHandler(done -> {
       latch.countDown();
@@ -26,7 +26,7 @@ class TestReporter {
 
   TestCaseRunner runner(TestCase suite) {
     TestCaseRunner runner = suite.runner();
-    runner.completionHandler(result -> {
+    runner.endHandler(result -> {
       results.add(result);
       latch.countDown();
     });

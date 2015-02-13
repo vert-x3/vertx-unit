@@ -62,7 +62,7 @@ class TestSuiteRunnerImpl implements TestSuiteRunner {
         if (handler != null) {
           handler.handle(runner);
         }
-        runner.run(null, context);
+        runner.execute(null, context);
       };
     } else {
       return (v, context) -> {
