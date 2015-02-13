@@ -1,17 +1,17 @@
 package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.unit.SuiteRunner;
+import io.vertx.ext.unit.TestSuiteRunner;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class ConsoleReporter implements Handler<SuiteRunner> {
+public class ConsoleReporter implements Handler<TestSuiteRunner> {
 
   @Override
-  public void handle(SuiteRunner module) {
+  public void handle(TestSuiteRunner module) {
     AtomicInteger run = new AtomicInteger();
     AtomicInteger failures = new AtomicInteger();
     module.handler(test -> {

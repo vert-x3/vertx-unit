@@ -13,8 +13,8 @@ class TestReporter {
   private final CountDownLatch latch = new CountDownLatch(1);
   final List<TestResult> results = Collections.synchronizedList(new ArrayList<>());
 
-  SuiteRunner runner(SuiteDef suite) {
-    SuiteRunner runner = suite.runner();
+  TestSuiteRunner runner(TestSuite suite) {
+    TestSuiteRunner runner = suite.runner();
     runner.handler(testExec -> {
       testExec.completionHandler(results::add);
     });
@@ -24,8 +24,8 @@ class TestReporter {
     return runner;
   }
 
-  TestRunner runner(TestDef suite) {
-    TestRunner runner = suite.runner();
+  TestCaseRunner runner(TestCase suite) {
+    TestCaseRunner runner = suite.runner();
     runner.completionHandler(result -> {
       results.add(result);
       latch.countDown();

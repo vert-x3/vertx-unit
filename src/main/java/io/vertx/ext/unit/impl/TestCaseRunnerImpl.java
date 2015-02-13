@@ -4,7 +4,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestResult;
-import io.vertx.ext.unit.TestRunner;
+import io.vertx.ext.unit.TestCaseRunner;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -13,18 +13,18 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class TestRunnerImpl implements TestRunner, Task<Void> {
+public class TestCaseRunnerImpl implements TestCaseRunner, Task<Void> {
 
   private final String desc;
   private final RunTestTask task;
   private volatile Handler<TestResult> completionHandler;
   private volatile TestResult result;
 
-  public TestRunnerImpl(String desc,
-                        Handler<Test> before,
-                        Handler<Test> test,
-                        Handler<Test> after,
-                        Task<?> next) {
+  public TestCaseRunnerImpl(String desc,
+                            Handler<Test> before,
+                            Handler<Test> test,
+                            Handler<Test> after,
+                            Task<?> next) {
     this.desc = desc;
     this.task = new RunTestTask(desc, before, test, after, (testResult, executor) -> {
       result = testResult;

@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface TestRunner {
+public interface TestCaseRunner {
 
   /**
    * @return the test exec description

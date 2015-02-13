@@ -14,69 +14,41 @@
  * under the License.
  */
 
-/** @module vertx-unit-js/test_runner */
+/** @module vertx-unit-js/test_case */
 var utils = require('vertx-js/util/utils');
-var TestResult = require('vertx-unit-js/test_result');
+var TestCaseRunner = require('vertx-unit-js/test_case_runner');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestRunner = io.vertx.ext.unit.TestRunner;
+var JTestCase = io.vertx.ext.unit.TestCase;
 
 /**
 
  @class
 */
-var TestRunner = function(j_val) {
+var TestCase = function(j_val) {
 
-  var j_testRunner = j_val;
+  var j_testCase = j_val;
   var that = this;
 
   /**
-  
+
    @public
 
-   @return {string}
+   @return {TestCaseRunner}
    */
-  this.description = function() {
+  this.runner = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_testRunner.description();
-    } else utils.invalidArgs();
-  };
-
-  /**
-  
-   @public
-   @param handler {function} 
-   */
-  this.completionHandler = function(handler) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testRunner.completionHandler(function(jVal) {
-      handler(new TestResult(jVal));
-    });
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-
-   */
-  this.run = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      j_testRunner.run();
-    }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_testRunner.run(__args[0]._jdel);
+      return new TestCaseRunner(j_testCase.runner());
     } else utils.invalidArgs();
   };
 
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
-  this._jdel = j_testRunner;
+  this._jdel = j_testCase;
 };
 
 // We export the Constructor function
-module.exports = TestRunner;
+module.exports = TestCase;

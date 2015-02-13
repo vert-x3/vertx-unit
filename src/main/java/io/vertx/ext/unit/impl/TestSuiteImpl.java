@@ -2,11 +2,10 @@ package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.ext.unit.SuiteDef;
-import io.vertx.ext.unit.SuiteRunner;
+import io.vertx.ext.unit.TestSuite;
+import io.vertx.ext.unit.TestSuiteRunner;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestResult;
-import junit.framework.TestSuite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,55 +17,55 @@ import java.util.concurrent.TimeoutException;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class SuiteDesc implements SuiteDef {
+public class TestSuiteImpl implements TestSuite {
 
   private final String desc;
   private volatile Handler<Test> before;
   private volatile Handler<Test> after;
-  private final List<TestDesc> tests = new ArrayList<>();
+  private final List<TestCaseImpl> tests = new ArrayList<>();
 
-  public SuiteDesc() {
+  public TestSuiteImpl() {
     this(null);
   }
 
-  public SuiteDesc(String desc) {
+  public TestSuiteImpl(String desc) {
     this.desc = desc;
   }
 
   @Override
-  public SuiteDef before(Handler<Test> before) {
+  public TestSuite before(Handler<Test> before) {
     this.before = before;
     return this;
   }
 
   @Override
-  public SuiteDef after(Handler<Test> after) {
+  public TestSuite after(Handler<Test> after) {
     this.after = after;
     return this;
   }
 
   @Override
-  public SuiteDef test(String desc, Handler<Test> handler) {
-    tests.add(new TestDesc(desc, handler));
+  public TestSuite test(String desc, Handler<Test> handler) {
+    tests.add(new TestCaseImpl(desc, handler));
     return this;
   }
 
   @Override
-  public SuiteRunner runner() {
+  public TestSuiteRunner runner() {
 
 
-    return new SuiteRunnerImpl(before, tests, after);
+    return new TestSuiteRunnerImpl(before, tests, after);
   }
 
   @Override
-  public TestSuite toJUnitSuite() {
+  public junit.framework.TestSuite toJUnitSuite() {
     return toJUnitSuite(2, TimeUnit.MINUTES);
   }
 
   @Override
-  public TestSuite toJUnitSuite(long timeout, TimeUnit unit) {
-    TestSuite suite = new TestSuite();
-    for (TestDesc test : tests) {
+  public junit.framework.TestSuite toJUnitSuite(long timeout, TimeUnit unit) {
+    junit.framework.TestSuite suite = new junit.framework.TestSuite();
+    for (TestCaseImpl test : tests) {
       suite.addTest(new junit.framework.Test() {
         @Override
         public int countTestCases() {

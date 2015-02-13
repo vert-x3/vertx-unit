@@ -5,11 +5,11 @@ import io.vertx.core.Vertx;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class SuiteDefSyncTest extends SuiteDefTestBase {
+public class TestSuiteSyncTest extends TestSuiteTestBase {
 
-  public SuiteDefSyncTest() {
+  public TestSuiteSyncTest() {
     super();
-    runSuite = SuiteRunner::run;
+    runSuite = TestSuiteRunner::run;
     completeAsync = Async::complete;
   }
 

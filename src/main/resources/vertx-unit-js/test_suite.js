@@ -14,36 +14,35 @@
  * under the License.
  */
 
-/** @module vertx-unit-js/suite_runner */
+/** @module vertx-unit-js/test_suite */
 var utils = require('vertx-js/util/utils');
-var ReadStream = require('vertx-js/read_stream');
-var TestRunner = require('vertx-unit-js/test_runner');
+var TestSuiteRunner = require('vertx-unit-js/test_suite_runner');
+var Test = require('vertx-unit-js/test');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JSuiteRunner = io.vertx.ext.unit.SuiteRunner;
+var JTestSuite = io.vertx.ext.unit.TestSuite;
 
 /**
 
  @class
 */
-var SuiteRunner = function(j_val) {
+var TestSuite = function(j_val) {
 
-  var j_suiteRunner = j_val;
+  var j_testSuite = j_val;
   var that = this;
-  ReadStream.call(this, j_val);
 
   /**
 
    @public
-   @param arg0 {function} 
-   @return {ReadStream}
+   @param before {function} 
+   @return {TestSuite}
    */
-  this.exceptionHandler = function(arg0) {
+  this.before = function(before) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_suiteRunner.exceptionHandler(function(jVal) {
-      arg0(utils.convReturnTypeUnknown(jVal));
+      j_testSuite.before(function(jVal) {
+      before(new Test(jVal));
     });
       return that;
     } else utils.invalidArgs();
@@ -52,14 +51,31 @@ var SuiteRunner = function(j_val) {
   /**
 
    @public
-   @param arg0 {function} 
-   @return {ReadStream}
+   @param callback {function} 
+   @return {TestSuite}
    */
-  this.handler = function(arg0) {
+  this.after = function(callback) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_suiteRunner.handler(function(jVal) {
-      arg0(new TestRunner(jVal));
+      j_testSuite.after(function(jVal) {
+      callback(new Test(jVal));
+    });
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param desc {string} 
+   @param handler {function} 
+   @return {TestSuite}
+   */
+  this.test = function(desc, handler) {
+    var __args = arguments;
+    if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
+      j_testSuite.test(desc, function(jVal) {
+      handler(new Test(jVal));
     });
       return that;
     } else utils.invalidArgs();
@@ -69,64 +85,20 @@ var SuiteRunner = function(j_val) {
 
    @public
 
-   @return {ReadStream}
+   @return {TestSuiteRunner}
    */
-  this.pause = function() {
+  this.runner = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      j_suiteRunner.pause();
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-
-   @return {ReadStream}
-   */
-  this.resume = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      j_suiteRunner.resume();
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param arg0 {function} 
-   @return {ReadStream}
-   */
-  this.endHandler = function(arg0) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_suiteRunner.endHandler(arg0);
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
-   Run the suite in the current thread.
-
-   @public
-
-   */
-  this.run = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      j_suiteRunner.run();
-    }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_suiteRunner.run(__args[0]._jdel);
+      return new TestSuiteRunner(j_testSuite.runner());
     } else utils.invalidArgs();
   };
 
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
-  this._jdel = j_suiteRunner;
+  this._jdel = j_testSuite;
 };
 
 // We export the Constructor function
-module.exports = SuiteRunner;
+module.exports = TestSuite;

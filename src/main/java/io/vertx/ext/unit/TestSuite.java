@@ -4,7 +4,6 @@ import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
-import junit.framework.TestSuite;
 
 import java.util.concurrent.TimeUnit;
 
@@ -12,22 +11,22 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface SuiteDef {
+public interface TestSuite {
 
   @Fluent
-  SuiteDef before(Handler<Test> before);
+  TestSuite before(Handler<Test> before);
 
   @Fluent
-  SuiteDef after(Handler<Test> callback);
+  TestSuite after(Handler<Test> callback);
 
   @Fluent
-  SuiteDef test(String desc, Handler<Test> handler);
+  TestSuite test(String desc, Handler<Test> handler);
 
-  SuiteRunner runner();
+  TestSuiteRunner runner();
 
   @GenIgnore
-  TestSuite toJUnitSuite();
+  junit.framework.TestSuite toJUnitSuite();
 
   @GenIgnore
-  TestSuite toJUnitSuite(long timeout, TimeUnit unit);
+  junit.framework.TestSuite toJUnitSuite(long timeout, TimeUnit unit);
 }

@@ -3,62 +3,61 @@ package io.vertx.ext.unit.impl;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.streams.ReadStream;
-import io.vertx.ext.unit.SuiteRunner;
+import io.vertx.ext.unit.TestSuiteRunner;
 import io.vertx.ext.unit.Test;
-import io.vertx.ext.unit.TestRunner;
+import io.vertx.ext.unit.TestCaseRunner;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
-class SuiteRunnerImpl implements SuiteRunner {
+class TestSuiteRunnerImpl implements TestSuiteRunner {
 
   private final Handler<Test> before;
   private final Handler<Test> after;
-  private List<TestDesc> tests;
+  private List<TestCaseImpl> tests;
   private Handler<Void> endHandler;
-  private Handler<TestRunner> handler;
+  private Handler<TestCaseRunner> handler;
 
-  SuiteRunnerImpl(Handler<Test> before, List<TestDesc> tests, Handler<Test> after) {
+  TestSuiteRunnerImpl(Handler<Test> before, List<TestCaseImpl> tests, Handler<Test> after) {
     this.before = before;
     this.after = after;
     this.tests = tests;
   }
 
   @Override
-  public ReadStream<TestRunner> exceptionHandler(Handler<Throwable> handler) {
+  public ReadStream<TestCaseRunner> exceptionHandler(Handler<Throwable> handler) {
     return this;
   }
 
   @Override
-  public ReadStream<TestRunner> handler(Handler<TestRunner> handler) {
+  public ReadStream<TestCaseRunner> handler(Handler<TestCaseRunner> handler) {
     this.handler = handler;
     return this;
   }
 
   @Override
-  public ReadStream<TestRunner> pause() {
+  public ReadStream<TestCaseRunner> pause() {
     return this;
   }
 
   @Override
-  public ReadStream<TestRunner> resume() {
+  public ReadStream<TestCaseRunner> resume() {
     return this;
   }
 
   @Override
-  public ReadStream<TestRunner> endHandler(Handler<Void> handler) {
+  public ReadStream<TestCaseRunner> endHandler(Handler<Void> handler) {
     endHandler = handler;
     return this;
   }
 
-  private Task<Void> build(TestDesc[] tests, int index) {
+  private Task<Void> build(TestCaseImpl[] tests, int index) {
     if (tests.length > index) {
       Task<?> next = build(tests, index + 1);
-      TestDesc test = tests[index];
-      TestRunnerImpl runner = new TestRunnerImpl(test.desc, before, test.handler, after, next);
+      TestCaseImpl test = tests[index];
+      TestCaseRunnerImpl runner = new TestCaseRunnerImpl(test.desc, before, test.handler, after, next);
       return (v, context) -> {
         if (handler != null) {
           handler.handle(runner);
@@ -75,7 +74,7 @@ class SuiteRunnerImpl implements SuiteRunner {
   }
 
   private Task<?> build() {
-    return build(tests.toArray(new TestDesc[tests.size()]), 0);
+    return build(tests.toArray(new TestCaseImpl[tests.size()]), 0);
   }
 
   // For unit testing

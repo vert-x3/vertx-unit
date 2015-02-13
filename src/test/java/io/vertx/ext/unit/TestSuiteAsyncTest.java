@@ -5,9 +5,9 @@ import io.vertx.core.Vertx;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class SuiteDefAsyncTest extends SuiteDefTestBase {
+public class TestSuiteAsyncTest extends TestSuiteTestBase {
 
-  public SuiteDefAsyncTest() {
+  public TestSuiteAsyncTest() {
     super();
     runSuite = runner -> new Thread(runner::run).start();
     completeAsync = Async::complete;

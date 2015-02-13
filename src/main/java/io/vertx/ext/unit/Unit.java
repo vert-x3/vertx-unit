@@ -2,8 +2,8 @@ package io.vertx.ext.unit;
 
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
-import io.vertx.ext.unit.impl.SuiteDesc;
-import io.vertx.ext.unit.impl.TestDesc;
+import io.vertx.ext.unit.impl.TestSuiteImpl;
+import io.vertx.ext.unit.impl.TestCaseImpl;
 
 /**
  * The factory for creating module or individual tests.
@@ -13,15 +13,15 @@ import io.vertx.ext.unit.impl.TestDesc;
 @VertxGen
 public interface Unit {
 
-  static SuiteDef suite() {
-    return new SuiteDesc();
+  static TestSuite suite() {
+    return new TestSuiteImpl();
   }
 
-  static SuiteDef suite(String desc) {
-    return new SuiteDesc(desc);
+  static TestSuite suite(String desc) {
+    return new TestSuiteImpl(desc);
   }
 
-  static TestDef test(String desc, Handler<Test> handler) {
-    return new TestDesc(desc, handler);
+  static TestCase test(String desc, Handler<Test> handler) {
+    return new TestCaseImpl(desc, handler);
   }
 }

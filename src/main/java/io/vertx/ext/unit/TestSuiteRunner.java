@@ -8,7 +8,7 @@ import io.vertx.core.streams.ReadStream;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface SuiteRunner extends ReadStream<TestRunner> {
+public interface TestSuiteRunner extends ReadStream<TestCaseRunner> {
 
   /**
    * Run the suite in the current thread.

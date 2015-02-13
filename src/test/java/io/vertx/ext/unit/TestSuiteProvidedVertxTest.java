@@ -7,11 +7,11 @@ import org.junit.Before;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class SuiteDefProvidedVertxTest extends SuiteDefTestBase {
+public class TestSuiteProvidedVertxTest extends TestSuiteTestBase {
 
   private Vertx vertx;
 
-  public SuiteDefProvidedVertxTest() {
+  public TestSuiteProvidedVertxTest() {
     super();
     runSuite = runner -> vertx.runOnContext(v -> runner.run());
     completeAsync = async -> vertx.runOnContext(v -> async.complete());

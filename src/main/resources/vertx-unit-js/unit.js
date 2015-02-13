@@ -16,9 +16,9 @@
 
 /** @module vertx-unit-js/unit */
 var utils = require('vertx-js/util/utils');
-var SuiteDef = require('vertx-unit-js/suite_def');
-var TestDef = require('vertx-unit-js/test_def');
+var TestSuite = require('vertx-unit-js/test_suite');
 var Test = require('vertx-unit-js/test');
+var TestCase = require('vertx-unit-js/test_case');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
@@ -43,15 +43,15 @@ var Unit = function(j_val) {
 /**
 
  @memberof module:vertx-unit-js/unit
-
- @return {SuiteDef}
+ @param desc {string} 
+ @return {TestSuite}
  */
 Unit.suite = function() {
   var __args = arguments;
   if (__args.length === 0) {
-    return new SuiteDef(JUnit.suite());
+    return new TestSuite(JUnit.suite());
   }else if (__args.length === 1 && typeof __args[0] === 'string') {
-    return new SuiteDef(JUnit.suite(__args[0]));
+    return new TestSuite(JUnit.suite(__args[0]));
   } else utils.invalidArgs();
 };
 
@@ -60,12 +60,12 @@ Unit.suite = function() {
  @memberof module:vertx-unit-js/unit
  @param desc {string} 
  @param handler {function} 
- @return {TestDef}
+ @return {TestCase}
  */
 Unit.test = function(desc, handler) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-    return new TestDef(JUnit.test(desc, function(jVal) {
+    return new TestCase(JUnit.test(desc, function(jVal) {
     handler(new Test(jVal));
   }));
   } else utils.invalidArgs();
