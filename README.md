@@ -4,7 +4,6 @@ Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
 
 ## Todo
 
-- timer impl
 - beforeEach / afterEach
 - bug when throwing exception without a message
 - same name test replaces previous ?

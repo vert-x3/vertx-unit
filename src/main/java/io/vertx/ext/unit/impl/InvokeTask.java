@@ -10,18 +10,18 @@ import org.junit.Assert;
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
-class InvokeTask implements Task<Throwable> {
+class InvokeTask implements Task<Result> {
 
-  private final Task<Throwable> next;
+  private final Task<Result> next;
   private final Handler<Test> test;
 
-  public InvokeTask(Handler<Test> test, Task<Throwable> next) {
+  public InvokeTask(Handler<Test> test, Task<Result> next) {
     this.test = test;
     this.next = next;
   }
 
   @Override
-  public void execute(Throwable failure, Context executor) {
+  public void execute(Result failure, Context executor) {
 
     class TestImpl implements Test {
 
@@ -29,11 +29,14 @@ class InvokeTask implements Task<Throwable> {
       private volatile boolean running;
       private volatile int asyncCount;
       private volatile Throwable failed;
+      private volatile long time;
+
 
       private void tryEnd() {
         if (asyncCount == 0 && !completed) {
           completed = true;
-          executor.run(next, failed);
+          time += System.currentTimeMillis();
+          executor.run(next, new Result(time, failed));
         }
       }
 
@@ -93,8 +96,10 @@ class InvokeTask implements Task<Throwable> {
     //
     TestImpl test = new TestImpl();
 
-    test.failed = failure;
+    test.failed = failure != null ? failure.failure : null;
+    test.time = failure != null ? failure.time : 0;
     test.running = true;
+    test.time -= System.currentTimeMillis();
     try {
       InvokeTask.this.test.handle(test);
     } catch (Throwable t) {
@@ -116,20 +121,20 @@ class InvokeTask implements Task<Throwable> {
       Handler<Test> after,
       Task<TestResult> next) {
 
-    Task<Throwable> completeTask = (failure,executor) -> {
-      executor.run(next, new TestResultImpl(desc, 0, failure));
+    Task<Result> completeTask = (result, executor) -> {
+      executor.run(next, new TestResultImpl(desc, result.time, result.failure));
     };
     InvokeTask afterTask = after == null ? null : new InvokeTask(after, completeTask);
-    InvokeTask runnerTask = new InvokeTask(test, (failure,executor) -> {
+    InvokeTask runnerTask = new InvokeTask(test, (result, executor) -> {
       if (afterTask != null) {
-        executor.run(afterTask, failure);
+        executor.run(afterTask, result);
       } else {
-        executor.run(completeTask, failure);
+        executor.run(completeTask, result);
       }
     });
-    return before == null ? runnerTask : new InvokeTask(before, (failure,executor) -> {
-      if (failure != null) {
-        executor.run(completeTask, failure);
+    return before == null ? runnerTask : new InvokeTask(before, (result, executor) -> {
+      if (result.failure != null) {
+        executor.run(completeTask, result);
       } else {
         executor.run(runnerTask, null);
       }

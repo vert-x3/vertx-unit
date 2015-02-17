@@ -233,4 +233,29 @@ public abstract class TestSuiteTestBase {
     assertTrue(reporter.results.get(0).failed());
     assertEquals("the_message", reporter.results.get(0).failure().message());
   }
+
+  @Test
+  public void timeExecution() {
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
+      Async async = test.async();
+      new Thread() {
+        @Override
+        public void run() {
+          try {
+            Thread.sleep(15);
+          } catch (InterruptedException ignore) {
+          } finally {
+            async.complete();
+          }
+        }
+      }.start();
+    });
+    TestReporter reporter = new TestReporter();
+    runSuite.accept(suite, reporter);
+    reporter.await();
+    assertEquals(1, reporter.results.size());
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertFalse(reporter.results.get(0).failed());
+    assertTrue(reporter.results.get(0).time() >= 15);
+  }
 }
