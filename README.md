@@ -8,10 +8,12 @@ Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
 - beforeEach / afterEach
 - bug when throwing exception without a message
 - same name test replaces previous ?
-- tap http://en.wikipedia.org/wiki/Test_Anything_Protocol
 - json stream reporter
-- xunit
-- markdown
+- report option configuration (so it is possible to configure the reporting of a testsuite declaratively)
+- reporters
+    - xunit
+    - markdown
+    - tap http://en.wikipedia.org/wiki/Test_Anything_Protocol
 
 ## Status
 
