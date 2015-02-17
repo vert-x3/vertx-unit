@@ -3,19 +3,19 @@ package io.vertx.ext.unit.impl;
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestResult;
-import io.vertx.ext.unit.TestCaseRunner;
+import io.vertx.ext.unit.TestCaseReport;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class TestCaseRunnerImpl implements TestCaseRunner, Task<Void> {
+public class TestCaseReportImpl implements TestCaseReport, Task<Void> {
 
   private final String desc;
   private final InvokeTask task;
   private volatile Handler<TestResult> completionHandler;
   private volatile TestResult result;
 
-  public TestCaseRunnerImpl(String desc,
+  public TestCaseReportImpl(String desc,
                             Handler<Test> before,
                             Handler<Test> test,
                             Handler<Test> after,
@@ -38,15 +38,16 @@ public class TestCaseRunnerImpl implements TestCaseRunner, Task<Void> {
   }
 
   @Override
-  public String description() {
+  public String name() {
     return desc;
   }
 
   @Override
-  public void endHandler(Handler<TestResult> handler) {
+  public TestCaseReport endHandler(Handler<TestResult> handler) {
     completionHandler = handler;
     if (completionHandler != null && result != null) {
       completionHandler.handle(result);
     }
+    return this;
   }
 }

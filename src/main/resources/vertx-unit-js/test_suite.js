@@ -17,6 +17,7 @@
 /** @module vertx-unit-js/test_suite */
 var utils = require('vertx-js/util/utils');
 var TestSuiteRunner = require('vertx-unit-js/test_suite_runner');
+var TestSuiteReport = require('vertx-unit-js/test_suite_report');
 var Test = require('vertx-unit-js/test');
 
 var io = Packages.io;
@@ -67,14 +68,14 @@ var TestSuite = function(j_val) {
   /**
 
    @public
-   @param desc {string} 
+   @param name {string} 
    @param handler {function} 
    @return {TestSuite}
    */
-  this.test = function(desc, handler) {
+  this.test = function(name, handler) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-      j_testSuite.test(desc, function(jVal) {
+      j_testSuite.test(name, function(jVal) {
       handler(new Test(jVal));
     });
       return that;
@@ -84,13 +85,38 @@ var TestSuite = function(j_val) {
   /**
 
    @public
+   @param vertx {Vertx} 
+   @param reporter {function} 
+   */
+  this.run = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      j_testSuite.run();
+    }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
+      j_testSuite.run(__args[0]._jdel);
+    }  else if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_testSuite.run(function(jVal) {
+      __args[0](new TestSuiteReport(jVal));
+    });
+    }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'function') {
+      j_testSuite.run(__args[0]._jdel, function(jVal) {
+      __args[1](new TestSuiteReport(jVal));
+    });
+    } else utils.invalidArgs();
+  };
 
+  /**
+
+   @public
+   @param vertx {Vertx} 
    @return {TestSuiteRunner}
    */
   this.runner = function() {
     var __args = arguments;
     if (__args.length === 0) {
       return new TestSuiteRunner(j_testSuite.runner());
+    }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
+      return new TestSuiteRunner(j_testSuite.runner(__args[0]._jdel));
     } else utils.invalidArgs();
   };
 
@@ -103,15 +129,13 @@ var TestSuite = function(j_val) {
 /**
 
  @memberof module:vertx-unit-js/test_suite
- @param desc {string} 
+ @param name {string} 
  @return {TestSuite}
  */
-TestSuite.create = function() {
+TestSuite.create = function(name) {
   var __args = arguments;
-  if (__args.length === 0) {
-    return new TestSuite(JTestSuite.create());
-  }else if (__args.length === 1 && typeof __args[0] === 'string') {
-    return new TestSuite(JTestSuite.create(__args[0]));
+  if (__args.length === 1 && typeof __args[0] === 'string') {
+    return new TestSuite(JTestSuite.create(name));
   } else utils.invalidArgs();
 };
 

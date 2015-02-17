@@ -51,7 +51,7 @@ public class JUnitTest {
 
   @org.junit.Test
   public void testSuiteTimeout() {
-    Result result = new JUnitCore().run(TestSuite.create().test("test test", Test::async).toJUnitSuite(100, TimeUnit.MILLISECONDS));
+    Result result = new JUnitCore().run(TestSuite.create("my_suite").test("my_test", Test::async).toJUnitSuite(100, TimeUnit.MILLISECONDS));
     assertEquals(1, result.getRunCount());
     assertEquals(1, result.getFailureCount());
     Failure failure = result.getFailures().get(0);
@@ -66,7 +66,7 @@ public class JUnitTest {
       @Override
       public void run() {
         try {
-          Result result = new JUnitCore().run(TestSuite.create().test("test test", Test::async).toJUnitSuite());
+          Result result = new JUnitCore().run(TestSuite.create("my_suite").test("my_test", Test::async).toJUnitSuite());
           resultRef.set(result);
         } finally {
           latch.countDown();
@@ -90,7 +90,7 @@ public class JUnitTest {
   }
 
   private Result run(Handler<Test> test) {
-    return new JUnitCore().run(TestSuite.create().test("test test", test).toJUnitSuite());
+    return new JUnitCore().run(TestSuite.create("my_suite").test("my_test", test).toJUnitSuite());
   }
 
   @org.junit.Test

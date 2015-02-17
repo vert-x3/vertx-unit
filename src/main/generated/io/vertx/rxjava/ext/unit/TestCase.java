@@ -39,8 +39,8 @@ public class TestCase {
     return delegate;
   }
 
-  public static TestCase create(String desc, Handler<Test> handler) {
-    TestCase ret= TestCase.newInstance(io.vertx.ext.unit.TestCase.create(desc, new Handler<io.vertx.ext.unit.Test>() {
+  public static TestCase create(String name, Handler<Test> handler) {
+    TestCase ret= TestCase.newInstance(io.vertx.ext.unit.TestCase.create(name, new Handler<io.vertx.ext.unit.Test>() {
       public void handle(io.vertx.ext.unit.Test event) {
         handler.handle(new Test(event));
       }

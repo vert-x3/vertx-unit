@@ -42,7 +42,11 @@ public class Test {
   }
 
   public Vertx vertx() {
+    if (cached_0 != null) {
+      return cached_0;
+    }
     Vertx ret= Vertx.newInstance(this.delegate.vertx());
+    cached_0 = ret;
     return ret;
   }
 
@@ -59,6 +63,7 @@ public class Test {
     this.delegate.fail(s);
   }
 
+  private Vertx cached_0;
 
   public static Test newInstance(io.vertx.ext.unit.Test arg) {
     return new Test(arg);

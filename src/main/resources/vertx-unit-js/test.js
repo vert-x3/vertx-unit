@@ -41,7 +41,10 @@ var Test = function(j_val) {
   this.vertx = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return new Vertx(j_test.vertx());
+      if (that.cachedvertx == null) {
+        that.cachedvertx = new Vertx(j_test.vertx());
+      }
+      return that.cachedvertx;
     } else utils.invalidArgs();
   };
 

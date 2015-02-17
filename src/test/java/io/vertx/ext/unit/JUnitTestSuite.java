@@ -13,11 +13,11 @@ import org.junit.runners.AllTests;
 public class JUnitTestSuite {
 
   public static TestSuite suite() {
-    return io.vertx.ext.unit.TestSuite.create().
-        test("test 1", test -> {
+    return io.vertx.ext.unit.TestSuite.create("my_suite").
+        test("my_test", test -> {
           test.assertTrue(true);
         }).
-        test("test 2", test -> {
+        test("my_test", test -> {
           // Test 2
         }).toJUnitSuite();
   }

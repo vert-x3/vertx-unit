@@ -16,20 +16,23 @@
 
 package io.vertx.rxjava.ext.unit;
 
-import io.vertx.ext.unit.TestCaseReport;
+import io.vertx.ext.unit.EventBusAdapter;
 import io.vertx.core.Handler;
+import io.vertx.ext.unit.TestSuiteReport;
 
 /**
+ * A {@link io.vertx.ext.unit.TestSuiteReport} that takes its input from the event bus.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  *
  * NOTE: This class has been automatically generated from the original non RX-ified interface using Vert.x codegen.
  */
 
-public class TestCaseRunner {
+public class EventBusRunner {
 
-  final TestCaseReport delegate;
+  final EventBusAdapter delegate;
 
-  public TestCaseRunner(TestCaseReport delegate) {
+  public EventBusRunner(EventBusAdapter delegate) {
     this.delegate = delegate;
   }
 
@@ -37,34 +40,16 @@ public class TestCaseRunner {
     return delegate;
   }
 
-  /**
-   * @return the test case name
-   */
-  public String name() {
-    if (cached_0 != null) {
-      return cached_0;
-    }
-    String ret = this.delegate.name();
-    cached_0 = ret;
-    return ret;
-  }
-
-  /**
-   * Set a callback for completion, the specified {@code handler} is invoked when the test exec has completed.
-   *
-   * @param handler the completion handler
-   */
-  public void endHandler(Handler<TestResult> handler) {
-    this.delegate.endHandler(new Handler<io.vertx.ext.unit.TestResult>() {
-      public void handle(io.vertx.ext.unit.TestResult event) {
-        handler.handle(new TestResult(event));
+  public void handler(Handler<TestSuiteRunner> handler) {
+    this.delegate.handler(new Handler<TestSuiteReport>() {
+      public void handle(TestSuiteReport event) {
+        handler.handle(new TestSuiteRunner(event));
       }
     });
   }
 
-  private java.lang.String cached_0;
 
-  public static TestCaseRunner newInstance(TestCaseReport arg) {
-    return new TestCaseRunner(arg);
+  public static EventBusRunner newInstance(EventBusAdapter arg) {
+    return new EventBusRunner(arg);
   }
 }

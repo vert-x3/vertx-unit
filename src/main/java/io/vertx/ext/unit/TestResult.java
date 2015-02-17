@@ -1,5 +1,6 @@
 package io.vertx.ext.unit;
 
+import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.VertxGen;
 
 /**
@@ -13,25 +14,30 @@ public interface TestResult {
   /**
    * The test description, may be null if none was provided.
    */
-  String description();
+  @CacheReturn
+  String name();
 
   /**
-   * The test execution time.
+   * The test execution time in millis.
    */
+  @CacheReturn
   long time();
 
   /**
    * Did it succeed?
    */
+  @CacheReturn
   boolean succeeded();
 
   /**
    * Did it fail?
    */
+  @CacheReturn
   boolean failed();
 
   /**
    * An exception describing failure, null if the test succeeded.
    */
-  Throwable failure();
+  @CacheReturn
+  Failure failure();
 }

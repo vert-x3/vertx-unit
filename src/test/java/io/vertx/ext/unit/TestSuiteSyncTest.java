@@ -9,7 +9,7 @@ public class TestSuiteSyncTest extends TestSuiteTestBase {
 
   public TestSuiteSyncTest() {
     super();
-    runSuite = TestSuiteRunner::run;
+    runSuite = (suite,reporter) -> suite.run(reporter);
     completeAsync = Async::complete;
   }
 

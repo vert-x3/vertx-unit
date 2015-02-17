@@ -1,5 +1,6 @@
 package io.vertx.ext.unit;
 
+import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Vertx;
 
@@ -11,6 +12,7 @@ import io.vertx.core.Vertx;
 @VertxGen
 public interface Test {
 
+  @CacheReturn
   Vertx vertx();
 
   Async async();

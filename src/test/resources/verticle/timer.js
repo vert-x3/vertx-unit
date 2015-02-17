@@ -1,14 +1,12 @@
-var TestSuite = require('vertx-unit-js/test_suite')
+var TestSuite = require('vertx-unit-js/test_suite');
 
-var suite = TestSuite.create().test("Timer test", function(test) {
+var suite = TestSuite.create("time_suite").test("timer_test", function(test) {
     var async = test.async();
     vertx.setTimer(50, function() {
        async.complete();
     });
 });
 
-var runner = suite.runner();
-runner.endHandler(function() {
+suite.run(vertx, function(runner) {
     vertx.eventBus().send("test", "done");
 });
-runner.run(vertx);

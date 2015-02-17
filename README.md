@@ -2,6 +2,17 @@
 
 Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
 
+## Todo
+
+- timer impl
+- beforeEach / afterEach
+- bug when throwing exception without a message
+- same name test replaces previous ?
+- tap http://en.wikipedia.org/wiki/Test_Anything_Protocol
+- json stream reporter
+- xunit
+- markdown
+
 ## Status
 
 Proof of concept

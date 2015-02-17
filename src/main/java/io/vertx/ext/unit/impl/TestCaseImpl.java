@@ -4,7 +4,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestCase;
-import io.vertx.ext.unit.TestCaseRunner;
+import io.vertx.ext.unit.TestCaseReport;
 import io.vertx.ext.unit.TestResult;
 
 import java.util.concurrent.CountDownLatch;
@@ -24,8 +24,8 @@ public class TestCaseImpl implements TestCase {
     this.handler = handler;
   }
 
-  TestCaseRunner runner() {
-    return new TestCaseRunnerImpl(desc, null, handler, null, (o, executor) -> {
+  TestCaseReport runner() {
+    return new TestCaseReportImpl(desc, null, handler, null, (o, executor) -> {
       // ?
     });
   }
@@ -54,7 +54,7 @@ public class TestCaseImpl implements TestCase {
 
   public void assertSuccess(Context context, long timeout, TimeUnit unit) {
     CountDownLatch latch = new CountDownLatch(1);
-    TestCaseRunnerImpl testCase = (TestCaseRunnerImpl) runner();
+    TestCaseReportImpl testCase = (TestCaseReportImpl) runner();
     AtomicReference<TestResult> resultRef = new AtomicReference<>();
     testCase.endHandler(result ->{
       resultRef.set(result);
@@ -70,7 +70,7 @@ public class TestCaseImpl implements TestCase {
     if (result == null) {
       throw new IllegalStateException("Time out");
     } else if (result.failed()) {
-      Throwable failure = result.failure();
+      Throwable failure = result.failure().cause();
       if (failure instanceof Error) {
         throw (Error) failure;
       } else if (failure instanceof RuntimeException) {

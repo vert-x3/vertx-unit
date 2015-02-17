@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
@@ -18,7 +19,7 @@ import static org.junit.Assert.*;
  */
 public abstract class TestSuiteTestBase {
 
-  protected Consumer<TestSuiteRunner> runSuite;
+  protected BiConsumer<TestSuite, Handler<TestSuiteReport>> runSuite;
   protected Consumer<Async> completeAsync;
 
   public TestSuiteTestBase() {
@@ -32,19 +33,19 @@ public abstract class TestSuiteTestBase {
   public void runTest() {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
-    TestSuite suite = TestSuite.create().
+    TestSuite suite = TestSuite.create("my_suite").
         test("my_test", test -> {
           sameContext.set(checkTest(test));
           count.compareAndSet(0, 1);
         });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(reporter.runner(suite));
+    runSuite.accept(suite, reporter);
     reporter.await();
     assertTrue(sameContext.get());
     assertEquals(1, count.get());
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
-    assertEquals("my_test", result.description());
+    assertEquals("my_test", result.name());
     assertTrue(result.succeeded());
     assertFalse(result.failed());
     assertNull(result.failure());
@@ -54,13 +55,13 @@ public abstract class TestSuiteTestBase {
   public void runTestWithAsyncCompletion() throws Exception {
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
     AtomicInteger count = new AtomicInteger();
-    TestSuite suite = TestSuite.create().
+    TestSuite suite = TestSuite.create("my_suite").
         test("my_test", test -> {
           count.compareAndSet(0, 1);
           queue.add(test.async());
         });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(reporter.runner(suite));
+    runSuite.accept(suite, reporter);
     Async async = queue.poll(2, TimeUnit.SECONDS);
     assertEquals(1, count.get());
     assertFalse(reporter.completed());
@@ -69,7 +70,7 @@ public abstract class TestSuiteTestBase {
     assertTrue(reporter.completed());
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
-    assertEquals("my_test", result.description());
+    assertEquals("my_test", result.name());
     assertTrue(result.succeeded());
     assertFalse(result.failed());
     assertNull(result.failure());
@@ -87,7 +88,7 @@ public abstract class TestSuiteTestBase {
 
   private void failTest(Handler<io.vertx.ext.unit.Test> thrower) {
     AtomicReference<Throwable> failure = new AtomicReference<>();
-    TestSuite suite = TestSuite.create().
+    TestSuite suite = TestSuite.create("my_suite").
         test("my_test", test -> {
           try {
             thrower.handle(test);
@@ -97,26 +98,27 @@ public abstract class TestSuiteTestBase {
           }
         });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(reporter.runner(suite));
+    runSuite.accept(suite, reporter);
     reporter.await();
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
-    assertEquals("my_test", result.description());
+    assertEquals("my_test", result.name());
     assertFalse(result.succeeded());
     assertTrue(result.failed());
     assertNotNull(result.failure());
-    assertSame(failure.get(), result.failure());
+    assertSame(failure.get().getMessage(), result.failure().message());
+    assertSame(failure.get(), result.failure().cause());
   }
 
   @Test
   public void runTestWithAsyncFailure() throws Exception {
     BlockingQueue<io.vertx.ext.unit.Test> queue = new ArrayBlockingQueue<>(1);
-    TestSuite suite = TestSuite.create().test("my_test", test -> {
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
       test.async();
       queue.add(test);
     });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(reporter.runner(suite));
+    runSuite.accept(suite, reporter);
     assertFalse(reporter.completed());
     io.vertx.ext.unit.Test test = queue.poll(2, TimeUnit.SECONDS);
     try {
@@ -131,14 +133,14 @@ public abstract class TestSuiteTestBase {
   public void runBefore() throws Exception {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
-    TestSuite suite = TestSuite.create().test("my_test", test -> {
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
       sameContext.set(checkTest(test));
       count.compareAndSet(1, 2);
     }).before(test -> {
       count.compareAndSet(0, 1);
     });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(reporter.runner(suite));
+    runSuite.accept(suite, reporter);
     reporter.await();
     assertEquals(2, count.get());
     assertTrue(sameContext.get());
@@ -149,7 +151,7 @@ public abstract class TestSuiteTestBase {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
-    TestSuite suite = TestSuite.create().test("my_test", test -> {
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
       count.compareAndSet(1, 2);
       sameContext.set(checkTest(test));
     }).before(test -> {
@@ -157,7 +159,7 @@ public abstract class TestSuiteTestBase {
       queue.add(test.async());
     });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(reporter.runner(suite));
+    runSuite.accept(suite, reporter);
     Async async = queue.poll(2, TimeUnit.SECONDS);
     completeAsync.accept(async);
     reporter.await();
@@ -168,13 +170,13 @@ public abstract class TestSuiteTestBase {
   @Test
   public void runBeforeWithFailure() throws Exception {
     AtomicInteger count = new AtomicInteger();
-    TestSuite suite = TestSuite.create().test("my_test", test -> {
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
       count.incrementAndGet();
     }).before(test -> {
       throw new RuntimeException();
     });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(reporter.runner(suite));
+    runSuite.accept(suite, reporter);
     reporter.await();
     assertEquals(0, count.get());
   }
@@ -183,14 +185,14 @@ public abstract class TestSuiteTestBase {
   public void runAfterWithAsyncCompletion() throws Exception {
     AtomicInteger count = new AtomicInteger();
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
-    TestSuite suite = TestSuite.create().test("my_test", test -> {
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
       count.compareAndSet(0, 1);
     }).after(test -> {
       count.compareAndSet(1, 2);
       queue.add(test.async());
     });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(reporter.runner(suite));
+    runSuite.accept(suite, reporter);
     Async async = queue.poll(2, TimeUnit.SECONDS);
     assertFalse(reporter.completed());
     assertEquals(2, count.get());
@@ -202,14 +204,14 @@ public abstract class TestSuiteTestBase {
   public void runAfter() throws Exception {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
-    TestSuite suite = TestSuite.create().test("my_test", test -> {
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
       count.compareAndSet(0, 1);
     }).after(test -> {
       sameContext.set(checkTest(test));
       count.compareAndSet(1, 2);
     });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(reporter.runner(suite));
+    runSuite.accept(suite, reporter);
     reporter.await();
     assertEquals(2, count.get());
     assertTrue(sameContext.get());
@@ -218,17 +220,17 @@ public abstract class TestSuiteTestBase {
   @Test
   public void runAfterWithFailure() throws Exception {
     AtomicInteger count = new AtomicInteger();
-    TestSuite suite = TestSuite.create().test("my_test", test -> {
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
       count.compareAndSet(0, 1);
       test.fail("the_message");
     }).after(test -> {
       count.compareAndSet(1, 2);
     });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(reporter.runner(suite));
+    runSuite.accept(suite, reporter);
     reporter.await();
     assertEquals(2, count.get());
     assertTrue(reporter.results.get(0).failed());
-    assertEquals("the_message", reporter.results.get(0).failure().getMessage());
+    assertEquals("the_message", reporter.results.get(0).failure().message());
   }
 }

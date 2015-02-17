@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 @VertxGen
 public interface TestCase {
 
-  static TestCase create(String desc, Handler<Test> handler) {
-    return new TestCaseImpl(desc, handler);
+  static TestCase create(String name, Handler<Test> handler) {
+    return new TestCaseImpl(name, handler);
   }
 
   @GenIgnore

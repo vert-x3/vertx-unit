@@ -4,6 +4,7 @@ import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.ext.unit.impl.TestSuiteImpl;
 
 import java.util.concurrent.TimeUnit;
@@ -14,12 +15,8 @@ import java.util.concurrent.TimeUnit;
 @VertxGen
 public interface TestSuite {
 
-  static TestSuite create() {
-    return new TestSuiteImpl();
-  }
-
-  static TestSuite create(String desc) {
-    return new TestSuiteImpl(desc);
+  static TestSuite create(String name) {
+    return new TestSuiteImpl(name);
   }
 
   @Fluent
@@ -29,7 +26,17 @@ public interface TestSuite {
   TestSuite after(Handler<Test> callback);
 
   @Fluent
-  TestSuite test(String desc, Handler<Test> handler);
+  TestSuite test(String name, Handler<Test> handler);
+
+  void run();
+
+  void run(Vertx vertx);
+
+  void run(Handler<TestSuiteReport> reporter);
+
+  void run(Vertx vertx, Handler<TestSuiteReport> reporter);
+
+  TestSuiteRunner runner(Vertx vertx);
 
   TestSuiteRunner runner();
 

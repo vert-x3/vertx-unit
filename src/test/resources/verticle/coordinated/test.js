@@ -1,13 +1,13 @@
 var TestSuite = require('vertx-unit-js/test_suite');
 
-var suite = TestSuite.create().
+var suite = TestSuite.create("my_suite").
     before(function(test) {
         var async = test.async();
         vertx.deployVerticle("coordinated/server.js", function(id, err) {
             test.assertTrue(err === null);
             async.complete();
         });
-    }).test("server GET", function(test) {
+    }).test("server_get", function(test) {
         var async = test.async();
         var client = vertx.createHttpClient({});
         client.request("GET", 8080, "localhost", "/path", function(resp) {
@@ -16,8 +16,8 @@ var suite = TestSuite.create().
         }).end();
     });
 
-var runner = suite.runner();
-runner.endHandler(function() {
-    vertx.eventBus().send("test", "done");
+suite.run(function(runner) {
+    runner.endHandler(function() {
+        vertx.eventBus().send("test", "done");
+    });
 });
-runner.run();

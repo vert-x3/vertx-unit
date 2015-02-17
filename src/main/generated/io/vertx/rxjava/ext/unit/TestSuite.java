@@ -19,6 +19,7 @@ package io.vertx.rxjava.ext.unit;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.rxjava.core.Vertx;
 import io.vertx.core.Handler;
 
 /**
@@ -39,13 +40,8 @@ public class TestSuite {
     return delegate;
   }
 
-  public static TestSuite create() {
-    TestSuite ret= TestSuite.newInstance(io.vertx.ext.unit.TestSuite.create());
-    return ret;
-  }
-
-  public static TestSuite create(String desc) {
-    TestSuite ret= TestSuite.newInstance(io.vertx.ext.unit.TestSuite.create(desc));
+  public static TestSuite create(String name) {
+    TestSuite ret= TestSuite.newInstance(io.vertx.ext.unit.TestSuite.create(name));
     return ret;
   }
 
@@ -67,13 +63,42 @@ public class TestSuite {
     return this;
   }
 
-  public TestSuite test(String desc, Handler<Test> handler) {
-    this.delegate.test(desc, new Handler<io.vertx.ext.unit.Test>() {
+  public TestSuite test(String name, Handler<Test> handler) {
+    this.delegate.test(name, new Handler<io.vertx.ext.unit.Test>() {
       public void handle(io.vertx.ext.unit.Test event) {
         handler.handle(new Test(event));
       }
     });
     return this;
+  }
+
+  public void run() {
+    this.delegate.run();
+  }
+
+  public void run(Vertx vertx) {
+    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate());
+  }
+
+  public void run(Handler<TestSuiteReport> reporter) {
+    this.delegate.run(new Handler<io.vertx.ext.unit.TestSuiteReport>() {
+      public void handle(io.vertx.ext.unit.TestSuiteReport event) {
+        reporter.handle(new TestSuiteReport(event));
+      }
+    });
+  }
+
+  public void run(Vertx vertx, Handler<TestSuiteReport> reporter) {
+    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), new Handler<io.vertx.ext.unit.TestSuiteReport>() {
+      public void handle(io.vertx.ext.unit.TestSuiteReport event) {
+        reporter.handle(new TestSuiteReport(event));
+      }
+    });
+  }
+
+  public TestSuiteRunner runner(Vertx vertx) {
+    TestSuiteRunner ret= TestSuiteRunner.newInstance(this.delegate.runner((io.vertx.core.Vertx) vertx.getDelegate()));
+    return ret;
   }
 
   public TestSuiteRunner runner() {

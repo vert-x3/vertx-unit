@@ -14,59 +14,44 @@
  * under the License.
  */
 
-/** @module vertx-unit-js/test_suite_runner */
+/** @module vertx-unit-js/event_bus_report */
 var utils = require('vertx-js/util/utils');
 var TestSuiteReport = require('vertx-unit-js/test_suite_report');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestSuiteRunner = io.vertx.ext.unit.TestSuiteRunner;
+var JEventBusReport = io.vertx.ext.unit.EventBusReport;
 
 /**
- The test suite runner.
 
  @class
 */
-var TestSuiteRunner = function(j_val) {
+var EventBusReport = function(j_val) {
 
-  var j_testSuiteRunner = j_val;
+  var j_eventBusReport = j_val;
   var that = this;
 
   /**
-   Set a reporter for handling the events emitted by the test suite.
 
    @public
-   @param reporter {function} the reporter 
-   @return {TestSuiteRunner} a reference to this, so the API can be used fluently
+   @param reporter {function} 
+   @return {EventBusReport}
    */
   this.handler = function(reporter) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuiteRunner.handler(function(jVal) {
+      j_eventBusReport.handler(function(jVal) {
       reporter(new TestSuiteReport(jVal));
     });
       return that;
     } else utils.invalidArgs();
   };
 
-  /**
-   Run the testsuite.
-
-   @public
-
-   */
-  this.run = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      j_testSuiteRunner.run();
-    } else utils.invalidArgs();
-  };
-
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
-  this._jdel = j_testSuiteRunner;
+  this._jdel = j_eventBusReport;
 };
 
 // We export the Constructor function
-module.exports = TestSuiteRunner;
+module.exports = EventBusReport;

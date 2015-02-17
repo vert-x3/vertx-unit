@@ -14,59 +14,62 @@
  * under the License.
  */
 
-/** @module vertx-unit-js/test_suite_runner */
+/** @module vertx-unit-js/test_case_report */
 var utils = require('vertx-js/util/utils');
-var TestSuiteReport = require('vertx-unit-js/test_suite_report');
+var TestResult = require('vertx-unit-js/test_result');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestSuiteRunner = io.vertx.ext.unit.TestSuiteRunner;
+var JTestCaseReport = io.vertx.ext.unit.TestCaseReport;
 
 /**
- The test suite runner.
 
  @class
 */
-var TestSuiteRunner = function(j_val) {
+var TestCaseReport = function(j_val) {
 
-  var j_testSuiteRunner = j_val;
+  var j_testCaseReport = j_val;
   var that = this;
 
   /**
-   Set a reporter for handling the events emitted by the test suite.
+   @return the test case name
 
    @public
-   @param reporter {function} the reporter 
-   @return {TestSuiteRunner} a reference to this, so the API can be used fluently
+
+   @return {string}
    */
-  this.handler = function(reporter) {
+  this.name = function() {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuiteRunner.handler(function(jVal) {
-      reporter(new TestSuiteReport(jVal));
-    });
-      return that;
+    if (__args.length === 0) {
+      if (that.cachedname == null) {
+        that.cachedname = j_testCaseReport.name();
+      }
+      return that.cachedname;
     } else utils.invalidArgs();
   };
 
   /**
-   Run the testsuite.
+   Set a callback for completion, the specified <code>handler</code> is invoked when the test exec has completed.
 
    @public
-
+   @param handler {function} the completion handler 
+   @return {TestCaseReport} a reference to this, so the API can be used fluently
    */
-  this.run = function() {
+  this.endHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 0) {
-      j_testSuiteRunner.run();
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_testCaseReport.endHandler(function(jVal) {
+      handler(new TestResult(jVal));
+    });
+      return that;
     } else utils.invalidArgs();
   };
 
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
-  this._jdel = j_testSuiteRunner;
+  this._jdel = j_testCaseReport;
 };
 
 // We export the Constructor function
-module.exports = TestSuiteRunner;
+module.exports = TestCaseReport;

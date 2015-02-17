@@ -40,14 +40,14 @@ var TestCase = function(j_val) {
 /**
 
  @memberof module:vertx-unit-js/test_case
- @param desc {string} 
+ @param name {string} 
  @param handler {function} 
  @return {TestCase}
  */
-TestCase.create = function(desc, handler) {
+TestCase.create = function(name, handler) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-    return new TestCase(JTestCase.create(desc, function(jVal) {
+    return new TestCase(JTestCase.create(name, function(jVal) {
     handler(new Test(jVal));
   }));
   } else utils.invalidArgs();

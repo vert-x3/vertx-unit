@@ -16,8 +16,12 @@
 
 package io.vertx.rxjava.ext.unit;
 
-import io.vertx.ext.unit.TestCaseReport;
+import java.util.Map;
+import io.vertx.lang.rxjava.InternalHelper;
+import rx.Observable;
+import io.vertx.rxjava.core.buffer.Buffer;
 import io.vertx.core.Handler;
+import io.vertx.rxjava.core.eventbus.MessageProducer;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -25,11 +29,11 @@ import io.vertx.core.Handler;
  * NOTE: This class has been automatically generated from the original non RX-ified interface using Vert.x codegen.
  */
 
-public class TestCaseRunner {
+public class Reporter {
 
-  final TestCaseReport delegate;
+  final io.vertx.ext.unit.Reporter delegate;
 
-  public TestCaseRunner(TestCaseReport delegate) {
+  public Reporter(io.vertx.ext.unit.Reporter delegate) {
     this.delegate = delegate;
   }
 
@@ -37,34 +41,22 @@ public class TestCaseRunner {
     return delegate;
   }
 
-  /**
-   * @return the test case name
-   */
-  public String name() {
-    if (cached_0 != null) {
-      return cached_0;
-    }
-    String ret = this.delegate.name();
-    cached_0 = ret;
+  public static Reporter eventBusReporter(MessageProducer<?> producer) {
+    Reporter ret= Reporter.newInstance(io.vertx.ext.unit.Reporter.eventBusReporter((io.vertx.core.eventbus.MessageProducer<?>) producer.getDelegate()));
     return ret;
   }
 
-  /**
-   * Set a callback for completion, the specified {@code handler} is invoked when the test exec has completed.
-   *
-   * @param handler the completion handler
-   */
-  public void endHandler(Handler<TestResult> handler) {
-    this.delegate.endHandler(new Handler<io.vertx.ext.unit.TestResult>() {
-      public void handle(io.vertx.ext.unit.TestResult event) {
-        handler.handle(new TestResult(event));
+  public static Reporter junitXmlReporter(Handler<Buffer> output) {
+    Reporter ret= Reporter.newInstance(io.vertx.ext.unit.Reporter.junitXmlReporter(new Handler<io.vertx.core.buffer.Buffer>() {
+      public void handle(io.vertx.core.buffer.Buffer event) {
+        output.handle(new Buffer(event));
       }
-    });
+    }));
+    return ret;
   }
 
-  private java.lang.String cached_0;
 
-  public static TestCaseRunner newInstance(TestCaseReport arg) {
-    return new TestCaseRunner(arg);
+  public static Reporter newInstance(io.vertx.ext.unit.Reporter arg) {
+    return new Reporter(arg);
   }
 }

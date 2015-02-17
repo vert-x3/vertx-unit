@@ -9,19 +9,18 @@ import java.util.concurrent.TimeUnit;
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
-class TestReporter {
+class TestReporter implements Reporter {
   private final CountDownLatch latch = new CountDownLatch(1);
   final List<TestResult> results = Collections.synchronizedList(new ArrayList<>());
 
-  TestSuiteRunner runner(TestSuite suite) {
-    TestSuiteRunner runner = suite.runner();
+  @Override
+  public void handle(TestSuiteReport runner) {
     runner.handler(testExec -> {
       testExec.endHandler(results::add);
     });
     runner.endHandler(done -> {
       latch.countDown();
     });
-    return runner;
   }
 
   void await() {

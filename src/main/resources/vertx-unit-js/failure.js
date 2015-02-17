@@ -14,60 +14,86 @@
  * under the License.
  */
 
-/** @module vertx-unit-js/test_case_runner */
+/** @module vertx-unit-js/failure */
 var utils = require('vertx-js/util/utils');
-var TestResult = require('vertx-unit-js/test_result');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestCaseRunner = io.vertx.ext.unit.TestCaseRunner;
+var JFailure = io.vertx.ext.unit.Failure;
 
 /**
+ A failure provides the details of a failure that happened during the execution of a test case.<p/>
+
+ The failure can be:
+ <ul>
+   <li>an assertion failure: an assertion failed</li>
+   <li>an error failure: an expected error occured</li>
+ </ul>
+
 
  @class
 */
-var TestCaseRunner = function(j_val) {
+var Failure = function(j_val) {
 
-  var j_testCaseRunner = j_val;
+  var j_failure = j_val;
   var that = this;
 
   /**
-   @return the test case name
+   @return true if the failure is an error failure otherwise it is an assertion failure
+
+   @public
+
+   @return {boolean}
+   */
+  this.isError = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      if (that.cachedisError == null) {
+        that.cachedisError = j_failure.isError();
+      }
+      return that.cachedisError;
+    } else utils.invalidArgs();
+  };
+
+  /**
+   @return the error message
 
    @public
 
    @return {string}
    */
-  this.name = function() {
+  this.message = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      if (that.cachedname == null) {
-        that.cachedname = j_testCaseRunner.name();
+      if (that.cachedmessage == null) {
+        that.cachedmessage = j_failure.message();
       }
-      return that.cachedname;
+      return that.cachedmessage;
     } else utils.invalidArgs();
   };
 
   /**
-   Set a callback for completion, the specified <code>handler</code> is invoked when the test exec has completed.
+   @return the stack trace
 
    @public
-   @param handler {function} the completion handler 
+
+   @return {string}
    */
-  this.endHandler = function(handler) {
+  this.stackTrace = function() {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testCaseRunner.endHandler(function(jVal) {
-      handler(new TestResult(jVal));
-    });
+    if (__args.length === 0) {
+      if (that.cachedstackTrace == null) {
+        that.cachedstackTrace = j_failure.stackTrace();
+      }
+      return that.cachedstackTrace;
     } else utils.invalidArgs();
   };
 
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
-  this._jdel = j_testCaseRunner;
+  this._jdel = j_failure;
 };
 
 // We export the Constructor function
-module.exports = TestCaseRunner;
+module.exports = Failure;

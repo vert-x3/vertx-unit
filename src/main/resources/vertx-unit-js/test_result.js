@@ -16,6 +16,7 @@
 
 /** @module vertx-unit-js/test_result */
 var utils = require('vertx-js/util/utils');
+var Failure = require('vertx-unit-js/failure');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
@@ -38,15 +39,18 @@ var TestResult = function(j_val) {
 
    @return {string}
    */
-  this.description = function() {
+  this.name = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_testResult.description();
+      if (that.cachedname == null) {
+        that.cachedname = j_testResult.name();
+      }
+      return that.cachedname;
     } else utils.invalidArgs();
   };
 
   /**
-   The test execution time.
+   The test execution time in millis.
 
    @public
 
@@ -55,7 +59,10 @@ var TestResult = function(j_val) {
   this.time = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_testResult.time();
+      if (that.cachedtime == null) {
+        that.cachedtime = j_testResult.time();
+      }
+      return that.cachedtime;
     } else utils.invalidArgs();
   };
 
@@ -69,7 +76,10 @@ var TestResult = function(j_val) {
   this.succeeded = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_testResult.succeeded();
+      if (that.cachedsucceeded == null) {
+        that.cachedsucceeded = j_testResult.succeeded();
+      }
+      return that.cachedsucceeded;
     } else utils.invalidArgs();
   };
 
@@ -83,7 +93,10 @@ var TestResult = function(j_val) {
   this.failed = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_testResult.failed();
+      if (that.cachedfailed == null) {
+        that.cachedfailed = j_testResult.failed();
+      }
+      return that.cachedfailed;
     } else utils.invalidArgs();
   };
 
@@ -92,12 +105,15 @@ var TestResult = function(j_val) {
 
    @public
 
-   @return {todo}
+   @return {Failure}
    */
   this.failure = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return utils.convReturnTypeUnknown(j_testResult.failure());
+      if (that.cachedfailure == null) {
+        that.cachedfailure = new Failure(j_testResult.failure());
+      }
+      return that.cachedfailure;
     } else utils.invalidArgs();
   };
 
