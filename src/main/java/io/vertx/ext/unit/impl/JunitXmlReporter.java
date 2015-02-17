@@ -15,8 +15,10 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -25,7 +27,8 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class JunitXmlReporter implements Reporter {
 
-  final Handler<Buffer> output;
+  private final NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+  private final Handler<Buffer> output;
 
   public JunitXmlReporter(Handler<Buffer> output) {
     this.output = output;
@@ -61,7 +64,7 @@ public class JunitXmlReporter implements Reporter {
         writer.writeStartDocument("UTF-8", "1.0");
         writer.writeStartElement("testsuite");
         writer.writeAttribute("name", suite.name());
-        writer.writeAttribute("time", "" + time.get());
+        writer.writeAttribute("time", "" + formatTimeMillis(time.get()));
         writer.writeAttribute("tests", "" + results.size());
         writer.writeAttribute("errors", "" + errors.get());
         writer.writeAttribute("failures", "" + failures.get());
@@ -69,7 +72,7 @@ public class JunitXmlReporter implements Reporter {
         for (TestResult result : results) {
           writer.writeStartElement("testcase");
           writer.writeAttribute("name", result.name());
-          writer.writeAttribute("time", "" + result.time());
+          writer.writeAttribute("time", "" + formatTimeMillis(result.time()));
           if (result.failed()) {
             writer.writeStartElement("failure");
             writer.writeAttribute("type", result.failure().isError() ? "Error" : "AssertionError");
@@ -95,5 +98,9 @@ public class JunitXmlReporter implements Reporter {
         e.printStackTrace();
       }
     });
+  }
+
+  private String formatTimeMillis(long timeMillis) {
+    return format.format((((double)timeMillis) / 1000));
   }
 }

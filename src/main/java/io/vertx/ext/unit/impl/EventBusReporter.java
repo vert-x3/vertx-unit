@@ -44,10 +44,6 @@ public class EventBusReporter implements Reporter {
         if (result.failed()) {
           Failure failure = result.failure();
           json.put("failure", ((FailureImpl) failure).toJson());
-
-
-
-
         }
         producer.write(json);
       });

@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.impl.FailureImpl;
 import io.vertx.test.core.AsyncTestBase;
 import io.vertx.test.core.TestUtils;
+import io.vertx.test.core.VertxTestBase;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,21 +15,16 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class EventBusTest extends AsyncTestBase {
+public class EventBusTest extends VertxTestBase {
 
   @org.junit.Test
   public void testEventBusReporter() throws Exception {
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName1 = TestUtils.randomAlphaString(10);
     String testCaseName2 = TestUtils.randomAlphaString(10);
-    Vertx vertx = Vertx.vertx();
     AtomicInteger status = new AtomicInteger();
     vertx.eventBus().<JsonObject>consumer("foobar", msg -> {
       JsonObject body = msg.body();
@@ -45,7 +41,7 @@ public class EventBusTest extends AsyncTestBase {
         case 2:
           assertEquals("endTestCase", type);
           assertEquals(testCaseName1, body.getString("name"));
-          assertNotNull(body.getInteger("time"));
+          assertTrue(body.getInteger("time") > 10);
           assertNull(testCaseName1, body.getJsonObject("failure"));
           break;
         case 3:
@@ -55,7 +51,7 @@ public class EventBusTest extends AsyncTestBase {
         case 4:
           assertEquals("endTestCase", type);
           assertEquals(testCaseName2, body.getString("name"));
-          assertNotNull(body.getInteger("time"));
+          assertTrue(body.getInteger("time") >= 0);
           JsonObject failure = body.getJsonObject("failure");
           assertNotNull(failure);
           assertEquals("the_" + testCaseName2 + "_failure", failure.getString("message"));
@@ -74,7 +70,10 @@ public class EventBusTest extends AsyncTestBase {
       status.incrementAndGet();
     });
     TestSuite.create(testSuiteName).test(testCaseName1, test -> {
-      // Ok
+      try {
+        Thread.sleep(10);
+      } catch (InterruptedException ignore) {
+      }
     }).test(testCaseName2, test -> {
       test.fail("the_" + testCaseName2 + "_failure");
     }).run(vertx, Reporter.eventBusReporter(vertx.eventBus().publisher("foobar")));
@@ -85,7 +84,6 @@ public class EventBusTest extends AsyncTestBase {
   public void testEventBusReporterTestSuiteFailure() throws Exception {
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName = TestUtils.randomAlphaString(10);
-    Vertx vertx = Vertx.vertx();
     AtomicInteger status = new AtomicInteger();
     vertx.eventBus().<JsonObject>consumer("foobar", msg -> {
       JsonObject body = msg.body();
@@ -134,7 +132,6 @@ public class EventBusTest extends AsyncTestBase {
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName1 = TestUtils.randomAlphaString(10);
     String testCaseName2 = TestUtils.randomAlphaString(10);
-    Vertx vertx = Vertx.vertx();
     EventBusAdapter slurper = EventBusAdapter.create();
     vertx.eventBus().consumer("foobar", slurper);
     slurper.handler(testSuite -> {
@@ -152,11 +149,13 @@ public class EventBusTest extends AsyncTestBase {
         assertEquals(entry1.getKey().name(), entry1.getValue().name());
         assertEquals(testCaseName1, entry1.getValue().name());
         assertTrue(entry1.getValue().succeeded());
+        assertEquals(10, entry1.getValue().time());
         assertNull(entry1.getValue().failure());
         Map.Entry<TestCaseReport, TestResult> entry2 = it.next();
         assertEquals(entry2.getKey().name(), entry2.getValue().name());
         assertEquals(testCaseName2, entry2.getValue().name());
         assertFalse(entry2.getValue().succeeded());
+        assertEquals(5, entry2.getValue().time());
         assertNotNull(entry2.getValue().failure());
         assertEquals(false, entry2.getValue().failure().isError());
         assertEquals("the_failure_message", entry2.getValue().failure().message());
@@ -167,9 +166,9 @@ public class EventBusTest extends AsyncTestBase {
     });
     vertx.eventBus().publish("foobar", new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
     vertx.eventBus().publish("foobar", new JsonObject().put("type", "beginTestCase").put("name", testCaseName1));
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "endTestCase").put("name", testCaseName1));
+    vertx.eventBus().publish("foobar", new JsonObject().put("type", "endTestCase").put("name", testCaseName1).put("time", 10));
     vertx.eventBus().publish("foobar", new JsonObject().put("type", "beginTestCase").put("name", testCaseName2));
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "endTestCase").put("name", testCaseName2).
+    vertx.eventBus().publish("foobar", new JsonObject().put("type", "endTestCase").put("name", testCaseName2).put("time", 5).
         put("failure", new FailureImpl(
             false, "the_failure_message", "the_failure_stackTrace", new IOException()).toJson()));
     vertx.eventBus().publish("foobar", new JsonObject().put("type", "endTestSuite"));
@@ -180,7 +179,6 @@ public class EventBusTest extends AsyncTestBase {
   public void testEventBusReportAfterFailure() throws Exception {
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName = TestUtils.randomAlphaString(10);
-    Vertx vertx = Vertx.vertx();
     EventBusAdapter slurper = EventBusAdapter.create();
     vertx.eventBus().consumer("foobar", slurper);
     AtomicReference<Throwable> suiteFailure = new AtomicReference<>();
@@ -221,7 +219,6 @@ public class EventBusTest extends AsyncTestBase {
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName1 = TestUtils.randomAlphaString(10);
     String testCaseName2 = TestUtils.randomAlphaString(10);
-    Vertx vertx = Vertx.vertx();
     EventBusAdapter slurper = EventBusAdapter.create();
     vertx.eventBus().consumer("the-address", slurper);
     TestReporter testReporter = new TestReporter();
@@ -245,7 +242,6 @@ public class EventBusTest extends AsyncTestBase {
   public void testEndToEndAfterFailure() {
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName = TestUtils.randomAlphaString(10);
-    Vertx vertx = Vertx.vertx();
     EventBusAdapter slurper = EventBusAdapter.create();
     vertx.eventBus().consumer("the-address", slurper);
     TestReporter testReporter = new TestReporter();
@@ -253,13 +249,19 @@ public class EventBusTest extends AsyncTestBase {
     RuntimeException error = new RuntimeException("the_runtime_exception");
     Reporter reporter = Reporter.eventBusReporter(vertx.eventBus().publisher("the-address"));
     TestSuite suite = TestSuite.create(testSuiteName).
-        test(testCaseName, test -> {}).after(test -> { throw error; });
+        test(testCaseName, test -> {
+          try {
+            Thread.sleep(10);
+          } catch (InterruptedException ignore) {
+          }
+        }).after(test -> { throw error; });
     suite.run(reporter);
     testReporter.await();
     assertEquals(1, testReporter.results.size());
     TestResult result1 = testReporter.results.get(0);
     assertEquals(testCaseName, result1.name());
     assertTrue(result1.succeeded());
+    assertTrue(result1.time() >= 10);
     assertEquals(1, testReporter.exceptions.size());
     Throwable cause = testReporter.exceptions.get(0);
     assertTrue(cause instanceof RuntimeException);

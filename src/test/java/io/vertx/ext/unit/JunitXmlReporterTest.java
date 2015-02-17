@@ -12,11 +12,25 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class JunitXmlReporterTest extends AsyncTestBase {
+
+  private final NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+
+  private double parseTime(String value) {
+    try {
+      return format.parse(value).doubleValue();
+    } catch (ParseException e) {
+      fail(e.getMessage());
+      return 0;
+    }
+  }
 
   @org.junit.Test
   public void testReportTestCases() {
@@ -26,7 +40,13 @@ public class JunitXmlReporterTest extends AsyncTestBase {
     String testCaseName3 = TestUtils.randomAlphaString(10);
 
     TestSuite suite = TestSuite.create(testSuiteName).
-        test(testCaseName1, test -> {}).
+        test(testCaseName1, test -> {
+          try {
+            Thread.sleep(10);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }).
         test(testCaseName2, test -> { test.fail("the_assertion_failure"); }).
         test(testCaseName3, test -> { throw new RuntimeException("the_error_failure"); });
 
@@ -34,7 +54,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       Document doc = assertDoc(buffer);
       Element testsuiteElt = doc.getDocumentElement();
       assertEquals("testsuite", testsuiteElt.getTagName());
-      assertNotNull(testsuiteElt.getAttribute("time"));
+      assertTrue(parseTime(testsuiteElt.getAttribute("time")) >= 0.010);
       assertEquals("3", testsuiteElt.getAttribute("tests"));
       assertEquals("1", testsuiteElt.getAttribute("errors"));
       assertEquals("1", testsuiteElt.getAttribute("failures"));
@@ -44,18 +64,18 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       assertEquals(3, testCases.getLength());
       Element testCase1Elt = (Element) testCases.item(0);
       assertEquals(testCaseName1, testCase1Elt.getAttribute("name"));
-      assertNotNull(testCase1Elt.getAttribute("time"));
+      assertTrue(parseTime(testCase1Elt.getAttribute("time")) >= 0.010);
       assertEquals(0, testCase1Elt.getElementsByTagName("failure").getLength());
       Element testCase2Elt = (Element) testCases.item(1);
       assertEquals(testCaseName2, testCase2Elt.getAttribute("name"));
-      assertNotNull(testCase2Elt.getAttribute("time"));
+      assertTrue(parseTime(testCase2Elt.getAttribute("time")) >= 0);
       assertEquals(1, testCase2Elt.getElementsByTagName("failure").getLength());
       Element testCase2FailureElt = (Element) testCase2Elt.getElementsByTagName("failure").item(0);
       assertEquals("AssertionError", testCase2FailureElt.getAttribute("type"));
       assertEquals("the_assertion_failure", testCase2FailureElt.getAttribute("message"));
       Element testCase3Elt = (Element) testCases.item(2);
       assertEquals(testCaseName3, testCase3Elt.getAttribute("name"));
-      assertNotNull(testCase3Elt.getAttribute("time"));
+      assertTrue(parseTime(testCase3Elt.getAttribute("time")) >= 0);
       assertEquals(1, testCase3Elt.getElementsByTagName("failure").getLength());
       Element testCase3FailureElt = (Element) testCase3Elt.getElementsByTagName("failure").item(0);
       assertEquals("Error", testCase3FailureElt.getAttribute("type"));
