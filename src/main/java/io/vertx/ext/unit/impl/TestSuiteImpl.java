@@ -22,7 +22,9 @@ public class TestSuiteImpl implements TestSuite {
 
   private final String name;
   private volatile Handler<Test> before;
+  private volatile Handler<Test> beforeEach;
   private volatile Handler<Test> after;
+  private volatile Handler<Test> afterEach;
   private final List<TestCaseImpl> tests = new ArrayList<>();
 
   public TestSuiteImpl(String name) {
@@ -30,14 +32,26 @@ public class TestSuiteImpl implements TestSuite {
   }
 
   @Override
-  public TestSuite before(Handler<Test> before) {
-    this.before = before;
+  public TestSuite before(Handler<Test> handler) {
+    this.before = handler;
     return this;
   }
 
   @Override
-  public TestSuite after(Handler<Test> after) {
-    this.after = after;
+  public TestSuite beforeEach(Handler<Test> handler) {
+    beforeEach = handler;
+    return this;
+  }
+
+  @Override
+  public TestSuite after(Handler<Test> handler) {
+    this.after = handler;
+    return this;
+  }
+
+  @Override
+  public TestSuite afterEach(Handler<Test> handler) {
+    afterEach = handler;
     return this;
   }
 
@@ -75,7 +89,7 @@ public class TestSuiteImpl implements TestSuite {
 
   @Override
   public TestSuiteRunner runner(Vertx vertx) {
-    return new TestSuiteRunnerImpl(name, before, after, tests.toArray(new TestCaseImpl[tests.size()]), vertx);
+    return new TestSuiteRunnerImpl(name, before, after, beforeEach, afterEach, tests.toArray(new TestCaseImpl[tests.size()]), vertx);
   }
 
   @Override

@@ -45,10 +45,19 @@ public class TestSuite {
     return ret;
   }
 
-  public TestSuite before(Handler<Test> before) {
+  public TestSuite before(Handler<Test> handler) {
     this.delegate.before(new Handler<io.vertx.ext.unit.Test>() {
       public void handle(io.vertx.ext.unit.Test event) {
-        before.handle(new Test(event));
+        handler.handle(new Test(event));
+      }
+    });
+    return this;
+  }
+
+  public TestSuite beforeEach(Handler<Test> handler) {
+    this.delegate.beforeEach(new Handler<io.vertx.ext.unit.Test>() {
+      public void handle(io.vertx.ext.unit.Test event) {
+        handler.handle(new Test(event));
       }
     });
     return this;
@@ -56,6 +65,15 @@ public class TestSuite {
 
   public TestSuite after(Handler<Test> callback) {
     this.delegate.after(new Handler<io.vertx.ext.unit.Test>() {
+      public void handle(io.vertx.ext.unit.Test event) {
+        callback.handle(new Test(event));
+      }
+    });
+    return this;
+  }
+
+  public TestSuite afterEach(Handler<Test> callback) {
+    this.delegate.afterEach(new Handler<io.vertx.ext.unit.Test>() {
       public void handle(io.vertx.ext.unit.Test event) {
         callback.handle(new Test(event));
       }

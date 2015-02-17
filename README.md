@@ -4,6 +4,7 @@ Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
 
 ## Todo
 
+- junit XML time report is formatted in seconds (time="0.009")
 - beforeEach / afterEach
 - bug when throwing exception without a message
 - same name test replaces previous ?

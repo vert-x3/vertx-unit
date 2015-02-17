@@ -20,10 +20,16 @@ public interface TestSuite {
   }
 
   @Fluent
-  TestSuite before(Handler<Test> before);
+  TestSuite before(Handler<Test> handler);
+
+  @Fluent
+  TestSuite beforeEach(Handler<Test> handler);
 
   @Fluent
   TestSuite after(Handler<Test> callback);
+
+  @Fluent
+  TestSuite afterEach(Handler<Test> callback);
 
   @Fluent
   TestSuite test(String name, Handler<Test> handler);

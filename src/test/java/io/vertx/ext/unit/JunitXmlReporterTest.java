@@ -19,7 +19,7 @@ import java.io.ByteArrayInputStream;
 public class JunitXmlReporterTest extends AsyncTestBase {
 
   @org.junit.Test
-  public void testXml() {
+  public void testReportTestCases() {
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName1 = TestUtils.randomAlphaString(10);
     String testCaseName2 = TestUtils.randomAlphaString(10);
@@ -65,6 +65,82 @@ public class JunitXmlReporterTest extends AsyncTestBase {
     suite.run(reporter);
     await();
 
+  }
+
+  @org.junit.Test
+  public void testReportAfterFailure() {
+    String testSuiteName = TestUtils.randomAlphaString(10);
+    String testCaseName1 = TestUtils.randomAlphaString(10);
+
+    TestSuite suite = TestSuite.create(testSuiteName).
+        test(testCaseName1, test -> {
+        }).
+        after(test -> {
+          test.fail("the_after_failure");
+        });
+
+    Reporter reporter = Reporter.junitXmlReporter(buffer -> {
+      Document doc = assertDoc(buffer);
+      Element testsuiteElt = doc.getDocumentElement();
+      assertEquals("testsuite", testsuiteElt.getTagName());
+      assertNotNull(testsuiteElt.getAttribute("time"));
+      assertEquals("2", testsuiteElt.getAttribute("tests"));
+      assertEquals("1", testsuiteElt.getAttribute("errors"));
+      assertEquals("0", testsuiteElt.getAttribute("skipped"));
+      assertEquals(testSuiteName, testsuiteElt.getAttribute("name"));
+      NodeList testCases = testsuiteElt.getElementsByTagName("testcase");
+      assertEquals(2, testCases.getLength());
+      Element testCase1Elt = (Element) testCases.item(0);
+      assertEquals(testCaseName1, testCase1Elt.getAttribute("name"));
+      assertNotNull(testCase1Elt.getAttribute("time"));
+      assertEquals(0, testCase1Elt.getElementsByTagName("failure").getLength());
+      Element testCase2Elt = (Element) testCases.item(1);
+      assertEquals(testSuiteName, testCase2Elt.getAttribute("name"));
+      assertNotNull(testCase2Elt.getAttribute("time"));
+      assertEquals(1, testCase2Elt.getElementsByTagName("failure").getLength());
+      Element testCase2FailureElt = (Element) testCase2Elt.getElementsByTagName("failure").item(0);
+      assertEquals("AssertionError", testCase2FailureElt.getAttribute("type"));
+      assertEquals("the_after_failure", testCase2FailureElt.getAttribute("message"));
+      testComplete();
+    });
+    suite.run(reporter);
+    await();
+  }
+
+  @org.junit.Test
+  public void testReportBeforeFailure() {
+    String testSuiteName = TestUtils.randomAlphaString(10);
+    String testCaseName1 = TestUtils.randomAlphaString(10);
+
+    TestSuite suite = TestSuite.create(testSuiteName).
+        test(testCaseName1, test -> {
+        }).
+        before(test -> {
+          test.fail("the_before_failure");
+        });
+
+    Reporter reporter = Reporter.junitXmlReporter(buffer -> {
+      Document doc = assertDoc(buffer);
+      Element testsuiteElt = doc.getDocumentElement();
+      assertEquals("testsuite", testsuiteElt.getTagName());
+      assertNotNull(testsuiteElt.getAttribute("time"));
+      assertEquals("1", testsuiteElt.getAttribute("tests"));
+      assertEquals("1", testsuiteElt.getAttribute("errors"));
+      assertEquals("0", testsuiteElt.getAttribute("skipped"));
+      assertEquals(testSuiteName, testsuiteElt.getAttribute("name"));
+      NodeList testCases = testsuiteElt.getElementsByTagName("testcase");
+      assertEquals(1, testCases.getLength());
+      Element testCase1Elt = (Element) testCases.item(0);
+      assertEquals(testSuiteName, testCase1Elt.getAttribute("name"));
+      assertNotNull(testCase1Elt.getAttribute("time"));
+      assertEquals(1, testCase1Elt.getElementsByTagName("failure").getLength());
+      Element testCase2FailureElt = (Element) testCase1Elt.getElementsByTagName("failure").item(0);
+      assertEquals("AssertionError", testCase2FailureElt.getAttribute("type"));
+      assertEquals("the_before_failure", testCase2FailureElt.getAttribute("message"));
+      testComplete();
+    });
+    suite.run(reporter);
+    await();
   }
 
   @org.junit.Test

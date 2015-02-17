@@ -17,6 +17,7 @@ public class EventBusAdapterImpl implements EventBusAdapter {
 
 
   private Handler<TestCaseReport> testCaseRunnerHandler;
+  private Handler<Throwable> exceptionHandler;
   private Handler<Void> endHandler;
   private Handler<TestSuiteReport> runnerHandler;
   private TestSuiteReport runner;
@@ -43,6 +44,7 @@ public class EventBusAdapterImpl implements EventBusAdapter {
           }
           @Override
           public ReadStream<TestCaseReport> exceptionHandler(Handler<Throwable> handler) {
+            exceptionHandler = handler;
             return this;
           }
           @Override
@@ -88,10 +90,7 @@ public class EventBusAdapterImpl implements EventBusAdapter {
           JsonObject failureJson = body.getJsonObject("failure");
           Failure failure = null;
           if (failureJson != null) {
-            failure = new FailureImpl(
-                failureJson.getBoolean("error"),
-                failureJson.getString("message"),
-                failureJson.getString("stackTrace"));
+            failure = new FailureImpl(failureJson);
           }
           TestResult result = new TestResultImpl(name, body.getInteger("time", 0), failure);
           testCaseHandler.handle(result);
@@ -100,6 +99,16 @@ public class EventBusAdapterImpl implements EventBusAdapter {
         break;
       }
       case "endTestSuite": {
+        JsonObject failureJson = body.getJsonObject("failure");
+        if (failureJson != null && exceptionHandler != null) {
+          FailureImpl failure = new FailureImpl(failureJson);
+          Throwable cause = failure.cause();
+          if (cause == null) {
+            // Best effort
+            cause = new Exception(failureJson.getString("message"));
+          }
+          exceptionHandler.handle(cause);
+        }
         if (endHandler != null) {
           endHandler.handle(null);
         }

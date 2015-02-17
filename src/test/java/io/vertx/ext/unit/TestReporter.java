@@ -10,7 +10,9 @@ import java.util.concurrent.TimeUnit;
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
 class TestReporter implements Reporter {
+
   private final CountDownLatch latch = new CountDownLatch(1);
+  final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<>());
   final List<TestResult> results = Collections.synchronizedList(new ArrayList<>());
 
   @Override
@@ -18,6 +20,7 @@ class TestReporter implements Reporter {
     runner.handler(testExec -> {
       testExec.endHandler(results::add);
     });
+    runner.exceptionHandler(exceptions::add);
     runner.endHandler(done -> {
       latch.countDown();
     });

@@ -7,6 +7,7 @@ import io.vertx.ext.unit.Reporter;
 import io.vertx.ext.unit.TestSuiteReport;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -42,18 +43,26 @@ public class EventBusReporter implements Reporter {
             put("time", result.time());
         if (result.failed()) {
           Failure failure = result.failure();
-          json.put("failure", new JsonObject().
-              put("error", failure.isError()).
-              put("message", failure.message()).
-              put("stackTrace", failure.stackTrace())
-          );
+          json.put("failure", ((FailureImpl) failure).toJson());
+
+
+
+
         }
         producer.write(json);
       });
     });
+    AtomicReference<Throwable> exception = new AtomicReference<>();
+    suiteRunner.exceptionHandler(exception::set);
     suiteRunner.endHandler(done -> {
       starter.run();
-      producer.write(new JsonObject().put("type", "endTestSuite").put("name", suiteRunner.name()));
+      JsonObject msg = new JsonObject().put("type", "endTestSuite").
+          put("name", suiteRunner.name());
+      Throwable error = exception.get();
+      if (error != null) {
+        msg.put("failure", new FailureImpl(exception.get()).toJson());
+      }
+      producer.write(msg);
     });
   }
 }

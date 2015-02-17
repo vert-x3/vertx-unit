@@ -43,6 +43,7 @@ public abstract class TestSuiteTestBase {
     reporter.await();
     assertTrue(sameContext.get());
     assertEquals(1, count.get());
+    assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
     assertEquals("my_test", result.name());
@@ -68,6 +69,7 @@ public abstract class TestSuiteTestBase {
     completeAsync.accept(async);
     reporter.await();
     assertTrue(reporter.completed());
+    assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
     assertEquals("my_test", result.name());
@@ -100,6 +102,7 @@ public abstract class TestSuiteTestBase {
     TestReporter reporter = new TestReporter();
     runSuite.accept(suite, reporter);
     reporter.await();
+    assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
     TestResult result = reporter.results.get(0);
     assertEquals("my_test", result.name());
@@ -131,107 +134,276 @@ public abstract class TestSuiteTestBase {
 
   @Test
   public void runBefore() throws Exception {
-    AtomicInteger count = new AtomicInteger();
-    AtomicBoolean sameContext = new AtomicBoolean();
-    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
-      sameContext.set(checkTest(test));
-      count.compareAndSet(1, 2);
-    }).before(test -> {
-      count.compareAndSet(0, 1);
-    });
-    TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
-    reporter.await();
-    assertEquals(2, count.get());
-    assertTrue(sameContext.get());
+    for (int i = 0;i < 2;i++) {
+      AtomicInteger count = new AtomicInteger();
+      AtomicBoolean sameContext = new AtomicBoolean();
+      int val = i;
+      TestSuite suite = TestSuite.create("my_suite").
+          test("my_test_1", test -> {
+        sameContext.set(checkTest(test));
+        count.compareAndSet(1, 2);
+      }).test("my_test_2", test -> {
+        if (val == 0) {
+          count.compareAndSet(3, 4);
+        } else {
+          count.compareAndSet(2, 3);
+        }
+      });
+      if (i == 0) {
+        suite = suite.beforeEach(test -> {
+          count.incrementAndGet();
+        });
+      } else {
+        suite = suite.before(test -> {
+          count.incrementAndGet();
+        });
+      }
+      TestReporter reporter = new TestReporter();
+      runSuite.accept(suite, reporter);
+      reporter.await();
+      assertEquals(i == 0 ? 4 : 3, count.get());
+      assertTrue(sameContext.get());
+      assertEquals(0, reporter.exceptions.size());
+      assertEquals(2, reporter.results.size());
+      assertEquals("my_test_1", reporter.results.get(0).name());
+      assertTrue(reporter.results.get(0).succeeded());
+      assertEquals("my_test_2", reporter.results.get(1).name());
+      assertTrue(reporter.results.get(1).succeeded());
+    }
   }
 
   @Test
   public void runBeforeWithAsyncCompletion() throws Exception {
-    AtomicInteger count = new AtomicInteger();
-    AtomicBoolean sameContext = new AtomicBoolean();
-    BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
-    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
-      count.compareAndSet(1, 2);
-      sameContext.set(checkTest(test));
-    }).before(test -> {
-      count.compareAndSet(0, 1);
-      queue.add(test.async());
-    });
-    TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
-    Async async = queue.poll(2, TimeUnit.SECONDS);
-    completeAsync.accept(async);
-    reporter.await();
-    assertEquals(2, count.get());
-    assertTrue(sameContext.get());
+    for (int i = 0;i < 2;i++) {
+      AtomicInteger count = new AtomicInteger();
+      AtomicBoolean sameContext = new AtomicBoolean();
+      BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
+      TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
+        count.compareAndSet(1, 2);
+        sameContext.set(checkTest(test));
+      });
+      if (i == 0) {
+        suite = suite.before(test -> {
+          count.compareAndSet(0, 1);
+          queue.add(test.async());
+        });
+      } else {
+        suite = suite.beforeEach(test -> {
+          count.compareAndSet(0, 1);
+          queue.add(test.async());
+        });
+      }
+      TestReporter reporter = new TestReporter();
+      runSuite.accept(suite, reporter);
+      Async async = queue.poll(2, TimeUnit.SECONDS);
+      completeAsync.accept(async);
+      reporter.await();
+      assertEquals(2, count.get());
+      assertTrue(sameContext.get());
+      assertEquals(0, reporter.exceptions.size());
+      assertEquals(1, reporter.results.size());
+      assertEquals("my_test", reporter.results.get(0).name());
+      assertTrue(reporter.results.get(0).succeeded());
+    }
   }
 
   @Test
-  public void runBeforeWithFailure() throws Exception {
-    AtomicInteger count = new AtomicInteger();
-    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
-      count.incrementAndGet();
-    }).before(test -> {
-      throw new RuntimeException();
-    });
-    TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
-    reporter.await();
-    assertEquals(0, count.get());
+  public void failBefore() throws Exception {
+    for (int i = 0;i < 2;i++) {
+      AtomicInteger count = new AtomicInteger();
+      TestSuite suite = TestSuite.create("my_suite").
+          test("my_test_1", test -> {
+            count.incrementAndGet();
+          }).
+          test("my_test_2", test -> {
+            count.incrementAndGet();
+          });
+      if (i == 0) {
+        suite.before(test -> {
+          throw new RuntimeException();
+        });
+      } else {
+        AtomicBoolean failed = new AtomicBoolean();
+        suite.beforeEach(test -> {
+          if (failed.compareAndSet(false, true)) {
+            throw new RuntimeException();
+          }
+        });
+      }
+      TestReporter reporter = new TestReporter();
+      runSuite.accept(suite, reporter);
+      reporter.await();
+      if (i == 0) {
+        assertEquals(0, count.get());
+        assertEquals(0, reporter.results.size());
+        assertEquals(1, reporter.exceptions.size());
+      } else {
+        assertEquals(1, count.get());
+        assertEquals(0, reporter.exceptions.size());
+        assertEquals(2, reporter.results.size());
+        assertEquals("my_test_1", reporter.results.get(0).name());
+        assertTrue(reporter.results.get(0).failed());
+        assertEquals("my_test_2", reporter.results.get(1).name());
+        assertTrue(reporter.results.get(1).succeeded());
+      }
+    }
   }
 
   @Test
   public void runAfterWithAsyncCompletion() throws Exception {
-    AtomicInteger count = new AtomicInteger();
-    BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
-    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
-      count.compareAndSet(0, 1);
-    }).after(test -> {
-      count.compareAndSet(1, 2);
-      queue.add(test.async());
-    });
-    TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
-    Async async = queue.poll(2, TimeUnit.SECONDS);
-    assertFalse(reporter.completed());
-    assertEquals(2, count.get());
-    completeAsync.accept(async);
-    reporter.await();
+    for (int i = 0;i < 2;i++) {
+      AtomicInteger count = new AtomicInteger();
+      BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
+      TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
+        count.compareAndSet(0, 1);
+      });
+      if (i == 0) {
+        suite = suite.after(test -> {
+          count.compareAndSet(1, 2);
+          queue.add(test.async());
+        });
+      } else {
+        suite = suite.afterEach(test -> {
+          count.compareAndSet(1, 2);
+          queue.add(test.async());
+        });
+      }
+      TestReporter reporter = new TestReporter();
+      runSuite.accept(suite, reporter);
+      Async async = queue.poll(2, TimeUnit.SECONDS);
+      assertFalse(reporter.completed());
+      assertEquals(2, count.get());
+      completeAsync.accept(async);
+      reporter.await();
+      assertEquals(0, reporter.exceptions.size());
+      assertEquals(1, reporter.results.size());
+      assertEquals("my_test", reporter.results.get(0).name());
+      assertTrue(reporter.results.get(0).succeeded());
+    }
   }
 
   @Test
   public void runAfter() throws Exception {
-    AtomicInteger count = new AtomicInteger();
-    AtomicBoolean sameContext = new AtomicBoolean();
-    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
-      count.compareAndSet(0, 1);
-    }).after(test -> {
-      sameContext.set(checkTest(test));
-      count.compareAndSet(1, 2);
-    });
-    TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
-    reporter.await();
-    assertEquals(2, count.get());
-    assertTrue(sameContext.get());
+    for (int i = 0;i < 2;i++) {
+      AtomicInteger count = new AtomicInteger();
+      AtomicBoolean sameContext = new AtomicBoolean();
+      int val = i;
+      TestSuite suite = TestSuite.create("my_suite").
+          test("my_test_1", test -> {
+            count.compareAndSet(0, 1);
+          }).
+          test("my_test_2", test -> {
+            if (val == 0) {
+              count.compareAndSet(1, 2);
+            } else {
+              count.compareAndSet(2, 3);
+            }
+          });
+      if (i == 0) {
+        suite = suite.after(test -> {
+          sameContext.set(checkTest(test));
+          count.incrementAndGet();
+        });
+      } else {
+        suite = suite.afterEach(test -> {
+          sameContext.set(checkTest(test));
+          count.incrementAndGet();
+        });
+      }
+      TestReporter reporter = new TestReporter();
+      runSuite.accept(suite, reporter);
+      reporter.await();
+      assertEquals(i == 0 ? 3 : 4, count.get());
+      assertTrue(sameContext.get());
+      assertEquals(0, reporter.exceptions.size());
+      assertEquals(2, reporter.results.size());
+      assertEquals("my_test_1", reporter.results.get(0).name());
+      assertTrue(reporter.results.get(0).succeeded());
+      assertEquals("my_test_2", reporter.results.get(1).name());
+      assertTrue(reporter.results.get(1).succeeded());
+    }
   }
 
   @Test
-  public void runAfterWithFailure() throws Exception {
-    AtomicInteger count = new AtomicInteger();
-    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
-      count.compareAndSet(0, 1);
-      test.fail("the_message");
-    }).after(test -> {
-      count.compareAndSet(1, 2);
-    });
-    TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
-    reporter.await();
-    assertEquals(2, count.get());
-    assertTrue(reporter.results.get(0).failed());
-    assertEquals("the_message", reporter.results.get(0).failure().message());
+  public void afterIsRunAfterFailure() throws Exception {
+    for (int i = 0;i < 2;i++) {
+      AtomicInteger count = new AtomicInteger();
+      TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
+        count.compareAndSet(0, 1);
+        test.fail("the_message");
+      });
+      if (i == 0) {
+        suite = suite.after(test -> {
+          count.compareAndSet(1, 2);
+        });
+      } else {
+        suite = suite.afterEach(test -> {
+          count.compareAndSet(1, 2);
+        });
+      }
+      TestReporter reporter = new TestReporter();
+      runSuite.accept(suite, reporter);
+      reporter.await();
+      assertEquals(2, count.get());
+      assertEquals(0, reporter.exceptions.size());
+      assertEquals(1, reporter.results.size());
+      assertEquals("my_test", reporter.results.get(0).name());
+      assertTrue(reporter.results.get(0).failed());
+      assertEquals("the_message", reporter.results.get(0).failure().message());
+    }
+  }
+
+  @Test
+  public void failAfter() throws Exception {
+    for (int i = 0;i < 2;i++) {
+      AtomicInteger count = new AtomicInteger();
+      int val = i;
+      TestSuite suite = TestSuite.create("my_suite").
+          test("my_test_1", test -> {
+            count.compareAndSet(0, 1);
+          }).
+          test("my_test_2", test -> {
+            if (val == 0) {
+              count.compareAndSet(1, 2);
+            } else {
+              count.compareAndSet(2, 3);
+            }
+          });
+      if (i == 0) {
+        suite = suite.after(test -> {
+          count.incrementAndGet();
+          test.fail("the_message");
+        });
+      } else {
+        AtomicBoolean failed = new AtomicBoolean();
+        suite = suite.afterEach(test -> {
+          count.incrementAndGet();
+          if (failed.compareAndSet(false, true)) {
+            test.fail("the_message");
+          }
+        });
+      }
+      TestReporter reporter = new TestReporter();
+      runSuite.accept(suite, reporter);
+      reporter.await();
+      if (i == 0) {
+        assertEquals(3, count.get());
+        assertEquals(1, reporter.exceptions.size());
+        assertEquals(2, reporter.results.size());
+        assertEquals("my_test_1", reporter.results.get(0).name());
+        assertTrue(reporter.results.get(0).succeeded());
+        assertEquals("my_test_2", reporter.results.get(1).name());
+        assertTrue(reporter.results.get(1).succeeded());
+      } else {
+        assertEquals(4, count.get());
+        assertEquals(0, reporter.exceptions.size());
+        assertEquals(2, reporter.results.size());
+        assertEquals("my_test_1", reporter.results.get(0).name());
+        assertTrue(reporter.results.get(0).failed());
+        assertEquals("my_test_2", reporter.results.get(1).name());
+        assertTrue(reporter.results.get(1).succeeded());
+      }
+    }
   }
 
   @Test
@@ -253,6 +425,7 @@ public abstract class TestSuiteTestBase {
     TestReporter reporter = new TestReporter();
     runSuite.accept(suite, reporter);
     reporter.await();
+    assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
     assertEquals("my_test", reporter.results.get(0).name());
     assertFalse(reporter.results.get(0).failed());

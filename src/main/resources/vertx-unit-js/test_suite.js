@@ -36,14 +36,30 @@ var TestSuite = function(j_val) {
   /**
 
    @public
-   @param before {function} 
+   @param handler {function} 
    @return {TestSuite}
    */
-  this.before = function(before) {
+  this.before = function(handler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.before(function(jVal) {
-      before(new Test(jVal));
+      handler(new Test(jVal));
+    });
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param handler {function} 
+   @return {TestSuite}
+   */
+  this.beforeEach = function(handler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_testSuite.beforeEach(function(jVal) {
+      handler(new Test(jVal));
     });
       return that;
     } else utils.invalidArgs();
@@ -59,6 +75,22 @@ var TestSuite = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.after(function(jVal) {
+      callback(new Test(jVal));
+    });
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param callback {function} 
+   @return {TestSuite}
+   */
+  this.afterEach = function(callback) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_testSuite.afterEach(function(jVal) {
       callback(new Test(jVal));
     });
       return that;

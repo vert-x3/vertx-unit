@@ -15,14 +15,21 @@ class TestSuiteReportImpl implements TestSuiteReport {
   private final String name;
   private final Handler<Test> before;
   private final Handler<Test> after;
+  private final Handler<Test> beforeEach;
+  private final Handler<Test> afterEach;
   private TestCaseImpl[] tests;
   private Handler<Void> endHandler;
+  private Handler<Throwable> exceptionHandler;
   private Handler<TestCaseReport> handler;
 
-  TestSuiteReportImpl(String name, Handler<Test> before, TestCaseImpl[] tests, Handler<Test> after) {
+  TestSuiteReportImpl(String name, Handler<Test> before, Handler<Test> after,
+                      Handler<Test> beforeEach, Handler<Test> afterEach,
+                      TestCaseImpl[] tests) {
     this.name = name;
     this.before = before;
     this.after = after;
+    this.beforeEach = beforeEach;
+    this.afterEach = afterEach;
     this.tests = tests;
   }
 
@@ -33,6 +40,7 @@ class TestSuiteReportImpl implements TestSuiteReport {
 
   @Override
   public ReadStream<TestCaseReport> exceptionHandler(Handler<Throwable> handler) {
+    exceptionHandler = handler;
     return this;
   }
 
@@ -58,11 +66,11 @@ class TestSuiteReportImpl implements TestSuiteReport {
     return this;
   }
 
-  private Task<Void> build(TestCaseImpl[] tests, int index) {
+  private Task<Result> build(TestCaseImpl[] tests, int index, Task<Result> last) {
     if (tests.length > index) {
-      Task<?> next = build(tests, index + 1);
+      Task<?> next = build(tests, index + 1, last);
       TestCaseImpl test = tests[index];
-      TestCaseReportImpl runner = new TestCaseReportImpl(test.desc, before, test.handler, after, next);
+      TestCaseReportImpl runner = new TestCaseReportImpl(test.desc, beforeEach, test.handler, afterEach, next);
       return (v, context) -> {
         if (handler != null) {
           handler.handle(runner);
@@ -70,16 +78,40 @@ class TestSuiteReportImpl implements TestSuiteReport {
         runner.execute(null, context);
       };
     } else {
-      return (v, context) -> {
-        if (endHandler != null) {
-          endHandler.handle(null);
-        }
-      };
+      return last;
     }
   }
 
   private Task<?> build() {
-    return build(tests, 0);
+    Task<Result> last = (result, context) -> {
+      if (result != null && result.failure != null && exceptionHandler != null) {
+        exceptionHandler.handle(result.failure);
+      }
+      if (endHandler != null) {
+        endHandler.handle(null);
+      }
+    };
+    if (after != null) {
+      Task<Result> next = last;
+      last = new InvokeTask(after, next::execute);
+    }
+    last = build(tests, 0, last);
+    if (before != null) {
+      Task<?> next = last;
+      last = new InvokeTask(before, (result,context) -> {
+        if (result.failure == null) {
+          context.run(next, null);
+        } else {
+          if (exceptionHandler != null) {
+            exceptionHandler.handle(result.failure);
+          }
+          if (endHandler != null) {
+            endHandler.handle(null);
+          }
+        }
+      });
+    }
+    return last;
   }
 
   // For unit testing

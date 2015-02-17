@@ -48,6 +48,10 @@ public class JunitXmlReporter implements Reporter {
       }
       time.addAndGet(result.time());
     }));
+    suite.exceptionHandler(err -> {
+      results.add(new TestResultImpl(suite.name(), 0, err));
+      errors.incrementAndGet();
+    });
     suite.endHandler(done -> {
       // Create xml and send it
       try {
