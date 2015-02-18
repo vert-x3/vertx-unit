@@ -4,14 +4,15 @@ import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.file.FileProps;
 import io.vertx.core.file.FileSystem;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.impl.JunitXmlReporter;
-import io.vertx.ext.unit.impl.SimpleReporter;
+import io.vertx.ext.unit.report.ReportOptions;
+import io.vertx.ext.unit.report.impl.JunitXmlFormatter;
+import io.vertx.ext.unit.report.Reporter;
+import io.vertx.ext.unit.report.impl.SimpleFormatter;
 import io.vertx.test.core.VertxTestBase;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 
 /**
@@ -48,7 +49,7 @@ public class ReportOptionsTest extends VertxTestBase {
 
   private String testLog(String name, Runnable runnable) {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    StreamHandler handler = new StreamHandler(buffer, new SimpleFormatter());
+    StreamHandler handler = new StreamHandler(buffer, new java.util.logging.SimpleFormatter());
     Logger logger = Logger.getLogger(name);
     logger.addHandler(handler);
     try {
@@ -65,9 +66,9 @@ public class ReportOptionsTest extends VertxTestBase {
   @org.junit.Test
   public void testDefaultOptions() {
     String s = testSystemOut(() -> {
-      Reporter reporter = Reporter.create(vertx, new ReportOptions());
-      assertTrue(reporter instanceof SimpleReporter);
-      suite.run(reporter);
+      Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions());
+      assertTrue(reporter instanceof SimpleFormatter);
+      suite.run(reporter.asHandler());
     });
     assertTrue(s.length() > 0);
   }
@@ -75,9 +76,9 @@ public class ReportOptionsTest extends VertxTestBase {
   @org.junit.Test
   public void testToConsole() {
     String s = testSystemOut(() -> {
-      Reporter reporter = Reporter.create(vertx, new ReportOptions().setTo("console"));
-      assertTrue(reporter instanceof SimpleReporter);
-      suite.run(reporter);
+      Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("console"));
+      assertTrue(reporter instanceof SimpleFormatter);
+      suite.run(reporter.asHandler());
     });
     assertTrue(s.length() > 0);
   }
@@ -85,9 +86,9 @@ public class ReportOptionsTest extends VertxTestBase {
   @org.junit.Test
   public void testToLog() {
     String s = testLog("mylogger", () -> {
-      Reporter reporter = Reporter.create(vertx, new ReportOptions().setTo("log").setAt("mylogger"));
-      assertTrue(reporter instanceof SimpleReporter);
-      suite.run(reporter);
+      Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("log").setAt("mylogger"));
+      assertTrue(reporter instanceof SimpleFormatter);
+      suite.run(reporter.asHandler());
     });
     assertTrue(s.length() > 0);
   }
@@ -97,8 +98,8 @@ public class ReportOptionsTest extends VertxTestBase {
     FileSystem fs = vertx.fileSystem();
     String file = "target/report.txt";
     assertFalse(fs.existsBlocking(file));
-    Reporter reporter = Reporter.create(vertx, new ReportOptions().setTo("file").setAt(file));
-    suite.run(reporter);
+    Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("file").setAt(file));
+    suite.run(reporter.asHandler());
     assertTrue(fs.existsBlocking(file));
     FileProps props = fs.propsBlocking(file);
     assertTrue(props.size() > 0);
@@ -106,7 +107,7 @@ public class ReportOptionsTest extends VertxTestBase {
 
   @org.junit.Test
   public void testToEventBus() {
-    Reporter reporter = Reporter.create(vertx, new ReportOptions().setTo("bus").setAt("the_address"));
+    Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("bus").setAt("the_address"));
     MessageConsumer<JsonObject> consumer = vertx.eventBus().<JsonObject>consumer("the_address");
     consumer.handler(msg -> {
       if (msg.body().getString("type").equals("endTestSuite")) {
@@ -116,20 +117,20 @@ public class ReportOptionsTest extends VertxTestBase {
     });
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
-      suite.run(reporter);
+      suite.run(reporter.asHandler());
     });
     await();
   }
 
   @org.junit.Test
   public void testSimpleFormat() {
-    Reporter reporter = Reporter.create(vertx, new ReportOptions().setFormat("simple"));
-    assertTrue(reporter instanceof SimpleReporter);
+    Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setFormat("simple"));
+    assertTrue(reporter instanceof SimpleFormatter);
   }
 
   @org.junit.Test
   public void testJunitFormat() {
-    Reporter reporter = Reporter.create(vertx, new ReportOptions().setFormat("junit"));
-    assertTrue(reporter instanceof JunitXmlReporter);
+    Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setFormat("junit"));
+    assertTrue(reporter instanceof JunitXmlFormatter);
   }
 }

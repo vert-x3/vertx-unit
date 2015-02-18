@@ -19,9 +19,9 @@ package io.vertx.rxjava.ext.unit;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
-import io.vertx.ext.unit.ReportOptions;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.core.Handler;
+import io.vertx.ext.unit.report.ReportOptions;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

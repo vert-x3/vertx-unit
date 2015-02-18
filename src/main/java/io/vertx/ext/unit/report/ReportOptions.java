@@ -1,4 +1,4 @@
-package io.vertx.ext.unit;
+package io.vertx.ext.unit.report;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.Fluent;

@@ -23,8 +23,8 @@ var Test = require('vertx-unit-js/test');
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
 var JTestSuite = io.vertx.ext.unit.TestSuite;
-var ReportOptions = io.vertx.ext.unit.ReportOptions;
-var ReportOptions = io.vertx.ext.unit.ReportOptions;
+var ReportOptions = io.vertx.ext.unit.report.ReportOptions;
+var ReportOptions = io.vertx.ext.unit.report.ReportOptions;
 
 /**
 

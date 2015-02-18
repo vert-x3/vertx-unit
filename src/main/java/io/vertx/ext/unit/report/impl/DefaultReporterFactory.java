@@ -1,17 +1,15 @@
-package io.vertx.ext.unit;
+package io.vertx.ext.unit.report.impl;
 
-import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.eventbus.MessageProducer;
 import io.vertx.core.file.AsyncFile;
 import io.vertx.core.file.OpenOptions;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.impl.LoggerFactory;
-import io.vertx.ext.unit.impl.SimpleReporter;
-import io.vertx.ext.unit.impl.EventBusReporter;
-import io.vertx.ext.unit.impl.JunitXmlReporter;
+import io.vertx.ext.unit.report.ReportOptions;
+import io.vertx.ext.unit.report.Reporter;
+import io.vertx.ext.unit.report.ReporterFactory;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,14 +20,10 @@ import java.util.function.Consumer;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@VertxGen
-public interface Reporter extends Handler<TestSuiteReport> {
+public class DefaultReporterFactory implements ReporterFactory {
 
-  static Reporter create(ReportOptions options) {
-    return create(null, options);
-  }
-
-  static Reporter create(Vertx vertx, ReportOptions options) {
+  @Override
+  public Reporter reporter(Vertx vertx, ReportOptions options) {
     String to = options.getTo().toLowerCase();
     String at = options.getAt();
     if (to.equals("bus")) {
@@ -39,10 +33,10 @@ public interface Reporter extends Handler<TestSuiteReport> {
       if (vertx == null) {
         throw new IllegalArgumentException("No vertx provided for event bus reporting");
       }
-      return eventBusReporter(vertx.eventBus().publisher(at));
+      return new EventBusReporter(vertx, at);
     } else {
-      final Consumer<String> infoHandler;
-      BiConsumer<String, Throwable> errorHandler;
+      Consumer<Buffer> infoHandler;
+      BiConsumer<Buffer, Throwable> errorHandler;
       Handler<Void> endHandler;
       switch (to) {
         case "console":
@@ -71,7 +65,7 @@ public interface Reporter extends Handler<TestSuiteReport> {
             throw new IllegalArgumentException("No vertx provided for filesystem reporting");
           }
           AsyncFile file = vertx.fileSystem().openBlocking(path, new OpenOptions());
-          infoHandler = msg -> file.write(Buffer.buffer(msg).appendString(System.lineSeparator()));
+          infoHandler = msg -> file.write(msg.appendString(System.lineSeparator()));
           PrintWriter writer = new PrintWriter(new Writer() {
             public void write(char[] cbuf, int off, int len) throws IOException {
               file.write(Buffer.buffer(new String(cbuf, off, len)));
@@ -92,10 +86,10 @@ public interface Reporter extends Handler<TestSuiteReport> {
       String format = options.getFormat();
       switch (format.toLowerCase()) {
         case "simple":
-          return new SimpleReporter(infoHandler, errorHandler, endHandler);
+          return new SimpleFormatter(infoHandler, errorHandler, endHandler);
         case "junit":
-          return new JunitXmlReporter((String s) -> {
-            infoHandler.accept(s);
+          return new JunitXmlFormatter((Buffer buffer) -> {
+            infoHandler.accept(buffer);
             if (endHandler != null) {
               endHandler.handle(null);
             }
@@ -104,25 +98,5 @@ public interface Reporter extends Handler<TestSuiteReport> {
           throw new IllegalArgumentException("Invalid format <" + format + ">");
       }
     }
-  }
-
-  static Reporter logReporter(String loggerName) {
-    return new SimpleReporter(LoggerFactory.getLogger(loggerName));
-  }
-
-  static Reporter consoleReporter() {
-    return create(null, new ReportOptions());
-  }
-
-  static Reporter streamReporter(Handler<Buffer> stream) {
-    return new SimpleReporter(stream, null);
-  }
-
-  static Reporter eventBusReporter(MessageProducer<?> producer) {
-    return new EventBusReporter((MessageProducer) producer);
-  }
-
-  static Reporter junitXmlReporter(Handler<Buffer> output) {
-    return new JunitXmlReporter(output);
   }
 }

@@ -3,6 +3,9 @@ package io.vertx.ext.unit;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.impl.EventBusAdapterImpl;
+import io.vertx.ext.unit.report.ReportOptions;
+import io.vertx.ext.unit.report.impl.JunitXmlFormatter;
+import io.vertx.ext.unit.report.Reporter;
 import io.vertx.test.core.AsyncTestBase;
 import io.vertx.test.core.TestUtils;
 import org.w3c.dom.Document;
@@ -52,7 +55,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
         test(testCaseName3, test -> { throw new RuntimeException("the_error_failure"); }).
         test(testCaseName4, test -> { throw new RuntimeException(); });
 
-    Reporter reporter = Reporter.junitXmlReporter(buffer -> {
+    JunitXmlFormatter reporter = new JunitXmlFormatter(buffer -> {
       Document doc = assertDoc(buffer);
       Element testsuiteElt = doc.getDocumentElement();
       assertEquals("testsuite", testsuiteElt.getTagName());
@@ -91,7 +94,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       assertEquals("", testCase4FailureElt.getAttribute("message"));
       testComplete();
     });
-    suite.run(reporter);
+    suite.run(reporter.asHandler());
     await();
 
   }
@@ -108,7 +111,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
           test.fail("the_after_failure");
         });
 
-    Reporter reporter = Reporter.junitXmlReporter(buffer -> {
+    JunitXmlFormatter reporter = new JunitXmlFormatter(buffer -> {
       Document doc = assertDoc(buffer);
       Element testsuiteElt = doc.getDocumentElement();
       assertEquals("testsuite", testsuiteElt.getTagName());
@@ -132,7 +135,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       assertEquals("the_after_failure", testCase2FailureElt.getAttribute("message"));
       testComplete();
     });
-    suite.run(reporter);
+    suite.run(reporter.asHandler());
     await();
   }
 
@@ -148,7 +151,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
           test.fail("the_before_failure");
         });
 
-    Reporter reporter = Reporter.junitXmlReporter(buffer -> {
+    JunitXmlFormatter reporter = new JunitXmlFormatter(buffer -> {
       Document doc = assertDoc(buffer);
       Element testsuiteElt = doc.getDocumentElement();
       assertEquals("testsuite", testsuiteElt.getTagName());
@@ -168,7 +171,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       assertEquals("the_before_failure", testCase2FailureElt.getAttribute("message"));
       testComplete();
     });
-    suite.run(reporter);
+    suite.run(reporter.asHandler());
     await();
   }
 
@@ -176,17 +179,17 @@ public class JunitXmlReporterTest extends AsyncTestBase {
   public void testFromEventBus() {
     EventBusAdapter runner = new EventBusAdapterImpl();
     Vertx vertx = Vertx.vertx();
-    runner.handler(Reporter.junitXmlReporter(buffer -> {
+    runner.handler(new JunitXmlFormatter(buffer -> {
       Document doc = assertDoc(buffer);
       Element testsuiteElt = doc.getDocumentElement();
       assertEquals("testsuite", testsuiteElt.getTagName());
       NodeList testCases = testsuiteElt.getElementsByTagName("testcase");
       assertEquals(1, testCases.getLength());
       testComplete();
-    }));
+    }).asHandler());
     vertx.eventBus().consumer("foobar", runner);
     TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {});
-    suite.run(vertx, Reporter.eventBusReporter(vertx.eventBus().publisher("foobar")));
+    suite.run(vertx, Reporter.reporter(vertx, new ReportOptions().setTo("bus").setAt("foobar")).asHandler());
     await();
   }
 

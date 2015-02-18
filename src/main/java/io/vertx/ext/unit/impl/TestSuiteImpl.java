@@ -2,13 +2,13 @@ package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.ext.unit.ReportOptions;
-import io.vertx.ext.unit.Reporter;
+import io.vertx.ext.unit.report.ReportOptions;
 import io.vertx.ext.unit.TestSuite;
 import io.vertx.ext.unit.TestSuiteReport;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestResult;
 import io.vertx.ext.unit.TestSuiteRunner;
+import io.vertx.ext.unit.report.Reporter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,12 +86,12 @@ public class TestSuiteImpl implements TestSuite {
 
   @Override
   public void run(ReportOptions config) {
-    run(Reporter.create(null, config));
+    run(Reporter.reporter(null, config).asHandler());
   }
 
   @Override
   public void run(Vertx vertx, ReportOptions config) {
-    run(vertx, Reporter.create(vertx, config));
+    run(vertx, Reporter.reporter(vertx, config).asHandler());
   }
 
   @Override

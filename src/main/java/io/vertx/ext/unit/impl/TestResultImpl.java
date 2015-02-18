@@ -6,19 +6,19 @@ import io.vertx.ext.unit.TestResult;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-class TestResultImpl implements TestResult {
+public class TestResultImpl implements TestResult {
 
   private final String name;
   private final long time;
   private final Failure failure;
 
-  TestResultImpl(String name, long time, Failure failure) {
+  public TestResultImpl(String name, long time, Failure failure) {
     this.name = name;
     this.time = time;
     this.failure = failure;
   }
 
-  TestResultImpl(String name, long time, Throwable failure) {
+  public TestResultImpl(String name, long time, Throwable failure) {
     this(name, time, failure != null ? new FailureImpl(failure) : null);
   }
 

@@ -6,6 +6,7 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.impl.TestSuiteImpl;
+import io.vertx.ext.unit.report.ReportOptions;
 
 import java.util.concurrent.TimeUnit;
 

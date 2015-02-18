@@ -39,7 +39,7 @@ public abstract class TestSuiteTestBase {
           count.compareAndSet(0, 1);
         });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
+    runSuite.accept(suite, reporter.asHandler());
     reporter.await();
     assertTrue(sameContext.get());
     assertEquals(1, count.get());
@@ -62,7 +62,7 @@ public abstract class TestSuiteTestBase {
           queue.add(test.async());
         });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
+    runSuite.accept(suite, reporter.asHandler());
     Async async = queue.poll(2, TimeUnit.SECONDS);
     assertEquals(1, count.get());
     assertFalse(reporter.completed());
@@ -105,7 +105,7 @@ public abstract class TestSuiteTestBase {
           }
         });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
+    runSuite.accept(suite, reporter.asHandler());
     reporter.await();
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
@@ -126,7 +126,7 @@ public abstract class TestSuiteTestBase {
       queue.add(test);
     });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
+    runSuite.accept(suite, reporter.asHandler());
     assertFalse(reporter.completed());
     io.vertx.ext.unit.Test test = queue.poll(2, TimeUnit.SECONDS);
     try {
@@ -164,7 +164,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      runSuite.accept(suite, reporter.asHandler());
       reporter.await();
       assertEquals(i == 0 ? 4 : 3, count.get());
       assertTrue(sameContext.get());
@@ -199,7 +199,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      runSuite.accept(suite, reporter.asHandler());
       Async async = queue.poll(2, TimeUnit.SECONDS);
       completeAsync.accept(async);
       reporter.await();
@@ -236,7 +236,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      runSuite.accept(suite, reporter.asHandler());
       reporter.await();
       if (i == 0) {
         assertEquals(0, count.get());
@@ -274,7 +274,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      runSuite.accept(suite, reporter.asHandler());
       Async async = queue.poll(2, TimeUnit.SECONDS);
       assertFalse(reporter.completed());
       assertEquals(2, count.get());
@@ -316,7 +316,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      runSuite.accept(suite, reporter.asHandler());
       reporter.await();
       assertEquals(i == 0 ? 3 : 4, count.get());
       assertTrue(sameContext.get());
@@ -347,7 +347,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      runSuite.accept(suite, reporter.asHandler());
       reporter.await();
       assertEquals(2, count.get());
       assertEquals(0, reporter.exceptions.size());
@@ -389,7 +389,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      runSuite.accept(suite, reporter.asHandler());
       reporter.await();
       if (i == 0) {
         assertEquals(3, count.get());
@@ -428,7 +428,7 @@ public abstract class TestSuiteTestBase {
       }.start();
     });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
+    runSuite.accept(suite, reporter.asHandler());
     reporter.await();
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
