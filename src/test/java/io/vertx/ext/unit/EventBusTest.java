@@ -43,7 +43,7 @@ public class EventBusTest extends VertxTestBase {
         case 2:
           assertEquals("endTestCase", type);
           assertEquals(testCaseName1, body.getString("name"));
-          assertTrue(body.getInteger("time") > 10);
+          assertTrue(body.getInteger("time") >= 10);
           assertNull(testCaseName1, body.getJsonObject("failure"));
           break;
         case 3:
@@ -86,16 +86,19 @@ public class EventBusTest extends VertxTestBase {
       }
       status.incrementAndGet();
     });
-    TestSuite.create(testSuiteName).test(testCaseName1, test -> {
-      try {
-        Thread.sleep(10);
-      } catch (InterruptedException ignore) {
-      }
-    }).test(testCaseName2, test -> {
-      test.fail("the_" + testCaseName2 + "_failure");
-    }).test(testCaseName3, test -> {
-      throw new RuntimeException();
-    }).run(vertx, Reporter.eventBusReporter(vertx.eventBus().sender(address)));
+    consumer.completionHandler(ar -> {
+      assertTrue(ar.succeeded());
+      TestSuite.create(testSuiteName).test(testCaseName1, test -> {
+        try {
+          Thread.sleep(10);
+        } catch (InterruptedException ignore) {
+        }
+      }).test(testCaseName2, test -> {
+        test.fail("the_" + testCaseName2 + "_failure");
+      }).test(testCaseName3, test -> {
+        throw new RuntimeException();
+      }).run(vertx, Reporter.eventBusReporter(vertx.eventBus().sender(address)));
+    });
     await();
   }
 
@@ -141,11 +144,14 @@ public class EventBusTest extends VertxTestBase {
       }
       status.incrementAndGet();
     });
-    TestSuite.create(testSuiteName).test(testCaseName, test -> {
-      // Ok
-    }).after(test -> {
-      throw new RuntimeException("the_after_failure");
-    }).run(vertx, Reporter.eventBusReporter(vertx.eventBus().sender(address)));
+    consumer.completionHandler(ar -> {
+      assertTrue(ar.succeeded());
+      TestSuite.create(testSuiteName).test(testCaseName, test -> {
+        // Ok
+      }).after(test -> {
+        throw new RuntimeException("the_after_failure");
+      }).run(vertx, Reporter.eventBusReporter(vertx.eventBus().sender(address)));
+    });
     await();
   }
 
@@ -199,18 +205,21 @@ public class EventBusTest extends VertxTestBase {
         testComplete();
       });
     });
-    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
-    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName1));
-    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName1).put("time", 10));
-    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName2));
-    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName2).put("time", 5).
-        put("failure", new FailureImpl(
-            false, "the_failure_message", "the_failure_stackTrace", new IOException()).toJson()));
-    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName3));
-    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName3).put("time", 7).
-        put("failure", new FailureImpl(
-            false, null, "the_failure_stackTrace", new IOException()).toJson()));
-    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestSuite"));
+    consumer.completionHandler(ar -> {
+      assertTrue(ar.succeeded());
+      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
+      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName1));
+      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName1).put("time", 10));
+      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName2));
+      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName2).put("time", 5).
+          put("failure", new FailureImpl(
+              false, "the_failure_message", "the_failure_stackTrace", new IOException()).toJson()));
+      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName3));
+      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName3).put("time", 7).
+          put("failure", new FailureImpl(
+              false, null, "the_failure_stackTrace", new IOException()).toJson()));
+      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestSuite"));
+    });
     await();
   }
 
@@ -246,12 +255,15 @@ public class EventBusTest extends VertxTestBase {
         testComplete();
       });
     });
-    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
-    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName));
-    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName));
-    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestSuite").
-        put("failure", new FailureImpl(
-            false, "the_failure_message", "the_failure_stackTrace", new IOException()).toJson()));
+    consumer.completionHandler(ar -> {
+      assertTrue(ar.succeeded());
+      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
+      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName));
+      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName));
+      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestSuite").
+          put("failure", new FailureImpl(
+              false, "the_failure_message", "the_failure_stackTrace", new IOException()).toJson()));
+    });
     await();
   }
 
@@ -265,9 +277,12 @@ public class EventBusTest extends VertxTestBase {
     TestReporter testReporter = new TestReporter();
     slurper.handler(testReporter);
     Reporter reporter = Reporter.eventBusReporter(vertx.eventBus().publisher("the-address"));
-    TestSuite suite = TestSuite.create(testSuiteName).
-        test(testCaseName1, test -> {}).test(testCaseName2, test -> test.fail("the_failure"));
-    suite.run(reporter);
+    consumer.completionHandler(ar -> {
+      assertTrue(ar.succeeded());
+      TestSuite suite = TestSuite.create(testSuiteName).
+          test(testCaseName1, test -> {}).test(testCaseName2, test -> test.fail("the_failure"));
+      suite.run(reporter);
+    });
     testReporter.await();
     assertEquals(0, testReporter.exceptions.size());
     assertEquals(2, testReporter.results.size());
@@ -292,14 +307,17 @@ public class EventBusTest extends VertxTestBase {
     slurper.handler(testReporter);
     RuntimeException error = new RuntimeException("the_runtime_exception");
     Reporter reporter = Reporter.eventBusReporter(vertx.eventBus().sender(address));
-    TestSuite suite = TestSuite.create(testSuiteName).
-        test(testCaseName, test -> {
-          try {
-            Thread.sleep(10);
-          } catch (InterruptedException ignore) {
-          }
-        }).after(test -> { throw error; });
-    suite.run(reporter);
+    consumer.completionHandler(ar -> {
+      assertTrue(ar.succeeded());
+      TestSuite suite = TestSuite.create(testSuiteName).
+          test(testCaseName, test -> {
+            try {
+              Thread.sleep(10);
+            } catch (InterruptedException ignore) {
+            }
+          }).after(test -> { throw error; });
+      suite.run(reporter);
+    });
     testReporter.await();
     assertEquals(1, testReporter.results.size());
     TestResult result1 = testReporter.results.get(0);
