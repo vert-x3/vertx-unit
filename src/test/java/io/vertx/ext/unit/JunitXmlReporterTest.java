@@ -3,9 +3,9 @@ package io.vertx.ext.unit;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.impl.EventBusAdapterImpl;
+import io.vertx.ext.unit.impl.ReporterHandler;
 import io.vertx.ext.unit.report.ReportOptions;
 import io.vertx.ext.unit.report.impl.JunitXmlFormatter;
-import io.vertx.ext.unit.report.Reporter;
 import io.vertx.test.core.AsyncTestBase;
 import io.vertx.test.core.TestUtils;
 import org.w3c.dom.Document;
@@ -94,7 +94,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       assertEquals("", testCase4FailureElt.getAttribute("message"));
       testComplete();
     });
-    suite.run(reporter.asHandler());
+    suite.run(new ReporterHandler(reporter));
     await();
 
   }
@@ -135,7 +135,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       assertEquals("the_after_failure", testCase2FailureElt.getAttribute("message"));
       testComplete();
     });
-    suite.run(reporter.asHandler());
+    suite.run(new ReporterHandler(reporter));
     await();
   }
 
@@ -171,7 +171,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       assertEquals("the_before_failure", testCase2FailureElt.getAttribute("message"));
       testComplete();
     });
-    suite.run(reporter.asHandler());
+    suite.run(new ReporterHandler(reporter));
     await();
   }
 
@@ -179,17 +179,18 @@ public class JunitXmlReporterTest extends AsyncTestBase {
   public void testFromEventBus() {
     EventBusAdapter runner = new EventBusAdapterImpl();
     Vertx vertx = Vertx.vertx();
-    runner.handler(new JunitXmlFormatter(buffer -> {
+    JunitXmlFormatter reporter = new JunitXmlFormatter(buffer -> {
       Document doc = assertDoc(buffer);
       Element testsuiteElt = doc.getDocumentElement();
       assertEquals("testsuite", testsuiteElt.getTagName());
       NodeList testCases = testsuiteElt.getElementsByTagName("testcase");
       assertEquals(1, testCases.getLength());
       testComplete();
-    }).asHandler());
+    });
+    runner.handler(new ReporterHandler(reporter));
     vertx.eventBus().consumer("foobar", runner);
     TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {});
-    suite.run(vertx, Reporter.reporter(vertx, new ReportOptions().setTo("bus").setAt("foobar")).asHandler());
+    suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt("foobar")));
     await();
   }
 

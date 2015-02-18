@@ -43,9 +43,9 @@ public interface TestSuite {
 
   void run(Vertx vertx, Handler<TestSuiteReport> reporter);
 
-  void run(ReportOptions config);
+  void run(TestOptions options);
 
-  void run(Vertx vertx, ReportOptions config);
+  void run(Vertx vertx, TestOptions options);
 
   TestSuiteRunner runner(Vertx vertx);
 

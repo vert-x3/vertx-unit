@@ -29,6 +29,7 @@ public interface Reporter<R> {
 
   void reportEndTestSuite(R report, String name, Throwable err);
 
+/*
   default Handler<TestSuiteReport> asHandler() {
     return testsuite -> {
       R report = createReport();
@@ -44,4 +45,5 @@ public interface Reporter<R> {
       });
     };
   }
+*/
 }

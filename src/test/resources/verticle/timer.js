@@ -7,6 +7,4 @@ var suite = TestSuite.create("time_suite").test("timer_test", function(test) {
     });
 });
 
-suite.run(vertx, function(runner) {
-    vertx.eventBus().send("test", "done");
-});
+suite.run(vertx, { reporters : [{ to: "bus", at: "test" }] });

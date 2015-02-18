@@ -9,8 +9,4 @@ def suite = TestSuite.create("my_suite").test "timer_test", { test ->
   }
 }
 
-def runner = suite.run(vertx) { runner ->
-  runner.endHandler {
-    vertx.eventBus().send("test", "done")
-  }
-}
+suite.run(vertx, [reporters:[[to:"bus",at:"test"]]]);

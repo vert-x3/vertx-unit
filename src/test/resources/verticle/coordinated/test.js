@@ -16,8 +16,4 @@ var suite = TestSuite.create("my_suite").
         }).end();
     });
 
-suite.run(function(runner) {
-    runner.endHandler(function() {
-        vertx.eventBus().send("test", "done");
-    });
-});
+suite.run(vertx, { reporters : [{ to: "bus", at: "test" }] });

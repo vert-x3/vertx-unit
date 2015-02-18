@@ -23,8 +23,8 @@ var Test = require('vertx-unit-js/test');
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
 var JTestSuite = io.vertx.ext.unit.TestSuite;
-var ReportOptions = io.vertx.ext.unit.report.ReportOptions;
-var ReportOptions = io.vertx.ext.unit.report.ReportOptions;
+var TestOptions = io.vertx.ext.unit.TestOptions;
+var TestOptions = io.vertx.ext.unit.TestOptions;
 
 /**
 
@@ -120,7 +120,7 @@ var TestSuite = function(j_val) {
 
    @public
    @param vertx {Vertx} 
-   @param config {Object} 
+   @param options {Object} 
    */
   this.run = function() {
     var __args = arguments;
@@ -133,13 +133,13 @@ var TestSuite = function(j_val) {
       __args[0](new TestSuiteReport(jVal));
     });
     }  else if (__args.length === 1 && typeof __args[0] === 'object') {
-      j_testSuite.run(__args[0] != null ? new ReportOptions(new JsonObject(JSON.stringify(__args[0]))) : null);
+      j_testSuite.run(__args[0] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[0]))) : null);
     }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'function') {
       j_testSuite.run(__args[0]._jdel, function(jVal) {
       __args[1](new TestSuiteReport(jVal));
     });
     }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
-      j_testSuite.run(__args[0]._jdel, __args[1] != null ? new ReportOptions(new JsonObject(JSON.stringify(__args[1]))) : null);
+      j_testSuite.run(__args[0]._jdel, __args[1] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[1]))) : null);
     } else utils.invalidArgs();
   };
 

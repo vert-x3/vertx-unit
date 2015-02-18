@@ -1,0 +1,15 @@
+== TestOptions
+
+++++
+ Test configuration options.
+++++
+
+|===
+|Name | Type | Description
+
+|timeout
+|Number
+|-
+|reporters
+|Array of link:ReportOptions.html[ReportOptions]
+|-|===

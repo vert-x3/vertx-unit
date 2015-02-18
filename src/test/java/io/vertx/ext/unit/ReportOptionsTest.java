@@ -66,9 +66,7 @@ public class ReportOptionsTest extends VertxTestBase {
   @org.junit.Test
   public void testDefaultOptions() {
     String s = testSystemOut(() -> {
-      Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions());
-      assertTrue(reporter instanceof SimpleFormatter);
-      suite.run(reporter.asHandler());
+      suite.run(new TestOptions().addReporter(new ReportOptions()));
     });
     assertTrue(s.length() > 0);
   }
@@ -78,7 +76,7 @@ public class ReportOptionsTest extends VertxTestBase {
     String s = testSystemOut(() -> {
       Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("console"));
       assertTrue(reporter instanceof SimpleFormatter);
-      suite.run(reporter.asHandler());
+      suite.run(new TestOptions().addReporter(new ReportOptions().setTo("console")));
     });
     assertTrue(s.length() > 0);
   }
@@ -88,7 +86,7 @@ public class ReportOptionsTest extends VertxTestBase {
     String s = testLog("mylogger", () -> {
       Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("log").setAt("mylogger"));
       assertTrue(reporter instanceof SimpleFormatter);
-      suite.run(reporter.asHandler());
+      suite.run(new TestOptions().addReporter(new ReportOptions().setTo("log").setAt("mylogger")));
     });
     assertTrue(s.length() > 0);
   }
@@ -98,8 +96,7 @@ public class ReportOptionsTest extends VertxTestBase {
     FileSystem fs = vertx.fileSystem();
     String file = "target/report.txt";
     assertFalse(fs.existsBlocking(file));
-    Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("file").setAt(file));
-    suite.run(reporter.asHandler());
+    suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("file").setAt(file)));
     assertTrue(fs.existsBlocking(file));
     FileProps props = fs.propsBlocking(file);
     assertTrue(props.size() > 0);
@@ -107,7 +104,6 @@ public class ReportOptionsTest extends VertxTestBase {
 
   @org.junit.Test
   public void testToEventBus() {
-    Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("bus").setAt("the_address"));
     MessageConsumer<JsonObject> consumer = vertx.eventBus().<JsonObject>consumer("the_address");
     consumer.handler(msg -> {
       if (msg.body().getString("type").equals("endTestSuite")) {
@@ -117,7 +113,7 @@ public class ReportOptionsTest extends VertxTestBase {
     });
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
-      suite.run(reporter.asHandler());
+      suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt("the_address")));
     });
     await();
   }

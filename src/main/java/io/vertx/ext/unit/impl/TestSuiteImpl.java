@@ -2,7 +2,7 @@ package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.ext.unit.report.ReportOptions;
+import io.vertx.ext.unit.TestOptions;
 import io.vertx.ext.unit.TestSuite;
 import io.vertx.ext.unit.TestSuiteReport;
 import io.vertx.ext.unit.Test;
@@ -85,13 +85,15 @@ public class TestSuiteImpl implements TestSuite {
   }
 
   @Override
-  public void run(ReportOptions config) {
-    run(Reporter.reporter(null, config).asHandler());
+  public void run(TestOptions options) {
+    Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(null, reportOptions)).toArray(Reporter[]::new);
+    run(new ReporterHandler(reporters));
   }
 
   @Override
-  public void run(Vertx vertx, ReportOptions config) {
-    run(vertx, Reporter.reporter(vertx, config).asHandler());
+  public void run(Vertx vertx, TestOptions options) {
+    Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
+    run(vertx, new ReporterHandler(reporters));
   }
 
   @Override

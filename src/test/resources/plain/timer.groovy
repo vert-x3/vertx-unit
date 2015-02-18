@@ -12,8 +12,8 @@ def suite = TestSuite.create("my_suite").test "my_test", { test ->
   }
 }
 
-suite.run(vertx) { runner ->
-  runner.endHandler {
+suite.run(vertx) { report ->
+  report.endHandler {
     // Signal the junit runner we are done
     done.run();
   }
