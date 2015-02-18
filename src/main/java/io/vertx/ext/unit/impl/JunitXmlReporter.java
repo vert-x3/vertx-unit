@@ -76,7 +76,8 @@ public class JunitXmlReporter implements Reporter {
           if (result.failed()) {
             writer.writeStartElement("failure");
             writer.writeAttribute("type", result.failure().isError() ? "Error" : "AssertionError");
-            writer.writeAttribute("message", result.failure().message());
+            String msg = result.failure().message();
+            writer.writeAttribute("message", msg != null ? msg : "");
             writer.writeCharacters(result.failure().stackTrace());
             writer.writeEndElement();
           }

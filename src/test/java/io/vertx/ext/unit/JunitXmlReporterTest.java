@@ -38,6 +38,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
     String testCaseName1 = TestUtils.randomAlphaString(10);
     String testCaseName2 = TestUtils.randomAlphaString(10);
     String testCaseName3 = TestUtils.randomAlphaString(10);
+    String testCaseName4 = TestUtils.randomAlphaString(10);
 
     TestSuite suite = TestSuite.create(testSuiteName).
         test(testCaseName1, test -> {
@@ -48,20 +49,21 @@ public class JunitXmlReporterTest extends AsyncTestBase {
           }
         }).
         test(testCaseName2, test -> { test.fail("the_assertion_failure"); }).
-        test(testCaseName3, test -> { throw new RuntimeException("the_error_failure"); });
+        test(testCaseName3, test -> { throw new RuntimeException("the_error_failure"); }).
+        test(testCaseName4, test -> { throw new RuntimeException(); });
 
     Reporter reporter = Reporter.junitXmlReporter(buffer -> {
       Document doc = assertDoc(buffer);
       Element testsuiteElt = doc.getDocumentElement();
       assertEquals("testsuite", testsuiteElt.getTagName());
       assertTrue(parseTime(testsuiteElt.getAttribute("time")) >= 0.010);
-      assertEquals("3", testsuiteElt.getAttribute("tests"));
-      assertEquals("1", testsuiteElt.getAttribute("errors"));
+      assertEquals("4", testsuiteElt.getAttribute("tests"));
+      assertEquals("2", testsuiteElt.getAttribute("errors"));
       assertEquals("1", testsuiteElt.getAttribute("failures"));
       assertEquals("0", testsuiteElt.getAttribute("skipped"));
       assertEquals(testSuiteName, testsuiteElt.getAttribute("name"));
       NodeList testCases = testsuiteElt.getElementsByTagName("testcase");
-      assertEquals(3, testCases.getLength());
+      assertEquals(4, testCases.getLength());
       Element testCase1Elt = (Element) testCases.item(0);
       assertEquals(testCaseName1, testCase1Elt.getAttribute("name"));
       assertTrue(parseTime(testCase1Elt.getAttribute("time")) >= 0.010);
@@ -80,6 +82,13 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       Element testCase3FailureElt = (Element) testCase3Elt.getElementsByTagName("failure").item(0);
       assertEquals("Error", testCase3FailureElt.getAttribute("type"));
       assertEquals("the_error_failure", testCase3FailureElt.getAttribute("message"));
+      Element testCase4Elt = (Element) testCases.item(3);
+      assertEquals(testCaseName4, testCase4Elt.getAttribute("name"));
+      assertTrue(parseTime(testCase4Elt.getAttribute("time")) >= 0);
+      assertEquals(1, testCase4Elt.getElementsByTagName("failure").getLength());
+      Element testCase4FailureElt = (Element) testCase4Elt.getElementsByTagName("failure").item(0);
+      assertEquals("Error", testCase4FailureElt.getAttribute("type"));
+      assertEquals("", testCase4FailureElt.getAttribute("message"));
       testComplete();
     });
     suite.run(reporter);

@@ -1,9 +1,8 @@
 package io.vertx.ext.unit;
 
-import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.impl.FailureImpl;
-import io.vertx.test.core.AsyncTestBase;
 import io.vertx.test.core.TestUtils;
 import io.vertx.test.core.VertxTestBase;
 
@@ -22,11 +21,14 @@ public class EventBusTest extends VertxTestBase {
 
   @org.junit.Test
   public void testEventBusReporter() throws Exception {
+    String address = TestUtils.randomAlphaString(10);
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName1 = TestUtils.randomAlphaString(10);
     String testCaseName2 = TestUtils.randomAlphaString(10);
+    String testCaseName3 = TestUtils.randomAlphaString(10);
     AtomicInteger status = new AtomicInteger();
-    vertx.eventBus().<JsonObject>consumer("foobar", msg -> {
+    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer(address);
+    consumer.handler(msg -> {
       JsonObject body = msg.body();
       String type = body.getString("type");
       switch (status.get()) {
@@ -59,8 +61,23 @@ public class EventBusTest extends VertxTestBase {
           assertNotNull(failure.getBinary("cause"));
           break;
         case 5:
+          assertEquals("beginTestCase", type);
+          assertEquals(testCaseName3, body.getString("name"));
+          break;
+        case 6:
+          assertEquals("endTestCase", type);
+          assertEquals(testCaseName3, body.getString("name"));
+          assertTrue(body.getInteger("time") >= 0);
+          JsonObject error = body.getJsonObject("failure");
+          assertNotNull(error);
+          assertNull(error.getString("message"));
+          assertNotNull(error.getString("stackTrace"));
+          assertNotNull(error.getBinary("cause"));
+          break;
+        case 7:
           assertEquals("endTestSuite", type);
           assertEquals(testSuiteName, body.getString("name"));
+          consumer.unregister();
           testComplete();
           break;
         default:
@@ -76,16 +93,20 @@ public class EventBusTest extends VertxTestBase {
       }
     }).test(testCaseName2, test -> {
       test.fail("the_" + testCaseName2 + "_failure");
-    }).run(vertx, Reporter.eventBusReporter(vertx.eventBus().publisher("foobar")));
+    }).test(testCaseName3, test -> {
+      throw new RuntimeException();
+    }).run(vertx, Reporter.eventBusReporter(vertx.eventBus().sender(address)));
     await();
   }
 
   @org.junit.Test
   public void testEventBusReporterTestSuiteFailure() throws Exception {
+    String address = TestUtils.randomAlphaString(10);
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName = TestUtils.randomAlphaString(10);
     AtomicInteger status = new AtomicInteger();
-    vertx.eventBus().<JsonObject>consumer("foobar", msg -> {
+    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer(address);
+    consumer.handler(msg -> {
       JsonObject body = msg.body();
       String type = body.getString("type");
       switch (status.get()) {
@@ -112,6 +133,7 @@ public class EventBusTest extends VertxTestBase {
           assertEquals("the_after_failure", failure.getString("message"));
           assertNotNull(failure.getString("stackTrace"));
           assertNotNull(failure.getBinary("cause"));
+          consumer.unregister();
           testComplete();
           break;
         default:
@@ -123,17 +145,19 @@ public class EventBusTest extends VertxTestBase {
       // Ok
     }).after(test -> {
       throw new RuntimeException("the_after_failure");
-    }).run(vertx, Reporter.eventBusReporter(vertx.eventBus().publisher("foobar")));
+    }).run(vertx, Reporter.eventBusReporter(vertx.eventBus().sender(address)));
     await();
   }
 
   @org.junit.Test
   public void testEventBusReport() throws Exception {
+    String address = TestUtils.randomAlphaString(10);
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName1 = TestUtils.randomAlphaString(10);
     String testCaseName2 = TestUtils.randomAlphaString(10);
+    String testCaseName3 = TestUtils.randomAlphaString(10);
     EventBusAdapter slurper = EventBusAdapter.create();
-    vertx.eventBus().consumer("foobar", slurper);
+    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer(address, slurper);
     slurper.handler(testSuite -> {
       Map<TestCaseReport, TestResult> results = new LinkedHashMap<>();
       testSuite.handler(testCase -> {
@@ -143,7 +167,7 @@ public class EventBusTest extends VertxTestBase {
       });
       testSuite.endHandler(done -> {
         assertEquals(testSuiteName, testSuite.name());
-        assertEquals(2, results.size());
+        assertEquals(3, results.size());
         Iterator<Map.Entry<TestCaseReport, TestResult>> it = results.entrySet().iterator();
         Map.Entry<TestCaseReport, TestResult> entry1 = it.next();
         assertEquals(entry1.getKey().name(), entry1.getValue().name());
@@ -161,26 +185,42 @@ public class EventBusTest extends VertxTestBase {
         assertEquals("the_failure_message", entry2.getValue().failure().message());
         assertEquals("the_failure_stackTrace", entry2.getValue().failure().stackTrace());
         assertTrue(entry2.getValue().failure().cause() instanceof IOException);
+        Map.Entry<TestCaseReport, TestResult> entry3 = it.next();
+        assertEquals(entry3.getKey().name(), entry3.getValue().name());
+        assertEquals(testCaseName3, entry3.getValue().name());
+        assertFalse(entry3.getValue().succeeded());
+        assertEquals(7, entry3.getValue().time());
+        assertNotNull(entry3.getValue().failure());
+        assertEquals(false, entry3.getValue().failure().isError());
+        assertEquals(null, entry3.getValue().failure().message());
+        assertEquals("the_failure_stackTrace", entry3.getValue().failure().stackTrace());
+        assertTrue(entry3.getValue().failure().cause() instanceof IOException);
+        consumer.unregister();
         testComplete();
       });
     });
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "beginTestCase").put("name", testCaseName1));
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "endTestCase").put("name", testCaseName1).put("time", 10));
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "beginTestCase").put("name", testCaseName2));
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "endTestCase").put("name", testCaseName2).put("time", 5).
+    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
+    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName1));
+    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName1).put("time", 10));
+    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName2));
+    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName2).put("time", 5).
         put("failure", new FailureImpl(
             false, "the_failure_message", "the_failure_stackTrace", new IOException()).toJson()));
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "endTestSuite"));
+    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName3));
+    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName3).put("time", 7).
+        put("failure", new FailureImpl(
+            false, null, "the_failure_stackTrace", new IOException()).toJson()));
+    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestSuite"));
     await();
   }
 
   @org.junit.Test
   public void testEventBusReportAfterFailure() throws Exception {
+    String address = TestUtils.randomAlphaString(10);
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName = TestUtils.randomAlphaString(10);
     EventBusAdapter slurper = EventBusAdapter.create();
-    vertx.eventBus().consumer("foobar", slurper);
+    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer(address, slurper);
     AtomicReference<Throwable> suiteFailure = new AtomicReference<>();
     slurper.handler(testSuite -> {
       Map<TestCaseReport, TestResult> results = new LinkedHashMap<>();
@@ -202,13 +242,14 @@ public class EventBusTest extends VertxTestBase {
         assertNull(entry1.getValue().failure());
         assertNotNull(suiteFailure.get());
         assertTrue(suiteFailure.get() instanceof IOException);
+        consumer.unregister();
         testComplete();
       });
     });
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "beginTestCase").put("name", testCaseName));
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "endTestCase").put("name", testCaseName));
-    vertx.eventBus().publish("foobar", new JsonObject().put("type", "endTestSuite").
+    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
+    vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName));
+    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName));
+    vertx.eventBus().publish(address, new JsonObject().put("type", "endTestSuite").
         put("failure", new FailureImpl(
             false, "the_failure_message", "the_failure_stackTrace", new IOException()).toJson()));
     await();
@@ -220,12 +261,12 @@ public class EventBusTest extends VertxTestBase {
     String testCaseName1 = TestUtils.randomAlphaString(10);
     String testCaseName2 = TestUtils.randomAlphaString(10);
     EventBusAdapter slurper = EventBusAdapter.create();
-    vertx.eventBus().consumer("the-address", slurper);
+    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer("the-address", slurper);
     TestReporter testReporter = new TestReporter();
     slurper.handler(testReporter);
     Reporter reporter = Reporter.eventBusReporter(vertx.eventBus().publisher("the-address"));
     TestSuite suite = TestSuite.create(testSuiteName).
-        test(testCaseName1, test -> {}).test(testCaseName2, test -> fail());
+        test(testCaseName1, test -> {}).test(testCaseName2, test -> test.fail("the_failure"));
     suite.run(reporter);
     testReporter.await();
     assertEquals(0, testReporter.exceptions.size());
@@ -236,18 +277,21 @@ public class EventBusTest extends VertxTestBase {
     TestResult result2 = testReporter.results.get(1);
     assertEquals(testCaseName2, result2.name());
     assertTrue(result2.failed());
+    assertEquals("the_failure", result2.failure().message());
+    consumer.unregister();
   }
 
   @org.junit.Test
   public void testEndToEndAfterFailure() {
+    String address = TestUtils.randomAlphaString(10);
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName = TestUtils.randomAlphaString(10);
     EventBusAdapter slurper = EventBusAdapter.create();
-    vertx.eventBus().consumer("the-address", slurper);
+    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer(address, slurper);
     TestReporter testReporter = new TestReporter();
     slurper.handler(testReporter);
     RuntimeException error = new RuntimeException("the_runtime_exception");
-    Reporter reporter = Reporter.eventBusReporter(vertx.eventBus().publisher("the-address"));
+    Reporter reporter = Reporter.eventBusReporter(vertx.eventBus().sender(address));
     TestSuite suite = TestSuite.create(testSuiteName).
         test(testCaseName, test -> {
           try {
@@ -267,5 +311,6 @@ public class EventBusTest extends VertxTestBase {
     assertTrue(cause instanceof RuntimeException);
     assertEquals(error.getMessage(), cause.getMessage());
     assertTrue(Arrays.equals(error.getStackTrace(), cause.getStackTrace()));
+    consumer.unregister();
   }
 }

@@ -84,6 +84,11 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
+  public void runTestWithEmptyRuntimeException() {
+    failTest(test -> { throw new RuntimeException(); });
+  }
+
+  @Test
   public void runTestWithRuntimeException() {
     failTest(test -> { throw new RuntimeException("message_failure"); });
   }
