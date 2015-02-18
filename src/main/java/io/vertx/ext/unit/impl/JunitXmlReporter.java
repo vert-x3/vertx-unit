@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -28,10 +29,14 @@ import java.util.concurrent.atomic.AtomicLong;
 public class JunitXmlReporter implements Reporter {
 
   private final NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
-  private final Handler<Buffer> output;
+  private final Consumer<String> dataHandler;
 
-  public JunitXmlReporter(Handler<Buffer> output) {
-    this.output = output;
+  public JunitXmlReporter(Consumer<String> dataHandler) {
+    this.dataHandler = dataHandler;
+  }
+
+  public JunitXmlReporter(Handler<Buffer> dataHandler) {
+    this.dataHandler = msg -> dataHandler.handle(Buffer.buffer(msg, "UTF-8"));
   }
 
   @Override
@@ -94,7 +99,7 @@ public class JunitXmlReporter implements Reporter {
         buffer.getBuffer().setLength(0);
         StreamResult result = new StreamResult(buffer);
         transformer.transform(source, result);
-        output.handle(Buffer.buffer(buffer.toString(), "UTF-8"));
+        dataHandler.accept(buffer.toString());
       } catch (Exception e) {
         e.printStackTrace();
       }

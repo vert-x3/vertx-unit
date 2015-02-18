@@ -42,6 +42,10 @@ public interface TestSuite {
 
   void run(Vertx vertx, Handler<TestSuiteReport> reporter);
 
+  void run(ReportOptions config);
+
+  void run(Vertx vertx, ReportOptions config);
+
   TestSuiteRunner runner(Vertx vertx);
 
   TestSuiteRunner runner();

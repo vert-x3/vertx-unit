@@ -19,6 +19,7 @@ package io.vertx.rxjava.ext.unit;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.ext.unit.ReportOptions;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.core.Handler;
 
@@ -112,6 +113,14 @@ public class TestSuite {
         reporter.handle(new TestSuiteReport(event));
       }
     });
+  }
+
+  public void run(ReportOptions config) {
+    this.delegate.run(config);
+  }
+
+  public void run(Vertx vertx, ReportOptions config) {
+    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), config);
   }
 
   public TestSuiteRunner runner(Vertx vertx) {

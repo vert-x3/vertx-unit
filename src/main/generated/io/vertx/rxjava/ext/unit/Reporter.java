@@ -20,6 +20,8 @@ import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.core.buffer.Buffer;
+import io.vertx.ext.unit.ReportOptions;
+import io.vertx.rxjava.core.Vertx;
 import io.vertx.core.Handler;
 import io.vertx.rxjava.core.eventbus.MessageProducer;
 
@@ -39,6 +41,35 @@ public class Reporter {
 
   public Object getDelegate() {
     return delegate;
+  }
+
+  public static Reporter create(ReportOptions options) {
+    Reporter ret= Reporter.newInstance(io.vertx.ext.unit.Reporter.create(options));
+    return ret;
+  }
+
+  public static Reporter create(Vertx vertx, ReportOptions options) {
+    Reporter ret= Reporter.newInstance(io.vertx.ext.unit.Reporter.create((io.vertx.core.Vertx) vertx.getDelegate(), options));
+    return ret;
+  }
+
+  public static Reporter logReporter(String loggerName) {
+    Reporter ret= Reporter.newInstance(io.vertx.ext.unit.Reporter.logReporter(loggerName));
+    return ret;
+  }
+
+  public static Reporter consoleReporter() {
+    Reporter ret= Reporter.newInstance(io.vertx.ext.unit.Reporter.consoleReporter());
+    return ret;
+  }
+
+  public static Reporter streamReporter(Handler<Buffer> stream) {
+    Reporter ret= Reporter.newInstance(io.vertx.ext.unit.Reporter.streamReporter(new Handler<io.vertx.core.buffer.Buffer>() {
+      public void handle(io.vertx.core.buffer.Buffer event) {
+        stream.handle(new Buffer(event));
+      }
+    }));
+    return ret;
   }
 
   public static Reporter eventBusReporter(MessageProducer<?> producer) {

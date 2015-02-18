@@ -2,6 +2,8 @@ package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.ext.unit.ReportOptions;
+import io.vertx.ext.unit.Reporter;
 import io.vertx.ext.unit.TestSuite;
 import io.vertx.ext.unit.TestSuiteReport;
 import io.vertx.ext.unit.Test;
@@ -80,6 +82,16 @@ public class TestSuiteImpl implements TestSuite {
   @Override
   public void run(Vertx vertx, Handler<TestSuiteReport> reporter) {
     runner(vertx).handler(reporter).run();
+  }
+
+  @Override
+  public void run(ReportOptions config) {
+    run(Reporter.create(null, config));
+  }
+
+  @Override
+  public void run(Vertx vertx, ReportOptions config) {
+    run(vertx, Reporter.create(vertx, config));
   }
 
   @Override

@@ -22,6 +22,8 @@ var MessageProducer = require('vertx-js/message_producer');
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
 var JReporter = io.vertx.ext.unit.Reporter;
+var ReportOptions = io.vertx.ext.unit.ReportOptions;
+var ReportOptions = io.vertx.ext.unit.ReportOptions;
 
 /**
 
@@ -36,6 +38,63 @@ var Reporter = function(j_val) {
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
   this._jdel = j_reporter;
+};
+
+/**
+
+ @memberof module:vertx-unit-js/reporter
+ @param vertx {Vertx} 
+ @param options {Object} 
+ @return {Reporter}
+ */
+Reporter.create = function() {
+  var __args = arguments;
+  if (__args.length === 1 && typeof __args[0] === 'object') {
+    return new Reporter(JReporter.create(__args[0] != null ? new ReportOptions(new JsonObject(JSON.stringify(__args[0]))) : null));
+  }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
+    return new Reporter(JReporter.create(__args[0]._jdel, __args[1] != null ? new ReportOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
+  } else utils.invalidArgs();
+};
+
+/**
+
+ @memberof module:vertx-unit-js/reporter
+ @param loggerName {string} 
+ @return {Reporter}
+ */
+Reporter.logReporter = function(loggerName) {
+  var __args = arguments;
+  if (__args.length === 1 && typeof __args[0] === 'string') {
+    return new Reporter(JReporter.logReporter(loggerName));
+  } else utils.invalidArgs();
+};
+
+/**
+
+ @memberof module:vertx-unit-js/reporter
+
+ @return {Reporter}
+ */
+Reporter.consoleReporter = function() {
+  var __args = arguments;
+  if (__args.length === 0) {
+    return new Reporter(JReporter.consoleReporter());
+  } else utils.invalidArgs();
+};
+
+/**
+
+ @memberof module:vertx-unit-js/reporter
+ @param stream {function} 
+ @return {Reporter}
+ */
+Reporter.streamReporter = function(stream) {
+  var __args = arguments;
+  if (__args.length === 1 && typeof __args[0] === 'function') {
+    return new Reporter(JReporter.streamReporter(function(jVal) {
+    stream(new Buffer(jVal));
+  }));
+  } else utils.invalidArgs();
 };
 
 /**
