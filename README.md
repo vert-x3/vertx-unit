@@ -4,11 +4,10 @@ Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
 
 ## Todo
 
-- more than one reporter
+- test timeout
 - assertion API
 - same name test replaces previous ?
 - json stream reporter
-- report option configuration (so it is possible to configure the reporting of a testsuite declaratively)
 - reporters
     - xunit
     - markdown
