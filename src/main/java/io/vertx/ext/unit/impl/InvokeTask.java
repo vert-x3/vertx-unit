@@ -27,24 +27,45 @@ class InvokeTask implements Task<Result> {
 
     class TestImpl implements Test {
 
-      private volatile boolean completed;
-      private volatile Throwable failed;
-      private volatile long time;
+      private boolean completed;
+      private Throwable failed;
+      private long time;
       private final LinkedList<Async> asyncs = new LinkedList<>();
 
+      public TestImpl(long time, Throwable failed) {
+        this.failed = failed;
+        this.time = time - System.currentTimeMillis();
+      }
+
       private void tryEnd() {
-        if (asyncs.isEmpty() && !completed) {
-          completed = true;
-          time += System.currentTimeMillis();
+        boolean run = false;
+        synchronized (this) {
+          if (asyncs.isEmpty() && !completed) {
+            completed = true;
+            run = true;
+            time += System.currentTimeMillis();
+          }
+        }
+        if (run) {
           executor.run(next, new Result(time, failed));
         }
       }
 
       private void failed(Throwable t) {
-        if (asyncs.size() > 0) {
-          failed = t;
-          while (asyncs.size() > 0) {
-            asyncs.peekFirst().complete();
+        synchronized (this) {
+          if (!completed) {
+            failed = t;
+          }
+        }
+        while (true) {
+          Async async;
+          synchronized (this) {
+            async = asyncs.peekFirst();
+          }
+          if (async == null) {
+            break;
+          } else {
+            async.complete();
           }
         }
       }
@@ -56,19 +77,29 @@ class InvokeTask implements Task<Result> {
 
       @Override
       public Async async() {
-        Async async = new Async() {
-          @Override
-          public boolean complete() {
-            if (asyncs.remove(this)) {
-              tryEnd();
-              return true;
-            } else {
-              return false;
-            }
+        synchronized (this) {
+          if (!completed) {
+            Async async = new Async() {
+              @Override
+              public boolean complete() {
+                boolean completed;
+                synchronized (TestImpl.this) {
+                  completed = asyncs.remove(this);
+                }
+                if (completed) {
+                  tryEnd();
+                  return true;
+                } else {
+                  return false;
+                }
+              }
+            };
+            asyncs.add(async);
+            return async;
+          } else {
+            throw new IllegalStateException("Test already completed");
           }
-        };
-        asyncs.add(async);
-        return async;
+        }
       }
 
       public void assertTrue(boolean condition) {
@@ -91,11 +122,7 @@ class InvokeTask implements Task<Result> {
     };
 
     //
-    TestImpl test = new TestImpl();
-
-    test.failed = failure != null ? failure.failure : null;
-    test.time = failure != null ? failure.time : 0;
-    test.time -= System.currentTimeMillis();
+    TestImpl test = new TestImpl(failure != null ? failure.time : 0, failure != null ? failure.failure : null);
     Async async = test.async();
     try {
       InvokeTask.this.test.handle(test);
