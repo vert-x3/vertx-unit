@@ -34,11 +34,12 @@ var Async = function(j_val) {
 
    @public
 
+   @return {boolean}
    */
   this.complete = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      j_async.complete();
+      return j_async.complete();
     } else utils.invalidArgs();
   };
 

@@ -8,6 +8,6 @@ import io.vertx.codegen.annotations.VertxGen;
 @VertxGen
 public interface Async {
 
-  void complete();
+  boolean complete();
 
 }

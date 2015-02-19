@@ -38,8 +38,9 @@ public class Async {
     return delegate;
   }
 
-  public void complete() {
-    this.delegate.complete();
+  public boolean complete() {
+    boolean ret = this.delegate.complete();
+    return ret;
   }
 
 

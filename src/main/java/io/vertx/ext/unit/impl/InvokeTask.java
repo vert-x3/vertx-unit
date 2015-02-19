@@ -7,6 +7,8 @@ import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestResult;
 import org.junit.Assert;
 
+import java.util.LinkedList;
+
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
@@ -26,14 +28,12 @@ class InvokeTask implements Task<Result> {
     class TestImpl implements Test {
 
       private volatile boolean completed;
-      private volatile boolean running;
-      private volatile int asyncCount;
       private volatile Throwable failed;
       private volatile long time;
-
+      private final LinkedList<Async> asyncs = new LinkedList<>();
 
       private void tryEnd() {
-        if (asyncCount == 0 && !completed) {
+        if (asyncs.isEmpty() && !completed) {
           completed = true;
           time += System.currentTimeMillis();
           executor.run(next, new Result(time, failed));
@@ -41,11 +41,10 @@ class InvokeTask implements Task<Result> {
       }
 
       private void failed(Throwable t) {
-        if (asyncCount > 0) {
+        if (asyncs.size() > 0) {
           failed = t;
-          asyncCount = 0;
-          if (!running) {
-            tryEnd();
+          while (asyncs.size() > 0) {
+            asyncs.peekFirst().complete();
           }
         }
       }
@@ -57,21 +56,19 @@ class InvokeTask implements Task<Result> {
 
       @Override
       public Async async() {
-        asyncCount++;
-        return new Async() {
-          boolean called = false;
+        Async async = new Async() {
           @Override
-          public void complete() {
-            if (!called) {
-              called = true;
-              if (--asyncCount == 0 && !running) {
-                tryEnd();
-              }
+          public boolean complete() {
+            if (asyncs.remove(this)) {
+              tryEnd();
+              return true;
             } else {
-              throw new IllegalStateException("Already completed");
+              return false;
             }
           }
         };
+        asyncs.add(async);
+        return async;
       }
 
       public void assertTrue(boolean condition) {
@@ -98,20 +95,15 @@ class InvokeTask implements Task<Result> {
 
     test.failed = failure != null ? failure.failure : null;
     test.time = failure != null ? failure.time : 0;
-    test.running = true;
     test.time -= System.currentTimeMillis();
+    Async async = test.async();
     try {
       InvokeTask.this.test.handle(test);
     } catch (Throwable t) {
-      if (test.failed == null) {
-        test.failed = t;
-      }
+      test.failed(t);
     } finally {
-      test.running = false;
+      async.complete();
     }
-
-    //
-    test.tryEnd();
   }
 
   static InvokeTask runTestTask(
