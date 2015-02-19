@@ -3,7 +3,7 @@ exports.vertxStartAsync = function(future) {
     var suite = TestSuite.create("time_suite").test("timer_test", function(test) {
         var async = test.async();
         vertx.setTimer(50, function() {
-            async.complete();
+            test.fail("the_failure");
         });
     });
     suite.run({ reporters : [{ to: "console", format: "simple"}] }).resolve(future);

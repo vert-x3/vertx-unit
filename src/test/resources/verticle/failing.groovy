@@ -7,8 +7,8 @@ def vertxStart(Future future) {
   def suite = TestSuite.create("my_suite").test "timer_test", { test ->
     def async = test.async()
     vertx.setTimer 50, {
-      async.complete()
+      test.fail("the_failure")
     }
   }
-  suite.run([:]).resolve(future);
+  suite.run([:]).resolve(future)
 }

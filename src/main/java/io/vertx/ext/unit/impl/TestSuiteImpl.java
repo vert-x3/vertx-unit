@@ -1,9 +1,8 @@
 package io.vertx.ext.unit.impl;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.ext.unit.TestCompletion;
 import io.vertx.ext.unit.TestOptions;
 import io.vertx.ext.unit.TestSuite;
 import io.vertx.ext.unit.Test;
@@ -65,51 +64,28 @@ public class TestSuiteImpl implements TestSuite {
   }
 
   @Override
-  public void run() {
-    run(null, new TestOptions(), (Future) null);
+  public TestCompletion run() {
+    return run(null, new TestOptions());
   }
 
   @Override
-  public void run(Vertx vertx) {
-    run(vertx, new TestOptions(), (Future) null);
+  public TestCompletion run(Vertx vertx) {
+    return run(vertx, new TestOptions());
   }
 
   @Override
-  public void run(TestOptions options) {
-    run(null, options, (Future) null);
+  public TestCompletion run(TestOptions options) {
+    return run(null, options);
   }
 
   @Override
-  public void run(TestOptions options, Handler<AsyncResult<Void>> completionHandler) {
-    run(null, options, completionHandler);
-  }
-
-  @Override
-  public void run(TestOptions options, Future future) {
-    run(null, options, future);
-  }
-
-  @Override
-  public void run(Vertx vertx, TestOptions options) {
-    run(vertx, options, (Handler<AsyncResult<Void>>) null);
-  }
-
-  @Override
-  public void run(Vertx vertx, TestOptions options, Handler<AsyncResult<Void>> completionHandler) {
-    Future<Void> completion = null;
-    if (completionHandler != null) {
-      completion = Future.future();
-      completion.setHandler(completionHandler);
-    }
-    run(vertx, options, completion);
-  }
-
-  @Override
-  public void run(Vertx vertx, TestOptions options, Future completion) {
+  public TestCompletion run(Vertx vertx, TestOptions options) {
     Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
+    ReporterHandler abc = new ReporterHandler(null, reporters);
     runner(vertx).
         setTimeout(options.getTimeout()).
-        handler(new ReporterHandler(completion, reporters)).run();
+        handler(abc).run();
+    return abc;
   }
 
   @Override

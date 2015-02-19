@@ -37,21 +37,13 @@ public interface TestSuite {
   @Fluent
   TestSuite test(String name, Handler<Test> handler);
 
-  void run();
+  TestCompletion run();
 
-  void run(Vertx vertx);
+  TestCompletion run(Vertx vertx);
 
-  void run(TestOptions options);
+  TestCompletion run(TestOptions options);
 
-  void run(TestOptions options, Handler<AsyncResult<Void>> completionHandler);
-
-  void run(TestOptions options, Future future);
-
-  void run(Vertx vertx, TestOptions options);
-
-  void run(Vertx vertx, TestOptions options, Handler<AsyncResult<Void>> completionHandler);
-
-  void run(Vertx vertx, TestOptions options, Future future);
+  TestCompletion run(Vertx vertx, TestOptions options);
 
   TestSuiteRunner runner();
 

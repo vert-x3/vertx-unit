@@ -21,9 +21,7 @@ import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.ext.unit.TestOptions;
 import io.vertx.rxjava.core.Vertx;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import io.vertx.rxjava.core.Future;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -93,48 +91,24 @@ public class TestSuite {
     return this;
   }
 
-  public void run() {
-    this.delegate.run();
+  public TestCompletion run() {
+    TestCompletion ret= TestCompletion.newInstance(this.delegate.run());
+    return ret;
   }
 
-  public void run(Vertx vertx) {
-    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate());
+  public TestCompletion run(Vertx vertx) {
+    TestCompletion ret= TestCompletion.newInstance(this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate()));
+    return ret;
   }
 
-  public void run(TestOptions options) {
-    this.delegate.run(options);
+  public TestCompletion run(TestOptions options) {
+    TestCompletion ret= TestCompletion.newInstance(this.delegate.run(options));
+    return ret;
   }
 
-  public void run(TestOptions options, Handler<AsyncResult<Void>> completionHandler) {
-    this.delegate.run(options, completionHandler);
-  }
-
-  public Observable<Void> runObservable(TestOptions options) {
-    io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
-    run(options, completionHandler.toHandler());
-    return completionHandler;
-  }
-
-  public void run(TestOptions options, Future future) {
-    this.delegate.run(options, (io.vertx.core.Future) future.getDelegate());
-  }
-
-  public void run(Vertx vertx, TestOptions options) {
-    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options);
-  }
-
-  public void run(Vertx vertx, TestOptions options, Handler<AsyncResult<Void>> completionHandler) {
-    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options, completionHandler);
-  }
-
-  public Observable<Void> runObservable(Vertx vertx, TestOptions options) {
-    io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
-    run(vertx, options, completionHandler.toHandler());
-    return completionHandler;
-  }
-
-  public void run(Vertx vertx, TestOptions options, Future future) {
-    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options, (io.vertx.core.Future) future.getDelegate());
+  public TestCompletion run(Vertx vertx, TestOptions options) {
+    TestCompletion ret= TestCompletion.newInstance(this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options));
+    return ret;
   }
 
   public TestSuiteRunner runner() {

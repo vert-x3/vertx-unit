@@ -135,7 +135,7 @@ public class ReportingTest extends VertxTestBase {
   @org.junit.Test
   public void testReportSucceededToCompletionHandler() {
     TestSuite suite = TestSuite.create("my_suite").test("first_test", test -> {});
-    suite.run(new TestOptions(), ar -> {
+    suite.run(new TestOptions()).handler(ar -> {
       assertTrue(ar.succeeded());
       testComplete();
     });
@@ -154,7 +154,7 @@ public class ReportingTest extends VertxTestBase {
     };
     AtomicInteger count = new AtomicInteger();
     for (TestSuite suite : suites) {
-      suite.run(new TestOptions(), ar -> {
+      suite.run(new TestOptions()).handler(ar -> {
         assertTrue(ar.failed());
         assertSame(e, ar.cause());
         if (count.incrementAndGet() == 3) {

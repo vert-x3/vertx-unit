@@ -35,11 +35,34 @@ public class VerticleTest extends AsyncTestBase {
     await();
   }
 
+  @org.junit.Test
+  public void testJavaScriptFailure() {
+    Vertx vertx = Vertx.vertx();
+    vertx.deployVerticle("js:verticle/failing", ar -> {
+      assertTrue(ar.failed());
+      ar.cause().printStackTrace();
+      assertEquals("the_failure", ar.cause().getMessage());
+      testComplete();
+    });
+    await();
+  }
+
   @Test
   public void testGroovyTimer() {
     Vertx vertx = Vertx.vertx();
     vertx.deployVerticle("verticle/timer.groovy", ar -> {
       assertTrue(ar.succeeded());
+      testComplete();
+    });
+    await();
+  }
+
+  @Test
+  public void testGroovyFailure() {
+    Vertx vertx = Vertx.vertx();
+    vertx.deployVerticle("verticle/failing.groovy", ar -> {
+      assertTrue(ar.failed());
+      assertEquals("the_failure", ar.cause().getMessage());
       testComplete();
     });
     await();
