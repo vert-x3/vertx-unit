@@ -1,5 +1,6 @@
 package io.vertx.ext.unit.impl;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.TestOptions;
@@ -64,23 +65,45 @@ public class TestSuiteImpl implements TestSuite {
 
   @Override
   public void run() {
-    runner().handler(runner -> {}).run();
+    run(null, new TestOptions(), null);
+  }
+
+  @Override
+  public void run(Handler<AsyncResult<Void>> completionHandler) {
+    run(null, new TestOptions(), completionHandler);
   }
 
   @Override
   public void run(Vertx vertx) {
-    runner(vertx).handler(runner -> {}).run();
+    run(vertx, new TestOptions(), null);
+  }
+
+  @Override
+  public void run(Vertx vertx, Handler<AsyncResult<Void>> completionHandler) {
+    run(vertx, new TestOptions(), completionHandler);
   }
 
   @Override
   public void run(TestOptions options) {
-    run(null, options);
+    run(null, options, null);
+  }
+
+  @Override
+  public void run(TestOptions options, Handler<AsyncResult<Void>> completionHandler) {
+    run(null, options, completionHandler);
   }
 
   @Override
   public void run(Vertx vertx, TestOptions options) {
+    run(vertx, options, null);
+  }
+
+  @Override
+  public void run(Vertx vertx, TestOptions options, Handler<AsyncResult<Void>> completionHandler) {
     Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
-    runner(vertx).setTimeout(options.getTimeout()).handler(new ReporterHandler(reporters)).run();
+    runner(vertx).
+        setTimeout(options.getTimeout()).
+        handler(new ReporterHandler(completionHandler, reporters)).run();
   }
 
   @Override

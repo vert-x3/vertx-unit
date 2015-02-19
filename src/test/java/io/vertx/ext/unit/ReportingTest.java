@@ -1,5 +1,6 @@
 package io.vertx.ext.unit;
 
+import io.vertx.core.Handler;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.file.FileProps;
 import io.vertx.core.file.FileSystem;
@@ -12,13 +13,14 @@ import io.vertx.test.core.VertxTestBase;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class ReportOptionsTest extends VertxTestBase {
+public class ReportingTest extends VertxTestBase {
 
   private String testSystemOut(Runnable runnable) {
     PrintStream prevOut = System.out;
@@ -64,7 +66,7 @@ public class ReportOptionsTest extends VertxTestBase {
   private static final TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {});
 
   @org.junit.Test
-  public void testDefaultOptions() {
+  public void testReportWithDefaultOptions() {
     String s = testSystemOut(() -> {
       suite.run(new TestOptions().addReporter(new ReportOptions()));
     });
@@ -72,7 +74,7 @@ public class ReportOptionsTest extends VertxTestBase {
   }
 
   @org.junit.Test
-  public void testToConsole() {
+  public void testReportToConsole() {
     String s = testSystemOut(() -> {
       Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("console"));
       assertTrue(reporter instanceof SimpleFormatter);
@@ -82,7 +84,7 @@ public class ReportOptionsTest extends VertxTestBase {
   }
 
   @org.junit.Test
-  public void testToLog() {
+  public void testReportToLog() {
     String s = testLog("mylogger", () -> {
       Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("log").setAt("mylogger"));
       assertTrue(reporter instanceof SimpleFormatter);
@@ -92,7 +94,7 @@ public class ReportOptionsTest extends VertxTestBase {
   }
 
   @org.junit.Test
-  public void testToFile() {
+  public void testReportToFile() {
     FileSystem fs = vertx.fileSystem();
     String file = "target/report.txt";
     assertFalse(fs.existsBlocking(file));
@@ -103,7 +105,7 @@ public class ReportOptionsTest extends VertxTestBase {
   }
 
   @org.junit.Test
-  public void testToEventBus() {
+  public void testReportToEventBus() {
     MessageConsumer<JsonObject> consumer = vertx.eventBus().<JsonObject>consumer("the_address");
     consumer.handler(msg -> {
       if (msg.body().getString("type").equals("endTestSuite")) {
@@ -119,14 +121,47 @@ public class ReportOptionsTest extends VertxTestBase {
   }
 
   @org.junit.Test
-  public void testSimpleFormat() {
+  public void testSimpleFormatReporter() {
     Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setFormat("simple"));
     assertTrue(reporter instanceof SimpleFormatter);
   }
 
   @org.junit.Test
-  public void testJunitFormat() {
+  public void testJunitFormatReporter() {
     Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setFormat("junit"));
     assertTrue(reporter instanceof JunitXmlFormatter);
+  }
+
+  @org.junit.Test
+  public void testReportSucceededToCompletionHandler() {
+    TestSuite suite = TestSuite.create("my_suite").test("first_test", test -> {});
+    suite.run(ar -> {
+      assertTrue(ar.succeeded());
+      testComplete();
+    });
+    await();
+  }
+
+  @org.junit.Test
+  public void testReportToFailureCompletionHandler() {
+    RuntimeException e = new RuntimeException();
+    Handler<Test> fails = test -> { throw e; };
+    Handler<Test> pass = test -> { };
+    TestSuite[] suites = {
+        TestSuite.create("my_suite").test("first_test", fails),
+        TestSuite.create("my_suite").before(fails).test("first_test", pass),
+        TestSuite.create("my_suite").test("first_test", pass).after(fails)
+    };
+    AtomicInteger count = new AtomicInteger();
+    for (TestSuite suite : suites) {
+      suite.run(ar -> {
+        assertTrue(ar.failed());
+        assertSame(e, ar.cause());
+        if (count.incrementAndGet() == 3) {
+          testComplete();
+        }
+      });
+    }
+    await();
   }
 }

@@ -21,6 +21,7 @@ import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.ext.unit.TestOptions;
 import io.vertx.rxjava.core.Vertx;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 /**
@@ -95,16 +96,56 @@ public class TestSuite {
     this.delegate.run();
   }
 
+  public void run(Handler<AsyncResult<Void>> completionHandler) {
+    this.delegate.run(completionHandler);
+  }
+
+  public Observable<Void> runObservable() {
+    io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
+    run(completionHandler.toHandler());
+    return completionHandler;
+  }
+
   public void run(Vertx vertx) {
     this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate());
+  }
+
+  public void run(Vertx vertx, Handler<AsyncResult<Void>> completionHandler) {
+    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), completionHandler);
+  }
+
+  public Observable<Void> runObservable(Vertx vertx) {
+    io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
+    run(vertx, completionHandler.toHandler());
+    return completionHandler;
   }
 
   public void run(TestOptions options) {
     this.delegate.run(options);
   }
 
+  public void run(TestOptions options, Handler<AsyncResult<Void>> completionHandler) {
+    this.delegate.run(options, completionHandler);
+  }
+
+  public Observable<Void> runObservable(TestOptions options) {
+    io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
+    run(options, completionHandler.toHandler());
+    return completionHandler;
+  }
+
   public void run(Vertx vertx, TestOptions options) {
     this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options);
+  }
+
+  public void run(Vertx vertx, TestOptions options, Handler<AsyncResult<Void>> completionHandler) {
+    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options, completionHandler);
+  }
+
+  public Observable<Void> runObservable(Vertx vertx, TestOptions options) {
+    io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
+    run(vertx, options, completionHandler.toHandler());
+    return completionHandler;
   }
 
   public TestSuiteRunner runner() {
