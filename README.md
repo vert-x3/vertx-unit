@@ -4,7 +4,6 @@ Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
 
 ## Todo
 
-- test timeout
 - assertion API
 - same name test replaces previous ?
 - json stream reporter

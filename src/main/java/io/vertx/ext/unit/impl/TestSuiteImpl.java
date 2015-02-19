@@ -4,7 +4,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.TestOptions;
 import io.vertx.ext.unit.TestSuite;
-import io.vertx.ext.unit.TestSuiteReport;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestResult;
 import io.vertx.ext.unit.TestSuiteRunner;
@@ -65,35 +64,23 @@ public class TestSuiteImpl implements TestSuite {
 
   @Override
   public void run() {
-    run(runner -> {});
+    runner().handler(runner -> {}).run();
   }
 
   @Override
   public void run(Vertx vertx) {
-    run(vertx, runner -> {
-    });
-  }
-
-  @Override
-  public void run(Handler<TestSuiteReport> reporter) {
-    runner().handler(reporter).run();
-  }
-
-  @Override
-  public void run(Vertx vertx, Handler<TestSuiteReport> reporter) {
-    runner(vertx).handler(reporter).run();
+    runner(vertx).handler(runner -> {}).run();
   }
 
   @Override
   public void run(TestOptions options) {
-    Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(null, reportOptions)).toArray(Reporter[]::new);
-    run(new ReporterHandler(reporters));
+    run(null, options);
   }
 
   @Override
   public void run(Vertx vertx, TestOptions options) {
     Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
-    run(vertx, new ReporterHandler(reporters));
+    runner(vertx).setTimeout(options.getTimeout()).handler(new ReporterHandler(reporters)).run();
   }
 
   @Override
@@ -124,7 +111,7 @@ public class TestSuiteImpl implements TestSuite {
         public void run(junit.framework.TestResult testResult) {
           BlockingQueue<TestResult> latch = new ArrayBlockingQueue<>(1);
           Vertx vertx = Vertx.vertx();
-          InvokeTask task = InvokeTask.runTestTask(test.desc, before, test.handler, after, (testResult1, executor) -> {
+          InvokeTask task = InvokeTask.runTestTask(test.desc, 0L, before, test.handler, after, (testResult1, executor) -> {
             latch.add(testResult1);
           });
           testResult.startTest(this);

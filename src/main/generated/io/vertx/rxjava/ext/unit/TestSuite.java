@@ -99,22 +99,6 @@ public class TestSuite {
     this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate());
   }
 
-  public void run(Handler<TestSuiteReport> reporter) {
-    this.delegate.run(new Handler<io.vertx.ext.unit.TestSuiteReport>() {
-      public void handle(io.vertx.ext.unit.TestSuiteReport event) {
-        reporter.handle(new TestSuiteReport(event));
-      }
-    });
-  }
-
-  public void run(Vertx vertx, Handler<TestSuiteReport> reporter) {
-    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), new Handler<io.vertx.ext.unit.TestSuiteReport>() {
-      public void handle(io.vertx.ext.unit.TestSuiteReport event) {
-        reporter.handle(new TestSuiteReport(event));
-      }
-    });
-  }
-
   public void run(TestOptions options) {
     this.delegate.run(options);
   }
@@ -123,13 +107,13 @@ public class TestSuite {
     this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options);
   }
 
-  public TestSuiteRunner runner(Vertx vertx) {
-    TestSuiteRunner ret= TestSuiteRunner.newInstance(this.delegate.runner((io.vertx.core.Vertx) vertx.getDelegate()));
+  public TestSuiteRunner runner() {
+    TestSuiteRunner ret= TestSuiteRunner.newInstance(this.delegate.runner());
     return ret;
   }
 
-  public TestSuiteRunner runner() {
-    TestSuiteRunner ret= TestSuiteRunner.newInstance(this.delegate.runner());
+  public TestSuiteRunner runner(Vertx vertx) {
+    TestSuiteRunner ret= TestSuiteRunner.newInstance(this.delegate.runner((io.vertx.core.Vertx) vertx.getDelegate()));
     return ret;
   }
 

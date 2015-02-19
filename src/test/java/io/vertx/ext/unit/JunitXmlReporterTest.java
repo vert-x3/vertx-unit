@@ -94,7 +94,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       assertEquals("", testCase4FailureElt.getAttribute("message"));
       testComplete();
     });
-    suite.run(new ReporterHandler(reporter));
+    suite.runner().handler(new ReporterHandler(reporter)).run();
     await();
 
   }
@@ -135,7 +135,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       assertEquals("the_after_failure", testCase2FailureElt.getAttribute("message"));
       testComplete();
     });
-    suite.run(new ReporterHandler(reporter));
+    suite.runner().handler(new ReporterHandler(reporter)).run();
     await();
   }
 
@@ -171,7 +171,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       assertEquals("the_before_failure", testCase2FailureElt.getAttribute("message"));
       testComplete();
     });
-    suite.run(new ReporterHandler(reporter));
+    suite.runner().handler(new ReporterHandler(reporter)).run();
     await();
   }
 

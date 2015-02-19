@@ -12,6 +12,11 @@ import io.vertx.core.Handler;
 @VertxGen
 public interface TestSuiteRunner {
 
+  long getTimeout();
+
+  @Fluent
+  TestSuiteRunner setTimeout(long timeout);
+
   /**
    * Set a reporter for handling the events emitted by the test suite.
    *

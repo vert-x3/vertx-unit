@@ -10,18 +10,19 @@ import io.vertx.ext.unit.TestCaseReport;
  */
 public class TestCaseReportImpl implements TestCaseReport, Task<Void> {
 
-  private final String desc;
+  private final String name;
   private final InvokeTask task;
   private volatile Handler<TestResult> completionHandler;
   private volatile TestResult result;
 
-  public TestCaseReportImpl(String desc,
+  public TestCaseReportImpl(String name,
+                            long timeout,
                             Handler<Test> before,
                             Handler<Test> test,
                             Handler<Test> after,
                             Task<?> next) {
-    this.desc = desc;
-    this.task = InvokeTask.runTestTask(desc, before, test, after, (testResult, executor) -> {
+    this.name = name;
+    this.task = InvokeTask.runTestTask(name, timeout, before, test, after, (testResult, executor) -> {
       result = testResult;
       if (completionHandler != null) {
         completionHandler.handle(testResult);
@@ -39,7 +40,7 @@ public class TestCaseReportImpl implements TestCaseReport, Task<Void> {
 
   @Override
   public String name() {
-    return desc;
+    return name;
   }
 
   @Override

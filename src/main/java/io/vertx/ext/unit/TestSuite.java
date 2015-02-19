@@ -39,17 +39,13 @@ public interface TestSuite {
 
   void run(Vertx vertx);
 
-  void run(Handler<TestSuiteReport> reporter);
-
-  void run(Vertx vertx, Handler<TestSuiteReport> reporter);
-
   void run(TestOptions options);
 
   void run(Vertx vertx, TestOptions options);
 
-  TestSuiteRunner runner(Vertx vertx);
-
   TestSuiteRunner runner();
+
+  TestSuiteRunner runner(Vertx vertx);
 
   @GenIgnore
   junit.framework.TestSuite toJUnitSuite();

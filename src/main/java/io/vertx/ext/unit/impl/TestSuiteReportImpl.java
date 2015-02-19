@@ -13,6 +13,7 @@ import io.vertx.ext.unit.TestCaseReport;
 class TestSuiteReportImpl implements TestSuiteReport {
 
   private final String name;
+  private final long timeout;
   private final Handler<Test> before;
   private final Handler<Test> after;
   private final Handler<Test> beforeEach;
@@ -22,10 +23,11 @@ class TestSuiteReportImpl implements TestSuiteReport {
   private Handler<Throwable> exceptionHandler;
   private Handler<TestCaseReport> handler;
 
-  TestSuiteReportImpl(String name, Handler<Test> before, Handler<Test> after,
+  TestSuiteReportImpl(String name, long timeout, Handler<Test> before, Handler<Test> after,
                       Handler<Test> beforeEach, Handler<Test> afterEach,
                       TestCaseImpl[] tests) {
     this.name = name;
+    this.timeout = timeout;
     this.before = before;
     this.after = after;
     this.beforeEach = beforeEach;
@@ -70,7 +72,7 @@ class TestSuiteReportImpl implements TestSuiteReport {
     if (tests.length > index) {
       Task<?> next = build(tests, index + 1, last);
       TestCaseImpl test = tests[index];
-      TestCaseReportImpl runner = new TestCaseReportImpl(test.desc, beforeEach, test.handler, afterEach, next);
+      TestCaseReportImpl runner = new TestCaseReportImpl(test.desc, timeout, beforeEach, test.handler, afterEach, next);
       return (v, context) -> {
         if (handler != null) {
           handler.handle(runner);

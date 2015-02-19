@@ -8,6 +8,7 @@ import io.vertx.ext.unit.TestResult;
 import org.junit.Assert;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeoutException;
 
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -16,14 +17,22 @@ class InvokeTask implements Task<Result> {
 
   private final Task<Result> next;
   private final Handler<Test> test;
+  private final long timeout;
 
   public InvokeTask(Handler<Test> test, Task<Result> next) {
     this.test = test;
+    this.timeout = 0;
+    this.next = next;
+  }
+
+  public InvokeTask(Handler<Test> test, long timeout, Task<Result> next) {
+    this.test = test;
+    this.timeout = timeout;
     this.next = next;
   }
 
   @Override
-  public void execute(Result failure, Context executor) {
+  public void execute(Result failure, Context context) {
 
     class TestImpl implements Test {
 
@@ -47,7 +56,7 @@ class InvokeTask implements Task<Result> {
           }
         }
         if (run) {
-          executor.run(next, new Result(time, failed));
+          context.run(next, new Result(time, failed));
         }
       }
 
@@ -72,7 +81,7 @@ class InvokeTask implements Task<Result> {
 
       @Override
       public Vertx vertx() {
-        return executor.vertx();
+        return context.vertx();
       }
 
       @Override
@@ -124,6 +133,24 @@ class InvokeTask implements Task<Result> {
     //
     TestImpl test = new TestImpl(failure != null ? failure.time : 0, failure != null ? failure.failure : null);
     Async async = test.async();
+
+    //
+    if (timeout > 0) {
+      Runnable cancel = () -> {
+        try {
+          Thread.sleep(timeout);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
+        test.failed(new TimeoutException());
+      };
+      if (context.vertx() != null) {
+        context.vertx().executeBlocking(future -> cancel.run(), null);
+      } else {
+        new Thread(cancel).start();
+      }
+    }
+
     try {
       InvokeTask.this.test.handle(test);
     } catch (Throwable t) {
@@ -134,17 +161,18 @@ class InvokeTask implements Task<Result> {
   }
 
   static InvokeTask runTestTask(
-      String desc,
+      String name,
+      Long timeout,
       Handler<Test> before,
       Handler<Test> test,
       Handler<Test> after,
       Task<TestResult> next) {
 
     Task<Result> completeTask = (result, executor) -> {
-      executor.run(next, new TestResultImpl(desc, result.time, result.failure));
+      executor.run(next, new TestResultImpl(name, result.time, result.failure));
     };
     InvokeTask afterTask = after == null ? null : new InvokeTask(after, completeTask);
-    InvokeTask runnerTask = new InvokeTask(test, (result, executor) -> {
+    InvokeTask runnerTask = new InvokeTask(test, timeout, (result, executor) -> {
       if (afterTask != null) {
         executor.run(afterTask, result);
       } else {

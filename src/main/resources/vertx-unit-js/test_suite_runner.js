@@ -33,6 +33,33 @@ var TestSuiteRunner = function(j_val) {
   var that = this;
 
   /**
+
+   @public
+
+   @return {number}
+   */
+  this.getTimeout = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      return j_testSuiteRunner.getTimeout();
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param timeout {number} 
+   @return {TestSuiteRunner}
+   */
+  this.setTimeout = function(timeout) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] ==='number') {
+      j_testSuiteRunner.setTimeout(timeout);
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
    Set a reporter for handling the events emitted by the test suite.
 
    @public

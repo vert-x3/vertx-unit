@@ -19,16 +19,29 @@ public class TestSuiteRunnerImpl implements TestSuiteRunner {
   private final TestCaseImpl[] tests;
   private final Vertx vertx;
   private Handler<TestSuiteReport> handler;
+  private long timeout;
 
   public TestSuiteRunnerImpl(String name, Handler<Test> before, Handler<Test> after, Handler<Test> beforeEach,
                              Handler<Test> afterEach, TestCaseImpl[] tests, Vertx vertx) {
     this.name = name;
+    this.timeout = 0;
     this.before = before;
     this.after = after;
     this.beforeEach = beforeEach;
     this.afterEach = afterEach;
     this.tests = tests;
     this.vertx = vertx;
+  }
+
+  @Override
+  public long getTimeout() {
+    return timeout;
+  }
+
+  @Override
+  public TestSuiteRunner setTimeout(long timeout) {
+    this.timeout = timeout;
+    return this;
   }
 
   @Override
@@ -39,7 +52,7 @@ public class TestSuiteRunnerImpl implements TestSuiteRunner {
 
   @Override
   public void run() {
-    TestSuiteReportImpl runner = new TestSuiteReportImpl(name, before, after, beforeEach, afterEach, tests);
+    TestSuiteReportImpl runner = new TestSuiteReportImpl(name, timeout, before, after, beforeEach, afterEach, tests);
     handler.handle(runner);
     if (vertx != null) {
       runner.run(vertx);

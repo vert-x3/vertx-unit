@@ -13,7 +13,8 @@ public class TestSuiteVertxTest extends TestSuiteTestBase {
 
   public TestSuiteVertxTest() {
     super();
-    runSuite = (suite,reporter) -> suite.run(vertx, reporter);
+    getRunner = (suite) -> suite.runner(vertx);
+    run = TestSuiteRunner::run;
     completeAsync = Async::complete;
   }
 

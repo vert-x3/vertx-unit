@@ -41,6 +41,16 @@ public class TestSuiteRunner {
     return delegate;
   }
 
+  public long getTimeout() {
+    long ret = this.delegate.getTimeout();
+    return ret;
+  }
+
+  public TestSuiteRunner setTimeout(long timeout) {
+    this.delegate.setTimeout(timeout);
+    return this;
+  }
+
   /**
    * Set a reporter for handling the events emitted by the test suite.
    *

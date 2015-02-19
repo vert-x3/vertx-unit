@@ -13,7 +13,8 @@ public class TestSuiteProvidedVertxTest extends TestSuiteTestBase {
 
   public TestSuiteProvidedVertxTest() {
     super();
-    runSuite = (suite,reporter) -> vertx.runOnContext(v -> suite.run(reporter));
+    getRunner = TestSuite::runner;
+    run = (runner) -> vertx.runOnContext(v -> runner.run());
     completeAsync = async -> vertx.runOnContext(v -> async.complete());
   }
 

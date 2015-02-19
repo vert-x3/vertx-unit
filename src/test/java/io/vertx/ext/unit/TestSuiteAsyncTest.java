@@ -9,10 +9,11 @@ public class TestSuiteAsyncTest extends TestSuiteTestBase {
 
   public TestSuiteAsyncTest() {
     super();
-    runSuite = (suite,reporter) -> new Thread() {
+    getRunner = TestSuite::runner;
+    run = (runner) -> new Thread() {
       @Override
       public void run() {
-        suite.run(reporter);
+        runner.run();
       }
     }.start();
     completeAsync = Async::complete;

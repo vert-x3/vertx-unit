@@ -6,11 +6,12 @@ import org.junit.Test;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static org.junit.Assert.*;
 
@@ -19,10 +20,19 @@ import static org.junit.Assert.*;
  */
 public abstract class TestSuiteTestBase {
 
-  protected BiConsumer<TestSuite, Handler<TestSuiteReport>> runSuite;
+  protected Function<TestSuite, TestSuiteRunner> getRunner;
+  protected Consumer<TestSuiteRunner> run;
   protected Consumer<Async> completeAsync;
 
   public TestSuiteTestBase() {
+  }
+
+  private void run(TestSuite suite, TestReporter reporter) {
+    run.accept(getRunner.apply(suite).handler(reporter));
+  }
+
+  private void run(TestSuite suite, TestReporter reporter, long timeout) {
+    run.accept(getRunner.apply(suite).handler(reporter).setTimeout(timeout));
   }
 
   protected boolean checkTest(io.vertx.ext.unit.Test test) {
@@ -39,7 +49,7 @@ public abstract class TestSuiteTestBase {
           count.compareAndSet(0, 1);
         });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
+    run(suite, reporter);
     reporter.await();
     assertTrue(sameContext.get());
     assertEquals(1, count.get());
@@ -62,7 +72,7 @@ public abstract class TestSuiteTestBase {
           queue.add(test.async());
         });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
+    run(suite, reporter);
     Async async = queue.poll(2, TimeUnit.SECONDS);
     assertEquals(1, count.get());
     assertFalse(reporter.completed());
@@ -105,7 +115,7 @@ public abstract class TestSuiteTestBase {
           }
         });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
+    run(suite, reporter);
     reporter.await();
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
@@ -126,7 +136,7 @@ public abstract class TestSuiteTestBase {
       queue.add(test);
     });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
+    run(suite, reporter);
     assertFalse(reporter.completed());
     io.vertx.ext.unit.Test test = queue.poll(2, TimeUnit.SECONDS);
     try {
@@ -164,7 +174,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      run(suite, reporter);
       reporter.await();
       assertEquals(i == 0 ? 4 : 3, count.get());
       assertTrue(sameContext.get());
@@ -199,7 +209,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      run(suite, reporter);
       Async async = queue.poll(2, TimeUnit.SECONDS);
       completeAsync.accept(async);
       reporter.await();
@@ -236,7 +246,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      run(suite, reporter);
       reporter.await();
       if (i == 0) {
         assertEquals(0, count.get());
@@ -274,7 +284,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      run(suite, reporter);
       Async async = queue.poll(2, TimeUnit.SECONDS);
       assertFalse(reporter.completed());
       assertEquals(2, count.get());
@@ -316,7 +326,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      run(suite, reporter);
       reporter.await();
       assertEquals(i == 0 ? 3 : 4, count.get());
       assertTrue(sameContext.get());
@@ -347,7 +357,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      run(suite, reporter);
       reporter.await();
       assertEquals(2, count.get());
       assertEquals(0, reporter.exceptions.size());
@@ -389,7 +399,7 @@ public abstract class TestSuiteTestBase {
         });
       }
       TestReporter reporter = new TestReporter();
-      runSuite.accept(suite, reporter);
+      run(suite, reporter);
       reporter.await();
       if (i == 0) {
         assertEquals(3, count.get());
@@ -428,12 +438,36 @@ public abstract class TestSuiteTestBase {
       }.start();
     });
     TestReporter reporter = new TestReporter();
-    runSuite.accept(suite, reporter);
+    run(suite, reporter);
     reporter.await();
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
     assertEquals("my_test", reporter.results.get(0).name());
     assertFalse(reporter.results.get(0).failed());
     assertTrue(reporter.results.get(0).time() >= 15);
+  }
+
+  @Test
+  public void testTimeout() throws Exception {
+    BlockingQueue<Async> queue = new ArrayBlockingQueue<>(2);
+    TestSuite suite = TestSuite.create("my_suite").
+        test("my_test0", test -> {
+          queue.add(test.async());
+        }).
+        test("my_test1", test -> {
+          queue.add(test.async());
+        });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter, 300); // 300 ms
+    reporter.await(); // Wait until timeout and suite completes
+    assertEquals(2, reporter.results.size());
+    for (int i = 0;i < 2;i++) {
+      Async async = queue.poll(2, TimeUnit.SECONDS);
+      assertEquals("my_test" + i, reporter.results.get(i).name());
+      assertTrue(reporter.results.get(i).failed());
+      assertNotNull(reporter.results.get(i).failure());
+      assertTrue(reporter.results.get(i).failure().cause() instanceof TimeoutException);
+      assertFalse(async.complete());
+    }
   }
 }
