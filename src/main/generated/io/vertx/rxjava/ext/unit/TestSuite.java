@@ -23,6 +23,7 @@ import io.vertx.ext.unit.TestOptions;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.rxjava.core.Future;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -96,28 +97,8 @@ public class TestSuite {
     this.delegate.run();
   }
 
-  public void run(Handler<AsyncResult<Void>> completionHandler) {
-    this.delegate.run(completionHandler);
-  }
-
-  public Observable<Void> runObservable() {
-    io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
-    run(completionHandler.toHandler());
-    return completionHandler;
-  }
-
   public void run(Vertx vertx) {
     this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate());
-  }
-
-  public void run(Vertx vertx, Handler<AsyncResult<Void>> completionHandler) {
-    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), completionHandler);
-  }
-
-  public Observable<Void> runObservable(Vertx vertx) {
-    io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
-    run(vertx, completionHandler.toHandler());
-    return completionHandler;
   }
 
   public void run(TestOptions options) {
@@ -134,6 +115,10 @@ public class TestSuite {
     return completionHandler;
   }
 
+  public void run(TestOptions options, Future future) {
+    this.delegate.run(options, (io.vertx.core.Future) future.getDelegate());
+  }
+
   public void run(Vertx vertx, TestOptions options) {
     this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options);
   }
@@ -146,6 +131,10 @@ public class TestSuite {
     io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
     run(vertx, options, completionHandler.toHandler());
     return completionHandler;
+  }
+
+  public void run(Vertx vertx, TestOptions options, Future future) {
+    this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options, (io.vertx.core.Future) future.getDelegate());
   }
 
   public TestSuiteRunner runner() {

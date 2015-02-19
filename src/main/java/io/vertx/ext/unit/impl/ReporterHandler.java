@@ -14,21 +14,21 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ReporterHandler implements Handler<TestSuiteReport> {
 
   private final Reporter[] reporters;
-  private final Handler<AsyncResult<Void>> completionHandler;
+  private final Future completion;
 
   public ReporterHandler(Reporter... reporters) {
     this(null, reporters);
   }
 
-  public ReporterHandler(Handler<AsyncResult<Void>> completionHandler,
+  public ReporterHandler(Future completion,
                          Reporter... reporters) {
-    this.completionHandler = completionHandler;
+    this.completion = completion;
     this.reporters = reporters;
   }
 
   @Override
   public void handle(TestSuiteReport testsuite) {
-    Future<Void> future = Future.future();
+    AtomicReference<Throwable> global = new AtomicReference<>();
     Object[] reports = new Object[reporters.length];
     for (int i = 0;i < reporters.length;i++) {
       reports[i] = reporters[i].createReport();
@@ -39,8 +39,8 @@ public class ReporterHandler implements Handler<TestSuiteReport> {
         reporters[i].reportBeginTestCase(reports[i], testcase.name());
       }
       testcase.endHandler(result -> {
-        if (result.failed() && !future.isComplete()) {
-          future.fail(result.failure().cause());
+        if (result.failed()) {
+          global.compareAndSet(null, result.failure().cause());
         }
         for (int i = 0;i < reporters.length;i++) {
           reporters[i].reportEndTestCase(reports[i], result);
@@ -49,20 +49,19 @@ public class ReporterHandler implements Handler<TestSuiteReport> {
     });
     AtomicReference<Throwable> err = new AtomicReference<>();
     testsuite.exceptionHandler(t -> {
-      if (!future.isComplete()) {
-        future.fail(t);
-      }
+      global.compareAndSet(null, t);
       err.set(t);
     });
     testsuite.endHandler(v -> {
       for (int i = 0;i < reporters.length;i++) {
         reporters[i].reportEndTestSuite(reports[i], testsuite.name(), err.get());
       }
-      if (completionHandler != null) {
-        if (!future.isComplete()) {
-          future.complete();
+      if (completion != null) {
+        if (global.get() == null) {
+          completion.complete();
+        } else {
+          completion.fail(global.get());
         }
-        completionHandler.handle(future);
       }
     });
   }

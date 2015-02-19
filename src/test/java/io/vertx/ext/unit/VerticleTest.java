@@ -28,13 +28,9 @@ public class VerticleTest extends AsyncTestBase {
   @org.junit.Test
   public void testJavaScriptTimer() {
     Vertx vertx = Vertx.vertx();
-    vertx.eventBus().<JsonObject>consumer("test").handler(msg -> {
-      if (msg.body().getString("type").equals("endTestSuite")) {
-        testComplete();
-      }
-    });
     vertx.deployVerticle("js:verticle/timer", ar -> {
       assertTrue(ar.succeeded());
+      testComplete();
     });
     await();
   }
@@ -42,13 +38,9 @@ public class VerticleTest extends AsyncTestBase {
   @Test
   public void testGroovyTimer() {
     Vertx vertx = Vertx.vertx();
-    vertx.eventBus().<JsonObject>consumer("test").handler(msg -> {
-      if (msg.body().getString("type").equals("endTestSuite")) {
-        testComplete();
-      }
-    });
     vertx.deployVerticle("verticle/timer.groovy", ar -> {
       assertTrue(ar.succeeded());
+      testComplete();
     });
     await();
   }

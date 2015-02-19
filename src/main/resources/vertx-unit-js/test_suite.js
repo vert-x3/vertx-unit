@@ -18,10 +18,13 @@
 var utils = require('vertx-js/util/utils');
 var TestSuiteRunner = require('vertx-unit-js/test_suite_runner');
 var Test = require('vertx-unit-js/test');
+var Future = require('vertx-js/future');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
 var JTestSuite = io.vertx.ext.unit.TestSuite;
+var TestOptions = io.vertx.ext.unit.TestOptions;
+var TestOptions = io.vertx.ext.unit.TestOptions;
 var TestOptions = io.vertx.ext.unit.TestOptions;
 var TestOptions = io.vertx.ext.unit.TestOptions;
 var TestOptions = io.vertx.ext.unit.TestOptions;
@@ -122,32 +125,16 @@ var TestSuite = function(j_val) {
    @public
    @param vertx {Vertx} 
    @param options {Object} 
-   @param completionHandler {function} 
+   @param future {Future} 
    */
   this.run = function() {
     var __args = arguments;
     if (__args.length === 0) {
       j_testSuite.run();
-    }  else if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuite.run(function(ar) {
-      if (ar.succeeded()) {
-        __args[0](null, null);
-      } else {
-        __args[0](null, ar.cause());
-      }
-    });
     }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
       j_testSuite.run(__args[0]._jdel);
     }  else if (__args.length === 1 && typeof __args[0] === 'object') {
       j_testSuite.run(__args[0] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[0]))) : null);
-    }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'function') {
-      j_testSuite.run(__args[0]._jdel, function(ar) {
-      if (ar.succeeded()) {
-        __args[1](null, null);
-      } else {
-        __args[1](null, ar.cause());
-      }
-    });
     }  else if (__args.length === 2 && typeof __args[0] === 'object' && typeof __args[1] === 'function') {
       j_testSuite.run(__args[0] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[0]))) : null, function(ar) {
       if (ar.succeeded()) {
@@ -156,6 +143,8 @@ var TestSuite = function(j_val) {
         __args[1](null, ar.cause());
       }
     });
+    }  else if (__args.length === 2 && typeof __args[0] === 'object' && typeof __args[1] === 'object' && __args[1]._jdel) {
+      j_testSuite.run(__args[0] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[0]))) : null, __args[1]._jdel);
     }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
       j_testSuite.run(__args[0]._jdel, __args[1] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[1]))) : null);
     }  else if (__args.length === 3 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object' && typeof __args[2] === 'function') {
@@ -166,6 +155,8 @@ var TestSuite = function(j_val) {
         __args[2](null, ar.cause());
       }
     });
+    }  else if (__args.length === 3 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object' && typeof __args[2] === 'object' && __args[2]._jdel) {
+      j_testSuite.run(__args[0]._jdel, __args[1] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[1]))) : null, __args[2]._jdel);
     } else utils.invalidArgs();
   };
 

@@ -4,6 +4,7 @@ import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.impl.TestSuiteImpl;
@@ -38,19 +39,19 @@ public interface TestSuite {
 
   void run();
 
-  void run(Handler<AsyncResult<Void>> completionHandler);
-
   void run(Vertx vertx);
-
-  void run(Vertx vertx, Handler<AsyncResult<Void>> completionHandler);
 
   void run(TestOptions options);
 
   void run(TestOptions options, Handler<AsyncResult<Void>> completionHandler);
 
+  void run(TestOptions options, Future future);
+
   void run(Vertx vertx, TestOptions options);
 
   void run(Vertx vertx, TestOptions options, Handler<AsyncResult<Void>> completionHandler);
+
+  void run(Vertx vertx, TestOptions options, Future future);
 
   TestSuiteRunner runner();
 

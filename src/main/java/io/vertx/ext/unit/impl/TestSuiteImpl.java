@@ -1,6 +1,7 @@
 package io.vertx.ext.unit.impl;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.TestOptions;
@@ -65,27 +66,17 @@ public class TestSuiteImpl implements TestSuite {
 
   @Override
   public void run() {
-    run(null, new TestOptions(), null);
-  }
-
-  @Override
-  public void run(Handler<AsyncResult<Void>> completionHandler) {
-    run(null, new TestOptions(), completionHandler);
+    run(null, new TestOptions(), (Future) null);
   }
 
   @Override
   public void run(Vertx vertx) {
-    run(vertx, new TestOptions(), null);
-  }
-
-  @Override
-  public void run(Vertx vertx, Handler<AsyncResult<Void>> completionHandler) {
-    run(vertx, new TestOptions(), completionHandler);
+    run(vertx, new TestOptions(), (Future) null);
   }
 
   @Override
   public void run(TestOptions options) {
-    run(null, options, null);
+    run(null, options, (Future) null);
   }
 
   @Override
@@ -94,16 +85,31 @@ public class TestSuiteImpl implements TestSuite {
   }
 
   @Override
+  public void run(TestOptions options, Future future) {
+    run(null, options, future);
+  }
+
+  @Override
   public void run(Vertx vertx, TestOptions options) {
-    run(vertx, options, null);
+    run(vertx, options, (Handler<AsyncResult<Void>>) null);
   }
 
   @Override
   public void run(Vertx vertx, TestOptions options, Handler<AsyncResult<Void>> completionHandler) {
+    Future<Void> completion = null;
+    if (completionHandler != null) {
+      completion = Future.future();
+      completion.setHandler(completionHandler);
+    }
+    run(vertx, options, completion);
+  }
+
+  @Override
+  public void run(Vertx vertx, TestOptions options, Future completion) {
     Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
     runner(vertx).
         setTimeout(options.getTimeout()).
-        handler(new ReporterHandler(completionHandler, reporters)).run();
+        handler(new ReporterHandler(completion, reporters)).run();
   }
 
   @Override
