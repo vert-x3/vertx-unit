@@ -6,5 +6,5 @@ exports.vertxStartAsync = function(future) {
             async.complete();
         });
     });
-    suite.run({ reporters : [{ to: "console", format: "simple"}] }).resolve(future);
+    suite.run().resolve(future);
 };

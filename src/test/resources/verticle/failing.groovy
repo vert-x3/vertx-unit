@@ -10,5 +10,5 @@ def vertxStart(Future future) {
       test.fail("the_failure")
     }
   }
-  suite.run([:]).resolve(future)
+  suite.run().resolve(future)
 }

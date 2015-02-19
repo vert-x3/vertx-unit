@@ -10,5 +10,5 @@ def vertxStart(Future future) {
       async.complete()
     }
   }
-  suite.run([:]).resolve(future);
+  suite.run().resolve(future);
 }
