@@ -6,6 +6,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.impl.EventBusAdapterImpl;
+import io.vertx.ext.unit.report.TestSuiteReport;
 
 /**
  * A adapter that listen to reports to the event bus and report them to an handler.

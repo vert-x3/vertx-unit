@@ -4,7 +4,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.TestCompletion;
-import io.vertx.ext.unit.TestSuiteReport;
+import io.vertx.ext.unit.report.TestSuiteReport;
 import io.vertx.ext.unit.report.Reporter;
 
 import java.util.concurrent.atomic.AtomicReference;

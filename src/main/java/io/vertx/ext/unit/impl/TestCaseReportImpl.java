@@ -3,7 +3,7 @@ package io.vertx.ext.unit.impl;
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestResult;
-import io.vertx.ext.unit.TestCaseReport;
+import io.vertx.ext.unit.report.TestCaseReport;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

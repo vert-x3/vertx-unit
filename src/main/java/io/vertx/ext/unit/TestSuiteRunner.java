@@ -3,6 +3,7 @@ package io.vertx.ext.unit;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
+import io.vertx.ext.unit.report.TestSuiteReport;
 
 /**
  * The test suite runner.

@@ -19,6 +19,7 @@ package io.vertx.rxjava.ext.unit;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.rxjava.ext.unit.report.TestSuiteReport;
 import io.vertx.rxjava.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.Handler;
@@ -49,8 +50,8 @@ public class EventBusAdapter {
   }
 
   public EventBusAdapter handler(Handler<TestSuiteReport> reporter) {
-    this.delegate.handler(new Handler<io.vertx.ext.unit.TestSuiteReport>() {
-      public void handle(io.vertx.ext.unit.TestSuiteReport event) {
+    this.delegate.handler(new Handler<io.vertx.ext.unit.report.TestSuiteReport>() {
+      public void handle(io.vertx.ext.unit.report.TestSuiteReport event) {
         reporter.handle(new TestSuiteReport(event));
       }
     });

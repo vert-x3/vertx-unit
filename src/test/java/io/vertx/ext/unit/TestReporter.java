@@ -1,7 +1,7 @@
 package io.vertx.ext.unit;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.unit.report.Reporter;
+import io.vertx.ext.unit.report.TestSuiteReport;
 
 import java.util.ArrayList;
 import java.util.Collections;

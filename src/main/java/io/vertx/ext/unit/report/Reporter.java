@@ -1,12 +1,8 @@
 package io.vertx.ext.unit.report;
 
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.TestResult;
-import io.vertx.ext.unit.TestSuiteReport;
 import io.vertx.ext.unit.report.impl.DefaultReporterFactory;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

@@ -3,7 +3,7 @@ package io.vertx.ext.unit.impl;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Test;
-import io.vertx.ext.unit.TestSuiteReport;
+import io.vertx.ext.unit.report.TestSuiteReport;
 import io.vertx.ext.unit.TestSuiteRunner;
 
 /**

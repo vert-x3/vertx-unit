@@ -4,7 +4,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestCase;
-import io.vertx.ext.unit.TestCaseReport;
+import io.vertx.ext.unit.report.TestCaseReport;
 import io.vertx.ext.unit.TestResult;
 
 import java.util.concurrent.CountDownLatch;

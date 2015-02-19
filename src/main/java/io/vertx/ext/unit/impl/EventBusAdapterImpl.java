@@ -6,9 +6,9 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.ext.unit.EventBusAdapter;
 import io.vertx.ext.unit.Failure;
-import io.vertx.ext.unit.TestCaseReport;
+import io.vertx.ext.unit.report.TestCaseReport;
 import io.vertx.ext.unit.TestResult;
-import io.vertx.ext.unit.TestSuiteReport;
+import io.vertx.ext.unit.report.TestSuiteReport;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

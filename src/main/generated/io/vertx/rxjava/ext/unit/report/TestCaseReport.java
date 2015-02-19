@@ -14,11 +14,12 @@
  * under the License.
  */
 
-package io.vertx.rxjava.ext.unit;
+package io.vertx.rxjava.ext.unit.report;
 
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.rxjava.ext.unit.TestResult;
 import io.vertx.core.Handler;
 
 /**
@@ -29,9 +30,9 @@ import io.vertx.core.Handler;
 
 public class TestCaseReport {
 
-  final io.vertx.ext.unit.TestCaseReport delegate;
+  final io.vertx.ext.unit.report.TestCaseReport delegate;
 
-  public TestCaseReport(io.vertx.ext.unit.TestCaseReport delegate) {
+  public TestCaseReport(io.vertx.ext.unit.report.TestCaseReport delegate) {
     this.delegate = delegate;
   }
 
@@ -68,7 +69,7 @@ public class TestCaseReport {
 
   private java.lang.String cached_0;
 
-  public static TestCaseReport newInstance(io.vertx.ext.unit.TestCaseReport arg) {
+  public static TestCaseReport newInstance(io.vertx.ext.unit.report.TestCaseReport arg) {
     return new TestCaseReport(arg);
   }
 }

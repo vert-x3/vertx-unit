@@ -14,7 +14,7 @@
  * under the License.
  */
 
-package io.vertx.rxjava.ext.unit;
+package io.vertx.rxjava.ext.unit.report;
 
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
@@ -32,9 +32,9 @@ import io.vertx.core.Handler;
 
 public class TestSuiteReport implements ReadStream<TestCaseReport> {
 
-  final io.vertx.ext.unit.TestSuiteReport delegate;
+  final io.vertx.ext.unit.report.TestSuiteReport delegate;
 
-  public TestSuiteReport(io.vertx.ext.unit.TestSuiteReport delegate) {
+  public TestSuiteReport(io.vertx.ext.unit.report.TestSuiteReport delegate) {
     this.delegate = delegate;
   }
 
@@ -46,8 +46,8 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
 
   public synchronized rx.Observable<TestCaseReport> toObservable() {
     if (observable == null) {
-      java.util.function.Function<io.vertx.ext.unit.TestCaseReport, TestCaseReport> conv = TestCaseReport::newInstance;
-      io.vertx.lang.rxjava.ReadStreamAdapter<io.vertx.ext.unit.TestCaseReport, TestCaseReport> adapter = new io.vertx.lang.rxjava.ReadStreamAdapter<>(this, conv);
+      java.util.function.Function<io.vertx.ext.unit.report.TestCaseReport, TestCaseReport> conv = TestCaseReport::newInstance;
+      io.vertx.lang.rxjava.ReadStreamAdapter<io.vertx.ext.unit.report.TestCaseReport, TestCaseReport> adapter = new io.vertx.lang.rxjava.ReadStreamAdapter<>(this, conv);
       observable = rx.Observable.create(adapter);
     }
     return observable;
@@ -59,8 +59,8 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
   }
 
   public ReadStream<TestCaseReport> handler(Handler<TestCaseReport> arg0) {
-    this.delegate.handler(new Handler<io.vertx.ext.unit.TestCaseReport>() {
-      public void handle(io.vertx.ext.unit.TestCaseReport event) {
+    this.delegate.handler(new Handler<io.vertx.ext.unit.report.TestCaseReport>() {
+      public void handle(io.vertx.ext.unit.report.TestCaseReport event) {
         arg0.handle(new TestCaseReport(event));
       }
     });
@@ -96,7 +96,7 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
 
   private java.lang.String cached_0;
 
-  public static TestSuiteReport newInstance(io.vertx.ext.unit.TestSuiteReport arg) {
+  public static TestSuiteReport newInstance(io.vertx.ext.unit.report.TestSuiteReport arg) {
     return new TestSuiteReport(arg);
   }
 }
