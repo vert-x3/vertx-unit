@@ -4,7 +4,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.Test;
-import io.vertx.ext.unit.TestResult;
+import io.vertx.ext.unit.report.TestResult;
 import org.junit.Assert;
 
 import java.util.LinkedList;

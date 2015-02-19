@@ -1,6 +1,7 @@
 package io.vertx.ext.unit;
 
 import io.vertx.core.Handler;
+import io.vertx.ext.unit.report.TestResult;
 import org.junit.Test;
 
 import java.util.concurrent.ArrayBlockingQueue;

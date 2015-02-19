@@ -19,7 +19,6 @@ package io.vertx.rxjava.ext.unit.report;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
-import io.vertx.rxjava.ext.unit.TestResult;
 import io.vertx.core.Handler;
 
 /**
@@ -59,8 +58,8 @@ public class TestCaseReport {
    * @return a reference to this, so the API can be used fluently
    */
   public TestCaseReport endHandler(Handler<TestResult> handler) {
-    this.delegate.endHandler(new Handler<io.vertx.ext.unit.TestResult>() {
-      public void handle(io.vertx.ext.unit.TestResult event) {
+    this.delegate.endHandler(new Handler<io.vertx.ext.unit.report.TestResult>() {
+      public void handle(io.vertx.ext.unit.report.TestResult event) {
         handler.handle(new TestResult(event));
       }
     });

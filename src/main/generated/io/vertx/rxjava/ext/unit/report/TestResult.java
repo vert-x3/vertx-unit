@@ -14,11 +14,12 @@
  * under the License.
  */
 
-package io.vertx.rxjava.ext.unit;
+package io.vertx.rxjava.ext.unit.report;
 
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.rxjava.ext.unit.Failure;
 
 /**
  * The result of a test.
@@ -30,9 +31,9 @@ import rx.Observable;
 
 public class TestResult {
 
-  final io.vertx.ext.unit.TestResult delegate;
+  final io.vertx.ext.unit.report.TestResult delegate;
 
-  public TestResult(io.vertx.ext.unit.TestResult delegate) {
+  public TestResult(io.vertx.ext.unit.report.TestResult delegate) {
     this.delegate = delegate;
   }
 
@@ -106,7 +107,7 @@ public class TestResult {
   private java.lang.Boolean cached_3;
   private Failure cached_4;
 
-  public static TestResult newInstance(io.vertx.ext.unit.TestResult arg) {
+  public static TestResult newInstance(io.vertx.ext.unit.report.TestResult arg) {
     return new TestResult(arg);
   }
 }

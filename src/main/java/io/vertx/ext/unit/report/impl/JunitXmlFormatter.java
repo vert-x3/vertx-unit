@@ -2,7 +2,7 @@ package io.vertx.ext.unit.report.impl;
 
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.ext.unit.TestResult;
+import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.impl.TestResultImpl;
 import io.vertx.ext.unit.report.Reporter;
 

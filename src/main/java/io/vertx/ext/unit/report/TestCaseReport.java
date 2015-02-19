@@ -4,7 +4,6 @@ import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
-import io.vertx.ext.unit.TestResult;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

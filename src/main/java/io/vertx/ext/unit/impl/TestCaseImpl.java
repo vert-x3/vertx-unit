@@ -5,7 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.TestCase;
 import io.vertx.ext.unit.report.TestCaseReport;
-import io.vertx.ext.unit.TestResult;
+import io.vertx.ext.unit.report.TestResult;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

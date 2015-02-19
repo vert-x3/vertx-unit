@@ -1,7 +1,7 @@
 package io.vertx.ext.unit.impl;
 
 import io.vertx.ext.unit.Failure;
-import io.vertx.ext.unit.TestResult;
+import io.vertx.ext.unit.report.TestResult;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

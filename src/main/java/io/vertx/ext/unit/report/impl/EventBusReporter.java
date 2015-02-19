@@ -4,7 +4,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.MessageProducer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Failure;
-import io.vertx.ext.unit.TestResult;
+import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.impl.FailureImpl;
 import io.vertx.ext.unit.report.Reporter;
 
