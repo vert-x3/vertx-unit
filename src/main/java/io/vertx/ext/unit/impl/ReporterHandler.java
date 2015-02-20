@@ -65,7 +65,7 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
           failure.compareAndSet(null, result.failure().cause());
         }
         for (int i = 0;i < reporters.length;i++) {
-          reporters[i].reportEndTestCase(reports[i], result);
+          reporters[i].reportEndTestCase(reports[i], testcase.name(), result);
         }
       });
     });

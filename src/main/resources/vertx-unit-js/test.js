@@ -23,7 +23,8 @@ var JsonObject = io.vertx.core.json.JsonObject;
 var JTest = io.vertx.ext.unit.Test;
 
 /**
- The test interface allows the test code to report test completion or failures.
+ The test object is used for performing test assertions and manage the completion of the test. This object
+ is provided by <i>vertx-unit</i> as argument of the test case.
 
  @class
 */
@@ -33,10 +34,109 @@ var Test = function(j_val) {
   var that = this;
 
   /**
+   Assert the specified <code>condition</code> is <code>true</code>. If the condition is <code>false</code>, an assertion error is thrown
+   otherwise the execution continue.
+
+   @public
+   @param condition {boolean} the condition to assert 
+   @param message {string} the failure message 
+   @return {Test} a reference to this, so the API can be used fluently
+   */
+  this.assertTrue = function() {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] ==='boolean') {
+      j_test.assertTrue(__args[0]);
+      return that;
+    }  else if (__args.length === 2 && typeof __args[0] ==='boolean' && typeof __args[1] === 'string') {
+      j_test.assertTrue(__args[0], __args[1]);
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Assert the specified <code>condition</code> is <code>false</code>. If the condition is <code>true</code>, an assertion error is thrown
+   otherwise the execution continue.
+
+   @public
+   @param condition {boolean} the condition to assert 
+   @param message {string} the failure message 
+   @return {Test} a reference to this, so the API can be used fluently
+   */
+  this.assertFalse = function() {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] ==='boolean') {
+      j_test.assertFalse(__args[0]);
+      return that;
+    }  else if (__args.length === 2 && typeof __args[0] ==='boolean' && typeof __args[1] === 'string') {
+      j_test.assertFalse(__args[0], __args[1]);
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Assert the <code>expected</code> argument is equals to the <code>actual</code> argument. If the aguments are not equals
+   an assertion error is thrown otherwise the execution continue.
+
+   @public
+   @param expected {Object} the object the actual object is supposedly equals to 
+   @param actual {Object} the actual object to test 
+   @param message {string} the failure message 
+   @return {Test} a reference to this, so the API can be used fluently
+   */
+  this.assertEquals = function() {
+    var __args = arguments;
+    if (__args.length === 2 && true && true) {
+      j_test.assertEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
+      return that;
+    }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
+      j_test.assertEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Assert the <code>first</code> argument is not equals to the <code>second</code> argument. If the aguments are equals
+   an assertion error is thrown otherwise the execution continue.
+
+   @public
+   @param first {Object} the first object to test 
+   @param second {Object} the second object to test 
+   @param message {string} the failure message 
+   @return {Test} a reference to this, so the API can be used fluently
+   */
+  this.assertNotEquals = function() {
+    var __args = arguments;
+    if (__args.length === 2 && true && true) {
+      j_test.assertNotEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
+      return that;
+    }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
+      j_test.assertNotEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Throw a failure with the specified failure <code>message</code>.
+
+   @public
+   @param message {string} the failure message 
+   */
+  this.fail = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      j_test.fail();
+    }  else if (__args.length === 1 && typeof __args[0] === 'string') {
+      j_test.fail(__args[0]);
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Returns the vertx instance associated with this test. The value may be null if no vertx instance was
+   specified when running the test suite.
 
    @public
 
-   @return {Vertx}
+   @return {Vertx} the vertx instance
    */
   this.vertx = function() {
     var __args = arguments;
@@ -49,91 +149,20 @@ var Test = function(j_val) {
   };
 
   /**
+   Create and returns a new async object, the returned async controls the completion of the test. The test case
+   will complete when all the async objects have their {@link Async#complete} method called
+   at least once.<p/>
+  
+   This method shall be used for creating asynchronous exit points for the executed test.
 
    @public
 
-   @return {Async}
+   @return {Async} the async instance
    */
   this.async = function() {
     var __args = arguments;
     if (__args.length === 0) {
       return new Async(j_test.async());
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param condition {boolean} 
-   @param message {string} 
-   */
-  this.assertTrue = function() {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] ==='boolean') {
-      j_test.assertTrue(__args[0]);
-    }  else if (__args.length === 2 && typeof __args[0] ==='boolean' && typeof __args[1] === 'string') {
-      j_test.assertTrue(__args[0], __args[1]);
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param condition {boolean} 
-   @param message {string} 
-   */
-  this.assertFalse = function() {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] ==='boolean') {
-      j_test.assertFalse(__args[0]);
-    }  else if (__args.length === 2 && typeof __args[0] ==='boolean' && typeof __args[1] === 'string') {
-      j_test.assertFalse(__args[0], __args[1]);
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param s {string} 
-   */
-  this.fail = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      j_test.fail();
-    }  else if (__args.length === 1 && typeof __args[0] === 'string') {
-      j_test.fail(__args[0]);
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param expected {Object} 
-   @param actual {Object} 
-   @param message {string} 
-   */
-  this.assertEquals = function() {
-    var __args = arguments;
-    if (__args.length === 2 && true && true) {
-      j_test.assertEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
-    }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
-      j_test.assertEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param first {Object} 
-   @param second {Object} 
-   @param message {string} 
-   */
-  this.assertNotEquals = function() {
-    var __args = arguments;
-    if (__args.length === 2 && true && true) {
-      j_test.assertNotEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
-    }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
-      j_test.assertNotEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
     } else utils.invalidArgs();
   };
 

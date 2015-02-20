@@ -1,7 +1,12 @@
 == TestOptions
 
 ++++
- Test configuration options.
+ Test execution options:
+
+ <ul>
+   <li>the <code>timeout</code> in milliseconds, the default value is 2 minutes </li>
+   <li>the <code>reporters</code> is an array of reporter configurations</li>
+ </ul>
 ++++
 
 |===
@@ -9,7 +14,9 @@
 
 |timeout
 |Number
-|-
+| Set the test timeout.
+
 |reporters
 |Array of link:ReportOptions.html[ReportOptions]
-|-|===
+| Replace the current list of reporters with a new one.
+|===

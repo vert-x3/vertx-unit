@@ -22,6 +22,7 @@ var JsonObject = io.vertx.core.json.JsonObject;
 var JAsync = io.vertx.ext.unit.Async;
 
 /**
+ An asynchronous exit point for a test.
 
  @class
 */
@@ -31,10 +32,12 @@ var Async = function(j_val) {
   var that = this;
 
   /**
+   Signals the asynchronous operation is done, this method should be called only once, calling it several
+   times is tolerated.
 
    @public
 
-   @return {boolean}
+   @return {boolean} true when called the first time, false otherwise.
    */
   this.complete = function() {
     var __args = arguments;

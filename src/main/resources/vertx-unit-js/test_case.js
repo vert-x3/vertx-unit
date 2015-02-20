@@ -23,6 +23,7 @@ var JsonObject = io.vertx.core.json.JsonObject;
 var JTestCase = io.vertx.ext.unit.TestCase;
 
 /**
+ A test case object can be used to create a single test.
 
  @class
 */
@@ -38,17 +39,18 @@ var TestCase = function(j_val) {
 };
 
 /**
+ Create a test case.
 
  @memberof module:vertx-unit-js/test_case
- @param name {string} 
- @param handler {function} 
- @return {TestCase}
+ @param name {string} the test case name 
+ @param testCase {function} the test case 
+ @return {TestCase} the created test case
  */
-TestCase.create = function(name, handler) {
+TestCase.create = function(name, testCase) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
     return new TestCase(JTestCase.create(name, function(jVal) {
-    handler(new Test(jVal));
+    testCase(new Test(jVal));
   }));
   } else utils.invalidArgs();
 };

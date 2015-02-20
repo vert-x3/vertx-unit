@@ -22,6 +22,8 @@ import rx.Observable;
 import io.vertx.core.Handler;
 
 /**
+ * Report the execution of a test case.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  *
  * NOTE: This class has been automatically generated from the original non RX-ified interface using Vert.x codegen.

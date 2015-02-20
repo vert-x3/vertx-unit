@@ -112,18 +112,20 @@ class InvokeTask implements Task<Result> {
       }
 
       @Override
-      public void assertTrue(boolean condition, String message) {
+      public Test assertTrue(boolean condition, String message) {
         try {
           Assert.assertTrue(message, condition);
+          return this;
         } catch (AssertionError err) {
           failed(err);
           throw err;
         }
       }
 
-      public void assertTrue(boolean condition) {
+      public Test assertTrue(boolean condition) {
         try {
           Assert.assertTrue(condition);
+          return this;
         } catch (AssertionError err) {
           failed(err);
           throw err;
@@ -140,9 +142,10 @@ class InvokeTask implements Task<Result> {
       }
 
       @Override
-      public void assertFalse(boolean condition) {
+      public Test assertFalse(boolean condition) {
         try {
           Assert.assertFalse(condition);
+          return this;
         } catch (AssertionError err) {
           failed(err);
           throw err;
@@ -150,9 +153,10 @@ class InvokeTask implements Task<Result> {
       }
 
       @Override
-      public void assertFalse(boolean condition, String message) {
+      public Test assertFalse(boolean condition, String message) {
         try {
           Assert.assertFalse(message, condition);
+          return this;
         } catch (AssertionError err) {
           failed(err);
           throw err;
@@ -170,9 +174,10 @@ class InvokeTask implements Task<Result> {
       }
 
       @Override
-      public void assertEquals(Object expected, Object actual) {
+      public Test assertEquals(Object expected, Object actual) {
         try {
           Assert.assertEquals(expected, actual);
+          return this;
         } catch (AssertionError err) {
           failed(err);
           throw err;
@@ -180,9 +185,10 @@ class InvokeTask implements Task<Result> {
       }
 
       @Override
-      public void assertEquals(Object expected, Object actual, String message) {
+      public Test assertEquals(Object expected, Object actual, String message) {
         try {
           Assert.assertEquals(message, expected, actual);
+          return this;
         } catch (AssertionError err) {
           failed(err);
           throw err;
@@ -190,9 +196,10 @@ class InvokeTask implements Task<Result> {
       }
 
       @Override
-      public void assertNotEquals(Object first, Object second, String message) {
+      public Test assertNotEquals(Object first, Object second, String message) {
         try {
           Assert.assertNotEquals(message, first, second);
+          return this;
         } catch (AssertionError err) {
           failed(err);
           throw err;
@@ -200,9 +207,10 @@ class InvokeTask implements Task<Result> {
       }
 
       @Override
-      public void assertNotEquals(Object first, Object second) {
+      public Test assertNotEquals(Object first, Object second) {
         try {
           Assert.assertNotEquals(first, second);
+          return this;
         } catch (AssertionError err) {
           failed(err);
           throw err;

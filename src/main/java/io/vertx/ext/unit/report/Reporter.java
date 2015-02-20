@@ -4,7 +4,10 @@ import io.vertx.core.Vertx;
 import io.vertx.ext.unit.report.impl.DefaultReporterFactory;
 
 /**
+ * The reporter defines a set of callback for the life cycle events.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
+ * @param <R> the report generic type
  */
 public interface Reporter<R> {
 
@@ -14,31 +17,45 @@ public interface Reporter<R> {
     return factory.reporter(vertx, options);
   }
 
+  /**
+   * Create an empty report.
+   *
+   * @return a new empty report
+   */
   R createReport();
 
+  /**
+   * Signals the test suite began.
+   *
+   * @param report the report
+   * @param name the test suite name
+   */
   void reportBeginTestSuite(R report, String name);
 
+  /**
+   * Signals a test case began.
+   *
+   * @param report the report
+   * @param name the test case name
+   */
   void reportBeginTestCase(R report, String name);
 
-  void reportEndTestCase(R report, TestResult result);
+  /**
+   * Signals a test case ended.
+   *
+   *  @param report the report
+   * @param name the test case name
+   * @param result the test case result
+   */
+  void reportEndTestCase(R report, String name, TestResult result);
 
+  /**
+   * Signals a test suite ended
+   *
+   * @param report the report
+   * @param name the test suite name
+   * @param err the test suite error
+   */
   void reportEndTestSuite(R report, String name, Throwable err);
 
-/*
-  default Handler<TestSuiteReport> asHandler() {
-    return testsuite -> {
-      R report = createReport();
-      reportBeginTestSuite(report, testsuite.name());
-      testsuite.handler(testcase -> {
-        reportBeginTestCase(report, testcase.name());
-        testcase.endHandler(result -> reportEndTestCase(report, result));
-      });
-      AtomicReference<Throwable> err = new AtomicReference<>();
-      testsuite.exceptionHandler(err::set);
-      testsuite.endHandler(v -> {
-        reportEndTestSuite(report, testsuite.name(), err.get());
-      });
-    };
-  }
-*/
 }

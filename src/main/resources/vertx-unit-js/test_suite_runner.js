@@ -33,6 +33,36 @@ var TestSuiteRunner = function(j_val) {
   var that = this;
 
   /**
+   @return the current runner vertx instance
+
+   @public
+
+   @return {Vertx}
+   */
+  this.getVertx = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      return new Vertx(j_testSuiteRunner.getVertx());
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Set a vertx instance of the runner.
+
+   @public
+   @param vertx {Vertx} the vertx instance 
+   @return {TestSuiteRunner} a reference to this, so the API can be used fluently
+   */
+  this.setVertx = function(vertx) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
+      j_testSuiteRunner.setVertx(vertx._jdel);
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+   @return the current runner timeout
 
    @public
 
@@ -46,10 +76,11 @@ var TestSuiteRunner = function(j_val) {
   };
 
   /**
+   Set a timeout on the runner, zero or a negative value means no timeout.
 
    @public
-   @param timeout {number} 
-   @return {TestSuiteRunner}
+   @param timeout {number} the timeout in millis 
+   @return {TestSuiteRunner} a reference to this, so the API can be used fluently
    */
   this.setTimeout = function(timeout) {
     var __args = arguments;
@@ -77,7 +108,7 @@ var TestSuiteRunner = function(j_val) {
   };
 
   /**
-   Run the testsuite.
+   Run the testsuite with the current <code>timeout</code>, <code>vertx</code> and <code>reporter</code>.
 
    @public
 

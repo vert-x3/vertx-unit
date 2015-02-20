@@ -27,7 +27,7 @@ var TestOptions = io.vertx.ext.unit.TestOptions;
 var TestOptions = io.vertx.ext.unit.TestOptions;
 
 /**
-
+ A named suite of test cases that are executed altogether. The suite suite is created with
  @class
 */
 var TestSuite = function(j_val) {
@@ -36,42 +36,45 @@ var TestSuite = function(j_val) {
   var that = this;
 
   /**
+   Set a callback executed before the tests.
 
    @public
-   @param handler {function} 
-   @return {TestSuite}
+   @param callback {function} the callback 
+   @return {TestSuite} a reference to this, so the API can be used fluently
    */
-  this.before = function(handler) {
+  this.before = function(callback) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.before(function(jVal) {
-      handler(new Test(jVal));
+      callback(new Test(jVal));
     });
       return that;
     } else utils.invalidArgs();
   };
 
   /**
+   Set a callback executed before each test and after the suite <code>before</code> callback.
 
    @public
-   @param handler {function} 
-   @return {TestSuite}
+   @param callback {function} the callback 
+   @return {TestSuite} a reference to this, so the API can be used fluently
    */
-  this.beforeEach = function(handler) {
+  this.beforeEach = function(callback) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.beforeEach(function(jVal) {
-      handler(new Test(jVal));
+      callback(new Test(jVal));
     });
       return that;
     } else utils.invalidArgs();
   };
 
   /**
+   Set a callback executed after the tests.
 
    @public
-   @param callback {function} 
-   @return {TestSuite}
+   @param callback {function} the callback 
+   @return {TestSuite} a reference to this, so the API can be used fluently
    */
   this.after = function(callback) {
     var __args = arguments;
@@ -84,10 +87,11 @@ var TestSuite = function(j_val) {
   };
 
   /**
+   Set a callback executed after each test and before the suite <code>after</code> callback.
 
    @public
-   @param callback {function} 
-   @return {TestSuite}
+   @param callback {function} the callback 
+   @return {TestSuite} a reference to this, so the API can be used fluently
    */
   this.afterEach = function(callback) {
     var __args = arguments;
@@ -100,37 +104,42 @@ var TestSuite = function(j_val) {
   };
 
   /**
+   Add a new test case to the suite.
 
    @public
-   @param name {string} 
-   @param handler {function} 
-   @return {TestSuite}
+   @param name {string} the test case name 
+   @param testCase {function} the test case 
+   @return {TestSuite} a reference to this, so the API can be used fluently
    */
-  this.test = function(name, handler) {
+  this.test = function(name, testCase) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
       j_testSuite.test(name, function(jVal) {
-      handler(new Test(jVal));
+      testCase(new Test(jVal));
     });
       return that;
     } else utils.invalidArgs();
   };
 
   /**
+   Run the testsuite with the specified <code>options</code> and the specified <code>vertx</code> instance.<p/>
+  
+   The test suite will be executed on the provided Vert.x event loop. The returned
+   {@link TestCompletion} object can be used to get a completion callback.
 
    @public
-   @param vertx {Vertx} 
-   @param options {Object} 
-   @return {TestCompletion}
+   @param vertx {Vertx} the vertx instance 
+   @param options {Object} the test options 
+   @return {TestCompletion} the related test completion
    */
   this.run = function() {
     var __args = arguments;
     if (__args.length === 0) {
       return new TestCompletion(j_testSuite.run());
-    }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      return new TestCompletion(j_testSuite.run(__args[0]._jdel));
     }  else if (__args.length === 1 && typeof __args[0] === 'object') {
       return new TestCompletion(j_testSuite.run(__args[0] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[0]))) : null));
+    }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
+      return new TestCompletion(j_testSuite.run(__args[0]._jdel));
     }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
       return new TestCompletion(j_testSuite.run(__args[0]._jdel, __args[1] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
     } else utils.invalidArgs();
@@ -139,15 +148,13 @@ var TestSuite = function(j_val) {
   /**
 
    @public
-   @param vertx {Vertx} 
+
    @return {TestSuiteRunner}
    */
   this.runner = function() {
     var __args = arguments;
     if (__args.length === 0) {
       return new TestSuiteRunner(j_testSuite.runner());
-    }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      return new TestSuiteRunner(j_testSuite.runner(__args[0]._jdel));
     } else utils.invalidArgs();
   };
 
@@ -158,10 +165,11 @@ var TestSuite = function(j_val) {
 };
 
 /**
+ Create and return a new test suite.
 
  @memberof module:vertx-unit-js/test_suite
- @param name {string} 
- @return {TestSuite}
+ @param name {string} the test suite name 
+ @return {TestSuite} the created test suite
  */
 TestSuite.create = function(name) {
   var __args = arguments;

@@ -41,7 +41,7 @@ public class EventBusReporter implements Reporter<MessageProducer<JsonObject>> {
   }
 
   @Override
-  public void reportEndTestCase(MessageProducer<JsonObject> report, TestResult result) {
+  public void reportEndTestCase(MessageProducer<JsonObject> report, String name, TestResult result) {
     JsonObject json = new JsonObject().
         put("type", "endTestCase").
         put("name", result.name()).

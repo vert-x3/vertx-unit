@@ -9,30 +9,56 @@ import io.vertx.ext.unit.impl.TestCaseImpl;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * A test case object can be used to create a single test.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
 public interface TestCase {
 
-  static TestCase create(String name, Handler<Test> handler) {
-    return new TestCaseImpl(name, handler);
+  /**
+   * Create a test case.
+   *
+   * @param name the test case name
+   * @param testCase the test case
+   * @return the created test case
+   */
+  static TestCase create(String name, Handler<Test> testCase) {
+    return new TestCaseImpl(name, testCase);
   }
 
+  /**
+   * Assert the test case passes and block until it is executed. This method should be used from a non Vert.x
+   * context, like a Junit test.
+   */
   @GenIgnore
   void assertSuccess();
 
+  /**
+   * Assert the test case passes and block until it is executed. This method should be used from a non Vert.x
+   * context, like a Junit test.
+   *
+   * @param timeout the suite timeout expressed in the {@code unit} argument
+   * @param unit the suite {@code timeout} unit
+   */
   @GenIgnore
   void assertSuccess(long timeout, TimeUnit unit);
 
+  /**
+   * Assert the test case passes and block until it is executed. This method should be used from a non Vert.x
+   * context, like a Junit test.
+   *
+   * @param vertx the vert.x instance
+   */
   @GenIgnore
   void assertSuccess(Vertx vertx);
 
   /**
-   * Run the test and assert it is a success.
+   * Assert the test case passes and block until it is executed. This method should be used from a non Vert.x
    *
-   * @param vertx the provided vertx
-   * @param timeout the timeout value
-   * @param unit the timeout unit
+   * @param vertx the vert.x instance
+   * @param timeout the suite timeout expressed in the {@code unit} argument
+   * @param unit the suite {@code timeout} unit
    */
   @GenIgnore
   void assertSuccess(Vertx vertx, long timeout, TimeUnit unit);

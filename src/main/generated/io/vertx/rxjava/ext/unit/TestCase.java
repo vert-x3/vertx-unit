@@ -22,6 +22,8 @@ import rx.Observable;
 import io.vertx.core.Handler;
 
 /**
+ * A test case object can be used to create a single test.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  *
  * NOTE: This class has been automatically generated from the original non RX-ified interface using Vert.x codegen.
@@ -39,10 +41,17 @@ public class TestCase {
     return delegate;
   }
 
-  public static TestCase create(String name, Handler<Test> handler) {
+  /**
+   * Create a test case.
+   *
+   * @param name the test case name
+   * @param testCase the test case
+   * @return the created test case
+   */
+  public static TestCase create(String name, Handler<Test> testCase) {
     TestCase ret= TestCase.newInstance(io.vertx.ext.unit.TestCase.create(name, new Handler<io.vertx.ext.unit.Test>() {
       public void handle(io.vertx.ext.unit.Test event) {
-        handler.handle(new Test(event));
+        testCase.handle(new Test(event));
       }
     }));
     return ret;

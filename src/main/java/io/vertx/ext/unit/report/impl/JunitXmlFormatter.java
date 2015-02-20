@@ -58,7 +58,7 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
   }
 
   @Override
-  public void reportEndTestCase(XmlReport report, TestResult result) {
+  public void reportEndTestCase(XmlReport report, String name, TestResult result) {
     report.results.add(result);
     if (result.failed()) {
       if (result.failure().isError()) {

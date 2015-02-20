@@ -17,12 +17,12 @@ public class TestSuiteRunnerImpl implements TestSuiteRunner {
   private final Handler<Test> beforeEach;
   private final Handler<Test> afterEach;
   private final TestCaseImpl[] tests;
-  private final Vertx vertx;
+  private Vertx vertx;
   private Handler<TestSuiteReport> handler;
   private long timeout;
 
   public TestSuiteRunnerImpl(String name, Handler<Test> before, Handler<Test> after, Handler<Test> beforeEach,
-                             Handler<Test> afterEach, TestCaseImpl[] tests, Vertx vertx) {
+                             Handler<Test> afterEach, TestCaseImpl[] tests) {
     this.name = name;
     this.timeout = 0;
     this.before = before;
@@ -30,7 +30,17 @@ public class TestSuiteRunnerImpl implements TestSuiteRunner {
     this.beforeEach = beforeEach;
     this.afterEach = afterEach;
     this.tests = tests;
+  }
+
+  @Override
+  public Vertx getVertx() {
+    return vertx;
+  }
+
+  @Override
+  public TestSuiteRunner setVertx(Vertx vertx) {
     this.vertx = vertx;
+    return this;
   }
 
   @Override

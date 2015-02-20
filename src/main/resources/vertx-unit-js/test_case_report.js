@@ -23,6 +23,7 @@ var JsonObject = io.vertx.core.json.JsonObject;
 var JTestCaseReport = io.vertx.ext.unit.report.TestCaseReport;
 
 /**
+ Report the execution of a test case.
 
  @class
 */

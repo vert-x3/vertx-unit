@@ -20,6 +20,7 @@ import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.ext.unit.report.TestSuiteReport;
+import io.vertx.rxjava.core.Vertx;
 import io.vertx.core.Handler;
 
 /**
@@ -42,11 +43,39 @@ public class TestSuiteRunner {
     return delegate;
   }
 
+  /**
+   * @return the current runner vertx instance
+   */
+  public Vertx getVertx() {
+    Vertx ret= Vertx.newInstance(this.delegate.getVertx());
+    return ret;
+  }
+
+  /**
+   * Set a vertx instance of the runner.
+   *
+   * @param vertx the vertx instance
+   * @return a reference to this, so the API can be used fluently
+   */
+  public TestSuiteRunner setVertx(Vertx vertx) {
+    this.delegate.setVertx((io.vertx.core.Vertx) vertx.getDelegate());
+    return this;
+  }
+
+  /**
+   * @return the current runner timeout
+   */
   public long getTimeout() {
     long ret = this.delegate.getTimeout();
     return ret;
   }
 
+  /**
+   * Set a timeout on the runner, zero or a negative value means no timeout.
+   *
+   * @param timeout the timeout in millis
+   * @return a reference to this, so the API can be used fluently
+   */
   public TestSuiteRunner setTimeout(long timeout) {
     this.delegate.setTimeout(timeout);
     return this;
@@ -68,7 +97,7 @@ public class TestSuiteRunner {
   }
 
   /**
-   * Run the testsuite.
+   * Run the testsuite with the current {@code timeout}, {@code vertx} and {@code reporter}.
    */
   public void run() {
     this.delegate.run();

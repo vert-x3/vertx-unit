@@ -46,7 +46,7 @@ public class SimpleFormatter implements Reporter<SimpleFormatter.ReportImpl> {
   }
 
   @Override
-  public void reportEndTestCase(ReportImpl report, TestResult result) {
+  public void reportEndTestCase(ReportImpl report, String name, TestResult result) {
     if (result.succeeded()) {
       info.accept(Buffer.buffer("Passed " + result.name()));
     } else {

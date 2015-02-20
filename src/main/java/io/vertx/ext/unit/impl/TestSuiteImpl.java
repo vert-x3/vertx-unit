@@ -34,14 +34,14 @@ public class TestSuiteImpl implements TestSuite {
   }
 
   @Override
-  public TestSuite before(Handler<Test> handler) {
-    this.before = handler;
+  public TestSuite before(Handler<Test> callback) {
+    this.before = callback;
     return this;
   }
 
   @Override
-  public TestSuite beforeEach(Handler<Test> handler) {
-    beforeEach = handler;
+  public TestSuite beforeEach(Handler<Test> callback) {
+    beforeEach = callback;
     return this;
   }
 
@@ -58,8 +58,8 @@ public class TestSuiteImpl implements TestSuite {
   }
 
   @Override
-  public TestSuite test(String name, Handler<Test> handler) {
-    tests.add(new TestCaseImpl(name, handler));
+  public TestSuite test(String name, Handler<Test> testCase) {
+    tests.add(new TestCaseImpl(name, testCase));
     return this;
   }
 
@@ -82,7 +82,8 @@ public class TestSuiteImpl implements TestSuite {
   public TestCompletion run(Vertx vertx, TestOptions options) {
     Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
     ReporterHandler abc = new ReporterHandler(null, reporters);
-    runner(vertx).
+    runner().
+        setVertx(vertx).
         setTimeout(options.getTimeout()).
         handler(abc).run();
     return abc;
@@ -90,12 +91,7 @@ public class TestSuiteImpl implements TestSuite {
 
   @Override
   public TestSuiteRunner runner() {
-    return runner(null);
-  }
-
-  @Override
-  public TestSuiteRunner runner(Vertx vertx) {
-    return new TestSuiteRunnerImpl(name, before, after, beforeEach, afterEach, tests.toArray(new TestCaseImpl[tests.size()]), vertx);
+    return new TestSuiteRunnerImpl(name, before, after, beforeEach, afterEach, tests.toArray(new TestCaseImpl[tests.size()]));
   }
 
   @Override
