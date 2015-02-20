@@ -14,43 +14,46 @@
  * under the License.
  */
 
-/** @module vertx-unit-js/async */
+/** @module vertx-unit-js/test_case */
 var utils = require('vertx-js/util/utils');
+var Test = require('vertx-unit-js/test');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JAsync = io.vertx.ext.unit.Async;
+var JTestCase = io.vertx.ext.unit.TestCase;
 
 /**
- An asynchronous exit point for a test.
+ A test case object can be used to create a single test.
 
  @class
 */
-var Async = function(j_val) {
+var TestCase = function(j_val) {
 
-  var j_async = j_val;
+  var j_testCase = j_val;
   var that = this;
-
-  /**
-   Signals the asynchronous operation is done, this method should be called only once, calling it several
-   times is tolerated.
-
-   @public
-
-   @return {boolean} true when called the first time, false otherwise.
-   */
-  this.complete = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      return j_async.complete();
-    } else utils.invalidArgs();
-  };
 
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
-  this._jdel = j_async;
+  this._jdel = j_testCase;
+};
+
+/**
+ Create a test case.
+
+ @memberof module:vertx-unit-js/test_case
+ @param name {string} the test case name 
+ @param testCase {function} the test case 
+ @return {TestCase} the created test case
+ */
+TestCase.create = function(name, testCase) {
+  var __args = arguments;
+  if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
+    return new TestCase(JTestCase.create(name, function(jVal) {
+    testCase(new Test(jVal));
+  }));
+  } else utils.invalidArgs();
 };
 
 // We export the Constructor function
-module.exports = Async;
+module.exports = TestCase;

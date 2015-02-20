@@ -1,0 +1,78 @@
+= Vertx unit
+
+Asynchronous polyglot unit testing.
+
+== Introduction
+
+Vertx unit aims to make Vertx applications testable. It provides a polyglot API for writing asynchronous
+tests easily.
+
+Vertx unit can be used in different fashions and run anywhere your code runs, it is just a matter of reporting
+the results the right way, this example shows the bare minimum test suite:
+
+[source,groovy]
+----
+import io.vertx.groovy.ext.unit.TestSuite
+def suite = TestSuite.create("the_test_suite")
+suite.test("my_test", { test ->
+  def s = "value"
+  test.assertEquals("value", s)
+})
+suite.run()
+
+----
+
+The  method will execute the suite and go through all the
+tests of the suite. The suite can fail or pass, this does not matter if the outter world is not aware
+of the test result.
+
+[source,groovy]
+----
+import io.vertx.groovy.ext.unit.TestSuite
+def suite = TestSuite.create("the_test_suite")
+suite.test("my_test", { test ->
+  def s = "value"
+  test.assertEquals("value", s)
+})
+suite.run([
+  reporters:[
+    [
+      to:"console"
+    ]
+  ]
+])
+
+----
+
+When executed, the test suite now reports to the console the steps of the test suite:
+
+----
+Begin test suite the_test_suite
+Begin test my_test
+Passed my_test
+End test suite the_test_suite , run: 1, Failures: 0, Errors: 0
+----
+
+The  option configures the reporters used by the suite runner for reporting the execution
+of the tests, see the <<reporting>> section for more info.
+
+== Writing a test suite
+
+todo
+
+== Asynchronous testing
+
+todo
+
+== Asserting
+
+todo
+
+[[reporting]]
+== Reporting
+
+todo
+
+== Junit integration
+
+todo

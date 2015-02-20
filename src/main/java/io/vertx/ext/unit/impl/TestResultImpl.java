@@ -1,25 +1,30 @@
 package io.vertx.ext.unit.impl;
 
-import io.vertx.ext.unit.TestResult;
+import io.vertx.ext.unit.report.Failure;
+import io.vertx.ext.unit.report.TestResult;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-class TestResultImpl implements TestResult {
+public class TestResultImpl implements TestResult {
 
-  final String description;
-  final long time;
-  final Throwable failure;
+  private final String name;
+  private final long time;
+  private final Failure failure;
 
-  TestResultImpl(String description, long time, Throwable failure) {
-    this.description = description;
+  public TestResultImpl(String name, long time, Failure failure) {
+    this.name = name;
     this.time = time;
     this.failure = failure;
   }
 
+  public TestResultImpl(String name, long time, Throwable failure) {
+    this(name, time, failure != null ? new FailureImpl(failure) : null);
+  }
+
   @Override
-  public String description() {
-    return description;
+  public String name() {
+    return name;
   }
 
   @Override
@@ -28,7 +33,7 @@ class TestResultImpl implements TestResult {
   }
 
   @Override
-  public Throwable failure() {
+  public Failure failure() {
     return failure;
   }
 

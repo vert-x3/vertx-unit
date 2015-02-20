@@ -14,43 +14,58 @@
  * under the License.
  */
 
-/** @module vertx-unit-js/async */
+/** @module vertx-unit-js/test_completion */
 var utils = require('vertx-js/util/utils');
+var Future = require('vertx-js/future');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JAsync = io.vertx.ext.unit.Async;
+var JTestCompletion = io.vertx.ext.unit.TestCompletion;
 
 /**
- An asynchronous exit point for a test.
 
  @class
 */
-var Async = function(j_val) {
+var TestCompletion = function(j_val) {
 
-  var j_async = j_val;
+  var j_testCompletion = j_val;
   var that = this;
 
   /**
-   Signals the asynchronous operation is done, this method should be called only once, calling it several
-   times is tolerated.
 
    @public
-
-   @return {boolean} true when called the first time, false otherwise.
+   @param future {Future} 
    */
-  this.complete = function() {
+  this.resolve = function(future) {
     var __args = arguments;
-    if (__args.length === 0) {
-      return j_async.complete();
+    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
+      j_testCompletion.resolve(future._jdel);
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param completionHandler {function} 
+   */
+  this.handler = function(completionHandler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_testCompletion.handler(function(ar) {
+      if (ar.succeeded()) {
+        completionHandler(null, null);
+      } else {
+        completionHandler(null, ar.cause());
+      }
+    });
     } else utils.invalidArgs();
   };
 
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
-  this._jdel = j_async;
+  this._jdel = j_testCompletion;
 };
 
 // We export the Constructor function
-module.exports = Async;
+module.exports = TestCompletion;

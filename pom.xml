@@ -23,7 +23,7 @@
   <parent>
     <groupId>io.vertx</groupId>
     <artifactId>vertx-ext-parent</artifactId>
-    <version>1</version>
+    <version>5</version>
   </parent>
 
   <artifactId>vertx-unit</artifactId>
@@ -45,17 +45,13 @@
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-    </dependency>
-    <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-codegen</artifactId>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -70,13 +66,23 @@
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>vertx-docgen</artifactId>
+      <artifactId>vertx-rx-java</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
+      <artifactId>vertx-docgen</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
       <artifactId>vertx-codetrans</artifactId>
-      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-codegen</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
@@ -86,40 +92,6 @@
   </dependencies>
 
   <build>
-
-    <pluginManagement>
-      <plugins>
-
-        <!-- Define an assembly execution for packaging the vertx service that can be reused
-             by children modules -->
-        <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.4.1</version>
-          <dependencies>
-            <dependency>
-              <groupId>io.vertx</groupId>
-              <artifactId>vertx-service-factory</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-          </dependencies>
-          <executions>
-            <execution>
-              <id>package-vertx-service</id>
-              <goals>
-                <goal>single</goal>
-              </goals>
-              <configuration>
-                <appendAssemblyId>false</appendAssemblyId>
-                <descriptorRefs>
-                  <descriptorRef>vertx-service</descriptorRef>
-                </descriptorRefs>
-              </configuration>
-              <phase>package</phase>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
 
     <plugins>
       <!-- Copy resources after compilation phase as we generate JS in src/main/resources -->

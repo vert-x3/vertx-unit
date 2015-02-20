@@ -14,43 +14,63 @@
  * under the License.
  */
 
-/** @module vertx-unit-js/async */
+/** @module vertx-unit-js/test_case_report */
 var utils = require('vertx-js/util/utils');
+var TestResult = require('vertx-unit-js/test_result');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JAsync = io.vertx.ext.unit.Async;
+var JTestCaseReport = io.vertx.ext.unit.report.TestCaseReport;
 
 /**
- An asynchronous exit point for a test.
+ Report the execution of a test case.
 
  @class
 */
-var Async = function(j_val) {
+var TestCaseReport = function(j_val) {
 
-  var j_async = j_val;
+  var j_testCaseReport = j_val;
   var that = this;
 
   /**
-   Signals the asynchronous operation is done, this method should be called only once, calling it several
-   times is tolerated.
+   @return the test case name
 
    @public
 
-   @return {boolean} true when called the first time, false otherwise.
+   @return {string}
    */
-  this.complete = function() {
+  this.name = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_async.complete();
+      if (that.cachedname == null) {
+        that.cachedname = j_testCaseReport.name();
+      }
+      return that.cachedname;
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Set a callback for completion, the specified <code>handler</code> is invoked when the test exec has completed.
+
+   @public
+   @param handler {function} the completion handler 
+   @return {TestCaseReport} a reference to this, so the API can be used fluently
+   */
+  this.endHandler = function(handler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_testCaseReport.endHandler(function(jVal) {
+      handler(new TestResult(jVal));
+    });
+      return that;
     } else utils.invalidArgs();
   };
 
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
-  this._jdel = j_async;
+  this._jdel = j_testCaseReport;
 };
 
 // We export the Constructor function
-module.exports = Async;
+module.exports = TestCaseReport;
