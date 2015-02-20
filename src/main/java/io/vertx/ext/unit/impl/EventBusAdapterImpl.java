@@ -5,7 +5,7 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.ext.unit.EventBusAdapter;
-import io.vertx.ext.unit.Failure;
+import io.vertx.ext.unit.report.Failure;
 import io.vertx.ext.unit.report.TestCaseReport;
 import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.report.TestSuiteReport;

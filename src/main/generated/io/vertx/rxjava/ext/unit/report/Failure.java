@@ -14,7 +14,7 @@
  * under the License.
  */
 
-package io.vertx.rxjava.ext.unit;
+package io.vertx.rxjava.ext.unit.report;
 
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
@@ -37,9 +37,9 @@ import rx.Observable;
 
 public class Failure {
 
-  final io.vertx.ext.unit.Failure delegate;
+  final io.vertx.ext.unit.report.Failure delegate;
 
-  public Failure(io.vertx.ext.unit.Failure delegate) {
+  public Failure(io.vertx.ext.unit.report.Failure delegate) {
     this.delegate = delegate;
   }
 
@@ -87,7 +87,7 @@ public class Failure {
   private java.lang.String cached_1;
   private java.lang.String cached_2;
 
-  public static Failure newInstance(io.vertx.ext.unit.Failure arg) {
+  public static Failure newInstance(io.vertx.ext.unit.report.Failure arg) {
     return new Failure(arg);
   }
 }

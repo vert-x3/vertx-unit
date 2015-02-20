@@ -1,6 +1,6 @@
 package io.vertx.ext.unit.impl;
 
-import io.vertx.ext.unit.Failure;
+import io.vertx.ext.unit.report.Failure;
 import io.vertx.ext.unit.report.TestResult;
 
 /**

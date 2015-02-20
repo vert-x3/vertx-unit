@@ -1,11 +1,10 @@
 package io.vertx.ext.unit.impl;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.Failure;
+import io.vertx.ext.unit.report.Failure;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;

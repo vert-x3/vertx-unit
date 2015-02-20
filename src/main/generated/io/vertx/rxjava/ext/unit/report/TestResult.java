@@ -19,7 +19,6 @@ package io.vertx.rxjava.ext.unit.report;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
-import io.vertx.rxjava.ext.unit.Failure;
 
 /**
  * The result of a test.
