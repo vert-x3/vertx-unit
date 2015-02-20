@@ -94,22 +94,6 @@
   <build>
 
     <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>default-testCompile</id>
-            <configuration>
-              <annotationProcessors>
-                <annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>
-              </annotationProcessors>
-              <compilerArgs>
-                <arg>-AoutputDirectory=${project.basedir}/src/test</arg>
-              </compilerArgs>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <!-- Copy resources after compilation phase as we generate JS in src/main/resources -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
