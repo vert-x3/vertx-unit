@@ -37,9 +37,7 @@ public class TestCaseImpl implements TestCase {
 
   @Override
   public void assertSuccess(long timeout, TimeUnit unit) {
-    Vertx vertx = Vertx.vertx();
-    assertSuccess(vertx, timeout, unit);
-    vertx.close();
+    assertSuccess(Context.create(), timeout, unit);
   }
 
   @Override

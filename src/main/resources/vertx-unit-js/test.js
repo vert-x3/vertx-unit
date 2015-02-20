@@ -64,12 +64,30 @@ var Test = function(j_val) {
   /**
 
    @public
-   @param b {boolean} 
+   @param condition {boolean} 
+   @param message {string} 
    */
-  this.assertTrue = function(b) {
+  this.assertTrue = function() {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] ==='boolean') {
-      j_test.assertTrue(b);
+      j_test.assertTrue(__args[0]);
+    }  else if (__args.length === 2 && typeof __args[0] ==='boolean' && typeof __args[1] === 'string') {
+      j_test.assertTrue(__args[0], __args[1]);
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param condition {boolean} 
+   @param message {string} 
+   */
+  this.assertFalse = function() {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] ==='boolean') {
+      j_test.assertFalse(__args[0]);
+    }  else if (__args.length === 2 && typeof __args[0] ==='boolean' && typeof __args[1] === 'string') {
+      j_test.assertFalse(__args[0], __args[1]);
     } else utils.invalidArgs();
   };
 
@@ -78,10 +96,44 @@ var Test = function(j_val) {
    @public
    @param s {string} 
    */
-  this.fail = function(s) {
+  this.fail = function() {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'string') {
-      j_test.fail(s);
+    if (__args.length === 0) {
+      j_test.fail();
+    }  else if (__args.length === 1 && typeof __args[0] === 'string') {
+      j_test.fail(__args[0]);
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param expected {Object} 
+   @param actual {Object} 
+   @param message {string} 
+   */
+  this.assertEquals = function() {
+    var __args = arguments;
+    if (__args.length === 2 && true && true) {
+      j_test.assertEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
+    }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
+      j_test.assertEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param first {Object} 
+   @param second {Object} 
+   @param message {string} 
+   */
+  this.assertNotEquals = function() {
+    var __args = arguments;
+    if (__args.length === 2 && true && true) {
+      j_test.assertNotEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
+    }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
+      j_test.assertNotEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
     } else utils.invalidArgs();
   };
 

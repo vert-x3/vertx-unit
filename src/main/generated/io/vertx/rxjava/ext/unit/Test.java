@@ -55,12 +55,44 @@ public class Test {
     return ret;
   }
 
-  public void assertTrue(boolean b) {
-    this.delegate.assertTrue(b);
+  public void assertTrue(boolean condition) {
+    this.delegate.assertTrue(condition);
+  }
+
+  public void assertTrue(boolean condition, String message) {
+    this.delegate.assertTrue(condition, message);
+  }
+
+  public void assertFalse(boolean condition) {
+    this.delegate.assertFalse(condition);
+  }
+
+  public void assertFalse(boolean condition, String message) {
+    this.delegate.assertFalse(condition, message);
+  }
+
+  public void fail() {
+    this.delegate.fail();
   }
 
   public void fail(String s) {
     this.delegate.fail(s);
+  }
+
+  public void assertEquals(Object expected, Object actual) {
+    this.delegate.assertEquals(expected, actual);
+  }
+
+  public void assertEquals(Object expected, Object actual, String message) {
+    this.delegate.assertEquals(expected, actual, message);
+  }
+
+  public void assertNotEquals(Object first, Object second) {
+    this.delegate.assertNotEquals(first, second);
+  }
+
+  public void assertNotEquals(Object first, Object second, String message) {
+    this.delegate.assertNotEquals(first, second, message);
   }
 
   private Vertx cached_0;
