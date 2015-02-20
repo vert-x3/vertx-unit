@@ -4,6 +4,7 @@ Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
 
 ## Todo
 
+- filtering
 - handle reporter/formatter failures
 - same name test replaces previous ?
 - json stream reporter
