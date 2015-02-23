@@ -4,6 +4,7 @@ Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
 
 ## Todo
 
+- object sharing via io.vertx.core.Context#put
 - report to directory instead of file (for multiplexing based on test suite name)
 - filtering
 - handle reporter/formatter failures
