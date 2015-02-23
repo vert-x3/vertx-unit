@@ -200,4 +200,15 @@ public class Examples {
     // Run with a 10 seconds time out
     suite.run(options);
   }
+
+  public static void reporter_01(TestSuite suite) {
+    suite.run(new TestOptions().
+            addReporter(new ReportOptions().
+                setTo("console")).
+            addReporter(new ReportOptions().
+                setTo("file").
+                setAt("report.xml").
+                setFormat("junit"))
+    );
+  }
 }

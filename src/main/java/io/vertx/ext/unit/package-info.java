@@ -234,6 +234,58 @@
  *
  * == Reporting
  *
+ * Reporting is an important piece of a test suite, Vertx Unit can be configured to run with different kind
+ * of reporters.
+ *
+ * By default no reporter is configured, when running a test suite, _test options_ can be provided to
+ * configure one or several:
+ *
+ * .Using the console reporter and as a junit xml file
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#reporter_01}
+ * ----
+ *
+ * === Console reporting
+ *
+ * Reports to the JVM `System.out` and `System.err`:
+ *
+ * to::
+ * _console_
+ * format::
+ * _simple_ or _junit_
+ *
+ * === File reporting
+ *
+ * Reports to a file, a `Vertx` instance must be provided:
+ *
+ * to::
+ * _file_
+ * at::
+ * the file name
+ * format::
+ * _simple_ or _junit_
+ *
+ * === Log reporting
+ *
+ * Reports to a logger, a `Vertx` instance must be provided:
+ *
+ * to::
+ * _log_
+ * at::
+ * the logger name
+ *
+ * === Event bus reporting
+ *
+ * Reports events to the event bus, a `Vertx` instance must be provided:
+ *
+ * to::
+ * _bus_
+ * at::
+ * the event bus address to which events will be sent
+ *
+ * todo _EventBusAdapter_
+ *
  * == Junit integration
  *
  * todo
