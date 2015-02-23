@@ -85,8 +85,53 @@
  *
  * == Asserting
  *
- * todo
+ * Vertx Unit provides the _test_ object for doing assertions in test cases. The _test_ object provides the usual
+ * methods when dealing with assertions.
  *
+ * === assertEquals
+ *
+ * Assert two objects are equals, works for _basic_ types or _json_ types.
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#asserting_01}
+ * ----
+ *
+ * There is also an overloaded version for providing a message:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#asserting_02}
+ * ----
+ *
+ * Usually each assertion provides an overloaded version.
+ *
+ * === assertNotEquals
+ *
+ * The counter part of _assertEquals_.
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#asserting_03}
+ * ----
+ *
+ * === assertTrue and assertFalse
+ *
+ * Asserts the value of a boolean expression.
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#asserting_04}
+ * ----
+ *
+ * === Failing
+ *
+ * Last but not least, _test_ provides a _fail_ method that will throw an assertion error:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#asserting_05}
+ * ----
  *
  * == Asynchronous testing
  *

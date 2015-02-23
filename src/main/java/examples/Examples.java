@@ -80,4 +80,36 @@ public class Examples {
       // Test case cleanup
     });
   }
+
+  public static void asserting_01(io.vertx.ext.unit.TestSuite suite, int callbackCount) {
+    suite.test("my_test_1", test -> {
+      test.assertEquals(10, callbackCount);
+    });
+  }
+
+  public static void asserting_02(io.vertx.ext.unit.TestSuite suite, int callbackCount) {
+    suite.test("my_test_1", test -> {
+      test.assertEquals(10, callbackCount, "Should have been 10 instead of " + callbackCount);
+    });
+  }
+
+  public static void asserting_03(io.vertx.ext.unit.TestSuite suite, int callbackCount) {
+    suite.test("my_test_1", test -> {
+      test.assertNotEquals(10, callbackCount);
+    });
+  }
+
+  public static void asserting_04(io.vertx.ext.unit.TestSuite suite, boolean var, int value) {
+    suite.test("my_test_1", test -> {
+      test.assertTrue(var);
+      test.assertFalse(value > 10);
+    });
+  }
+
+  public static void asserting_05(io.vertx.ext.unit.TestSuite suite) {
+    suite.test("my_test_1", test -> {
+      test.fail("That should never happen");
+      // Following statements won't be executed
+    });
+  }
 }

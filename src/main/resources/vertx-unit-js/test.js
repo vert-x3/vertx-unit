@@ -74,7 +74,7 @@ var Test = function(j_val) {
   };
 
   /**
-   Assert the <code>expected</code> argument is equals to the <code>actual</code> argument. If the aguments are not equals
+   Assert the <code>expected</code> argument is equals to the <code>actual</code> argument. If the arguments are not equals
    an assertion error is thrown otherwise the execution continue.
 
    @public
@@ -95,7 +95,7 @@ var Test = function(j_val) {
   };
 
   /**
-   Assert the <code>first</code> argument is not equals to the <code>second</code> argument. If the aguments are equals
+   Assert the <code>first</code> argument is not equals to the <code>second</code> argument. If the arguments are equals
    an assertion error is thrown otherwise the execution continue.
 
    @public

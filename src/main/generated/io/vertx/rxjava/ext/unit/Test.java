@@ -93,7 +93,7 @@ public class Test {
   }
 
   /**
-   * Assert the {@code expected} argument is equals to the {@code actual} argument. If the aguments are not equals
+   * Assert the {@code expected} argument is equals to the {@code actual} argument. If the arguments are not equals
    * an assertion error is thrown otherwise the execution continue.
    *
    * @param expected the object the actual object is supposedly equals to
@@ -106,7 +106,7 @@ public class Test {
   }
 
   /**
-   * Assert the {@code expected} argument is equals to the {@code actual} argument. If the aguments are not equals
+   * Assert the {@code expected} argument is equals to the {@code actual} argument. If the arguments are not equals
    * an assertion error is thrown otherwise the execution continue.
    *
    * @param expected the object the actual object is supposedly equals to
@@ -120,7 +120,7 @@ public class Test {
   }
 
   /**
-   * Assert the {@code first} argument is not equals to the {@code second} argument. If the aguments are equals
+   * Assert the {@code first} argument is not equals to the {@code second} argument. If the arguments are equals
    * an assertion error is thrown otherwise the execution continue.
    *
    * @param first the first object to test
@@ -133,7 +133,7 @@ public class Test {
   }
 
   /**
-   * Assert the {@code first} argument is not equals to the {@code second} argument. If the aguments are equals
+   * Assert the {@code first} argument is not equals to the {@code second} argument. If the arguments are equals
    * an assertion error is thrown otherwise the execution continue.
    *
    * @param first the first object to test

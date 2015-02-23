@@ -57,7 +57,7 @@ public interface Test {
   Test assertFalse(boolean condition, String message);
 
   /**
-   * Assert the {@code expected} argument is equals to the {@code actual} argument. If the aguments are not equals
+   * Assert the {@code expected} argument is equals to the {@code actual} argument. If the arguments are not equals
    * an assertion error is thrown otherwise the execution continue.
    *
    * @param expected the object the actual object is supposedly equals to
@@ -68,7 +68,7 @@ public interface Test {
   Test assertEquals(Object expected, Object actual);
 
   /**
-   * Assert the {@code expected} argument is equals to the {@code actual} argument. If the aguments are not equals
+   * Assert the {@code expected} argument is equals to the {@code actual} argument. If the arguments are not equals
    * an assertion error is thrown otherwise the execution continue.
    *
    * @param expected the object the actual object is supposedly equals to
@@ -80,7 +80,7 @@ public interface Test {
   Test assertEquals(Object expected, Object actual, String message);
 
   /**
-   * Assert the {@code first} argument is not equals to the {@code second} argument. If the aguments are equals
+   * Assert the {@code first} argument is not equals to the {@code second} argument. If the arguments are equals
    * an assertion error is thrown otherwise the execution continue.
    *
    * @param first the first object to test
@@ -91,7 +91,7 @@ public interface Test {
   Test assertNotEquals(Object first, Object second);
 
   /**
-   * Assert the {@code first} argument is not equals to the {@code second} argument. If the aguments are equals
+   * Assert the {@code first} argument is not equals to the {@code second} argument. If the arguments are equals
    * an assertion error is thrown otherwise the execution continue.
    *
    * @param first the first object to test
