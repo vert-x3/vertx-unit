@@ -172,9 +172,67 @@
  * ----
  *
  * [[reporting]]
- * == Reporting
+ * == Running
  *
- * todo
+ * When a test suite is created, it won't be executed until the {@link io.vertx.ext.unit.TestSuite#run} method
+ * is called.
+ *
+ * .Running a test suite
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#running_01}
+ * ----
+ *
+ * When the testsuite is executed, it will use the current Vert.x event loop for the steps of the test suite,
+ * that is the context object returned by `io.vertx.core.Vertx#currentContext`. When such context does not
+ * exist, the test suite is executed synchronously in the current thread.
+ *
+ * The test suite can also be ran with a specified `Vertx` instance:
+ *
+ * .Provides a Vertx instance to run the test suite
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#running_02}
+ * ----
+ *
+ * This execution uses the `Context` provided by the `Vertx` instance for runnings the steps of the test suite.
+ *
+ * === Test suite completion
+ *
+ * No assumptions can be made about when the test suite will be completed, and if some code needs to be executed
+ * after the test suite, it should either be in the test suite _after_ callback or as callback of the
+ * {@link io.vertx.ext.unit.TestCompletion}:
+ *
+ * .Test suite execution callback
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#running_03}
+ * ----
+ *
+ * The `TestCompletion` object provides also a {@link io.vertx.ext.unit.TestCompletion#resolve} method that
+ * takes a `Future` object, this `Future` will be notified of the test suite execution:
+ *
+ * .Resolving the start Future with the test suite
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#running_04}
+ * ----
+ *
+ * This allow to easily create a _test_ verticle whose deployment is the test suite execution, allowing the
+ * code that deploys it to be easily aware of the success or failure.
+ *
+ * === Time out
+ *
+ * The test cases of a test suite must execute before a certain timeout is reached. The default timeout is
+ * of _2 minutes_, it can be changed using _test options_:
+ *
+ * .Setting the test suite timeout
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#running_05}
+ * ----
+ *
+ * == Reporting
  *
  * == Junit integration
  *

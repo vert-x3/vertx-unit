@@ -1,5 +1,6 @@
 package examples;
 
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
@@ -8,6 +9,7 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestCompletion;
 import io.vertx.ext.unit.TestOptions;
 import io.vertx.ext.unit.TestSuite;
 import io.vertx.ext.unit.report.ReportOptions;
@@ -162,5 +164,40 @@ public class Examples {
         async.complete();
       });
     });
+  }
+
+  public static void running_01(TestSuite suite) {
+    suite.run();
+  }
+
+  public static void running_02(TestSuite suite, Vertx vertx) {
+    suite.run(vertx);
+  }
+
+  public static void running_03(TestSuite suite, Vertx vertx) {
+    TestCompletion completion = suite.run(vertx);
+    completion.handler(ar -> {
+      if (ar.succeeded()) {
+        System.out.println("Test suite passed!");
+      } else {
+        System.out.println("Test suite failed:");
+        ar.cause().printStackTrace();
+      }
+    });
+  }
+
+  public static void running_04(Future<Void> startFuture) {
+    TestSuite suite = TestSuite.create("my_test_suite");
+    suite.test("my_test_case", test -> {
+      // Do something
+    });
+    suite.run().resolve(startFuture);
+  }
+
+  public static void running_05(TestSuite suite) {
+    TestOptions options = new TestOptions().setTimeout(10000);
+
+    // Run with a 10 seconds time out
+    suite.run(options);
   }
 }

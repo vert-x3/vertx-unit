@@ -221,6 +221,7 @@ The previous examples supposed that test cases were terminated after their respe
 default behavior of a test case callback. Often it is desirable to terminate the test after the test case
 callback, for instance:
 
+.The Async object asynchronously completes the test case
 [source,js]
 ----
 suite.test("my_test_case", function (test) {
@@ -245,6 +246,7 @@ NOTE: When the `complete` callback is not invoked, the test case fails after a c
 Several `Async` objects can be created during the same test case, all of them must be _completed_ to terminate
 the test.
 
+.Several Async objects provide coordination
 [source,js]
 ----
 suite.test("my_test_case", function (test) {
@@ -287,9 +289,90 @@ suite.before(function (test) {
 ----
 
 [[reporting]]
-== Reporting
+== Running
 
-todo
+When a test suite is created, it won't be executed until the `link:jsdoc/test_suite-TestSuite.html#run[run]` method
+is called.
+
+.Running a test suite
+[source,js]
+----
+suite.run();
+
+----
+
+When the testsuite is executed, it will use the current Vert.x event loop for the steps of the test suite,
+that is the context object returned by `io.vertx.core.Vertx#currentContext`. When such context does not
+exist, the test suite is executed synchronously in the current thread.
+
+The test suite can also be ran with a specified `Vertx` instance:
+
+.Provides a Vertx instance to run the test suite
+[source,js]
+----
+suite.run(vertx);
+
+----
+
+This execution uses the `Context` provided by the `Vertx` instance for runnings the steps of the test suite.
+
+=== Test suite completion
+
+No assumptions can be made about when the test suite will be completed, and if some code needs to be executed
+after the test suite, it should either be in the test suite _after_ callback or as callback of the
+`link:jsdoc/test_completion-TestCompletion.html[TestCompletion]`:
+
+.Test suite execution callback
+[source,js]
+----
+var completion = suite.run(vertx);
+completion.handler(function (ar, ar_err) {
+  if ((ar != null)) {
+    console.log("Test suite passed!");
+  } else {
+    console.log("Test suite failed:");
+    ar_err.printStackTrace();
+  };
+});
+
+----
+
+The `TestCompletion` object provides also a `link:jsdoc/test_completion-TestCompletion.html#resolve[resolve]` method that
+takes a `Future` object, this `Future` will be notified of the test suite execution:
+
+.Resolving the start Future with the test suite
+[source,js]
+----
+var TestSuite = require("vertx-unit-js/test_suite");
+var suite = TestSuite.create("my_test_suite");
+suite.test("my_test_case", function (test) {
+  // Do something
+});
+suite.run().resolve(startFuture);
+
+----
+
+This allow to easily create a _test_ verticle whose deployment is the test suite execution, allowing the
+code that deploys it to be easily aware of the success or failure.
+
+=== Time out
+
+The test cases of a test suite must execute before a certain timeout is reached. The default timeout is
+of _2 minutes_, it can be changed using _test options_:
+
+.Setting the test suite timeout
+[source,js]
+----
+var options = {
+  "timeout" : 10 * 1000
+};
+
+// Run with a 10 seconds time out
+suite.run(options);
+
+----
+
+== Reporting
 
 == Junit integration
 
