@@ -15,7 +15,7 @@ the results the right way, this example shows the bare minimum test suite:
 ----
 import io.vertx.groovy.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
-suite.test("my_test", { test ->
+suite.test("my_test_case", { test ->
   def s = "value"
   test.assertEquals("value", s)
 })
@@ -31,7 +31,7 @@ of the test result.
 ----
 import io.vertx.groovy.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
-suite.test("my_test", { test ->
+suite.test("my_test_case", { test ->
   def s = "value"
   test.assertEquals("value", s)
 })
@@ -67,13 +67,13 @@ initializing or disposing services used by the test suite.
 ----
 import io.vertx.groovy.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
-suite.test("my_test_1", { test ->
+suite.test("my_test_case_1", { test ->
   // Test 1
 })
-suite.test("my_test_2", { test ->
+suite.test("my_test_case_2", { test ->
   // Test 2
 })
-suite.test("my_test_3", { test ->
+suite.test("my_test_case_3", { test ->
   // Test 3
 })
 
@@ -85,11 +85,11 @@ The API is fluent and therefore the test can be chained:
 ----
 import io.vertx.groovy.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
-suite.test("my_test_1", { test ->
+suite.test("my_test_case_1", { test ->
   // Test 1
-}).test("my_test_2", { test ->
+}).test("my_test_case_2", { test ->
   // Test 2
-}).test("my_test_3", { test ->
+}).test("my_test_case_3", { test ->
   // Test 3
 })
 
@@ -103,11 +103,11 @@ import io.vertx.groovy.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
 suite.before({ test ->
   // Test suite setup
-}).test("my_test_1", { test ->
+}).test("my_test_case_1", { test ->
   // Test 1
-}).test("my_test_2", { test ->
+}).test("my_test_case_2", { test ->
   // Test 2
-}).test("my_test_3", { test ->
+}).test("my_test_case_3", { test ->
   // Test 3
 }).after({ test ->
   // Test suite cleanup
@@ -132,11 +132,11 @@ import io.vertx.groovy.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
 suite.beforeEach({ test ->
   // Test case setup
-}).test("my_test_1", { test ->
+}).test("my_test_case_1", { test ->
   // Test 1
-}).test("my_test_2", { test ->
+}).test("my_test_case_2", { test ->
   // Test 2
-}).test("my_test_3", { test ->
+}).test("my_test_case_3", { test ->
   // Test 3
 }).afterEach({ test ->
   // Test case cleanup
@@ -159,7 +159,7 @@ Assert two objects are equals, works for _basic_ types or _json_ types.
 
 [source,groovy]
 ----
-suite.test("my_test_1", { test ->
+suite.test("my_test_case", { test ->
   test.assertEquals(10, callbackCount)
 })
 
@@ -169,7 +169,7 @@ There is also an overloaded version for providing a message:
 
 [source,groovy]
 ----
-suite.test("my_test_1", { test ->
+suite.test("my_test_case", { test ->
   test.assertEquals(10, callbackCount, "Should have been 10 instead of ${callbackCount}")
 })
 
@@ -183,7 +183,7 @@ The counter part of _assertEquals_.
 
 [source,groovy]
 ----
-suite.test("my_test_1", { test ->
+suite.test("my_test_case", { test ->
   test.assertNotEquals(10, callbackCount)
 })
 
@@ -195,7 +195,7 @@ Asserts the value of a boolean expression.
 
 [source,groovy]
 ----
-suite.test("my_test_1", { test ->
+suite.test("my_test_case", { test ->
   test.assertTrue(var)
   test.assertFalse(value > 10)
 })
@@ -208,7 +208,7 @@ Last but not least, _test_ provides a _fail_ method that will throw an assertion
 
 [source,groovy]
 ----
-suite.test("my_test_1", { test ->
+suite.test("my_test_case", { test ->
   test.fail("That should never happen")
   // Following statements won't be executed
 })
@@ -217,7 +217,74 @@ suite.test("my_test_1", { test ->
 
 == Asynchronous testing
 
-todo
+The previous examples supposed that test cases were terminated after their respective callbacks, this is the
+default behavior of a test case callback. Often it is desirable to terminate the test after the test case
+callback, for instance:
+
+[source,groovy]
+----
+suite.test("my_test_case", { test ->
+  def async = test.async()
+  eventBus.consumer("the-address", { msg ->
+    // <2>
+    async.complete()
+  })
+  // <1>
+})
+
+----
+<1> The callback exits but the test case is not terminated
+<2> The event callback from the bus terminates the test
+
+Creating an `link:groovydoc/io/vertx/groovy/ext/unit/Async.html[Async]` object with the `link:groovydoc/io/vertx/groovy/ext/unit/Test.html#async()[async]` method marks the
+executed test case as non terminated. The test case terminates when the `link:groovydoc/io/vertx/groovy/ext/unit/Async.html#complete()[complete]`
+method is invoked.
+
+NOTE: When the `complete` callback is not invoked, the test case fails after a certain timeout.
+
+Several `Async` objects can be created during the same test case, all of them must be _completed_ to terminate
+the test.
+
+[source,groovy]
+----
+suite.test("my_test_case", { test ->
+
+  def async1 = test.async()
+  def client = vertx.createHttpClient()
+  def req = client.get(8080, "localhost", "/")
+  req.exceptionHandler({ err ->
+    test.fail(err.getMessage())})
+  req.handler({ resp ->
+    test.assertEquals(200, resp.statusCode())
+    async1.complete()
+  })
+  req.end()
+
+  def async2 = test.async()
+  vertx.eventBus().consumer("the-address", { msg ->
+    async2.complete()
+  })
+})
+
+----
+
+Async objects can also be used in _before_ or _after_ callbacks, it can be very convenient in a _before_ callback
+to implement a setup that depends on one or several asynchronous results:
+
+.Async start an http server before test cases
+[source,groovy]
+----
+suite.before({ test ->
+  def async = test.async()
+  def server = vertx.createHttpServer()
+  server.requestHandler(requestHandler)
+  server.listen(8080, { ar ->
+    test.assertTrue(ar.succeeded())
+    async.complete()
+  })
+})
+
+----
 
 [[reporting]]
 == Reporting

@@ -1,5 +1,13 @@
 package examples;
 
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestOptions;
 import io.vertx.ext.unit.TestSuite;
 import io.vertx.ext.unit.report.ReportOptions;
@@ -110,6 +118,49 @@ public class Examples {
     suite.test("my_test_case", test -> {
       test.fail("That should never happen");
       // Following statements won't be executed
+    });
+  }
+
+  public static void async_01(io.vertx.ext.unit.TestSuite suite, EventBus eventBus) {
+    suite.test("my_test_case", test -> {
+      Async async = test.async();
+      eventBus.consumer("the-address", msg -> {
+        // <2>
+        async.complete();
+      });
+      // <1>
+    });
+  }
+
+  public static void async_02(io.vertx.ext.unit.TestSuite suite, Vertx vertx) {
+    suite.test("my_test_case", test -> {
+
+      Async async1 = test.async();
+      HttpClient client = vertx.createHttpClient();
+      HttpClientRequest req = client.get(8080, "localhost", "/");
+      req.exceptionHandler(err -> test.fail(err.getMessage()));
+      req.handler(resp -> {
+        test.assertEquals(200, resp.statusCode());
+        async1.complete();
+      });
+      req.end();
+
+      Async async2 = test.async();
+      vertx.eventBus().consumer("the-address", msg -> {
+        async2.complete();
+      });
+    });
+  }
+
+  public static void async_03(io.vertx.ext.unit.TestSuite suite, Vertx vertx, Handler<HttpServerRequest> requestHandler) {
+    suite.before(test -> {
+      Async async = test.async();
+      HttpServer server = vertx.createHttpServer();
+      server.requestHandler(requestHandler);
+      server.listen(8080, ar -> {
+        test.assertTrue(ar.succeeded());
+        async.complete();
+      });
     });
   }
 }

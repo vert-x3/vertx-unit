@@ -135,7 +135,41 @@
  *
  * == Asynchronous testing
  *
- * todo
+ * The previous examples supposed that test cases were terminated after their respective callbacks, this is the
+ * default behavior of a test case callback. Often it is desirable to terminate the test after the test case
+ * callback, for instance:
+ *
+ * .The Async object asynchronously completes the test case
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#async_01}
+ * ----
+ * <1> The callback exits but the test case is not terminated
+ * <2> The event callback from the bus terminates the test
+ *
+ * Creating an {@link io.vertx.ext.unit.Async} object with the {@link io.vertx.ext.unit.Test#async()} method marks the
+ * executed test case as non terminated. The test case terminates when the {@link io.vertx.ext.unit.Async#complete()}
+ * method is invoked.
+ *
+ * NOTE: When the `complete` callback is not invoked, the test case fails after a certain timeout.
+ *
+ * Several `Async` objects can be created during the same test case, all of them must be _completed_ to terminate
+ * the test.
+ *
+ * .Several Async objects provide coordination
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#async_02}
+ * ----
+ *
+ * Async objects can also be used in _before_ or _after_ callbacks, it can be very convenient in a _before_ callback
+ * to implement a setup that depends on one or several asynchronous results:
+ *
+ * .Async start an http server before test cases
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#async_03}
+ * ----
  *
  * [[reporting]]
  * == Reporting

@@ -15,7 +15,7 @@ the results the right way, this example shows the bare minimum test suite:
 ----
 var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
-suite.test("my_test", function (test) {
+suite.test("my_test_case", function (test) {
   var s = "value";
   test.assertEquals("value", s);
 });
@@ -31,7 +31,7 @@ of the test result.
 ----
 var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
-suite.test("my_test", function (test) {
+suite.test("my_test_case", function (test) {
   var s = "value";
   test.assertEquals("value", s);
 });
@@ -67,13 +67,13 @@ initializing or disposing services used by the test suite.
 ----
 var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
-suite.test("my_test_1", function (test) {
+suite.test("my_test_case_1", function (test) {
   // Test 1
 });
-suite.test("my_test_2", function (test) {
+suite.test("my_test_case_2", function (test) {
   // Test 2
 });
-suite.test("my_test_3", function (test) {
+suite.test("my_test_case_3", function (test) {
   // Test 3
 });
 
@@ -85,11 +85,11 @@ The API is fluent and therefore the test can be chained:
 ----
 var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
-suite.test("my_test_1", function (test) {
+suite.test("my_test_case_1", function (test) {
   // Test 1
-}).test("my_test_2", function (test) {
+}).test("my_test_case_2", function (test) {
   // Test 2
-}).test("my_test_3", function (test) {
+}).test("my_test_case_3", function (test) {
   // Test 3
 });
 
@@ -103,11 +103,11 @@ var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
 suite.before(function (test) {
   // Test suite setup
-}).test("my_test_1", function (test) {
+}).test("my_test_case_1", function (test) {
   // Test 1
-}).test("my_test_2", function (test) {
+}).test("my_test_case_2", function (test) {
   // Test 2
-}).test("my_test_3", function (test) {
+}).test("my_test_case_3", function (test) {
   // Test 3
 }).after(function (test) {
   // Test suite cleanup
@@ -132,11 +132,11 @@ var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
 suite.beforeEach(function (test) {
   // Test case setup
-}).test("my_test_1", function (test) {
+}).test("my_test_case_1", function (test) {
   // Test 1
-}).test("my_test_2", function (test) {
+}).test("my_test_case_2", function (test) {
   // Test 2
-}).test("my_test_3", function (test) {
+}).test("my_test_case_3", function (test) {
   // Test 3
 }).afterEach(function (test) {
   // Test case cleanup
@@ -159,7 +159,7 @@ Assert two objects are equals, works for _basic_ types or _json_ types.
 
 [source,js]
 ----
-suite.test("my_test_1", function (test) {
+suite.test("my_test_case", function (test) {
   test.assertEquals(10, callbackCount);
 });
 
@@ -169,7 +169,7 @@ There is also an overloaded version for providing a message:
 
 [source,js]
 ----
-suite.test("my_test_1", function (test) {
+suite.test("my_test_case", function (test) {
   test.assertEquals(10, callbackCount, "Should have been 10 instead of " + callbackCount);
 });
 
@@ -183,7 +183,7 @@ The counter part of _assertEquals_.
 
 [source,js]
 ----
-suite.test("my_test_1", function (test) {
+suite.test("my_test_case", function (test) {
   test.assertNotEquals(10, callbackCount);
 });
 
@@ -195,7 +195,7 @@ Asserts the value of a boolean expression.
 
 [source,js]
 ----
-suite.test("my_test_1", function (test) {
+suite.test("my_test_case", function (test) {
   test.assertTrue(var);
   test.assertFalse(value > 10);
 });
@@ -208,7 +208,7 @@ Last but not least, _test_ provides a _fail_ method that will throw an assertion
 
 [source,js]
 ----
-suite.test("my_test_1", function (test) {
+suite.test("my_test_case", function (test) {
   test.fail("That should never happen");
   // Following statements won't be executed
 });
@@ -217,7 +217,74 @@ suite.test("my_test_1", function (test) {
 
 == Asynchronous testing
 
-todo
+The previous examples supposed that test cases were terminated after their respective callbacks, this is the
+default behavior of a test case callback. Often it is desirable to terminate the test after the test case
+callback, for instance:
+
+[source,js]
+----
+suite.test("my_test_case", function (test) {
+  var async = test.async();
+  eventBus.consumer("the-address", function (msg) {
+    // <2>
+    async.complete();
+  });
+  // <1>
+});
+
+----
+<1> The callback exits but the test case is not terminated
+<2> The event callback from the bus terminates the test
+
+Creating an `link:jsdoc/async-Async.html[Async]` object with the `link:jsdoc/test-Test.html#async[async]` method marks the
+executed test case as non terminated. The test case terminates when the `link:jsdoc/async-Async.html#complete[complete]`
+method is invoked.
+
+NOTE: When the `complete` callback is not invoked, the test case fails after a certain timeout.
+
+Several `Async` objects can be created during the same test case, all of them must be _completed_ to terminate
+the test.
+
+[source,js]
+----
+suite.test("my_test_case", function (test) {
+
+  var async1 = test.async();
+  var client = vertx.createHttpClient();
+  var req = client.get(8080, "localhost", "/");
+  req.exceptionHandler(function (err) {
+    test.fail(err.getMessage())});
+  req.handler(function (resp) {
+    test.assertEquals(200, resp.statusCode());
+    async1.complete();
+  });
+  req.end();
+
+  var async2 = test.async();
+  vertx.eventBus().consumer("the-address", function (msg) {
+    async2.complete();
+  });
+});
+
+----
+
+Async objects can also be used in _before_ or _after_ callbacks, it can be very convenient in a _before_ callback
+to implement a setup that depends on one or several asynchronous results:
+
+.Async start an http server before test cases
+[source,js]
+----
+suite.before(function (test) {
+  var async = test.async();
+  var server = vertx.createHttpServer();
+  server.requestHandler(requestHandler);
+  server.listen(8080, function (ar, ar_err) {
+    test.assertTrue((ar != null));
+    async.complete();
+  });
+});
+
+----
 
 [[reporting]]
 == Reporting
