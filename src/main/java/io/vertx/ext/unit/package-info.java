@@ -5,10 +5,11 @@
  *
  * == Introduction
  *
- * Vertx unit aims to make Vertx applications testable. It provides a polyglot API for writing asynchronous
- * tests easily.
+ * Vertx Unit aims to make Vertx applications testable. It provides a polyglot API for writing asynchronous
+ * tests easily. Vertx Unit Api borrows from existing test frameworks like http://junit.org[JUnit] or http://qunitjs.com[QUnit]
+ * and follows the Vert.x practices.
  *
- * Vertx unit can be used in different fashions and run anywhere your code runs, it is just a matter of reporting
+ * Vertx Unit can be used in different ways and run anywhere your code runs, it is just a matter of reporting
  * the results the right way, this example shows the bare minimum test suite:
  *
  * [source,$lang]
@@ -39,13 +40,55 @@
  *
  * == Writing a test suite
  *
- * todo
+ * A test suite is a named collection of test case, a test case is a straight callback to execute. The suite can
+ * have lifecycle callbacks to execute _before_ and/or _after_ the test cases or the test suite that are used for
+ * initializing or disposing services used by the test suite.
  *
- * == Asynchronous testing
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#writing_test_suite_01}
+ * ----
  *
- * todo
+ * The API is fluent and therefore the test can be chained:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#writing_test_suite_02}
+ * ----
+ *
+ * Vertx Unit provides _before_ and _after_ callbacks for doing global setup or cleanup:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#writing_test_suite_03}
+ * ----
+ *
+ * The declaration order of the method does not matter, the example declares the _before_ callback before
+ * the test cases and _after_ callback after the test cases but it could be anywhere, as long as it is done before
+ * running the test suite.
+ *
+ * The _before_ callback is executed before any tests, when it fails, the test suite execution will stop and the
+ * failure is reported. The _after_ callback is the last callback executed by the testsuite, unless
+ * the _before_ callback reporter a failure.
+ *
+ * Likewise, Vertx Unit provides the _beforeEach_ and _afterEach_ callback that do the same but are executed
+ * for each test case:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#writing_test_suite_04}
+ * ----
+ *
+ * The _beforeEach_ callback is executed before each test case, when it fails, the test case is not executed and the
+ * failure is reported. The _afterEach_ callback is the executed just after the test case callback, unless
+ * the _beforeEach_ callback reported a failure.
  *
  * == Asserting
+ *
+ * todo
+ *
+ *
+ * == Asynchronous testing
  *
  * todo
  *
