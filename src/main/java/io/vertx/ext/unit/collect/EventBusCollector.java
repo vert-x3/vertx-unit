@@ -39,6 +39,12 @@ public interface EventBusCollector {
     return new EventBusCollectorImpl(vertx, reporter);
   }
 
+  /**
+   * Register the collector as a consumer of the event bus with the specified address.
+   *
+   * @param address the registration address
+   * @return the subscribed message consumer
+   */
   MessageConsumer<?> register(String address);
 
   @GenIgnore
