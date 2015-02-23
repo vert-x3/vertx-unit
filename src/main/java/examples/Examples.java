@@ -12,7 +12,9 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestCompletion;
 import io.vertx.ext.unit.TestOptions;
 import io.vertx.ext.unit.TestSuite;
+import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.ext.unit.report.ReportOptions;
+import io.vertx.ext.unit.report.ReportingOptions;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -210,5 +212,14 @@ public class Examples {
                 setAt("report.xml").
                 setFormat("junit"))
     );
+  }
+
+  public static void reporter_02(Vertx vertx) {
+    EventBusCollector collector = EventBusCollector.create(
+        vertx,
+        new ReportingOptions().addReporter(
+            new ReportOptions().setTo("file").setAt("report.xml").setFormat("junit")));
+
+    collector.register("the-address");
   }
 }

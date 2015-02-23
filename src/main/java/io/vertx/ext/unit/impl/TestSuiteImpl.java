@@ -80,7 +80,7 @@ public class TestSuiteImpl implements TestSuite {
 
   @Override
   public TestCompletion run(Vertx vertx, TestOptions options) {
-    Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
+    Reporter[] reporters = options  .getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
     ReporterHandler abc = new ReporterHandler(null, reporters);
     runner().
         setVertx(vertx).

@@ -436,7 +436,15 @@ _bus_
 at::
 the event bus address to which events will be sent
 
-todo _EventBusAdapter_
+It allow to decouple the execution of the test suite from the reporting.
+
+The messages sent over the event bus can be collected by the `link:jsdoc/event_bus_collector-EventBusCollector.html[EventBusCollector]`
+and achieve custom reporting:
+
+[source,js]
+----
+todo
+----
 
 == Junit integration
 

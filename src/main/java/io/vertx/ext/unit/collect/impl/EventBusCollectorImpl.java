@@ -1,10 +1,14 @@
-package io.vertx.ext.unit.impl;
+package io.vertx.ext.unit.collect.impl;
 
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
-import io.vertx.ext.unit.EventBusAdapter;
+import io.vertx.ext.unit.collect.EventBusCollector;
+import io.vertx.ext.unit.impl.FailureImpl;
+import io.vertx.ext.unit.impl.TestResultImpl;
 import io.vertx.ext.unit.report.Failure;
 import io.vertx.ext.unit.report.TestCaseReport;
 import io.vertx.ext.unit.report.TestResult;
@@ -13,21 +17,19 @@ import io.vertx.ext.unit.report.TestSuiteReport;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class EventBusAdapterImpl implements EventBusAdapter {
+public class EventBusCollectorImpl implements EventBusCollector, Handler<Message<JsonObject>> {
 
-
+  private final Vertx vertx;
+  private final Handler<TestSuiteReport> reporter;
   private Handler<TestCaseReport> testCaseRunnerHandler;
   private Handler<Throwable> exceptionHandler;
   private Handler<Void> endHandler;
-  private Handler<TestSuiteReport> runnerHandler;
   private TestSuiteReport runner;
-
   private Handler<TestResult> testCaseHandler;
 
-  @Override
-  public EventBusAdapterImpl handler(Handler<TestSuiteReport> reporter) {
-    runnerHandler = reporter;
-    return this;
+  public EventBusCollectorImpl(Vertx vertx, Handler<TestSuiteReport> reporter) {
+    this.reporter = reporter;
+    this.vertx = vertx;
   }
 
   @Override
@@ -66,7 +68,7 @@ public class EventBusAdapterImpl implements EventBusAdapter {
             return this;
           }
         };
-        runnerHandler.handle(runner);
+        reporter.handle(runner);
         break;
       }
       case "beginTestCase": {
@@ -115,5 +117,15 @@ public class EventBusAdapterImpl implements EventBusAdapter {
         break;
       }
     }
+  }
+
+  @Override
+  public MessageConsumer<?> register(String address) {
+    return vertx.eventBus().consumer(address, this);
+  }
+
+  @Override
+  public Handler<Message<JsonObject>> asMessageHandler() {
+    return this;
   }
 }

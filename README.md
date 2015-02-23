@@ -4,6 +4,7 @@ Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
 
 ## Todo
 
+- report to directory instead of file (for multiplexing based on test suite name)
 - filtering
 - handle reporter/formatter failures
 - same name test replaces previous ?

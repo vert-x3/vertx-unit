@@ -1,7 +1,10 @@
 package io.vertx.ext.unit;
 
+import io.vertx.core.Handler;
+import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.ext.unit.impl.FailureImpl;
 import io.vertx.ext.unit.report.ReportOptions;
 import io.vertx.ext.unit.report.TestCaseReport;
@@ -165,9 +168,8 @@ public class EventBusTest extends VertxTestBase {
     String testCaseName1 = TestUtils.randomAlphaString(10);
     String testCaseName2 = TestUtils.randomAlphaString(10);
     String testCaseName3 = TestUtils.randomAlphaString(10);
-    EventBusAdapter slurper = EventBusAdapter.create();
-    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer(address, slurper);
-    slurper.handler(testSuite -> {
+    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer(address);
+    Handler<Message<JsonObject>> messageHandler = EventBusCollector.create(vertx, testSuite -> {
       Map<TestCaseReport, TestResult> results = new LinkedHashMap<>();
       testSuite.handler(testCase -> {
         testCase.endHandler(result -> {
@@ -207,7 +209,7 @@ public class EventBusTest extends VertxTestBase {
         consumer.unregister();
         testComplete();
       });
-    });
+    }).asMessageHandler();
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
       vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
@@ -223,6 +225,7 @@ public class EventBusTest extends VertxTestBase {
               false, null, "the_failure_stackTrace", new IOException()).toJson()));
       vertx.eventBus().publish(address, new JsonObject().put("type", "endTestSuite"));
     });
+    consumer.handler(messageHandler);
     await();
   }
 
@@ -231,10 +234,9 @@ public class EventBusTest extends VertxTestBase {
     String address = TestUtils.randomAlphaString(10);
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName = TestUtils.randomAlphaString(10);
-    EventBusAdapter slurper = EventBusAdapter.create();
-    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer(address, slurper);
+    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer(address);
     AtomicReference<Throwable> suiteFailure = new AtomicReference<>();
-    slurper.handler(testSuite -> {
+    Handler<Message<JsonObject>> messageHandler = EventBusCollector.create(vertx, testSuite -> {
       Map<TestCaseReport, TestResult> results = new LinkedHashMap<>();
       testSuite.handler(testCase -> {
         testCase.endHandler(result -> {
@@ -257,7 +259,7 @@ public class EventBusTest extends VertxTestBase {
         consumer.unregister();
         testComplete();
       });
-    });
+    }).asMessageHandler();
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
       vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
@@ -267,6 +269,7 @@ public class EventBusTest extends VertxTestBase {
           put("failure", new FailureImpl(
               false, "the_failure_message", "the_failure_stackTrace", new IOException()).toJson()));
     });
+    consumer.handler(messageHandler);
     await();
   }
 
@@ -275,14 +278,14 @@ public class EventBusTest extends VertxTestBase {
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName1 = TestUtils.randomAlphaString(10);
     String testCaseName2 = TestUtils.randomAlphaString(10);
-    EventBusAdapter slurper = EventBusAdapter.create();
-    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer("the-address", slurper);
     TestReporter testReporter = new TestReporter();
-    slurper.handler(testReporter);
+    EventBusCollector collector = EventBusCollector.create(vertx, testReporter);
+    MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer("the-address", collector.asMessageHandler());
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
       TestSuite suite = TestSuite.create(testSuiteName).
-          test(testCaseName1, test -> {}).test(testCaseName2, test -> test.fail("the_failure"));
+          test(testCaseName1, test -> {
+          }).test(testCaseName2, test -> test.fail("the_failure"));
       suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt("the-address")));
     });
     testReporter.await();
@@ -303,10 +306,8 @@ public class EventBusTest extends VertxTestBase {
     String address = TestUtils.randomAlphaString(10);
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName = TestUtils.randomAlphaString(10);
-    EventBusAdapter slurper = EventBusAdapter.create();
-    MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer(address, slurper);
     TestReporter testReporter = new TestReporter();
-    slurper.handler(testReporter);
+    MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer(address, EventBusCollector.create(vertx, testReporter).asMessageHandler());
     RuntimeException error = new RuntimeException("the_runtime_exception");
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
@@ -316,7 +317,9 @@ public class EventBusTest extends VertxTestBase {
               Thread.sleep(10);
             } catch (InterruptedException ignore) {
             }
-          }).after(test -> { throw error; });
+          }).after(test -> {
+        throw error;
+      });
       suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt(address)));
     });
     testReporter.await();

@@ -284,7 +284,15 @@
  * at::
  * the event bus address to which events will be sent
  *
- * todo _EventBusAdapter_
+ * It allow to decouple the execution of the test suite from the reporting.
+ *
+ * The messages sent over the event bus can be collected by the {@link io.vertx.ext.unit.collect.EventBusCollector}
+ * and achieve custom reporting:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#reporter_02}
+ * ----
  *
  * == Junit integration
  *

@@ -2,11 +2,10 @@ package io.vertx.ext.unit;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.Fluent;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.report.ReportOptions;
+import io.vertx.ext.unit.report.ReportingOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,12 +19,11 @@ import java.util.List;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @DataObject
-public class TestOptions {
+public class TestOptions extends ReportingOptions {
 
   public static final long DEFAULT_TIMEOUT = 2 * 60 * 1000;
 
   private long timeout = DEFAULT_TIMEOUT;
-  private List<ReportOptions> reporters = new ArrayList<>();
 
   /**
    * Create a new empty options, with the default time out and no reporters.
@@ -39,10 +37,8 @@ public class TestOptions {
    * @param other the options to copy
    */
   public TestOptions(TestOptions other) {
+    super(other);
     setTimeout(other.timeout);
-    other.reporters.stream().
-        map(ReportOptions::new).
-        forEach(reporters::add);
   }
 
   /**
@@ -51,13 +47,7 @@ public class TestOptions {
    * @param json the json to create from
    */
   public TestOptions(JsonObject json) {
-    JsonArray reportersJson = json.getJsonArray("reporters");
-    if (reportersJson != null) {
-      for (int i = 0;i < reportersJson.size();i++) {
-        JsonObject reportJson = reportersJson.getJsonObject(i);
-        reporters.add(new ReportOptions(reportJson));
-      }
-    }
+    super(json);
     setTimeout(json.getLong("timeout", DEFAULT_TIMEOUT));
   }
 
@@ -80,47 +70,21 @@ public class TestOptions {
     return this;
   }
 
-  /**
-   * @return the current reporters options
-   */
-  public List<ReportOptions> getReporters() {
-    return reporters;
-  }
-
-  /**
-   * Add a reporter to the current list.
-   *
-   * @param reportOptions the options of the reporter to use
-   * @return a reference to this, so the API can be used fluently
-   */
-  @Fluent
+  @Override
   public TestOptions addReporter(ReportOptions reportOptions) {
-    reporters.add(reportOptions);
-    return this;
+    return (TestOptions) super.addReporter(reportOptions);
   }
 
-  /**
-   * Replace the current list of reporters with a new one.
-   *
-   * @param reporters the new reporters
-   * @return a reference to this, so the API can be used fluently
-   */
-  @Fluent
+  @Override
   public TestOptions setReporters(List<ReportOptions> reporters) {
-    this.reporters = reporters;
-    return this;
+    return (TestOptions) super.setReporters(reporters);
   }
 
   /**
    * @return the json modelling the current configuration
    */
   public JsonObject toJson() {
-    JsonObject config = new JsonObject();
-    if (reporters.size() > 0) {
-      JsonArray reportersJson = new JsonArray();
-      reporters.stream().map(ReportOptions::toJson).forEach(reportersJson::add);
-      config.put("reporters", reportersJson);
-    }
+    JsonObject config = super.toJson();
     config.put("timeout", timeout);
     return config;
   }

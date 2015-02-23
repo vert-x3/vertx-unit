@@ -1,0 +1,17 @@
+== ReportingOptions
+
+++++
+ Reporting options:
+
+ <ul>
+   <li>the <code>reporters</code> is an array of reporter configurations</li>
+ </ul>
+++++
+
+|===
+|Name | Type | Description
+
+|reporters
+|Array of link:ReportOptions.html[ReportOptions]
+| Replace the current list of reporters with a new one.
+|===

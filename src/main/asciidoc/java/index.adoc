@@ -396,7 +396,20 @@ _bus_
 at::
 the event bus address to which events will be sent
 
-todo _EventBusAdapter_
+It allow to decouple the execution of the test suite from the reporting.
+
+The messages sent over the event bus can be collected by the `link:apidocs/io/vertx/ext/unit/collect/EventBusCollector.html[EventBusCollector]`
+and achieve custom reporting:
+
+[source,java]
+----
+EventBusCollector collector = EventBusCollector.create(
+    vertx,
+    new ReportingOptions().addReporter(
+        new ReportOptions().setTo("file").setAt("report.xml").setFormat("junit")));
+
+collector.register("the-address");
+----
 
 == Junit integration
 

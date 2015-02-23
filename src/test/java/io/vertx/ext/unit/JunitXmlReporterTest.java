@@ -1,10 +1,7 @@
 package io.vertx.ext.unit;
 
-import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.ext.unit.impl.EventBusAdapterImpl;
 import io.vertx.ext.unit.impl.ReporterHandler;
-import io.vertx.ext.unit.report.ReportOptions;
 import io.vertx.ext.unit.report.impl.JunitXmlFormatter;
 import io.vertx.test.core.AsyncTestBase;
 import io.vertx.test.core.TestUtils;
@@ -172,25 +169,6 @@ public class JunitXmlReporterTest extends AsyncTestBase {
       testComplete();
     });
     suite.runner().handler(new ReporterHandler(reporter)).run();
-    await();
-  }
-
-  @org.junit.Test
-  public void testFromEventBus() {
-    EventBusAdapter runner = new EventBusAdapterImpl();
-    Vertx vertx = Vertx.vertx();
-    JunitXmlFormatter reporter = new JunitXmlFormatter(buffer -> {
-      Document doc = assertDoc(buffer);
-      Element testsuiteElt = doc.getDocumentElement();
-      assertEquals("testsuite", testsuiteElt.getTagName());
-      NodeList testCases = testsuiteElt.getElementsByTagName("testcase");
-      assertEquals(1, testCases.getLength());
-      testComplete();
-    });
-    runner.handler(new ReporterHandler(reporter));
-    vertx.eventBus().consumer("foobar", runner);
-    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {});
-    suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt("foobar")));
     await();
   }
 
