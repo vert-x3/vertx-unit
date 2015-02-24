@@ -36,10 +36,11 @@ var EventBusCollector = function(j_val) {
   var that = this;
 
   /**
+   Register the collector as a consumer of the event bus with the specified address.
 
    @public
-   @param address {string} 
-   @return {MessageConsumer}
+   @param address {string} the registration address 
+   @return {MessageConsumer} the subscribed message consumer
    */
   this.register = function(address) {
     var __args = arguments;

@@ -41,14 +41,11 @@ public class Async {
   }
 
   /**
-   * Signals the asynchronous operation is done, this method should be called only once, calling it several
-   * times is tolerated.
-   *
-   * @return true when called the first time, false otherwise.
+   * Signals the asynchronous operation is done, this method should be called only once, if the method is called
+   * another time it will throw an {@code IllegalStateException} to signal the error.
    */
-  public boolean complete() {
-    boolean ret = this.delegate.complete();
-    return ret;
+  public void complete() {
+    this.delegate.complete();
   }
 
 

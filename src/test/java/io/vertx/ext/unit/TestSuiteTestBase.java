@@ -468,7 +468,12 @@ public abstract class TestSuiteTestBase {
       assertTrue(reporter.results.get(i).failed());
       assertNotNull(reporter.results.get(i).failure());
       assertTrue(reporter.results.get(i).failure().cause() instanceof TimeoutException);
-      assertFalse(async.complete());
+      try {
+        async.complete();
+        fail("Was expecting an IllegalStateException");
+      } catch (IllegalStateException ignore) {
+        // Expected
+      }
     }
   }
 }

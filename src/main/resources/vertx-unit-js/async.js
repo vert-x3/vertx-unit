@@ -32,17 +32,16 @@ var Async = function(j_val) {
   var that = this;
 
   /**
-   Signals the asynchronous operation is done, this method should be called only once, calling it several
-   times is tolerated.
+   Signals the asynchronous operation is done, this method should be called only once, if the method is called
+   another time it will throw an <code>IllegalStateException</code> to signal the error.
 
    @public
 
-   @return {boolean} true when called the first time, false otherwise.
    */
   this.complete = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_async.complete();
+      j_async.complete();
     } else utils.invalidArgs();
   };
 
