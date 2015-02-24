@@ -146,6 +146,4 @@ public interface TestSuite {
   @GenIgnore
   junit.framework.TestSuite toJUnitSuite(long timeout, TimeUnit unit);
 
-  TestSuiteRunner runner();
-
 }

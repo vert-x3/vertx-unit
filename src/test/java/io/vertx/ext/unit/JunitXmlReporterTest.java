@@ -2,6 +2,7 @@ package io.vertx.ext.unit;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.impl.ReporterHandler;
+import io.vertx.ext.unit.impl.TestSuiteImpl;
 import io.vertx.ext.unit.report.impl.JunitXmlFormatter;
 import io.vertx.test.core.AsyncTestBase;
 import io.vertx.test.core.TestUtils;
@@ -40,7 +41,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
     String testCaseName3 = TestUtils.randomAlphaString(10);
     String testCaseName4 = TestUtils.randomAlphaString(10);
 
-    TestSuite suite = TestSuite.create(testSuiteName).
+    TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(testSuiteName).
         test(testCaseName1, test -> {
           try {
             Thread.sleep(10);
@@ -101,7 +102,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName1 = TestUtils.randomAlphaString(10);
 
-    TestSuite suite = TestSuite.create(testSuiteName).
+    TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(testSuiteName).
         test(testCaseName1, test -> {
         }).
         after(test -> {
@@ -141,7 +142,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName1 = TestUtils.randomAlphaString(10);
 
-    TestSuite suite = TestSuite.create(testSuiteName).
+    TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(testSuiteName).
         test(testCaseName1, test -> {
         }).
         before(test -> {

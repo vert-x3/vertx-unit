@@ -197,11 +197,6 @@ public class TestSuite {
     return ret;
   }
 
-  public TestSuiteRunner runner() {
-    TestSuiteRunner ret= TestSuiteRunner.newInstance(this.delegate.runner());
-    return ret;
-  }
-
 
   public static TestSuite newInstance(io.vertx.ext.unit.TestSuite arg) {
     return new TestSuite(arg);

@@ -4,12 +4,13 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.report.TestSuiteReport;
-import io.vertx.ext.unit.TestSuiteRunner;
 
 /**
+ * The test suite runner.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class TestSuiteRunnerImpl implements TestSuiteRunner {
+public class TestSuiteRunner {
 
   private final String name;
   private final Handler<Test> before;
@@ -21,8 +22,8 @@ public class TestSuiteRunnerImpl implements TestSuiteRunner {
   private Handler<TestSuiteReport> handler;
   private long timeout;
 
-  public TestSuiteRunnerImpl(String name, Handler<Test> before, Handler<Test> after, Handler<Test> beforeEach,
-                             Handler<Test> afterEach, TestCaseImpl[] tests) {
+  public TestSuiteRunner(String name, Handler<Test> before, Handler<Test> after, Handler<Test> beforeEach,
+                         Handler<Test> afterEach, TestCaseImpl[] tests) {
     this.name = name;
     this.timeout = 0;
     this.before = before;
@@ -32,35 +33,56 @@ public class TestSuiteRunnerImpl implements TestSuiteRunner {
     this.tests = tests;
   }
 
-  @Override
+  /**
+   * @return the current runner vertx instance
+   */
   public Vertx getVertx() {
     return vertx;
   }
 
-  @Override
+  /**
+   * Set a vertx instance of the runner.
+   *
+   * @param vertx the vertx instance
+   * @return a reference to this, so the API can be used fluently
+   */
   public TestSuiteRunner setVertx(Vertx vertx) {
     this.vertx = vertx;
     return this;
   }
 
-  @Override
+  /**
+   * @return the current runner timeout
+   */
   public long getTimeout() {
     return timeout;
   }
 
-  @Override
+  /**
+   * Set a timeout on the runner, zero or a negative value means no timeout.
+   *
+   * @param timeout the timeout in millis
+   * @return a reference to this, so the API can be used fluently
+   */
   public TestSuiteRunner setTimeout(long timeout) {
     this.timeout = timeout;
     return this;
   }
 
-  @Override
+  /**
+   * Set a reporter for handling the events emitted by the test suite.
+   *
+   * @param reporter the reporter
+   * @return a reference to this, so the API can be used fluently
+   */
   public TestSuiteRunner handler(Handler<TestSuiteReport> reporter) {
     handler = reporter;
     return this;
   }
 
-  @Override
+  /**
+   * Run the testsuite with the current {@code timeout}, {@code vertx} and {@code reporter}.
+   */
   public void run() {
     TestSuiteReportImpl runner = new TestSuiteReportImpl(name, timeout, before, after, beforeEach, afterEach, tests);
     handler.handle(runner);

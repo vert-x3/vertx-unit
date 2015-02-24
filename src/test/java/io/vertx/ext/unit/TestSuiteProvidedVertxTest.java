@@ -1,6 +1,7 @@
 package io.vertx.ext.unit;
 
 import io.vertx.core.Vertx;
+import io.vertx.ext.unit.impl.TestSuiteImpl;
 import org.junit.After;
 import org.junit.Before;
 
@@ -13,7 +14,7 @@ public class TestSuiteProvidedVertxTest extends TestSuiteTestBase {
 
   public TestSuiteProvidedVertxTest() {
     super();
-    getRunner = TestSuite::runner;
+    getRunner = TestSuiteImpl::runner;
     run = (runner) -> vertx.runOnContext(v -> runner.run());
     completeAsync = async -> vertx.runOnContext(v -> async.complete());
   }

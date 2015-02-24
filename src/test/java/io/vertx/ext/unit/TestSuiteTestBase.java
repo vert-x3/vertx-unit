@@ -1,6 +1,8 @@
 package io.vertx.ext.unit;
 
 import io.vertx.core.Handler;
+import io.vertx.ext.unit.impl.TestSuiteImpl;
+import io.vertx.ext.unit.impl.TestSuiteRunner;
 import io.vertx.ext.unit.report.TestResult;
 import org.junit.Test;
 
@@ -21,7 +23,7 @@ import static org.junit.Assert.*;
  */
 public abstract class TestSuiteTestBase {
 
-  protected Function<TestSuite, TestSuiteRunner> getRunner;
+  protected Function<TestSuiteImpl, TestSuiteRunner> getRunner;
   protected Consumer<TestSuiteRunner> run;
   protected Consumer<Async> completeAsync;
 
@@ -29,11 +31,11 @@ public abstract class TestSuiteTestBase {
   }
 
   private void run(TestSuite suite, TestReporter reporter) {
-    run.accept(getRunner.apply(suite).handler(reporter));
+    run.accept(getRunner.apply((TestSuiteImpl) suite).handler(reporter));
   }
 
   private void run(TestSuite suite, TestReporter reporter, long timeout) {
-    run.accept(getRunner.apply(suite).handler(reporter).setTimeout(timeout));
+    run.accept(getRunner.apply((TestSuiteImpl) suite).handler(reporter).setTimeout(timeout));
   }
 
   protected boolean checkTest(io.vertx.ext.unit.Test test) {

@@ -1,6 +1,7 @@
 package io.vertx.ext.unit;
 
 import io.vertx.core.Vertx;
+import io.vertx.ext.unit.impl.TestSuiteRunner;
 import org.junit.After;
 import org.junit.Before;
 

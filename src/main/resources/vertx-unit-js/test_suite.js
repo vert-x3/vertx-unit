@@ -16,7 +16,6 @@
 
 /** @module vertx-unit-js/test_suite */
 var utils = require('vertx-js/util/utils');
-var TestSuiteRunner = require('vertx-unit-js/test_suite_runner');
 var Test = require('vertx-unit-js/test');
 var TestCompletion = require('vertx-unit-js/test_completion');
 
@@ -142,19 +141,6 @@ var TestSuite = function(j_val) {
       return new TestCompletion(j_testSuite.run(__args[0]._jdel));
     }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
       return new TestCompletion(j_testSuite.run(__args[0]._jdel, __args[1] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-
-   @return {TestSuiteRunner}
-   */
-  this.runner = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      return new TestSuiteRunner(j_testSuite.runner());
     } else utils.invalidArgs();
   };
 

@@ -7,7 +7,6 @@ import io.vertx.ext.unit.TestOptions;
 import io.vertx.ext.unit.TestSuite;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.report.TestResult;
-import io.vertx.ext.unit.TestSuiteRunner;
 import io.vertx.ext.unit.report.Reporter;
 
 import java.util.ArrayList;
@@ -89,9 +88,8 @@ public class TestSuiteImpl implements TestSuite {
     return abc;
   }
 
-  @Override
   public TestSuiteRunner runner() {
-    return new TestSuiteRunnerImpl(name, before, after, beforeEach, afterEach, tests.toArray(new TestCaseImpl[tests.size()]));
+    return new TestSuiteRunner(name, before, after, beforeEach, afterEach, tests.toArray(new TestCaseImpl[tests.size()]));
   }
 
   @Override
