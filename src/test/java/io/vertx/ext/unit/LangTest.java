@@ -3,6 +3,7 @@ package io.vertx.ext.unit;
 import groovy.lang.GroovyShell;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.test.core.AsyncTestBase;
 
 /**
@@ -35,7 +36,7 @@ public class LangTest extends AsyncTestBase {
     vertx.eventBus().<JsonObject>consumer("assert_tests").bodyStream().handler(msg -> {
       String type = msg.getString("type");
       switch (type) {
-        case "endTestCase":
+        case EventBusCollector.EVENT_TEST_CASE_END:
           String name = msg.getString("name");
           if (name.startsWith("fail_")) {
             assertNotNull(msg.getValue("failure"));
@@ -43,7 +44,7 @@ public class LangTest extends AsyncTestBase {
             assertEquals(null, msg.getValue("failure"));
           }
           break;
-        case "endTestSuite":
+        case EventBusCollector.EVENT_TEST_SUITE_END:
           testComplete();
           break;
       }

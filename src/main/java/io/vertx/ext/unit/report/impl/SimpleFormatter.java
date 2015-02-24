@@ -24,6 +24,7 @@ public class SimpleFormatter implements Reporter<SimpleFormatter.ReportImpl> {
   }
 
   public static class ReportImpl {
+    private String name;
     private int run;
     private int failures;
     private int errors;
@@ -36,6 +37,7 @@ public class SimpleFormatter implements Reporter<SimpleFormatter.ReportImpl> {
 
   @Override
   public void reportBeginTestSuite(ReportImpl report, String name) {
+    report.name = name;
     info.accept(Buffer.buffer("Begin test suite " + name));
   }
 
@@ -60,11 +62,13 @@ public class SimpleFormatter implements Reporter<SimpleFormatter.ReportImpl> {
   }
 
   @Override
-  public void reportEndTestSuite(ReportImpl report, String name, Throwable err) {
-    if (err != null) {
-      error.accept(Buffer.buffer("Test suite " + name + " failure"), err);
-    }
-    String msg = "End test suite " + name + " , run: " + report.run + ", Failures: " + report.failures + ", Errors: " + report.errors;
+  public void reportError(ReportImpl report, Throwable err) {
+    error.accept(Buffer.buffer("Test suite " + report.name + " failure"), err);
+  }
+
+  @Override
+  public void reportEndTestSuite(ReportImpl report) {
+    String msg = "End test suite " + report.name + " , run: " + report.run + ", Failures: " + report.failures + ", Errors: " + report.errors;
     info.accept(Buffer.buffer(msg));
     if (endHandler != null) {
       endHandler.handle(null);

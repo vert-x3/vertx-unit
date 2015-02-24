@@ -203,6 +203,30 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
+  public void reportFailureAfterTestCompleted() {
+    AtomicReference<io.vertx.ext.unit.Test> testRef = new AtomicReference<>();
+    TestSuite suite = TestSuite.create("my_suite").test("my_test_1", testRef::set).test("my_test_2", test -> {
+      try {
+        testRef.get().fail();
+      } catch (Exception e) {
+      }
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertEquals(1, reporter.exceptions.size());
+    assertEquals(2, reporter.results.size());
+    TestResult result = reporter.results.get(0);
+    assertEquals("my_test_1", result.name());
+    assertTrue(result.succeeded());
+    assertNull(result.failure());
+    result = reporter.results.get(1);
+    assertEquals("my_test_2", result.name());
+    assertTrue(result.failed());
+    assertNotNull(result.failure());
+  }
+
+  @Test
   public void runBefore() throws Exception {
     for (int i = 0;i < 2;i++) {
       AtomicInteger count = new AtomicInteger();

@@ -20,9 +20,10 @@ public class TestCaseReportImpl implements TestCaseReport, Task<Void> {
                             Handler<Test> before,
                             Handler<Test> test,
                             Handler<Test> after,
+                            Handler<Throwable> exceptionHandler,
                             Task<?> next) {
     this.name = name;
-    this.task = InvokeTask.runTestTask(name, timeout, before, test, after, (testResult, executor) -> {
+    this.task = InvokeTask.runTestTask(name, timeout, before, test, after, exceptionHandler, (testResult, executor) -> {
       result = testResult;
       if (completionHandler != null) {
         completionHandler.handle(testResult);

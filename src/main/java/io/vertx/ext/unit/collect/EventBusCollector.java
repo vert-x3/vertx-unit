@@ -26,25 +26,31 @@ public interface EventBusCollector {
    * Json {@code type} field value that signals a test suite begins, used as part of the test reporting
    * protocol for the event bus.
    */
-  String EVENT_BEGIN_TEST_SUITE = "beginTestSuite";
+  String EVENT_TEST_SUITE_BEGIN = "testSuiteBegin";
 
   /**
    * Json {@code type} field value that signals a test suite ends, used as part of the test reporting
    * protocol for the event bus.
    */
-  String EVENT_END_TEST_SUITE = "endTestSuite";
+  String EVENT_TEST_SUITE_END = "testSuiteEnd";
+
+  /**
+   * Json {@code type} field value that reports a test suite error, used as part of the test reporting
+   * protocol for the event bus.
+   */
+  String EVENT_TEST_SUITE_ERROR = "testSuiteError";
 
   /**
    * Json {@code type} field value that signals a test case begins, used as part of the test reporting
    * protocol for the event bus.
    */
-  String EVENT_BEGIN_TEST_CASE = "beginTestCase";
+  String EVENT_TEST_CASE_BEGIN = "testCaseBegin";
 
   /**
    * Json {@code type} field value that signals a test case ends, used as part of the test reporting
    * protocol for the event bus.
    */
-  String EVENT_END_TEST_CASE = "endTestCase";
+  String EVENT_TEST_CASE_END = "testCaseEnd";
 
   /**
    * Create a message handler reportsing with the specified options. The returned

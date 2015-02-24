@@ -14,8 +14,10 @@ import io.vertx.test.core.VertxTestBase;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,25 +41,25 @@ public class EventBusTest extends VertxTestBase {
       String type = body.getString("type");
       switch (status.get()) {
         case 0:
-          assertEquals("beginTestSuite", type);
+          assertEquals(EventBusCollector.EVENT_TEST_SUITE_BEGIN, type);
           assertEquals(testSuiteName, body.getString("name"));
           break;
         case 1:
-          assertEquals("beginTestCase", type);
+          assertEquals(EventBusCollector.EVENT_TEST_CASE_BEGIN, type);
           assertEquals(testCaseName1, body.getString("name"));
           break;
         case 2:
-          assertEquals("endTestCase", type);
+          assertEquals(EventBusCollector.EVENT_TEST_CASE_END, type);
           assertEquals(testCaseName1, body.getString("name"));
           assertTrue(body.getInteger("time") >= 10);
           assertNull(testCaseName1, body.getJsonObject("failure"));
           break;
         case 3:
-          assertEquals("beginTestCase", type);
+          assertEquals(EventBusCollector.EVENT_TEST_CASE_BEGIN, type);
           assertEquals(testCaseName2, body.getString("name"));
           break;
         case 4:
-          assertEquals("endTestCase", type);
+          assertEquals(EventBusCollector.EVENT_TEST_CASE_END, type);
           assertEquals(testCaseName2, body.getString("name"));
           assertTrue(body.getInteger("time") >= 0);
           JsonObject failure = body.getJsonObject("failure");
@@ -67,11 +69,11 @@ public class EventBusTest extends VertxTestBase {
           assertNotNull(failure.getBinary("cause"));
           break;
         case 5:
-          assertEquals("beginTestCase", type);
+          assertEquals(EventBusCollector.EVENT_TEST_CASE_BEGIN, type);
           assertEquals(testCaseName3, body.getString("name"));
           break;
         case 6:
-          assertEquals("endTestCase", type);
+          assertEquals(EventBusCollector.EVENT_TEST_CASE_END, type);
           assertEquals(testCaseName3, body.getString("name"));
           assertTrue(body.getInteger("time") >= 0);
           JsonObject error = body.getJsonObject("failure");
@@ -81,7 +83,7 @@ public class EventBusTest extends VertxTestBase {
           assertNotNull(error.getBinary("cause"));
           break;
         case 7:
-          assertEquals("endTestSuite", type);
+          assertEquals(EventBusCollector.EVENT_TEST_SUITE_END, type);
           assertEquals(testSuiteName, body.getString("name"));
           consumer.unregister();
           testComplete();
@@ -120,28 +122,31 @@ public class EventBusTest extends VertxTestBase {
       String type = body.getString("type");
       switch (status.get()) {
         case 0:
-          assertEquals("beginTestSuite", type);
+          assertEquals(EventBusCollector.EVENT_TEST_SUITE_BEGIN, type);
           assertEquals(testSuiteName, body.getString("name"));
           break;
         case 1:
-          assertEquals("beginTestCase", type);
+          assertEquals(EventBusCollector.EVENT_TEST_CASE_BEGIN, type);
           assertEquals(testCaseName, body.getString("name"));
           break;
         case 2:
-          assertEquals("endTestCase", type);
+          assertEquals(EventBusCollector.EVENT_TEST_CASE_END, type);
           assertEquals(testCaseName, body.getString("name"));
           assertNotNull(body.getInteger("time"));
           assertNull(testCaseName, body.getJsonObject("failure"));
           break;
         case 3:
-          assertEquals("endTestSuite", type);
-          assertEquals(testSuiteName, body.getString("name"));
-          assertNull(body.getValue("time"));
+          assertEquals(EventBusCollector.EVENT_TEST_SUITE_ERROR, type);
           JsonObject failure = body.getJsonObject("failure");
           assertNotNull(failure);
           assertEquals("the_after_failure", failure.getString("message"));
           assertNotNull(failure.getString("stackTrace"));
           assertNotNull(failure.getBinary("cause"));
+          break;
+        case 4:
+          assertEquals(EventBusCollector.EVENT_TEST_SUITE_END, type);
+          assertEquals(testSuiteName, body.getString("name"));
+          assertNull(body.getValue("time"));
           consumer.unregister();
           testComplete();
           break;
@@ -212,18 +217,18 @@ public class EventBusTest extends VertxTestBase {
     }).asMessageHandler();
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
-      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
-      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName1));
-      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName1).put("time", 10));
-      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName2));
-      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName2).put("time", 5).
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_SUITE_BEGIN).put("name", testSuiteName));
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_BEGIN).put("name", testCaseName1));
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_END).put("name", testCaseName1).put("time", 10));
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_BEGIN).put("name", testCaseName2));
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_END).put("name", testCaseName2).put("time", 5).
           put("failure", new FailureImpl(
               false, "the_failure_message", "the_failure_stackTrace", new IOException()).toJson()));
-      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName3));
-      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName3).put("time", 7).
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_BEGIN).put("name", testCaseName3));
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_END).put("name", testCaseName3).put("time", 7).
           put("failure", new FailureImpl(
               false, null, "the_failure_stackTrace", new IOException()).toJson()));
-      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestSuite"));
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_SUITE_END));
     });
     consumer.handler(messageHandler);
     await();
@@ -235,16 +240,16 @@ public class EventBusTest extends VertxTestBase {
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName = TestUtils.randomAlphaString(10);
     MessageConsumer<JsonObject> consumer = vertx.eventBus().localConsumer(address);
-    AtomicReference<Throwable> suiteFailure = new AtomicReference<>();
+    LinkedList<Throwable> suiteFailures = new LinkedList<>();
     Handler<Message<JsonObject>> messageHandler = EventBusCollector.create(vertx, testSuite -> {
       Map<TestCaseReport, TestResult> results = new LinkedHashMap<>();
       testSuite.handler(testCase -> {
         testCase.endHandler(result -> {
-          assertNull(suiteFailure.get());
+          assertEquals(Collections.emptyList(), suiteFailures);
           results.put(testCase, result);
         });
       });
-      testSuite.exceptionHandler(suiteFailure::set);
+      testSuite.exceptionHandler(suiteFailures::add);
       testSuite.endHandler(done -> {
         assertEquals(testSuiteName, testSuite.name());
         assertEquals(1, results.size());
@@ -254,20 +259,21 @@ public class EventBusTest extends VertxTestBase {
         assertEquals(testCaseName, entry1.getValue().name());
         assertTrue(entry1.getValue().succeeded());
         assertNull(entry1.getValue().failure());
-        assertNotNull(suiteFailure.get());
-        assertTrue(suiteFailure.get() instanceof IOException);
+        assertEquals(1, suiteFailures.size());
+        assertTrue(suiteFailures.get(0) instanceof IOException);
         consumer.unregister();
         testComplete();
       });
     }).asMessageHandler();
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
-      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestSuite").put("name", testSuiteName));
-      vertx.eventBus().publish(address, new JsonObject().put("type", "beginTestCase").put("name", testCaseName));
-      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestCase").put("name", testCaseName));
-      vertx.eventBus().publish(address, new JsonObject().put("type", "endTestSuite").
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_SUITE_BEGIN).put("name", testSuiteName));
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_BEGIN).put("name", testCaseName));
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_END).put("name", testCaseName));
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_SUITE_ERROR).
           put("failure", new FailureImpl(
               false, "the_failure_message", "the_failure_stackTrace", new IOException()).toJson()));
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_SUITE_END));
     });
     consumer.handler(messageHandler);
     await();

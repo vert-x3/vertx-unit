@@ -50,12 +50,19 @@ public interface Reporter<R> {
   void reportEndTestCase(R report, String name, TestResult result);
 
   /**
-   * Signals a test suite ended
+   * Report a global test suite error, it can be called mulitple times between the {@link #reportBeginTestSuite}
+   * and the {@link #reportEndTestSuite}.
    *
    * @param report the report
-   * @param name the test suite name
    * @param err the test suite error
    */
-  void reportEndTestSuite(R report, String name, Throwable err);
+  void reportError(R report, Throwable err);
+
+  /**
+   * Signals a test suite ended.
+   *
+   * @param report the report
+   */
+  void reportEndTestSuite(R report);
 
 }

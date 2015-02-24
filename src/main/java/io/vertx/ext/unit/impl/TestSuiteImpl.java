@@ -110,7 +110,7 @@ public class TestSuiteImpl implements TestSuite {
         public void run(junit.framework.TestResult testResult) {
           BlockingQueue<TestResult> latch = new ArrayBlockingQueue<>(1);
           Vertx vertx = Vertx.vertx();
-          InvokeTask task = InvokeTask.runTestTask(test.desc, 0L, before, test.handler, after, (testResult1, executor) -> {
+          InvokeTask task = InvokeTask.runTestTask(test.desc, 0L, before, test.handler, after, null, (testResult1, executor) -> {
             latch.add(testResult1);
           });
           testResult.startTest(this);

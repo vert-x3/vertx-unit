@@ -13,18 +13,21 @@ class InvokeTask implements Task<Result> {
 
   final Task<Result> next;
   final Handler<Test> handler;
+  final Handler<Throwable> unhandledFailureHandler;
   final long timeout;
 
-  public InvokeTask(Handler<Test> test, Task<Result> next) {
+  public InvokeTask(Handler<Test> test, Handler<Throwable> unhandledFailureHandler, Task<Result> next) {
     this.handler = test;
     this.timeout = 0;
     this.next = next;
+    this.unhandledFailureHandler = unhandledFailureHandler;
   }
 
-  public InvokeTask(Handler<Test> test, long timeout, Task<Result> next) {
+  public InvokeTask(Handler<Test> test, long timeout, Handler<Throwable> unhandledFailureHandler, Task<Result> next) {
     this.handler = test;
     this.timeout = timeout;
     this.next = next;
+    this.unhandledFailureHandler = unhandledFailureHandler;
   }
 
   @Override
@@ -34,10 +37,10 @@ class InvokeTask implements Task<Result> {
       Runnable cancel = () -> {
         try {
           Thread.sleep(timeout);
+          test.failed(new TimeoutException());
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
         }
-        test.failed(new TimeoutException());
       };
       if (context.vertx() != null) {
         context.vertx().executeBlocking(future -> cancel.run(), null);
@@ -54,20 +57,21 @@ class InvokeTask implements Task<Result> {
       Handler<Test> before,
       Handler<Test> test,
       Handler<Test> after,
+      Handler<Throwable> unhandledFailureHandler,
       Task<TestResult> next) {
 
     Task<Result> completeTask = (result, executor) -> {
       executor.run(next, new TestResultImpl(name, result.time, result.failure));
     };
-    InvokeTask afterTask = after == null ? null : new InvokeTask(after, completeTask);
-    InvokeTask runnerTask = new InvokeTask(test, timeout, (result, executor) -> {
+    InvokeTask afterTask = after == null ? null : new InvokeTask(after, unhandledFailureHandler, completeTask);
+    InvokeTask runnerTask = new InvokeTask(test, timeout, unhandledFailureHandler, (result, executor) -> {
       if (afterTask != null) {
         executor.run(afterTask, result);
       } else {
         executor.run(completeTask, result);
       }
     });
-    return before == null ? runnerTask : new InvokeTask(before, (result, executor) -> {
+    return before == null ? runnerTask : new InvokeTask(before, unhandledFailureHandler, (result, executor) -> {
       if (result.failure != null) {
         executor.run(completeTask, result);
       } else {

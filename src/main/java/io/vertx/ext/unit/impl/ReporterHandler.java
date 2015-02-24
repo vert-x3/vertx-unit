@@ -73,10 +73,13 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
     testsuite.exceptionHandler(t -> {
       failure.compareAndSet(null, t);
       err.set(t);
+      for (int i = 0;i < reporters.length;i++) {
+        reporters[i].reportError(reports[i], t);
+      }
     });
     testsuite.endHandler(v -> {
       for (int i = 0;i < reporters.length;i++) {
-        reporters[i].reportEndTestSuite(reports[i], testsuite.name(), err.get());
+        reporters[i].reportEndTestSuite(reports[i]);
       }
       completed = true;
       if (completion != null) {

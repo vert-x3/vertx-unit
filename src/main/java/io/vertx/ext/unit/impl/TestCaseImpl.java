@@ -24,8 +24,8 @@ public class TestCaseImpl implements TestCase {
     this.handler = handler;
   }
 
-  TestCaseReport runner() {
-    return new TestCaseReportImpl(desc, 0, null, handler, null, (o, executor) -> {
+  private TestCaseReport runner() {
+    return new TestCaseReportImpl(desc, 0, null, handler, null, null, (o, executor) -> {
       // ?
     });
   }

@@ -53,35 +53,6 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
     return observable;
   }
 
-  public ReadStream<TestCaseReport> exceptionHandler(Handler<Throwable> arg0) {
-    this.delegate.exceptionHandler(arg0);
-    return this;
-  }
-
-  public ReadStream<TestCaseReport> handler(Handler<TestCaseReport> arg0) {
-    this.delegate.handler(new Handler<io.vertx.ext.unit.report.TestCaseReport>() {
-      public void handle(io.vertx.ext.unit.report.TestCaseReport event) {
-        arg0.handle(new TestCaseReport(event));
-      }
-    });
-    return this;
-  }
-
-  public ReadStream<TestCaseReport> pause() {
-    this.delegate.pause();
-    return this;
-  }
-
-  public ReadStream<TestCaseReport> resume() {
-    this.delegate.resume();
-    return this;
-  }
-
-  public ReadStream<TestCaseReport> endHandler(Handler<Void> arg0) {
-    this.delegate.endHandler(arg0);
-    return this;
-  }
-
   /**
    * @return the test suite name
    */
@@ -92,6 +63,42 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
     String ret = this.delegate.name();
     cached_0 = ret;
     return ret;
+  }
+
+  /**
+   * Set an exception handler, the exception handler reports the test suite errors, it can be called mulitple
+   * times before the test ends.
+   *
+   * @param handler the exception handler
+   * @return a reference to this, so the API can be used fluently
+   */
+  public TestSuiteReport exceptionHandler(Handler<Throwable> handler) {
+    this.delegate.exceptionHandler(handler);
+    return this;
+  }
+
+  public TestSuiteReport handler(Handler<TestCaseReport> handler) {
+    this.delegate.handler(new Handler<io.vertx.ext.unit.report.TestCaseReport>() {
+      public void handle(io.vertx.ext.unit.report.TestCaseReport event) {
+        handler.handle(new TestCaseReport(event));
+      }
+    });
+    return this;
+  }
+
+  public TestSuiteReport pause() {
+    this.delegate.pause();
+    return this;
+  }
+
+  public TestSuiteReport resume() {
+    this.delegate.resume();
+    return this;
+  }
+
+  public TestSuiteReport endHandler(Handler<Void> endHandler) {
+    this.delegate.endHandler(endHandler);
+    return this;
   }
 
   private java.lang.String cached_0;

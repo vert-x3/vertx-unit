@@ -41,29 +41,29 @@ class TestSuiteReportImpl implements TestSuiteReport {
   }
 
   @Override
-  public ReadStream<TestCaseReport> exceptionHandler(Handler<Throwable> handler) {
+  public TestSuiteReport exceptionHandler(Handler<Throwable> handler) {
     exceptionHandler = handler;
     return this;
   }
 
   @Override
-  public ReadStream<TestCaseReport> handler(Handler<TestCaseReport> handler) {
+  public TestSuiteReport handler(Handler<TestCaseReport> handler) {
     this.handler = handler;
     return this;
   }
 
   @Override
-  public ReadStream<TestCaseReport> pause() {
+  public TestSuiteReport pause() {
     return this;
   }
 
   @Override
-  public ReadStream<TestCaseReport> resume() {
+  public TestSuiteReport resume() {
     return this;
   }
 
   @Override
-  public ReadStream<TestCaseReport> endHandler(Handler<Void> handler) {
+  public TestSuiteReport endHandler(Handler<Void> handler) {
     endHandler = handler;
     return this;
   }
@@ -72,7 +72,7 @@ class TestSuiteReportImpl implements TestSuiteReport {
     if (tests.length > index) {
       Task<?> next = build(tests, index + 1, last);
       TestCaseImpl test = tests[index];
-      TestCaseReportImpl runner = new TestCaseReportImpl(test.desc, timeout, beforeEach, test.handler, afterEach, next);
+      TestCaseReportImpl runner = new TestCaseReportImpl(test.desc, timeout, beforeEach, test.handler, afterEach, exceptionHandler, next);
       return (v, context) -> {
         if (handler != null) {
           handler.handle(runner);
@@ -95,12 +95,12 @@ class TestSuiteReportImpl implements TestSuiteReport {
     };
     if (after != null) {
       Task<Result> next = last;
-      last = new InvokeTask(after, next::execute);
+      last = new InvokeTask(after, exceptionHandler, next::execute);
     }
     last = build(tests, 0, last);
     if (before != null) {
       Task<?> next = last;
-      last = new InvokeTask(before, (result,context) -> {
+      last = new InvokeTask(before, exceptionHandler, (result,context) -> {
         if (result.failure == null) {
           context.run(next, null);
         } else {

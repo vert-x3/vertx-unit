@@ -35,80 +35,6 @@ var TestSuiteReport = function(j_val) {
   ReadStream.call(this, j_val);
 
   /**
-
-   @public
-   @param arg0 {function} 
-   @return {ReadStream}
-   */
-  this.exceptionHandler = function(arg0) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuiteReport.exceptionHandler(function(jVal) {
-      arg0(utils.convReturnTypeUnknown(jVal));
-    });
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param arg0 {function} 
-   @return {ReadStream}
-   */
-  this.handler = function(arg0) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuiteReport.handler(function(jVal) {
-      arg0(new TestCaseReport(jVal));
-    });
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-
-   @return {ReadStream}
-   */
-  this.pause = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      j_testSuiteReport.pause();
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-
-   @return {ReadStream}
-   */
-  this.resume = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      j_testSuiteReport.resume();
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
-
-   @public
-   @param arg0 {function} 
-   @return {ReadStream}
-   */
-  this.endHandler = function(arg0) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuiteReport.endHandler(arg0);
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
    @return the test suite name
 
    @public
@@ -122,6 +48,82 @@ var TestSuiteReport = function(j_val) {
         that.cachedname = j_testSuiteReport.name();
       }
       return that.cachedname;
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Set an exception handler, the exception handler reports the test suite errors, it can be called mulitple
+   times before the test ends.
+
+   @public
+   @param handler {function} the exception handler 
+   @return {TestSuiteReport} a reference to this, so the API can be used fluently
+   */
+  this.exceptionHandler = function(handler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_testSuiteReport.exceptionHandler(function(jVal) {
+      handler(utils.convReturnTypeUnknown(jVal));
+    });
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param handler {function} 
+   @return {TestSuiteReport}
+   */
+  this.handler = function(handler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_testSuiteReport.handler(function(jVal) {
+      handler(new TestCaseReport(jVal));
+    });
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+
+   @return {TestSuiteReport}
+   */
+  this.pause = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      j_testSuiteReport.pause();
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+
+   @return {TestSuiteReport}
+   */
+  this.resume = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      j_testSuiteReport.resume();
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param endHandler {function} 
+   @return {TestSuiteReport}
+   */
+  this.endHandler = function(endHandler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_testSuiteReport.endHandler(endHandler);
+      return that;
     } else utils.invalidArgs();
   };
 

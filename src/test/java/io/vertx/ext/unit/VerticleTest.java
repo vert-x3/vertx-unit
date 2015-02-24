@@ -2,6 +2,7 @@ package io.vertx.ext.unit;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.test.core.AsyncTestBase;
 import org.junit.*;
 import org.junit.Test;
@@ -15,7 +16,7 @@ public class VerticleTest extends AsyncTestBase {
   public void testCoordinated() {
     Vertx vertx = Vertx.vertx();
     vertx.eventBus().<JsonObject>consumer("test").handler(msg -> {
-      if (msg.body().getString("type").equals("endTestSuite")) {
+      if (msg.body().getString("type").equals(EventBusCollector.EVENT_TEST_SUITE_END)) {
         testComplete();
       }
     });

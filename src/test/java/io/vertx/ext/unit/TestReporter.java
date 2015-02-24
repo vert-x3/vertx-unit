@@ -24,7 +24,9 @@ class TestReporter implements Handler<TestSuiteReport> {
     runner.handler(testExec -> {
       testExec.endHandler(results::add);
     });
-    runner.exceptionHandler(exceptions::add);
+    runner.exceptionHandler(err -> {
+      exceptions.add(err);
+    });
     runner.endHandler(done -> {
       latch.countDown();
     });

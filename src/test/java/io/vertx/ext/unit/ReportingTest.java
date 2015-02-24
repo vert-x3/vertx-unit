@@ -5,6 +5,7 @@ import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.file.FileProps;
 import io.vertx.core.file.FileSystem;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.ext.unit.report.ReportOptions;
 import io.vertx.ext.unit.report.impl.JunitXmlFormatter;
 import io.vertx.ext.unit.report.Reporter;
@@ -108,7 +109,7 @@ public class ReportingTest extends VertxTestBase {
   public void testReportToEventBus() {
     MessageConsumer<JsonObject> consumer = vertx.eventBus().<JsonObject>consumer("the_address");
     consumer.handler(msg -> {
-      if (msg.body().getString("type").equals("endTestSuite")) {
+      if (msg.body().getString("type").equals(EventBusCollector.EVENT_TEST_SUITE_END)) {
         consumer.unregister();
         testComplete();
       }

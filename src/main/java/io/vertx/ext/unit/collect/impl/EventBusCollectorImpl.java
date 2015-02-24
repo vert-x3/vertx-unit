@@ -5,7 +5,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.streams.ReadStream;
 import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.ext.unit.impl.FailureImpl;
 import io.vertx.ext.unit.impl.TestResultImpl;
@@ -38,32 +37,32 @@ public class EventBusCollectorImpl implements EventBusCollector, Handler<Message
     String type = body.getString("type", "");
     String name = body.getString("name");
     switch (type) {
-      case EVENT_BEGIN_TEST_SUITE: {
+      case EVENT_TEST_SUITE_BEGIN: {
         runner = new TestSuiteReport() {
           @Override
           public String name() {
             return name;
           }
           @Override
-          public ReadStream<TestCaseReport> exceptionHandler(Handler<Throwable> handler) {
+          public TestSuiteReport exceptionHandler(Handler<Throwable> handler) {
             exceptionHandler = handler;
             return this;
           }
           @Override
-          public ReadStream<TestCaseReport> handler(Handler<TestCaseReport> handler) {
+          public TestSuiteReport handler(Handler<TestCaseReport> handler) {
             testCaseRunnerHandler = handler;
             return this;
           }
           @Override
-          public ReadStream<TestCaseReport> pause() {
+          public TestSuiteReport pause() {
             return this;
           }
           @Override
-          public ReadStream<TestCaseReport> resume() {
+          public TestSuiteReport resume() {
             return this;
           }
           @Override
-          public ReadStream<TestCaseReport> endHandler(Handler<Void> handler) {
+          public TestSuiteReport endHandler(Handler<Void> handler) {
             endHandler = handler;
             return this;
           }
@@ -71,7 +70,7 @@ public class EventBusCollectorImpl implements EventBusCollector, Handler<Message
         reporter.handle(runner);
         break;
       }
-      case EVENT_BEGIN_TEST_CASE: {
+      case EVENT_TEST_CASE_BEGIN: {
         if (testCaseRunnerHandler != null) {
           testCaseRunnerHandler.handle(new TestCaseReport() {
             @Override
@@ -87,7 +86,20 @@ public class EventBusCollectorImpl implements EventBusCollector, Handler<Message
         }
         break;
       }
-      case EVENT_END_TEST_CASE: {
+      case EVENT_TEST_SUITE_ERROR: {
+        JsonObject failureJson = body.getJsonObject("failure");
+        if (failureJson != null && exceptionHandler != null) {
+          FailureImpl failure = new FailureImpl(failureJson);
+          Throwable cause = failure.cause();
+          if (cause == null) {
+            // Best effort
+            cause = new Exception(failureJson.getString("message"));
+          }
+          exceptionHandler.handle(cause);
+        }
+        break;
+      }
+      case EVENT_TEST_CASE_END: {
         if (testCaseHandler != null) {
           JsonObject failureJson = body.getJsonObject("failure");
           Failure failure = null;
@@ -100,17 +112,7 @@ public class EventBusCollectorImpl implements EventBusCollector, Handler<Message
         }
         break;
       }
-      case EVENT_END_TEST_SUITE: {
-        JsonObject failureJson = body.getJsonObject("failure");
-        if (failureJson != null && exceptionHandler != null) {
-          FailureImpl failure = new FailureImpl(failureJson);
-          Throwable cause = failure.cause();
-          if (cause == null) {
-            // Best effort
-            cause = new Exception(failureJson.getString("message"));
-          }
-          exceptionHandler.handle(cause);
-        }
+      case EVENT_TEST_SUITE_END: {
         if (endHandler != null) {
           endHandler.handle(null);
         }

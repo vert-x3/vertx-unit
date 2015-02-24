@@ -71,11 +71,13 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
   }
 
   @Override
-  public void reportEndTestSuite(XmlReport report, String name, Throwable err) {
-    if (err != null) {
-      report.results.add(new TestResultImpl(report.name, 0, err));
-      report.errors.incrementAndGet();
-    }
+  public void reportError(XmlReport report, Throwable err) {
+    report.results.add(new TestResultImpl(report.name, 0, err));
+    report.errors.incrementAndGet();
+  }
+
+  @Override
+  public void reportEndTestSuite(XmlReport report) {
     // Create xml and send it
     try {
       StringWriter buffer = new StringWriter();

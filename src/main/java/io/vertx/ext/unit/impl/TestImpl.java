@@ -84,6 +84,9 @@ class TestImpl implements Test {
     synchronized (this) {
       switch (status) {
         case STATUS_COMPLETED:
+          if (failed == null && invokeTask.unhandledFailureHandler != null) {
+            invokeTask.unhandledFailureHandler.handle(t);
+          }
           return;
         case STATUS_RUNNING:
           if (failed == null) {
