@@ -8,6 +8,7 @@ See https://github.com/vert-x3/vertx-unit/blob/initial-work/src/main/asciidoc/ja
 
 ## Todo
 
+- add closeable resource to register for automatic cleanup or do something like this
 - object sharing via io.vertx.core.Context#put
 - report to directory instead of file (for multiplexing based on test suite name)
 - filtering
