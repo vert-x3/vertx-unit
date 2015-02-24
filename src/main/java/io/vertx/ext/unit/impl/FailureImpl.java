@@ -81,9 +81,9 @@ public class FailureImpl implements Failure {
         put("stackTrace", stackTrace);
     if (cause != null) {
       // Attempt to marshall the cause since it is Serializable
-      try {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(buffer);
+      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+      try(ObjectOutputStream oos = new ObjectOutputStream(buffer)) {
+        oos.flush();
         oos.writeObject(cause);
         json.put("cause", buffer.toByteArray());
       } catch (Exception ignore) {
