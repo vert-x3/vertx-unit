@@ -3,6 +3,7 @@ package io.vertx.ext.unit.report.impl;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.MessageProducer;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.ext.unit.report.Failure;
 import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.impl.FailureImpl;
@@ -29,21 +30,21 @@ public class EventBusReporter implements Reporter<MessageProducer<JsonObject>> {
   @Override
   public void reportBeginTestSuite(MessageProducer<JsonObject> report, String name) {
     report.write(new JsonObject().
-        put("type", "beginTestSuite").
+        put("type", EventBusCollector.EVENT_BEGIN_TEST_SUITE).
         put("name", name));
   }
 
   @Override
   public void reportBeginTestCase(MessageProducer<JsonObject> report, String name) {
     report.write(new JsonObject().
-        put("type", "beginTestCase").
+        put("type", EventBusCollector.EVENT_BEGIN_TEST_CASE).
         put("name", name));
   }
 
   @Override
   public void reportEndTestCase(MessageProducer<JsonObject> report, String name, TestResult result) {
     JsonObject json = new JsonObject().
-        put("type", "endTestCase").
+        put("type", EventBusCollector.EVENT_END_TEST_CASE).
         put("name", result.name()).
         put("time", result.time());
     if (result.failed()) {
@@ -55,7 +56,7 @@ public class EventBusReporter implements Reporter<MessageProducer<JsonObject>> {
 
   @Override
   public void reportEndTestSuite(MessageProducer<JsonObject> report, String name, Throwable err) {
-    JsonObject msg = new JsonObject().put("type", "endTestSuite").
+    JsonObject msg = new JsonObject().put("type", EventBusCollector.EVENT_END_TEST_SUITE).
         put("name", name);
     if (err != null) {
       msg.put("failure", new FailureImpl(err).toJson());

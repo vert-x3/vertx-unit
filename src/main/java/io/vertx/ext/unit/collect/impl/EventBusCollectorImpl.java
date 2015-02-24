@@ -38,7 +38,7 @@ public class EventBusCollectorImpl implements EventBusCollector, Handler<Message
     String type = body.getString("type", "");
     String name = body.getString("name");
     switch (type) {
-      case "beginTestSuite": {
+      case EVENT_BEGIN_TEST_SUITE: {
         runner = new TestSuiteReport() {
           @Override
           public String name() {
@@ -71,7 +71,7 @@ public class EventBusCollectorImpl implements EventBusCollector, Handler<Message
         reporter.handle(runner);
         break;
       }
-      case "beginTestCase": {
+      case EVENT_BEGIN_TEST_CASE: {
         if (testCaseRunnerHandler != null) {
           testCaseRunnerHandler.handle(new TestCaseReport() {
             @Override
@@ -87,7 +87,7 @@ public class EventBusCollectorImpl implements EventBusCollector, Handler<Message
         }
         break;
       }
-      case "endTestCase": {
+      case EVENT_END_TEST_CASE: {
         if (testCaseHandler != null) {
           JsonObject failureJson = body.getJsonObject("failure");
           Failure failure = null;
@@ -100,7 +100,7 @@ public class EventBusCollectorImpl implements EventBusCollector, Handler<Message
         }
         break;
       }
-      case "endTestSuite": {
+      case EVENT_END_TEST_SUITE: {
         JsonObject failureJson = body.getJsonObject("failure");
         if (failureJson != null && exceptionHandler != null) {
           FailureImpl failure = new FailureImpl(failureJson);

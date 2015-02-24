@@ -23,6 +23,30 @@ import io.vertx.ext.unit.report.TestSuiteReport;
 public interface EventBusCollector {
 
   /**
+   * Json {@code type} field value that signals a test suite begins, used as part of the test reporting
+   * protocol for the event bus.
+   */
+  String EVENT_BEGIN_TEST_SUITE = "beginTestSuite";
+
+  /**
+   * Json {@code type} field value that signals a test suite ends, used as part of the test reporting
+   * protocol for the event bus.
+   */
+  String EVENT_END_TEST_SUITE = "endTestSuite";
+
+  /**
+   * Json {@code type} field value that signals a test case begins, used as part of the test reporting
+   * protocol for the event bus.
+   */
+  String EVENT_BEGIN_TEST_CASE = "beginTestCase";
+
+  /**
+   * Json {@code type} field value that signals a test case ends, used as part of the test reporting
+   * protocol for the event bus.
+   */
+  String EVENT_END_TEST_CASE = "endTestCase";
+
+  /**
    * Create a message handler reportsing with the specified options. The returned
    * message handler can be registered to an event bus.
    *
