@@ -120,6 +120,37 @@ public class Test {
   }
 
   /**
+   * Asserts that the {@code expected} double argument is equals to the {@code actual} double argument
+   * within a positive delta. If the arguments do not satisfy this, an assertion error is thrown otherwise
+   * the execution continue.
+   *
+   * @param expected the object the actual object is supposedly equals to
+   * @param actual the actual object to test
+   * @param delta the maximum delta
+   * @return a reference to this, so the API can be used fluently
+   */
+  public Test assertInRange(double expected, double actual, double delta) {
+    this.delegate.assertInRange(expected, actual, delta);
+    return this;
+  }
+
+  /**
+   * Asserts that the {@code expected} double argument is equals to the {@code actual} double argument
+   * within a positive delta. If the arguments do not satisfy this, an assertion error is thrown otherwise
+   * the execution continue.
+   *
+   * @param expected the object the actual object is supposedly equals to
+   * @param actual the actual object to test
+   * @param delta the maximum delta
+   * @param message the failure message
+   * @return a reference to this, so the API can be used fluently
+   */
+  public Test assertInRange(double expected, double actual, double delta, String message) {
+    this.delegate.assertInRange(expected, actual, delta, message);
+    return this;
+  }
+
+  /**
    * Assert the {@code first} argument is not equals to the {@code second} argument. If the arguments are equals
    * an assertion error is thrown otherwise the execution continue.
    *

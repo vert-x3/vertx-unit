@@ -27,6 +27,15 @@ suite.test("assert_equals", function(test) {
     test.assertEquals([123], [321]);
 });
 
+suite.test("assert_in_range", function(test) {
+    test.assertInRange(0.12, 0.13, 0.02);
+    test.assertInRange(0.12, 0.11, 0.02);
+}).test("fail_assert_in_range_1", function(test) {
+    test.assertInRange(0.12, 0.15, 0.02);
+}).test("fail_assert_in_range_2", function(test) {
+    test.assertInRange(0.12, 0.09, 0.02);
+});
+
 suite.test("assert_equals_with_message", function(test) {
     test.assertEquals(0, 0, "the_message");
     test.assertEquals(10, 10, "the_message");

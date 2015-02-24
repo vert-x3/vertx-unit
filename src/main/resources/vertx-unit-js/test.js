@@ -95,6 +95,29 @@ var Test = function(j_val) {
   };
 
   /**
+   Asserts that the <code>expected</code> double argument is equals to the <code>actual</code> double argument
+   within a positive delta. If the arguments do not satisfy this, an assertion error is thrown otherwise
+   the execution continue.
+
+   @public
+   @param expected {number} the object the actual object is supposedly equals to 
+   @param actual {number} the actual object to test 
+   @param delta {number} the maximum delta 
+   @param message {string} the failure message 
+   @return {Test} a reference to this, so the API can be used fluently
+   */
+  this.assertInRange = function() {
+    var __args = arguments;
+    if (__args.length === 3 && typeof __args[0] ==='number' && typeof __args[1] ==='number' && typeof __args[2] ==='number') {
+      j_test.assertInRange(__args[0], __args[1], __args[2]);
+      return that;
+    }  else if (__args.length === 4 && typeof __args[0] ==='number' && typeof __args[1] ==='number' && typeof __args[2] ==='number' && typeof __args[3] === 'string') {
+      j_test.assertInRange(__args[0], __args[1], __args[2], __args[3]);
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
    Assert the <code>first</code> argument is not equals to the <code>second</code> argument. If the arguments are equals
    an assertion error is thrown otherwise the execution continue.
 

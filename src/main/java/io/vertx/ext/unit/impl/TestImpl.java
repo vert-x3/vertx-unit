@@ -183,6 +183,28 @@ class TestImpl implements Test {
   }
 
   @Override
+  public Test assertInRange(double expected, double actual, double delta) {
+    try {
+      Assert.assertEquals(expected, actual, delta);
+      return this;
+    } catch (AssertionError err) {
+      failed(err);
+      throw err;
+    }
+  }
+
+  @Override
+  public Test assertInRange(double expected, double actual, double delta, String message) {
+    try {
+      Assert.assertEquals(message, expected, actual, delta);
+      return this;
+    } catch (AssertionError err) {
+      failed(err);
+      throw err;
+    }
+  }
+
+  @Override
   public Test assertNotEquals(Object first, Object second, String message) {
     try {
       Assert.assertNotEquals(message, first, second);
