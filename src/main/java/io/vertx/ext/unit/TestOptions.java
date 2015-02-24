@@ -21,6 +21,9 @@ import java.util.List;
 @DataObject
 public class TestOptions extends ReportingOptions {
 
+  /**
+   * The default time out value in milliseconds: 2 minutes.
+   */
   public static final long DEFAULT_TIMEOUT = 2 * 60 * 1000;
 
   private long timeout = DEFAULT_TIMEOUT;
