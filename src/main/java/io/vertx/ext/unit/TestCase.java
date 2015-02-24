@@ -32,7 +32,7 @@ public interface TestCase {
    * context, like a Junit test.
    */
   @GenIgnore
-  void assertSuccess();
+  void awaitSuccess();
 
   /**
    * Assert the test case passes and block until it is executed. This method should be used from a non Vert.x
@@ -42,7 +42,7 @@ public interface TestCase {
    * @param unit the suite {@code timeout} unit
    */
   @GenIgnore
-  void assertSuccess(long timeout, TimeUnit unit);
+  void awaitSuccess(long timeout, TimeUnit unit);
 
   /**
    * Assert the test case passes and block until it is executed. This method should be used from a non Vert.x
@@ -51,7 +51,7 @@ public interface TestCase {
    * @param vertx the vert.x instance
    */
   @GenIgnore
-  void assertSuccess(Vertx vertx);
+  void awaitSuccess(Vertx vertx);
 
   /**
    * Assert the test case passes and block until it is executed. This method should be used from a non Vert.x
@@ -61,5 +61,5 @@ public interface TestCase {
    * @param unit the suite {@code timeout} unit
    */
   @GenIgnore
-  void assertSuccess(Vertx vertx, long timeout, TimeUnit unit);
+  void awaitSuccess(Vertx vertx, long timeout, TimeUnit unit);
 }

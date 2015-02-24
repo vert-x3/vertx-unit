@@ -96,13 +96,13 @@ public class JUnitTest {
   @org.junit.Test
   public void testAssert() {
     TestCase.create("my_test", test -> {
-    }).assertSuccess();
+    }).awaitSuccess();
   }
 
   @org.junit.Test
   public void testAssertFailure() {
     try {
-      TestCase.create("my_test", test -> test.fail("the_failure")).assertSuccess();
+      TestCase.create("my_test", test -> test.fail("the_failure")).awaitSuccess();
       fail();
     } catch (AssertionError err) {
       assertEquals("the_failure", err.getMessage());
@@ -115,7 +115,7 @@ public class JUnitTest {
     try {
       TestCase.create("my_test", test -> {
         throw failure;
-      }).assertSuccess();
+      }).awaitSuccess();
       fail();
     } catch (RuntimeException err) {
       assertSame(failure, err);
@@ -125,7 +125,7 @@ public class JUnitTest {
   @org.junit.Test
   public void testAssertTimeout() {
     try {
-      TestCase.create("my_test", Test::async).assertSuccess(300, TimeUnit.MILLISECONDS);
+      TestCase.create("my_test", Test::async).awaitSuccess(300, TimeUnit.MILLISECONDS);
       fail();
     } catch (IllegalStateException ignore) {
     }
@@ -139,7 +139,7 @@ public class JUnitTest {
       @Override
       public void run() {
         try {
-          TestCase.create("my_test", Test::async).assertSuccess();
+          TestCase.create("my_test", Test::async).awaitSuccess();
         } catch (IllegalStateException e) {
           ise.set(true);
         } finally {

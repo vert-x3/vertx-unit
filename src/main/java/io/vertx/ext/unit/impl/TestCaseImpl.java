@@ -31,22 +31,22 @@ public class TestCaseImpl implements TestCase {
   }
 
   @Override
-  public void assertSuccess() {
-    assertSuccess(2, TimeUnit.MINUTES);
+  public void awaitSuccess() {
+    awaitSuccess(2, TimeUnit.MINUTES);
   }
 
   @Override
-  public void assertSuccess(long timeout, TimeUnit unit) {
+  public void awaitSuccess(long timeout, TimeUnit unit) {
     assertSuccess(Context.create(), timeout, unit);
   }
 
   @Override
-  public void assertSuccess(Vertx vertx, long timeout, TimeUnit unit) {
+  public void awaitSuccess(Vertx vertx, long timeout, TimeUnit unit) {
     assertSuccess(Context.create(vertx), timeout, unit);
   }
 
   @Override
-  public void assertSuccess(Vertx vertx) {
+  public void awaitSuccess(Vertx vertx) {
     assertSuccess(Context.create(vertx), 2, TimeUnit.MINUTES);
   }
 
