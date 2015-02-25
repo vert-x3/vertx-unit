@@ -70,14 +70,20 @@ public class DefaultReporterFactory implements ReporterFactory {
             public void write(char[] cbuf, int off, int len) throws IOException {
               file.write(Buffer.buffer(new String(cbuf, off, len)));
             }
-            public void flush() throws IOException {}
-            public void close() throws IOException {}
+            public void flush() throws IOException {
+              file.flush();
+            }
+            public void close() throws IOException {
+              file.close();
+            }
           });
           errorHandler = (msg,err) -> {
             writer.println(err);
             err.printStackTrace(writer);
           };
-          endHandler = v -> file.close();
+          endHandler = v -> {
+            writer.close();
+          };
           break;
         }
         default:
