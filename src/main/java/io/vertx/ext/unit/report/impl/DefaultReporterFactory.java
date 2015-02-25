@@ -95,6 +95,9 @@ public class DefaultReporterFactory implements ReporterFactory {
             }
           });
         default:
+          if (endHandler != null) {
+            endHandler.handle(null);
+          }
           throw new IllegalArgumentException("Invalid format <" + format + ">");
       }
     }
