@@ -20,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -29,6 +28,7 @@ public class EventBusTest extends VertxTestBase {
 
   @org.junit.Test
   public void testEventBusReporter() throws Exception {
+    long now = System.currentTimeMillis();
     String address = TestUtils.randomAlphaString(10);
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName1 = TestUtils.randomAlphaString(10);
@@ -51,7 +51,7 @@ public class EventBusTest extends VertxTestBase {
         case 2:
           assertEquals(EventBusCollector.EVENT_TEST_CASE_END, type);
           assertEquals(testCaseName1, body.getString("name"));
-          assertTrue(body.getInteger("time") >= 10);
+          assertTrue(body.getInteger("durationTime") >= 10);
           assertNull(testCaseName1, body.getJsonObject("failure"));
           break;
         case 3:
@@ -61,7 +61,8 @@ public class EventBusTest extends VertxTestBase {
         case 4:
           assertEquals(EventBusCollector.EVENT_TEST_CASE_END, type);
           assertEquals(testCaseName2, body.getString("name"));
-          assertTrue(body.getInteger("time") >= 0);
+          assertTrue(body.getLong("beginTime") >= now);
+          assertTrue(body.getLong("durationTime") >= 0);
           JsonObject failure = body.getJsonObject("failure");
           assertNotNull(failure);
           assertEquals("the_" + testCaseName2 + "_failure", failure.getString("message"));
@@ -75,7 +76,8 @@ public class EventBusTest extends VertxTestBase {
         case 6:
           assertEquals(EventBusCollector.EVENT_TEST_CASE_END, type);
           assertEquals(testCaseName3, body.getString("name"));
-          assertTrue(body.getInteger("time") >= 0);
+          assertTrue(body.getLong("beginTime") >= now);
+          assertTrue(body.getLong("durationTime") >= 0);
           JsonObject error = body.getJsonObject("failure");
           assertNotNull(error);
           assertNull(error.getString("message"));
@@ -132,7 +134,8 @@ public class EventBusTest extends VertxTestBase {
         case 2:
           assertEquals(EventBusCollector.EVENT_TEST_CASE_END, type);
           assertEquals(testCaseName, body.getString("name"));
-          assertNotNull(body.getInteger("time"));
+          assertNotNull(body.getLong("beginTime"));
+          assertNotNull(body.getLong("durationTime"));
           assertNull(testCaseName, body.getJsonObject("failure"));
           break;
         case 3:
@@ -146,7 +149,8 @@ public class EventBusTest extends VertxTestBase {
         case 4:
           assertEquals(EventBusCollector.EVENT_TEST_SUITE_END, type);
           assertEquals(testSuiteName, body.getString("name"));
-          assertNull(body.getValue("time"));
+          assertNull(body.getLong("beginTime"));
+          assertNull(body.getLong("durationTime"));
           consumer.unregister();
           testComplete();
           break;
@@ -168,6 +172,7 @@ public class EventBusTest extends VertxTestBase {
 
   @org.junit.Test
   public void testEventBusReport() throws Exception {
+    long now = System.currentTimeMillis();
     String address = TestUtils.randomAlphaString(10);
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName1 = TestUtils.randomAlphaString(10);
@@ -189,13 +194,15 @@ public class EventBusTest extends VertxTestBase {
         assertEquals(entry1.getKey().name(), entry1.getValue().name());
         assertEquals(testCaseName1, entry1.getValue().name());
         assertTrue(entry1.getValue().succeeded());
-        assertEquals(10, entry1.getValue().time());
+        assertTrue(entry1.getValue().beginTime() >= now);
+        assertEquals(10, entry1.getValue().durationTime());
         assertNull(entry1.getValue().failure());
         Map.Entry<TestCaseReport, TestResult> entry2 = it.next();
         assertEquals(entry2.getKey().name(), entry2.getValue().name());
         assertEquals(testCaseName2, entry2.getValue().name());
         assertFalse(entry2.getValue().succeeded());
-        assertEquals(5, entry2.getValue().time());
+        assertTrue(entry2.getValue().beginTime() >= now);
+        assertEquals(5, entry2.getValue().durationTime());
         assertNotNull(entry2.getValue().failure());
         assertEquals(false, entry2.getValue().failure().isError());
         assertEquals("the_failure_message", entry2.getValue().failure().message());
@@ -205,7 +212,8 @@ public class EventBusTest extends VertxTestBase {
         assertEquals(entry3.getKey().name(), entry3.getValue().name());
         assertEquals(testCaseName3, entry3.getValue().name());
         assertFalse(entry3.getValue().succeeded());
-        assertEquals(7, entry3.getValue().time());
+        assertTrue(entry3.getValue().beginTime() >= now);
+        assertEquals(7, entry3.getValue().durationTime());
         assertNotNull(entry3.getValue().failure());
         assertEquals(false, entry3.getValue().failure().isError());
         assertEquals(null, entry3.getValue().failure().message());
@@ -219,13 +227,13 @@ public class EventBusTest extends VertxTestBase {
       assertTrue(ar.succeeded());
       vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_SUITE_BEGIN).put("name", testSuiteName));
       vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_BEGIN).put("name", testCaseName1));
-      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_END).put("name", testCaseName1).put("time", 10));
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_END).put("name", testCaseName1).put("beginTime", System.currentTimeMillis()).put("durationTime", 10L));
       vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_BEGIN).put("name", testCaseName2));
-      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_END).put("name", testCaseName2).put("time", 5).
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_END).put("name", testCaseName2).put("beginTime", System.currentTimeMillis()).put("durationTime", 5L).
           put("failure", new FailureImpl(
               false, "the_failure_message", "the_failure_stackTrace", new IOException()).toJson()));
       vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_BEGIN).put("name", testCaseName3));
-      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_END).put("name", testCaseName3).put("time", 7).
+      vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_END).put("name", testCaseName3).put("beginTime", System.currentTimeMillis()).put("durationTime", 7L).
           put("failure", new FailureImpl(
               false, null, "the_failure_stackTrace", new IOException()).toJson()));
       vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_SUITE_END));
@@ -309,6 +317,7 @@ public class EventBusTest extends VertxTestBase {
 
   @org.junit.Test
   public void testEndToEndAfterFailure() {
+    long now = System.currentTimeMillis();
     String address = TestUtils.randomAlphaString(10);
     String testSuiteName = TestUtils.randomAlphaString(10);
     String testCaseName = TestUtils.randomAlphaString(10);
@@ -333,7 +342,8 @@ public class EventBusTest extends VertxTestBase {
     TestResult result1 = testReporter.results.get(0);
     assertEquals(testCaseName, result1.name());
     assertTrue(result1.succeeded());
-    assertTrue(result1.time() >= 10);
+    assertTrue(result1.beginTime() >= now);
+    assertTrue(result1.durationTime() >= 10);
     assertEquals(1, testReporter.exceptions.size());
     Throwable cause = testReporter.exceptions.get(0);
     assertTrue(cause instanceof RuntimeException);

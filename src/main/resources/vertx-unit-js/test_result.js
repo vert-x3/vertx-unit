@@ -50,19 +50,36 @@ var TestResult = function(j_val) {
   };
 
   /**
-   The test execution time in millis.
+   The time at which the test began in millis.
 
    @public
 
    @return {number}
    */
-  this.time = function() {
+  this.beginTime = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      if (that.cachedtime == null) {
-        that.cachedtime = j_testResult.time();
+      if (that.cachedbeginTime == null) {
+        that.cachedbeginTime = j_testResult.beginTime();
       }
-      return that.cachedtime;
+      return that.cachedbeginTime;
+    } else utils.invalidArgs();
+  };
+
+  /**
+   How long the test lasted in millis.
+
+   @public
+
+   @return {number}
+   */
+  this.durationTime = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      if (that.cacheddurationTime == null) {
+        that.cacheddurationTime = j_testResult.durationTime();
+      }
+      return that.cacheddurationTime;
     } else utils.invalidArgs();
   };
 

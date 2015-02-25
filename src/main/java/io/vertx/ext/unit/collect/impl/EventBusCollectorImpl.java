@@ -106,7 +106,7 @@ public class EventBusCollectorImpl implements EventBusCollector, Handler<Message
           if (failureJson != null) {
             failure = new FailureImpl(failureJson);
           }
-          TestResult result = new TestResultImpl(name, body.getInteger("time", 0), failure);
+          TestResult result = new TestResultImpl(name, body.getLong("beginTime", 0L), body.getLong("durationTime", 0L), failure);
           testCaseHandler.handle(result);
           testCaseHandler = null;
         }

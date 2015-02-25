@@ -68,7 +68,7 @@ class TestSuiteReportImpl implements TestSuiteReport {
     return this;
   }
 
-  private Task<Result> build(TestCaseImpl[] tests, int index, Task<Result> last) {
+  private Task<Throwable> build(TestCaseImpl[] tests, int index, Task<Throwable> last) {
     if (tests.length > index) {
       Task<?> next = build(tests, index + 1, last);
       TestCaseImpl test = tests[index];
@@ -85,17 +85,19 @@ class TestSuiteReportImpl implements TestSuiteReport {
   }
 
   private Task<?> build() {
-    Task<Result> last = (result, context) -> {
-      if (result != null && result.failure != null && exceptionHandler != null) {
-        exceptionHandler.handle(result.failure);
+    Task<Throwable> last = (failure, context) -> {
+      if (failure != null && exceptionHandler != null) {
+        exceptionHandler.handle(failure);
       }
       if (endHandler != null) {
         endHandler.handle(null);
       }
     };
     if (after != null) {
-      Task<Result> next = last;
-      last = new InvokeTask(after, exceptionHandler, next::execute);
+      Task<Throwable> next = last;
+      last = new InvokeTask(after, exceptionHandler, (result, context) -> {
+        next.execute(result.failure, context);
+      });
     }
     last = build(tests, 0, last);
     if (before != null) {

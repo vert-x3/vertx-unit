@@ -42,14 +42,13 @@ class TestImpl implements Test {
   private final Context context;
   private int status;
   private Throwable failed;
-  private long time;
+  private long beginTime;
   private final LinkedList<AsyncImpl> asyncs = new LinkedList<>();
 
-  public TestImpl(InvokeTask invokeTask, Context context, long time, Throwable failed) {
+  public TestImpl(InvokeTask invokeTask, Context context, Throwable failed) {
     this.invokeTask = invokeTask;
     this.context = context;
     this.failed = failed;
-    this.time = time - System.currentTimeMillis();
     this.status = STATUS_RUNNING;
   }
 
@@ -59,15 +58,16 @@ class TestImpl implements Test {
       if (asyncs.isEmpty() && status == STATUS_ASYNC) {
         status = STATUS_COMPLETED;
         end = true;
-        time += System.currentTimeMillis();
       }
     }
     if (end) {
-      context.run(invokeTask.next, new Result(time, failed));
+      long endTime = System.currentTimeMillis();
+      context.run(invokeTask.next, new Result(beginTime, endTime, failed));
     }
   }
 
   void run() {
+    beginTime = System.currentTimeMillis();
     try {
       invokeTask.handler.handle(this);
     } catch (Throwable t) {

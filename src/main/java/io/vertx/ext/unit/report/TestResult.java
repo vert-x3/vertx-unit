@@ -18,10 +18,16 @@ public interface TestResult {
   String name();
 
   /**
-   * The test execution time in millis.
+   * The time at which the test began in millis.
    */
   @CacheReturn
-  long time();
+  long beginTime();
+
+  /**
+   * How long the test lasted in millis.
+   */
+  @CacheReturn
+  long durationTime();
 
   /**
    * Did it succeed?

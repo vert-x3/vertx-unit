@@ -50,7 +50,8 @@ public class EventBusReporter implements Reporter<EventBusReporter.EventBusRepor
     JsonObject json = new JsonObject().
         put("type", EventBusCollector.EVENT_TEST_CASE_END).
         put("name", result.name()).
-        put("time", result.time());
+        put("beginTime", result.beginTime()).
+        put("durationTime", result.durationTime());
     if (result.failed()) {
       Failure failure = result.failure();
       json.put("failure", ((FailureImpl) failure).toJson());

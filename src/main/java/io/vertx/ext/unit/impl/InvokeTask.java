@@ -5,11 +5,12 @@ import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.report.TestResult;
 
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
-class InvokeTask implements Task<Result> {
+class InvokeTask implements Task<Throwable> {
 
   final Task<Result> next;
   final Handler<Test> handler;
@@ -31,8 +32,8 @@ class InvokeTask implements Task<Result> {
   }
 
   @Override
-  public void execute(Result failure, Context context) {
-    TestImpl test = new TestImpl(this, context, failure != null ? failure.time : 0, failure != null ? failure.failure : null);
+  public void execute(Throwable failure, Context context) {
+    TestImpl test = new TestImpl(this, context, failure);
     if (timeout > 0) {
       Runnable cancel = () -> {
         try {
@@ -60,18 +61,28 @@ class InvokeTask implements Task<Result> {
       Handler<Throwable> unhandledFailureHandler,
       Task<TestResult> next) {
 
+    AtomicLong begin = new AtomicLong();
+    AtomicLong duration = new AtomicLong();
+
     Task<Result> completeTask = (result, executor) -> {
-      executor.run(next, new TestResultImpl(name, result.time, result.failure));
+      duration.addAndGet(result.duration());
+      executor.run(next, new TestResultImpl(name, begin.get(), duration.get(), result.failure));
     };
     InvokeTask afterTask = after == null ? null : new InvokeTask(after, unhandledFailureHandler, completeTask);
     InvokeTask runnerTask = new InvokeTask(test, timeout, unhandledFailureHandler, (result, executor) -> {
+      duration.addAndGet(result.duration());
+      if (begin.get() == 0) {
+        begin.set(result.beginTime);
+      }
       if (afterTask != null) {
-        executor.run(afterTask, result);
+        executor.run(afterTask, result.failure);
       } else {
         executor.run(completeTask, result);
       }
     });
     return before == null ? runnerTask : new InvokeTask(before, unhandledFailureHandler, (result, executor) -> {
+      begin.set(result.beginTime);
+      duration.set(result.duration());
       if (result.failure != null) {
         executor.run(completeTask, result);
       } else {

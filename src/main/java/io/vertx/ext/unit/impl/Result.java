@@ -5,11 +5,17 @@ package io.vertx.ext.unit.impl;
  */
 class Result {
 
-  final long time;
+  final long beginTime;
+  final long endTime;
   final Throwable failure;
 
-  public Result(long time, Throwable failure) {
-    this.time = time;
+  Result(long beginTime, long endTime, Throwable failure) {
+    this.beginTime = beginTime;
+    this.endTime = endTime;
     this.failure = failure;
+  }
+
+  long duration() {
+    return endTime - beginTime;
   }
 }

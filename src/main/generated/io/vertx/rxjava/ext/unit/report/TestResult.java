@@ -53,14 +53,26 @@ public class TestResult {
   }
 
   /**
-   * The test execution time in millis.
+   * The time at which the test began in millis.
    */
-  public long time() {
+  public long beginTime() {
     if (cached_1 != null) {
       return cached_1;
     }
-    long ret = this.delegate.time();
+    long ret = this.delegate.beginTime();
     cached_1 = ret;
+    return ret;
+  }
+
+  /**
+   * How long the test lasted in millis.
+   */
+  public long durationTime() {
+    if (cached_2 != null) {
+      return cached_2;
+    }
+    long ret = this.delegate.durationTime();
+    cached_2 = ret;
     return ret;
   }
 
@@ -68,11 +80,11 @@ public class TestResult {
    * Did it succeed?
    */
   public boolean succeeded() {
-    if (cached_2 != null) {
-      return cached_2;
+    if (cached_3 != null) {
+      return cached_3;
     }
     boolean ret = this.delegate.succeeded();
-    cached_2 = ret;
+    cached_3 = ret;
     return ret;
   }
 
@@ -80,11 +92,11 @@ public class TestResult {
    * Did it fail?
    */
   public boolean failed() {
-    if (cached_3 != null) {
-      return cached_3;
+    if (cached_4 != null) {
+      return cached_4;
     }
     boolean ret = this.delegate.failed();
-    cached_3 = ret;
+    cached_4 = ret;
     return ret;
   }
 
@@ -92,19 +104,20 @@ public class TestResult {
    * An exception describing failure, null if the test succeeded.
    */
   public Failure failure() {
-    if (cached_4 != null) {
-      return cached_4;
+    if (cached_5 != null) {
+      return cached_5;
     }
     Failure ret= Failure.newInstance(this.delegate.failure());
-    cached_4 = ret;
+    cached_5 = ret;
     return ret;
   }
 
   private java.lang.String cached_0;
   private java.lang.Long cached_1;
-  private java.lang.Boolean cached_2;
+  private java.lang.Long cached_2;
   private java.lang.Boolean cached_3;
-  private Failure cached_4;
+  private java.lang.Boolean cached_4;
+  private Failure cached_5;
 
   public static TestResult newInstance(io.vertx.ext.unit.report.TestResult arg) {
     return new TestResult(arg);

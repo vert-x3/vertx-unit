@@ -9,17 +9,19 @@ import io.vertx.ext.unit.report.TestResult;
 public class TestResultImpl implements TestResult {
 
   private final String name;
-  private final long time;
+  private final long beginTime;
+  private final long durationTime;
   private final Failure failure;
 
-  public TestResultImpl(String name, long time, Failure failure) {
+  public TestResultImpl(String name, long beginTime, long durationTime, Failure failure) {
     this.name = name;
-    this.time = time;
+    this.beginTime = beginTime;
+    this.durationTime = durationTime;
     this.failure = failure;
   }
 
-  public TestResultImpl(String name, long time, Throwable failure) {
-    this(name, time, failure != null ? new FailureImpl(failure) : null);
+  public TestResultImpl(String name, long beginTime, long durationTime,  Throwable failure) {
+    this(name, beginTime, durationTime, failure != null ? new FailureImpl(failure) : null);
   }
 
   @Override
@@ -28,8 +30,13 @@ public class TestResultImpl implements TestResult {
   }
 
   @Override
-  public long time() {
-    return time;
+  public long beginTime() {
+    return beginTime;
+  }
+
+  @Override
+  public long durationTime() {
+    return durationTime;
   }
 
   @Override

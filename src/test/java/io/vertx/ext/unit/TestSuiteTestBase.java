@@ -523,7 +523,7 @@ public abstract class TestSuiteTestBase {
     assertEquals(1, reporter.results.size());
     assertEquals("my_test", reporter.results.get(0).name());
     assertFalse(reporter.results.get(0).failed());
-    assertTrue(reporter.results.get(0).time() >= 15);
+    assertTrue(reporter.results.get(0).durationTime() >= 15);
   }
 
   @Test

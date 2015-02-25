@@ -1,5 +1,6 @@
 package io.vertx.ext.unit.report.impl;
 
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.report.TestResult;
@@ -17,6 +18,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,6 +31,7 @@ import java.util.function.Consumer;
 public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> {
 
   public static class XmlReport {
+    Date timestamp;
     String name;
     List<TestResult> results = new ArrayList<>();
     AtomicInteger errors = new AtomicInteger();
@@ -36,7 +39,7 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
     AtomicLong time = new AtomicLong();
   }
 
-  private final NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
+  private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.ENGLISH);
   private final Handler<String> dataHandler;
 
   public JunitXmlFormatter(Consumer<Buffer> dataHandler) {
@@ -51,6 +54,7 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
   @Override
   public void reportBeginTestSuite(XmlReport report, String name) {
     report.name = name;
+    report.timestamp = new Date();
   }
 
   @Override
@@ -67,12 +71,12 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
         report.failures.incrementAndGet();
       }
     }
-    report.time.addAndGet(result.time());
+    report.time.addAndGet(result.durationTime());
   }
 
   @Override
   public void reportError(XmlReport report, Throwable err) {
-    report.results.add(new TestResultImpl(report.name, 0, err));
+    report.results.add(new TestResultImpl(report.name, 0, 0, err));
     report.errors.incrementAndGet();
   }
 
@@ -86,6 +90,7 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
       writer.writeStartDocument("UTF-8", "1.0");
       writer.writeStartElement("testsuite");
       writer.writeAttribute("name", report.name);
+      writer.writeAttribute("timestamp", ISO8601Utils.format(report.timestamp));
       writer.writeAttribute("time", "" + formatTimeMillis(report.time.get()));
       writer.writeAttribute("tests", "" + report.results.size());
       writer.writeAttribute("errors", "" + report.errors.get());
@@ -94,7 +99,7 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
       for (TestResult result : report.results) {
         writer.writeStartElement("testcase");
         writer.writeAttribute("name", result.name());
-        writer.writeAttribute("time", "" + formatTimeMillis(result.time()));
+        writer.writeAttribute("time", "" + formatTimeMillis(result.durationTime()));
         if (result.failed()) {
           writer.writeStartElement("failure");
           writer.writeAttribute("type", result.failure().isError() ? "Error" : "AssertionError");
@@ -123,6 +128,6 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
   }
 
   private String formatTimeMillis(long timeMillis) {
-    return format.format((((double)timeMillis) / 1000));
+    return numberFormat.format((((double)timeMillis) / 1000));
   }
 }
