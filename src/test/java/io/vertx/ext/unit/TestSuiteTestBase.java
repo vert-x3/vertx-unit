@@ -30,11 +30,11 @@ public abstract class TestSuiteTestBase {
   public TestSuiteTestBase() {
   }
 
-  private void run(TestSuite suite, TestReporter reporter) {
+  void run(TestSuite suite, TestReporter reporter) {
     run.accept(getRunner.apply((TestSuiteImpl) suite).handler(reporter));
   }
 
-  private void run(TestSuite suite, TestReporter reporter, long timeout) {
+  void run(TestSuite suite, TestReporter reporter, long timeout) {
     run.accept(getRunner.apply((TestSuiteImpl) suite).handler(reporter).setTimeout(timeout));
   }
 

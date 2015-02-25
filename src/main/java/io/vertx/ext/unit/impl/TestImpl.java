@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 */
 class TestImpl implements Test {
 
+  private static final int STATUS_RUNNING = 0, STATUS_ASYNC = 1, STATUS_COMPLETED = 2;
+
   class AsyncImpl implements Async {
 
     private final AtomicBoolean completeCalled = new AtomicBoolean();
@@ -38,7 +40,7 @@ class TestImpl implements Test {
 
   private final InvokeTask invokeTask;
   private final Context context;
-  private boolean completed;
+  private int status;
   private Throwable failed;
   private long time;
   private final LinkedList<AsyncImpl> asyncs = new LinkedList<>();
@@ -48,39 +50,56 @@ class TestImpl implements Test {
     this.context = context;
     this.failed = failed;
     this.time = time - System.currentTimeMillis();
+    this.status = STATUS_RUNNING;
   }
 
   private void tryEnd() {
-    boolean run = false;
+    boolean end = false;
     synchronized (this) {
-      if (asyncs.isEmpty() && !completed) {
-        completed = true;
-        run = true;
+      if (asyncs.isEmpty() && status == STATUS_ASYNC) {
+        status = STATUS_COMPLETED;
+        end = true;
         time += System.currentTimeMillis();
       }
     }
-    if (run) {
+    if (end) {
       context.run(invokeTask.next, new Result(time, failed));
+    }
+  }
+
+  void run() {
+    try {
+      invokeTask.handler.handle(this);
+    } catch (Throwable t) {
+      failed(t);
+    } finally {
+      synchronized (this) {
+        status = TestImpl.STATUS_ASYNC;
+      }
+      tryEnd();
     }
   }
 
   void failed(Throwable t) {
     synchronized (this) {
-      if (!completed) {
-        failed = t;
+      switch (status) {
+        case STATUS_COMPLETED:
+          return;
+        case STATUS_RUNNING:
+          if (failed == null) {
+            failed = t;
+          }
+          return;
+        case STATUS_ASYNC:
+          if (failed != null) {
+            return;
+          }
+          asyncs.clear();
+          failed = t;
+          break;
       }
     }
-    while (true) {
-      AsyncImpl async;
-      synchronized (this) {
-        async = asyncs.peekFirst();
-      }
-      if (async == null) {
-        break;
-      } else {
-        async.internalComplete();
-      }
-    }
+    tryEnd();
   }
 
   @Override
@@ -91,7 +110,7 @@ class TestImpl implements Test {
   @Override
   public AsyncImpl async() {
     synchronized (this) {
-      if (!completed) {
+      if (status != STATUS_COMPLETED) {
         AsyncImpl async = new AsyncImpl();
         asyncs.add(async);
         return async;

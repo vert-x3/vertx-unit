@@ -12,17 +12,17 @@ import java.util.concurrent.TimeoutException;
 class InvokeTask implements Task<Result> {
 
   final Task<Result> next;
-  final Handler<Test> test;
+  final Handler<Test> handler;
   final long timeout;
 
   public InvokeTask(Handler<Test> test, Task<Result> next) {
-    this.test = test;
+    this.handler = test;
     this.timeout = 0;
     this.next = next;
   }
 
   public InvokeTask(Handler<Test> test, long timeout, Task<Result> next) {
-    this.test = test;
+    this.handler = test;
     this.timeout = timeout;
     this.next = next;
   }
@@ -30,7 +30,6 @@ class InvokeTask implements Task<Result> {
   @Override
   public void execute(Result failure, Context context) {
     TestImpl test = new TestImpl(this, context, failure != null ? failure.time : 0, failure != null ? failure.failure : null);
-    TestImpl.AsyncImpl async = test.async();
     if (timeout > 0) {
       Runnable cancel = () -> {
         try {
@@ -46,18 +45,12 @@ class InvokeTask implements Task<Result> {
         new Thread(cancel).start();
       }
     }
-    try {
-      InvokeTask.this.test.handle(test);
-    } catch (Throwable t) {
-      test.failed(t);
-    } finally {
-      async.internalComplete();
-    }
+    test.run();
   }
 
   static InvokeTask runTestTask(
       String name,
-      Long timeout,
+      long timeout,
       Handler<Test> before,
       Handler<Test> test,
       Handler<Test> after,
