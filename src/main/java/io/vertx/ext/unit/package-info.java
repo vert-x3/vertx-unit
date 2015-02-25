@@ -18,7 +18,7 @@
  * ----
  *
  * The {@code run} method will execute the suite and go through all the
- * tests of the suite. The suite can fail or pass, this does not matter if the outter world is not aware
+ * tests of the suite. The suite can fail or pass, this does not matter if the outer world is not aware
  * of the test result.
  *
  * [source,$lang]
