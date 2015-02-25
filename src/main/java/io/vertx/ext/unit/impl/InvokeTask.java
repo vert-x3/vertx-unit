@@ -51,7 +51,7 @@ class InvokeTask implements Task<Result> {
     test.run();
   }
 
-  static InvokeTask runTestTask(
+  static Task<?> runTestTask(
       String name,
       long timeout,
       Handler<Test> before,

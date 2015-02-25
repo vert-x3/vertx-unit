@@ -11,7 +11,7 @@ import io.vertx.ext.unit.report.TestCaseReport;
 public class TestCaseReportImpl implements TestCaseReport, Task<Void> {
 
   private final String name;
-  private final InvokeTask task;
+  private final Task<?> task;
   private volatile Handler<TestResult> completionHandler;
   private volatile TestResult result;
 
