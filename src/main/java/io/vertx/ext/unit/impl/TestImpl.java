@@ -6,6 +6,7 @@ import io.vertx.ext.unit.Test;
 import org.junit.Assert;
 
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -14,22 +15,24 @@ class TestImpl implements Test {
 
   class AsyncImpl implements Async {
 
+    private final AtomicBoolean completeCalled = new AtomicBoolean();
+
     @Override
     public void complete() {
-      if (!internalComplete()) {
+      if (!completeCalled.compareAndSet(false, true)) {
         throw new IllegalStateException("The Async complete method cannot be called more than one time, check your test.");
       }
+      internalComplete();
     }
 
-    boolean internalComplete() {
-      boolean completed;
+    void internalComplete() {
+      boolean complete;
       synchronized (TestImpl.this) {
-        completed = asyncs.remove(this);
+        complete = asyncs.remove(this);
       }
-      if (completed) {
+      if (complete) {
         tryEnd();
       }
-      return completed;
     }
   }
 
@@ -68,14 +71,14 @@ class TestImpl implements Test {
       }
     }
     while (true) {
-      Async async;
+      AsyncImpl async;
       synchronized (this) {
         async = asyncs.peekFirst();
       }
       if (async == null) {
         break;
       } else {
-        async.complete();
+        async.internalComplete();
       }
     }
   }

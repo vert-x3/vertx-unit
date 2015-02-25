@@ -93,14 +93,21 @@ public abstract class TestSuiteTestBase {
 
   @Test
   public void runTestWithAsyncCompletionCompletedInTest() throws Exception {
+    AtomicBoolean ok = new AtomicBoolean();
     TestSuite suite = TestSuite.create("my_suite").
         test("my_test", test -> {
           Async async = test.async();
           async.complete();
+          try {
+            async.complete();
+          } catch (IllegalStateException ignore) {
+          }
+          ok.set(true);
         });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
     reporter.await();
+    assertTrue(ok.get());
     assertTrue(reporter.completed());
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
@@ -109,6 +116,31 @@ public abstract class TestSuiteTestBase {
     assertTrue(result.succeeded());
     assertFalse(result.failed());
     assertNull(result.failure());
+  }
+
+  @Test
+  public void runTestWithAsyncCompletionAfterFailureInTest() throws Exception {
+    AtomicBoolean completed = new AtomicBoolean();
+    TestSuite suite = TestSuite.create("my_suite").
+        test("my_test", test -> {
+          Async async = test.async();
+          try {
+            test.fail("msg");
+          } catch (AssertionError ignore) {
+          }
+          async.complete();
+          completed.set(true);
+        });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertTrue(completed.get());
+    assertTrue(reporter.completed());
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    TestResult result = reporter.results.get(0);
+    assertEquals("my_test", result.name());
+    assertTrue(result.failed());
   }
 
   @Test
@@ -490,12 +522,7 @@ public abstract class TestSuiteTestBase {
       assertTrue(reporter.results.get(i).failed());
       assertNotNull(reporter.results.get(i).failure());
       assertTrue(reporter.results.get(i).failure().cause() instanceof TimeoutException);
-      try {
-        async.complete();
-        fail("Was expecting an IllegalStateException");
-      } catch (IllegalStateException ignore) {
-        // Expected
-      }
+      async.complete();
     }
   }
 }
