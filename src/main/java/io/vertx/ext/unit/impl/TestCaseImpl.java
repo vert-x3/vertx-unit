@@ -37,20 +37,20 @@ public class TestCaseImpl implements TestCase {
 
   @Override
   public void awaitSuccess(long timeout, TimeUnit unit) {
-    assertSuccess(Context.create(), timeout, unit);
+    awaitSuccess(Context.create(), timeout, unit);
   }
 
   @Override
   public void awaitSuccess(Vertx vertx, long timeout, TimeUnit unit) {
-    assertSuccess(Context.create(vertx), timeout, unit);
+    awaitSuccess(Context.create(vertx), timeout, unit);
   }
 
   @Override
   public void awaitSuccess(Vertx vertx) {
-    assertSuccess(Context.create(vertx), 2, TimeUnit.MINUTES);
+    awaitSuccess(Context.create(vertx), 2, TimeUnit.MINUTES);
   }
 
-  public void assertSuccess(Context context, long timeout, TimeUnit unit) {
+  private void awaitSuccess(Context context, long timeout, TimeUnit unit) {
     CountDownLatch latch = new CountDownLatch(1);
     TestCaseReportImpl testCase = (TestCaseReportImpl) runner();
     AtomicReference<TestResult> resultRef = new AtomicReference<>();
