@@ -13,6 +13,14 @@ import java.util.List;
  *
  * <ul>
  *   <li>the {@code timeout} in milliseconds, the default value is 2 minutes </li>
+ *   <li>the {@code useEventLoop}</li> configures the event loop usage
+ *     <ul>
+ *       <li>{@code true} always runs with an event loop</li>
+ *       <li>{@code false} never runs with an event loop</li>
+ *       <li>{@code null} uses an event loop if there is one (provided by {@link io.vertx.core.Vertx#currentContext()})
+ *       otherwise run without</li>
+ *     </ul>
+ *   </li>
  *   <li>the {@code reporters} is an array of reporter configurations</li>
  * </ul>
  *
@@ -26,7 +34,13 @@ public class TestOptions extends ReportingOptions {
    */
   public static final long DEFAULT_TIMEOUT = 2 * 60 * 1000;
 
+  /**
+   * The default value for using or not the event loop: {@code null}.
+   */
+  public static final Boolean DEFAULT_USE_EVENT_LOOP = null;
+
   private long timeout = DEFAULT_TIMEOUT;
+  private Boolean useEventLoop = DEFAULT_USE_EVENT_LOOP;
 
   /**
    * Create a new empty options, with the default time out and no reporters.
@@ -42,6 +56,7 @@ public class TestOptions extends ReportingOptions {
   public TestOptions(TestOptions other) {
     super(other);
     setTimeout(other.timeout);
+    setUseEventLoop(other.useEventLoop);
   }
 
   /**
@@ -52,6 +67,7 @@ public class TestOptions extends ReportingOptions {
   public TestOptions(JsonObject json) {
     super(json);
     setTimeout(json.getLong("timeout", DEFAULT_TIMEOUT));
+    setUseEventLoop(json.getBoolean("useEventLoop", DEFAULT_USE_EVENT_LOOP));
   }
 
   /**
@@ -73,6 +89,25 @@ public class TestOptions extends ReportingOptions {
     return this;
   }
 
+  /**
+   * @return true if the execution should use an event loop when there is no one existing
+   */
+  public Boolean isUseEventLoop() {
+    return useEventLoop;
+  }
+
+  /**
+   * Configure the execution to use an event loop when there is no one existing.
+   *
+   * @param useEventLoop the even loop usage
+   * @return a reference to this, so the API can be used fluently
+   */
+  @Fluent
+  public TestOptions setUseEventLoop(Boolean useEventLoop) {
+    this.useEventLoop = useEventLoop;
+    return this;
+  }
+
   @Override
   public TestOptions addReporter(ReportOptions reportOptions) {
     return (TestOptions) super.addReporter(reportOptions);
@@ -89,6 +124,9 @@ public class TestOptions extends ReportingOptions {
   public JsonObject toJson() {
     JsonObject config = super.toJson();
     config.put("timeout", timeout);
+    if (useEventLoop != null) {
+      config.put("useEventLoop", useEventLoop);
+    }
     return config;
   }
 }

@@ -4,20 +4,30 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.test.core.AsyncTestBase;
+import io.vertx.test.core.VertxTestBase;
 import org.junit.*;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class VerticleTest extends AsyncTestBase {
+public class VerticleTest extends VertxTestBase {
 
   @org.junit.Test
   public void testCoordinated() {
-    Vertx vertx = Vertx.vertx();
     vertx.eventBus().<JsonObject>consumer("test").handler(msg -> {
-      if (msg.body().getString("type").equals(EventBusCollector.EVENT_TEST_SUITE_END)) {
-        testComplete();
+      switch (msg.body().getString("type")) {
+        case EventBusCollector.EVENT_TEST_SUITE_ERROR:
+          // Replace with data object when done
+          fail("Unexpected failure " + msg.body().getJsonObject("failure"));
+          break;
+        case EventBusCollector.EVENT_TEST_SUITE_END:
+          testComplete();
+          break;
       }
     });
     vertx.deployVerticle("js:verticle/coordinated/test", ar -> {
@@ -28,7 +38,6 @@ public class VerticleTest extends AsyncTestBase {
 
   @org.junit.Test
   public void testJavaScriptTimer() {
-    Vertx vertx = Vertx.vertx();
     vertx.deployVerticle("js:verticle/timer", ar -> {
       assertTrue(ar.succeeded());
       testComplete();
@@ -38,7 +47,6 @@ public class VerticleTest extends AsyncTestBase {
 
   @org.junit.Test
   public void testJavaScriptFailure() {
-    Vertx vertx = Vertx.vertx();
     vertx.deployVerticle("js:verticle/failing", ar -> {
       assertTrue(ar.failed());
       ar.cause().printStackTrace();
@@ -50,7 +58,6 @@ public class VerticleTest extends AsyncTestBase {
 
   @Test
   public void testGroovyTimer() {
-    Vertx vertx = Vertx.vertx();
     vertx.deployVerticle("verticle/timer.groovy", ar -> {
       assertTrue(ar.succeeded());
       testComplete();
@@ -60,7 +67,6 @@ public class VerticleTest extends AsyncTestBase {
 
   @Test
   public void testGroovyFailure() {
-    Vertx vertx = Vertx.vertx();
     vertx.deployVerticle("verticle/failing.groovy", ar -> {
       assertTrue(ar.failed());
       assertEquals("the_failure", ar.cause().getMessage());

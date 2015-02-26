@@ -2,25 +2,24 @@ package io.vertx.ext.unit;
 
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.impl.TestSuiteImpl;
-import io.vertx.ext.unit.impl.TestSuiteRunner;
 import io.vertx.ext.unit.report.TestResult;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class TestSuiteSyncTest extends TestSuiteTestBase {
+public class TestSuiteNoEventLoopTest extends TestSuiteTestBase {
 
-  public TestSuiteSyncTest() {
+  public TestSuiteNoEventLoopTest() {
     super();
     getRunner = TestSuiteImpl::runner;
-    run = TestSuiteRunner::run;
+    run = runner -> {
+      assertNull(Vertx.currentContext());
+      runner.setUseEventLoop(false).run();
+    };
     completeAsync = Async::complete;
   }
 

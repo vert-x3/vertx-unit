@@ -5,6 +5,6 @@ package io.vertx.ext.unit.impl;
  */
 interface Task<T> {
 
-  void execute(T t, Context executor);
+  void execute(T t, TestContext executor);
 
 }

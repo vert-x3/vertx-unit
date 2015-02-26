@@ -5,11 +5,12 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.test.core.AsyncTestBase;
+import io.vertx.test.core.VertxTestBase;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class LangTest extends AsyncTestBase {
+public class LangTest extends VertxTestBase {
 
   @org.junit.Test
   public void testGroovy() throws Exception {
@@ -32,7 +33,6 @@ public class LangTest extends AsyncTestBase {
   }
 
   private void testAssertions(String verticle) throws Exception {
-    Vertx vertx = Vertx.vertx();
     vertx.eventBus().<JsonObject>consumer("assert_tests").bodyStream().handler(msg -> {
       String type = msg.getString("type");
       switch (type) {

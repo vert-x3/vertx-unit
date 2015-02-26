@@ -21,6 +21,7 @@ public class TestSuiteRunner {
   private Vertx vertx;
   private Handler<TestSuiteReport> handler;
   private long timeout;
+  private Boolean useEventLoop;
 
   public TestSuiteRunner(String name, Handler<Test> before, Handler<Test> after, Handler<Test> beforeEach,
                          Handler<Test> afterEach, TestCaseImpl[] tests) {
@@ -31,6 +32,15 @@ public class TestSuiteRunner {
     this.beforeEach = beforeEach;
     this.afterEach = afterEach;
     this.tests = tests;
+  }
+
+  public Boolean isUseEventLoop() {
+    return useEventLoop;
+  }
+
+  public TestSuiteRunner setUseEventLoop(Boolean useEventLoop) {
+    this.useEventLoop = useEventLoop;
+    return this;
   }
 
   /**
@@ -87,9 +97,9 @@ public class TestSuiteRunner {
     TestSuiteReportImpl runner = new TestSuiteReportImpl(name, timeout, before, after, beforeEach, afterEach, tests);
     handler.handle(runner);
     if (vertx != null) {
-      runner.run(vertx);
+      runner.run(vertx, useEventLoop);
     } else {
-      runner.run();
+      runner.run(useEventLoop);
     }
   }
 }

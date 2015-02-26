@@ -5,6 +5,14 @@
 
  <ul>
    <li>the <code>timeout</code> in milliseconds, the default value is 2 minutes </li>
+   <li>the <code>useEventLoop</code></li> configures the event loop usage
+     <ul>
+       <li><code>true</code> always runs with an event loop</li>
+       <li><code>false</code> never runs with an event loop</li>
+       <li><code>null</code> uses an event loop if there is one (provided by {@link Vertx#currentContext})
+       otherwise run without</li>
+     </ul>
+   </li>
    <li>the <code>reporters</code> is an array of reporter configurations</li>
  </ul>
 ++++
@@ -15,6 +23,10 @@
 |timeout
 |Number
 | Set the test timeout.
+
+|useEventLoop
+|Boolean
+| Configure the execution to use an event loop when there is no one existing.
 
 |reporters
 |Array of link:ReportOptions.html[ReportOptions]

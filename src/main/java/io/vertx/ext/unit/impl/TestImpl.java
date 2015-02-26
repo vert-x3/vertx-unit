@@ -39,13 +39,13 @@ class TestImpl implements Test {
   }
 
   private final InvokeTask invokeTask;
-  private final Context context;
+  private final TestContext context;
   private int status;
   private Throwable failed;
   private long beginTime;
   private final LinkedList<AsyncImpl> asyncs = new LinkedList<>();
 
-  public TestImpl(InvokeTask invokeTask, Context context, Throwable failed) {
+  public TestImpl(InvokeTask invokeTask, TestContext context, Throwable failed) {
     this.invokeTask = invokeTask;
     this.context = context;
     this.failed = failed;

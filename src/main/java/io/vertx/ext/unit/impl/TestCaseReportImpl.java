@@ -33,7 +33,7 @@ public class TestCaseReportImpl implements TestCaseReport, Task<Void> {
   }
 
   @Override
-  public void execute(Void v, Context executor) {
+  public void execute(Void v, TestContext executor) {
     if (result == null) {
       executor.run(task, null);
     }

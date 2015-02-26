@@ -32,7 +32,7 @@ class InvokeTask implements Task<Throwable> {
   }
 
   @Override
-  public void execute(Throwable failure, Context context) {
+  public void execute(Throwable failure, TestContext context) {
     TestImpl test = new TestImpl(this, context, failure);
     if (timeout > 0) {
       Runnable cancel = () -> {

@@ -80,12 +80,14 @@ public class TestSuiteImpl implements TestSuite {
   @Override
   public TestCompletion run(Vertx vertx, TestOptions options) {
     Reporter[] reporters = options  .getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
-    ReporterHandler abc = new ReporterHandler(null, reporters);
+    ReporterHandler handler = new ReporterHandler(null, reporters);
     runner().
         setVertx(vertx).
         setTimeout(options.getTimeout()).
-        handler(abc).run();
-    return abc;
+        setUseEventLoop(options.isUseEventLoop()).
+        handler(handler).
+        run();
+    return handler;
   }
 
   public TestSuiteRunner runner() {
@@ -114,7 +116,8 @@ public class TestSuiteImpl implements TestSuite {
             latch.add(testResult1);
           });
           testResult.startTest(this);
-          Context.create(vertx).run(task);
+          TestContext testContext = TestContext.create(vertx, vertx.getOrCreateContext());
+          testContext.run(task);
           try {
             TestResult result = latch.poll(timeout, unit);
             if (result != null) {

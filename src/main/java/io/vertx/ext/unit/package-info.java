@@ -183,10 +183,6 @@
  * {@link examples.Examples#running_01}
  * ----
  *
- * When the testsuite is executed, it will use the current Vert.x event loop for the steps of the test suite,
- * that is the context object returned by `io.vertx.core.Vertx#currentContext`. When such context does not
- * exist, the test suite is executed synchronously in the current thread.
- *
  * The test suite can also be ran with a specified `Vertx` instance:
  *
  * .Provides a Vertx instance to run the test suite
@@ -195,7 +191,8 @@
  * {@link examples.Examples#running_02}
  * ----
  *
- * This execution uses the `Context` provided by the `Vertx` instance for runnings the steps of the test suite.
+ * When running with a `Vertx` instance, the test suite is executed using the Vertx event loop, see the <<eventloop>>
+ * section for more details.
  *
  * === Test suite completion
  *
@@ -223,7 +220,7 @@
  *
  * === Time out
  *
- * The test cases of a test suite must execute before a certain timeout is reached. The default timeout is
+ * Each test case of a test suite must execute before a certain timeout is reached. The default timeout is
  * of _2 minutes_, it can be changed using _test options_:
  *
  * .Setting the test suite timeout
@@ -231,6 +228,41 @@
  * ----
  * {@link examples.Examples#running_05}
  * ----
+ *
+ * [[event_loop]]
+ * === Event loop
+ *
+ * Vertx Unit execution is a list of tasks to execute, the execution of each task is driven by the completion
+ * of the previous task. These tasks should leverage Vert.x event loop when possible but that depends on the
+ * current execution context (i.e the test suite is executed in a `main` or embedded in a `Verticle`) and
+ * wether or not a `Vertx` instance is configured.
+ *
+ * The {@link io.vertx.ext.unit.TestOptions#setUseEventLoop(java.lang.Boolean)} configures the usage of the event
+ * loop:
+ *
+ * .Event loop usage
+ * |===
+ * | | useEventLoop:null | useEventLoop:true | useEventLoop:false
+ *
+ * | `Vertx` instance
+ * | use vertx event loop
+ * | use vertx event loop
+ * | force no event loop
+ *
+ * | in a `Verticle`
+ * | use current event loop
+ * | use current event loop
+ * | force no event loop
+ *
+ * | in a _main_
+ * | use no event loop
+ * | raise an error
+ * | use no event loop
+ *
+ * |===
+ *
+ * The default `useEventLoop` value is `null`, that means that it will uses an event loop when possible and fallback
+ * to no event loop when no one is available.
  *
  * == Reporting
  *

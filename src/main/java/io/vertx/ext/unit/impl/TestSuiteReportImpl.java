@@ -1,8 +1,8 @@
 package io.vertx.ext.unit.impl;
 
+import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.streams.ReadStream;
 import io.vertx.ext.unit.report.TestSuiteReport;
 import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.report.TestCaseReport;
@@ -119,15 +119,26 @@ class TestSuiteReportImpl implements TestSuiteReport {
   }
 
   // For unit testing
-  public void run(Context context) {
+  public void run(TestContext context) {
     context.run(build());
   }
 
-  public void run() {
-    Context.create().run(build());
+  public void run(Boolean useEventLoop) {
+    Context context = null;
+    if (useEventLoop == null) {
+      context = Vertx.currentContext();
+    } else if (useEventLoop) {
+      context = Vertx.currentContext();
+      if (context == null) {
+        throw new IllegalStateException("No event loop, your test should either provide a Vertx instance or " +
+            "be executed in a Verticle");
+      }
+    }
+    TestContext.create(null, context).run(build());
   }
 
-  public void run(Vertx vertx) {
-    Context.create(vertx).run(build());
+  public void run(Vertx vertx, Boolean useEventLoop) {
+    Context context = Boolean.FALSE.equals(useEventLoop) ? null : vertx.getOrCreateContext();
+    TestContext.create(vertx, context).run(build());
   }
 }

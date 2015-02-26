@@ -6,15 +6,15 @@ import io.vertx.ext.unit.impl.TestSuiteImpl;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class TestSuiteAsyncTest extends TestSuiteTestBase {
+public class TestSuiteNoEventLoopAsyncTest extends TestSuiteTestBase {
 
-  public TestSuiteAsyncTest() {
+  public TestSuiteNoEventLoopAsyncTest() {
     super();
-    getRunner = testsuite -> ((TestSuiteImpl) testsuite).runner();
+    getRunner = testsuite -> testsuite.runner();
     run = (runner) -> new Thread() {
       @Override
       public void run() {
-        runner.run();
+        runner.setUseEventLoop(false).run();
       }
     }.start();
     completeAsync = Async::complete;
