@@ -1,6 +1,6 @@
 ## Unit Test for Vert.x
 
-Async polyglot unit testing for Vert.x inspired from Qunit (but not only).
+Async polyglot unit testing for Vert.x.
 
 ## Documentation
 
