@@ -8,6 +8,7 @@ See https://github.com/vert-x3/vertx-unit/blob/initial-work/src/main/asciidoc/ja
 
 ## Todo
 
+- find a way to configure junit runner timeout
 - when asserting
     - check the same context is used when running with a context (configurable)
     - ensure that any assert is done before the completion of a test, at the moment we are doing that
