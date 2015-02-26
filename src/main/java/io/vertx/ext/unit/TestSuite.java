@@ -37,6 +37,29 @@ public interface TestSuite {
   }
 
   /**
+   * Create and return a new test suite configured after the {@code testSuiteObject} argument.
+   *
+   * The {@code testSuiteObject} argument methods are inspected and the public, non static methods
+   * with {@link io.vertx.ext.unit.Test} parameter are retained and mapped to a Vertx Unit test suite
+   * via the method name:
+   *
+   * <ul>
+   *   <li>{@code before} : {@link #before} callback</li>
+   *   <li>{@code after} : {@link #after} callback</li>
+   *   <li>{@code beforeEach} : {@link #beforeEach} callback</li>
+   *   <li>{@code afterEach} : {@link #afterEach} callback</li>
+   *   <li>when the name starts with {@code test} :{@link #test} callback named after the method name</li>
+   * </ul>
+   *
+   * @param testSuiteObject the test suite object
+   * @return the configured test suite
+   */
+  @GenIgnore
+  static TestSuite create(Object testSuiteObject) {
+    return new TestSuiteImpl(testSuiteObject);
+  }
+
+  /**
    * Set a callback executed before the tests.
    *
    * @param callback the callback

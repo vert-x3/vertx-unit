@@ -9,7 +9,11 @@ import io.vertx.ext.unit.Test;
 import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.report.Reporter;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -30,6 +34,46 @@ public class TestSuiteImpl implements TestSuite {
 
   public TestSuiteImpl(String name) {
     this.name = name;
+  }
+
+  public TestSuiteImpl(Object testSuiteObject) {
+    Class<?> suiteClass = testSuiteObject.getClass();
+    name = suiteClass.getName();
+    for (Method method : suiteClass.getMethods()) {
+      int modifiers = method.getModifiers();
+      String methodName = method.getName();
+      if (Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers) &&
+          Arrays.equals(method.getParameterTypes(), new Class[]{Test.class})) {
+        Handler<Test> handler = test -> {
+          try {
+            method.invoke(testSuiteObject, test);
+          } catch (IllegalAccessException e) {
+            Helper.uncheckedThrow(e);
+          } catch (InvocationTargetException e) {
+            Helper.uncheckedThrow(e.getCause());
+          }
+        };
+        switch (methodName) {
+          case "before":
+            before(handler);
+            break;
+          case "after":
+            after(handler);
+            break;
+          case "beforeEach":
+            beforeEach(handler);
+            break;
+          case "afterEach":
+            afterEach(handler);
+            break;
+          default:
+            if (methodName.startsWith("test") && methodName.length() > 4) {
+              test(methodName, handler);
+            }
+            break;
+        }
+      }
+    }
   }
 
   @Override

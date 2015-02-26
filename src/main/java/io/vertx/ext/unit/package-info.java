@@ -331,6 +331,40 @@
  * {@link examples.Examples#reporter_02}
  * ----
  *
+ * == Java language integration
+ *
+ * The Java language provides classes and it is possible to create test suites directly from Java classes with the
+ * following mapping rules:
+ *
+ * The {@code testSuiteObject} argument methods are inspected and the public, non static methods
+ * with {@link io.vertx.ext.unit.Test} parameter are retained and mapped to a Vertx Unit test suite
+ * via the method name:
+ *
+ * * `before` : before callback
+ * * `after` : after callback
+ * * `beforeEach` : beforeEach callback
+ * * `afterEach` : afterEach callback
+ * *  when the name starts with _test_ : test case callback named after the method name
+ *
+ * .Test suite written using a Java class
+ * [source,java]
+ * ----
+ * public class MyTestSuite {
+ *
+ *   public void testSomething(Test test) {
+ *     test.assertFalse(false);
+ *   }
+ * }
+ * ----
+ *
+ * This class can be turned into a Vertx test suite easily:
+ *
+ * .Create a test suite from a Java object
+ * [source,java]
+ * ----
+ * TestSuite suite = TestSuite.create(new MyTestSuite());
+ * ----
+ *
  * == Junit integration
  *
  * Although Vertx Unit is polyglot and not based on JUnit, it is possible to run a Vertx Unit test suite or a test case
@@ -342,14 +376,32 @@
  * &#64;RunWith(AllTests.class)
  * public class JUnitTestSuite {
  *
- * public static TestSuite suite() {
- *   return io.vertx.ext.unit.TestSuite.create("my_suite").
- *     test("my_test_case", test -> {
- *       test.assertTrue(true);
- *     }).
- *     test("my_test", test -> {
- *       // Test 2
- *     }).toJUnitSuite();
+ *   public static TestSuite suite() {
+ *     return io.vertx.ext.unit.TestSuite.create("my_test_suite").
+ *       test("my_test_case", test -> {
+ *         test.assertTrue(true);
+ *       }).
+ *       test("my_test", test -> {
+ *         // Test 2
+ *       }).toJUnitSuite();
+ *   }
+ * }
+ * ----
+ *
+ * This can be combined with the Java integration seen earlier:
+ *
+ * .Run the test suite as a JUnit test suite
+ * [source,java]
+ * ----
+ * &#64;RunWith(AllTests.class)
+ * public class MyTestSuite {
+ *
+ *   public static TestSuite suite() {
+ *     return io.vertx.ext.unit.TestSuite.create(new MyTestSuite()).toJUnitSuite();
+ *   }
+ *
+ *   public void testSomething(Test test) {
+ *     test.assertFalse(false);
  *   }
  * }
  * ----
