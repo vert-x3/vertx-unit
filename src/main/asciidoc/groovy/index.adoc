@@ -155,8 +155,8 @@ the _beforeEach_ callback reported a failure.
 
 == Asserting
 
-Vertx Unit provides the _test_ object for doing assertions in test cases. The _test_ object provides the usual
-methods when dealing with assertions.
+Vertx Unit provides the `link:groovydoc/io/vertx/groovy/ext/unit/TestContext.html[TestContext]` object for doing assertions in test cases. The _context_
+object provides the usual methods when dealing with assertions.
 
 === assertEquals
 
@@ -190,6 +190,17 @@ The counter part of _assertEquals_.
 ----
 suite.test("my_test_case", { context ->
   context.assertNotEquals(10, callbackCount)
+})
+
+----
+
+=== assertInRange
+
+The `link:groovydoc/io/vertx/groovy/ext/unit/TestContext.html#assertInRange(double,%20double,%20double)[assertInRange]` targets real numbers.
+
+----
+suite.test("my_test_case", { context ->
+  context.assertInRange(0.1d, 0.2d, 0.5d)
 })
 
 ----
@@ -339,7 +350,7 @@ completion.handler({ ar ->
 
 ----
 
-The `TestCompletion` object provides also a `link:groovydoc/io/vertx/groovy/ext/unit/TestCompletion.html#resolve(io.vertx.core.Future)[resolve]` method that
+The `link:groovydoc/io/vertx/groovy/ext/unit/TestCompletion.html[TestCompletion]` object provides also a `link:groovydoc/io/vertx/groovy/ext/unit/TestCompletion.html#resolve(io.vertx.core.Future)[resolve]` method that
 takes a `Future` object, this `Future` will be notified of the test suite execution:
 
 .Resolving the start Future with the test suite
@@ -503,8 +514,8 @@ via the method name:
 ----
 public class MyTestSuite {
 
-  public void testSomething(Test test) {
-    test.assertFalse(false);
+  public void testSomething(TestContext context) {
+    context.assertFalse(false);
   }
 }
 ----
@@ -552,8 +563,8 @@ public class MyTestSuite {
     return io.vertx.ext.unit.TestSuite.create(new MyTestSuite()).toJUnitSuite();
   }
 
-  public void testSomething(Test test) {
-    test.assertFalse(false);
+  public void testSomething(Context context) {
+    context.assertFalse(false);
   }
 }
 ----

@@ -111,14 +111,23 @@ public class Examples {
     });
   }
 
-  public static void asserting_04(io.vertx.ext.unit.TestSuite suite, boolean var, int value) {
+  public static void asserting_04(io.vertx.ext.unit.TestSuite suite, int callbackCount) {
+    suite.test("my_test_case", context -> {
+
+      // Assert that 0.1 is equals to 0.2 +/- 0.5
+
+      context.assertInRange(0.1, 0.2, 0.5);
+    });
+  }
+
+  public static void asserting_05(io.vertx.ext.unit.TestSuite suite, boolean var, int value) {
     suite.test("my_test_case", context -> {
       context.assertTrue(var);
       context.assertFalse(value > 10);
     });
   }
 
-  public static void asserting_05(io.vertx.ext.unit.TestSuite suite) {
+  public static void asserting_06(io.vertx.ext.unit.TestSuite suite) {
     suite.test("my_test_case", context -> {
       context.fail("That should never happen");
       // Following statements won't be executed

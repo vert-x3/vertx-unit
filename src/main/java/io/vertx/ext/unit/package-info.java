@@ -120,13 +120,21 @@
  * {@link examples.Examples#asserting_03}
  * ----
  *
+ * === assertInRange
+ *
+ * The {@link io.vertx.ext.unit.TestContext#assertInRange} targets real numbers.
+ *
+ * ----
+ * {@link examples.Examples#asserting_04}
+ * ----
+ *
  * === assertTrue and assertFalse
  *
  * Asserts the value of a boolean expression.
  *
  * [source,$lang]
  * ----
- * {@link examples.Examples#asserting_04}
+ * {@link examples.Examples#asserting_05}
  * ----
  *
  * === Failing
@@ -135,7 +143,7 @@
  *
  * [source,$lang]
  * ----
- * {@link examples.Examples#asserting_05}
+ * {@link examples.Examples#asserting_06}
  * ----
  *
  * == Asynchronous testing
