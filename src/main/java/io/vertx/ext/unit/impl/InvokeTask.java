@@ -43,11 +43,7 @@ class InvokeTask implements Task<Throwable> {
           Thread.currentThread().interrupt();
         }
       };
-      if (context.vertx() != null) {
-        context.vertx().executeBlocking(future -> cancel.run(), null);
-      } else {
-        new Thread(cancel).start();
-      }
+      new Thread(cancel).start();
     }
     test.run();
   }

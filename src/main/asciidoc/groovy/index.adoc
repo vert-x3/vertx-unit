@@ -401,6 +401,8 @@ loop:
 
 |===
 
+The default `useEventLoop` value is `null`, that means that it will uses an event loop when possible and fallback
+to no event loop when no one is available.
 
 == Reporting
 
