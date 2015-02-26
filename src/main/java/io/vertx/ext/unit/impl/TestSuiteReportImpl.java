@@ -72,7 +72,7 @@ class TestSuiteReportImpl implements TestSuiteReport {
     if (tests.length > index) {
       Task<?> next = build(tests, index + 1, last);
       TestCaseImpl test = tests[index];
-      TestCaseReportImpl runner = new TestCaseReportImpl(test.desc, timeout, beforeEach, test.handler, afterEach, exceptionHandler, next);
+      TestCaseReportImpl runner = new TestCaseReportImpl(test.name, timeout, beforeEach, test.handler, afterEach, exceptionHandler, next);
       return (v, context) -> {
         if (handler != null) {
           handler.handle(runner);

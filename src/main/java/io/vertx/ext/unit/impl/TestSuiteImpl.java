@@ -6,7 +6,6 @@ import io.vertx.ext.unit.TestCompletion;
 import io.vertx.ext.unit.TestOptions;
 import io.vertx.ext.unit.TestSuite;
 import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.report.Reporter;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,10 +14,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -30,7 +25,7 @@ public class TestSuiteImpl implements TestSuite {
   private volatile Handler<TestContext> beforeEach;
   private volatile Handler<TestContext> after;
   private volatile Handler<TestContext> afterEach;
-  private final List<TestCaseImpl> tests = new ArrayList<>();
+  private final List<TestCaseImpl> testCases = new ArrayList<>();
 
   public TestSuiteImpl(String name) {
     this.name = name;
@@ -76,6 +71,10 @@ public class TestSuiteImpl implements TestSuite {
     }
   }
 
+  public List<TestCaseImpl> testCases() {
+    return testCases;
+  }
+
   @Override
   public TestSuite before(Handler<TestContext> callback) {
     this.before = callback;
@@ -102,7 +101,7 @@ public class TestSuiteImpl implements TestSuite {
 
   @Override
   public TestSuite test(String name, Handler<TestContext> testCase) {
-    tests.add(new TestCaseImpl(name, testCase));
+    testCases.add(new TestCaseImpl(name, testCase));
     return this;
   }
 
@@ -135,50 +134,6 @@ public class TestSuiteImpl implements TestSuite {
   }
 
   public TestSuiteRunner runner() {
-    return new TestSuiteRunner(name, before, after, beforeEach, afterEach, tests.toArray(new TestCaseImpl[tests.size()]));
-  }
-
-  @Override
-  public junit.framework.TestSuite toJUnitSuite() {
-    return toJUnitSuite(2, TimeUnit.MINUTES);
-  }
-
-  @Override
-  public junit.framework.TestSuite toJUnitSuite(long timeout, TimeUnit unit) {
-    junit.framework.TestSuite suite = new junit.framework.TestSuite(name);
-    for (TestCaseImpl test : tests) {
-      suite.addTest(new junit.framework.Test() {
-        @Override
-        public int countTestCases() {
-          return 1;
-        }
-        @Override
-        public void run(junit.framework.TestResult testResult) {
-          BlockingQueue<TestResult> latch = new ArrayBlockingQueue<>(1);
-          Vertx vertx = Vertx.vertx();
-          Task<?> task = InvokeTask.runTestTask(test.desc, 0L, before, test.handler, after, null, (testResult1, executor) -> {
-            latch.add(testResult1);
-          });
-          testResult.startTest(this);
-          TestSuiteContext testContext = TestSuiteContext.create(vertx, vertx.getOrCreateContext());
-          testContext.run(task);
-          try {
-            TestResult result = latch.poll(timeout, unit);
-            if (result != null) {
-              if (result.failed()) {
-                testResult.addError(this, result.failure().cause());
-              }
-            } else {
-              testResult.addError(this, new TimeoutException("Timed out in waiting for test complete"));
-            }
-          } catch (InterruptedException e) {
-            testResult.addError(this, e);
-          }
-          vertx.close();
-          testResult.endTest(this);
-        }
-      });
-    }
-    return suite;
+    return new TestSuiteRunner(name, before, after, beforeEach, afterEach, testCases.toArray(new TestCaseImpl[testCases.size()]));
   }
 }

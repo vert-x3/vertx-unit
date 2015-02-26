@@ -7,8 +7,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.impl.TestSuiteImpl;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * A named suite of test cases that are executed altogether. The suite suite is created with
  * the {@link #create(String)} and the returned suite contains initially no tests.<p/>
@@ -157,23 +155,5 @@ public interface TestSuite {
    * @return the related test completion
    */
   TestCompletion run(Vertx vertx, TestOptions options);
-
-  /**
-   * Create a junit test suite running this testsuite.
-   *
-   * @return the junit test suite
-   */
-  @GenIgnore
-  junit.framework.TestSuite toJUnitSuite();
-
-  /**
-   * Create a junit test suite running this testsuite.
-   *
-   * @param timeout the suite timeout expressed in the {@code unit} argument
-   * @param unit the suite {@code timeout} unit
-   * @return the junit test suite
-   */
-  @GenIgnore
-  junit.framework.TestSuite toJUnitSuite(long timeout, TimeUnit unit);
 
 }

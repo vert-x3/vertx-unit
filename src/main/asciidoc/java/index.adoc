@@ -179,6 +179,9 @@ The `link:apidocs/io/vertx/ext/unit/TestContext.html#assertInRange-double-double
 
 ----
 suite.test("my_test_case", context -> {
+
+  // Assert that 0.1 is equals to 0.2 +/- 0.5
+
   context.assertInRange(0.1, 0.2, 0.5);
 });
 ----
@@ -458,6 +461,42 @@ EventBusCollector collector = EventBusCollector.create(
 collector.register("the-address");
 ----
 
+== Junit integration
+
+Although Vertx Unit is polyglot and not based on JUnit, it is possible to run a Vertx Unit test suite or a test case
+from JUnit, allowing you to integrate your tests with JUnit and your build system or IDE.
+
+.Run a Java class as a JUnit test suite
+[source,java]
+----
+RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
+public class JUnitTestSuite {
+
+  Test
+  public void testSomething(Context context) {
+    context.assertFalse(false);
+  }
+}
+----
+
+The `link:apidocs/io/vertx/ext/unit/junit/VertxUnitRunner.html[VertxUnitRunner]` uses the junit annotations for introspecting the class
+and create a test suite after the class. The methods should declare a `link:apidocs/io/vertx/ext/unit/TestContext.html[TestContext]`
+argument, if they don't it is fine too. However the `TestContext` is the only way to retrieve the associated
+Vertx instance of perform asynchronous tests.
+
+A single test case can also be executed with a `link:apidocs/io/vertx/ext/unit/TestCase.html[TestCase]`:
+
+.Run a test case in a JUnit test
+[source,java]
+----
+TestCase.
+  create("my_test_case", context -> {
+    context.assertTrue(true);
+  }).
+  awaitSuccess(); // <1>
+----
+<1> Block until the test case is executed
+
 == Java language integration
 
 The Java language provides classes and it is possible to create test suites directly from Java classes with the
@@ -491,57 +530,3 @@ This class can be turned into a Vertx test suite easily:
 ----
 TestSuite suite = TestSuite.create(new MyTestSuite());
 ----
-
-== Junit integration
-
-Although Vertx Unit is polyglot and not based on JUnit, it is possible to run a Vertx Unit test suite or a test case
-from JUnit, allowing you to integrate your tests with JUnit and your build system or IDE.
-
-.Run the test suite as a JUnit test suite
-[source,java]
-----
-RunWith(AllTests.class)
-public class JUnitTestSuite {
-
-  public static TestSuite suite() {
-    return io.vertx.ext.unit.TestSuite.create("my_test_suite").
-      test("my_test_case", context -> {
-        context.assertTrue(true);
-      }).
-      test("my_test", context -> {
-        // Test 2
-      }).toJUnitSuite();
-  }
-}
-----
-
-This can be combined with the Java integration seen earlier:
-
-.Run the test suite as a JUnit test suite
-[source,java]
-----
-RunWith(AllTests.class)
-public class MyTestSuite {
-
-  public static TestSuite suite() {
-    return io.vertx.ext.unit.TestSuite.create(new MyTestSuite()).toJUnitSuite();
-  }
-
-  public void testSomething(Context context) {
-    context.assertFalse(false);
-  }
-}
-----
-
-A single test case can also be executed with a `link:apidocs/io/vertx/ext/unit/TestCase.html[TestCase]`:
-
-.Run a test case in a JUnit test
-[source,java]
-----
-TestCase.
-  create("my_test_case", context -> {
-    context.assertTrue(true);
-  }).
-  awaitSuccess(); // <1>
-----
-<1> Block until the test case is executed

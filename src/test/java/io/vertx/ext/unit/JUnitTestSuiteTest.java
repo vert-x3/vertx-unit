@@ -1,45 +1,48 @@
 package io.vertx.ext.unit;
 
-import junit.framework.TestResult;
-import junit.framework.TestSuite;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.AllTests;
 
 /**
  * Junit integration example.
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@RunWith(AllTests.class)
+@RunWith(VertxUnitRunner.class)
 public class JUnitTestSuiteTest {
 
-  public static TestSuite suite() {
-    JUnitTestSuiteTest suite = new JUnitTestSuiteTest();
-    TestSuite testSuite = io.vertx.ext.unit.TestSuite.create(suite).toJUnitSuite();
-    testSuite.addTest(new junit.framework.Test() {
-      @Override
-      public int countTestCases() {
-        return 1;
-      }
-      @Override
-      public void run(TestResult result) {
-        result.startTest(this);
-        if (suite.count != 2) {
-          result.addError(this, new RuntimeException());
-        }
-        result.endTest(this);
-      }
-    });
-    return testSuite;
+  @BeforeClass
+  public void before(TestContext context) {
+    System.out.println("before");
   }
 
-  int count;
-
-  public void testSomething(TestContext test) {
-    count++;
+  @Before
+  public void beforeEach(TestContext context) {
+    System.out.println("beforeEach");
   }
 
-  public void testSomethingElse(TestContext test) {
-    count++;
+  @Test
+  public void testSomething(TestContext context) {
+    System.out.println("testSomething");
+  }
+
+  @Test
+  public void testSomethingElse(TestContext context) {
+    System.out.println("testSomethingElse");
+  }
+
+  @After
+  public void afterEach(TestContext context) {
+    System.out.println("afterEach");
+  }
+
+  @AfterClass
+  public void after(TestContext context) {
+    System.out.println("after");
   }
 }

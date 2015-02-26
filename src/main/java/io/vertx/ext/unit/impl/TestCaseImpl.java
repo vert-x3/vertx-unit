@@ -16,18 +16,22 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class TestCaseImpl implements TestCase {
 
-  final String desc;
+  final String name;
   final Handler<TestContext> handler;
 
-  public TestCaseImpl(String desc, Handler<TestContext> handler) {
-    this.desc = desc;
+  public TestCaseImpl(String name, Handler<TestContext> handler) {
+    this.name = name;
     this.handler = handler;
   }
 
   private TestCaseReport runner() {
-    return new TestCaseReportImpl(desc, 0, null, handler, null, null, (o, executor) -> {
+    return new TestCaseReportImpl(name, 0, null, handler, null, null, (o, executor) -> {
       // ?
     });
+  }
+
+  public String name() {
+    return name;
   }
 
   @Override
