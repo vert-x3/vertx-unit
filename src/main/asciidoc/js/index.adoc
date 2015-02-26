@@ -4,11 +4,13 @@ Asynchronous polyglot unit testing.
 
 == Introduction
 
-Vertx Unit aims to make Vertx applications testable. It provides a polyglot API for writing asynchronous
-tests easily. Vertx Unit Api borrows from existing test frameworks like http://junit.org[JUnit] or http://qunitjs.com[QUnit]
+Vertx Unit is designed for writing asynchronous unit tests with a polyglot API and running these tests
+in the JVM. Vertx Unit Api borrows from existing test frameworks like http://junit.org[JUnit] or http://qunitjs.com[QUnit]
 and follows the Vert.x practices.
 
-Vertx Unit can be used in different ways and run anywhere your code runs, it is just a matter of reporting
+As a consequence Vertx Unit is the natural choice for testing Vert.x applications.
+
+It can be used in different ways and run anywhere your code runs, it is just a matter of reporting
 the results the right way, this example shows the bare minimum test suite:
 
 [source,js]
@@ -79,7 +81,7 @@ suite.test("my_test_case_3", function (test) {
 
 ----
 
-The API is fluent and therefore the test can be chained:
+The API is fluent and therefore the test cases can be chained:
 
 [source,js]
 ----
@@ -94,6 +96,9 @@ suite.test("my_test_case_1", function (test) {
 });
 
 ----
+
+The test cases declaration order is not guaranteed, so test cases should not rely on the execution of
+another test case to run. Such practice is considered as a bad one.
 
 Vertx Unit provides _before_ and _after_ callbacks for doing global setup or cleanup:
 
