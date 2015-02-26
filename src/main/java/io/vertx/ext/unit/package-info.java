@@ -363,7 +363,7 @@
  *   create("my_test_case", test -> {
  *     test.assertTrue(true);
  *   }).
- *   assertSuccess(); // <1>
+ *   awaitSuccess(); // <1>
  * ----
  * <1> Block until the test case is executed
  *
