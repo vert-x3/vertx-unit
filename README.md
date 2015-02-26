@@ -8,6 +8,7 @@ See https://github.com/vert-x3/vertx-unit/blob/initial-work/src/main/asciidoc/ja
 
 ## Todo
 
+- when executing a test with a context, check that the various asserts are executed with the *same* context
 - add a blocking mode to wait for the result of a test suite using a latch
 - provide subtest programming model (i.e add a tests in a test)
 - consider making TestResult an @DataObject instead
