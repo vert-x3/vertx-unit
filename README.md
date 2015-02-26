@@ -8,6 +8,8 @@ See https://github.com/vert-x3/vertx-unit/blob/initial-work/src/main/asciidoc/ja
 
 ## Todo
 
+- add a blocking mode to wait for the result of a test suite using a latch
+- provide subtest programming model (i.e add a tests in a test)
 - consider making TestResult an @DataObject instead
 - add closeable resource to register for automatic cleanup or do something like this
 - object sharing via io.vertx.core.Context#put
