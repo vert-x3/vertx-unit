@@ -2,7 +2,7 @@ package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.ext.unit.Test;
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.TestCase;
 import io.vertx.ext.unit.report.TestCaseReport;
 import io.vertx.ext.unit.report.TestResult;
@@ -17,9 +17,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class TestCaseImpl implements TestCase {
 
   final String desc;
-  final Handler<Test> handler;
+  final Handler<TestContext> handler;
 
-  public TestCaseImpl(String desc, Handler<Test> handler) {
+  public TestCaseImpl(String desc, Handler<TestContext> handler) {
     this.desc = desc;
     this.handler = handler;
   }
@@ -37,20 +37,20 @@ public class TestCaseImpl implements TestCase {
 
   @Override
   public void awaitSuccess(long timeout, TimeUnit unit) {
-    awaitSuccess(TestContext.create(null, Vertx.currentContext()), timeout, unit);
+    awaitSuccess(TestSuiteContext.create(null, Vertx.currentContext()), timeout, unit);
   }
 
   @Override
   public void awaitSuccess(Vertx vertx, long timeout, TimeUnit unit) {
-    awaitSuccess(TestContext.create(vertx, vertx.getOrCreateContext()), timeout, unit);
+    awaitSuccess(TestSuiteContext.create(vertx, vertx.getOrCreateContext()), timeout, unit);
   }
 
   @Override
   public void awaitSuccess(Vertx vertx) {
-    awaitSuccess(TestContext.create(vertx, vertx.getOrCreateContext()), 2, TimeUnit.MINUTES);
+    awaitSuccess(TestSuiteContext.create(vertx, vertx.getOrCreateContext()), 2, TimeUnit.MINUTES);
   }
 
-  private void awaitSuccess(TestContext context, long timeout, TimeUnit unit) {
+  private void awaitSuccess(TestSuiteContext context, long timeout, TimeUnit unit) {
     CountDownLatch latch = new CountDownLatch(1);
     TestCaseReportImpl testCase = (TestCaseReportImpl) runner();
     AtomicReference<TestResult> resultRef = new AtomicReference<>();

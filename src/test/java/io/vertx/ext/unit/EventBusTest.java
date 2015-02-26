@@ -98,14 +98,14 @@ public class EventBusTest extends VertxTestBase {
     });
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
-      TestSuite.create(testSuiteName).test(testCaseName1, test -> {
+      TestSuite.create(testSuiteName).test(testCaseName1, context -> {
         try {
           Thread.sleep(10);
         } catch (InterruptedException ignore) {
         }
-      }).test(testCaseName2, test -> {
-        test.fail("the_" + testCaseName2 + "_failure");
-      }).test(testCaseName3, test -> {
+      }).test(testCaseName2, context -> {
+        context.fail("the_" + testCaseName2 + "_failure");
+      }).test(testCaseName3, context -> {
         throw new RuntimeException();
       }).run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt(address)));
     });
@@ -161,9 +161,9 @@ public class EventBusTest extends VertxTestBase {
     });
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
-      TestSuite.create(testSuiteName).test(testCaseName, test -> {
+      TestSuite.create(testSuiteName).test(testCaseName, context -> {
         // Ok
-      }).after(test -> {
+      }).after(context -> {
         throw new RuntimeException("the_after_failure");
       }).run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt(address)));
     });
@@ -298,8 +298,8 @@ public class EventBusTest extends VertxTestBase {
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
       TestSuite suite = TestSuite.create(testSuiteName).
-          test(testCaseName1, test -> {
-          }).test(testCaseName2, test -> test.fail("the_failure"));
+          test(testCaseName1, context -> {
+          }).test(testCaseName2, context -> context.fail("the_failure"));
       suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt("the-address")));
     });
     testReporter.await();
@@ -327,12 +327,12 @@ public class EventBusTest extends VertxTestBase {
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
       TestSuite suite = TestSuite.create(testSuiteName).
-          test(testCaseName, test -> {
+          test(testCaseName, context -> {
             try {
               Thread.sleep(10);
             } catch (InterruptedException ignore) {
             }
-          }).after(test -> {
+          }).after(context -> {
         throw error;
       });
       suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt(address)));

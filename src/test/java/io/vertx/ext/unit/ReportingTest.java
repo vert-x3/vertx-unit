@@ -64,7 +64,7 @@ public class ReportingTest extends VertxTestBase {
     }
   }
 
-  private static final TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {});
+  private static final TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {});
 
   @org.junit.Test
   public void testReportWithDefaultOptions() {
@@ -135,7 +135,7 @@ public class ReportingTest extends VertxTestBase {
 
   @org.junit.Test
   public void testReportSucceededToCompletionHandler() {
-    TestSuite suite = TestSuite.create("my_suite").test("first_test", test -> {});
+    TestSuite suite = TestSuite.create("my_suite").test("first_test", context -> {});
     suite.run(new TestOptions()).handler(ar -> {
       assertTrue(ar.succeeded());
       testComplete();
@@ -146,8 +146,8 @@ public class ReportingTest extends VertxTestBase {
   @org.junit.Test
   public void testReportToFailureCompletionHandler() {
     RuntimeException e = new RuntimeException();
-    Handler<Test> fails = test -> { throw e; };
-    Handler<Test> pass = test -> { };
+    Handler<TestContext> fails = context -> { throw e; };
+    Handler<TestContext> pass = context -> { };
     TestSuite[] suites = {
         TestSuite.create("my_suite").test("first_test", fails),
         TestSuite.create("my_suite").before(fails).test("first_test", pass),

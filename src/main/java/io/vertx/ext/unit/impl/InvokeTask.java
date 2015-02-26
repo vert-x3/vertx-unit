@@ -1,7 +1,7 @@
 package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.unit.Test;
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.report.TestResult;
 
 import java.util.concurrent.TimeoutException;
@@ -13,18 +13,18 @@ import java.util.concurrent.atomic.AtomicLong;
 class InvokeTask implements Task<Throwable> {
 
   final Task<Result> next;
-  final Handler<Test> handler;
+  final Handler<TestContext> handler;
   final Handler<Throwable> unhandledFailureHandler;
   final long timeout;
 
-  public InvokeTask(Handler<Test> test, Handler<Throwable> unhandledFailureHandler, Task<Result> next) {
+  public InvokeTask(Handler<TestContext> test, Handler<Throwable> unhandledFailureHandler, Task<Result> next) {
     this.handler = test;
     this.timeout = 0;
     this.next = next;
     this.unhandledFailureHandler = unhandledFailureHandler;
   }
 
-  public InvokeTask(Handler<Test> test, long timeout, Handler<Throwable> unhandledFailureHandler, Task<Result> next) {
+  public InvokeTask(Handler<TestContext> test, long timeout, Handler<Throwable> unhandledFailureHandler, Task<Result> next) {
     this.handler = test;
     this.timeout = timeout;
     this.next = next;
@@ -32,8 +32,8 @@ class InvokeTask implements Task<Throwable> {
   }
 
   @Override
-  public void execute(Throwable failure, TestContext context) {
-    TestImpl test = new TestImpl(this, context, failure);
+  public void execute(Throwable failure, TestSuiteContext context) {
+    TestContextImpl test = new TestContextImpl(this, context, failure);
     if (timeout > 0) {
       Runnable cancel = () -> {
         try {
@@ -51,9 +51,9 @@ class InvokeTask implements Task<Throwable> {
   static Task<?> runTestTask(
       String name,
       long timeout,
-      Handler<Test> before,
-      Handler<Test> test,
-      Handler<Test> after,
+      Handler<TestContext> before,
+      Handler<TestContext> test,
+      Handler<TestContext> after,
       Handler<Throwable> unhandledFailureHandler,
       Task<TestResult> next) {
 

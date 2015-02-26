@@ -1,7 +1,7 @@
 package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.unit.Test;
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.report.TestCaseReport;
 
@@ -17,9 +17,9 @@ public class TestCaseReportImpl implements TestCaseReport, Task<Void> {
 
   public TestCaseReportImpl(String name,
                             long timeout,
-                            Handler<Test> before,
-                            Handler<Test> test,
-                            Handler<Test> after,
+                            Handler<TestContext> before,
+                            Handler<TestContext> test,
+                            Handler<TestContext> after,
                             Handler<Throwable> exceptionHandler,
                             Task<?> next) {
     this.name = name;
@@ -33,7 +33,7 @@ public class TestCaseReportImpl implements TestCaseReport, Task<Void> {
   }
 
   @Override
-  public void execute(Void v, TestContext executor) {
+  public void execute(Void v, TestSuiteContext executor) {
     if (result == null) {
       executor.run(task, null);
     }

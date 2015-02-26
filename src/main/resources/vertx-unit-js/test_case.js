@@ -16,7 +16,7 @@
 
 /** @module vertx-unit-js/test_case */
 var utils = require('vertx-js/util/utils');
-var Test = require('vertx-unit-js/test');
+var TestContext = require('vertx-unit-js/test_context');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
@@ -50,7 +50,7 @@ TestCase.create = function(name, testCase) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
     return new TestCase(JTestCase.create(name, function(jVal) {
-    testCase(new Test(jVal));
+    testCase(new TestContext(jVal));
   }));
   } else utils.invalidArgs();
 };

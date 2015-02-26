@@ -17,9 +17,9 @@ the results the right way, this example shows the bare minimum test suite:
 ----
 var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
-suite.test("my_test_case", function (test) {
+suite.test("my_test_case", function (context) {
   var s = "value";
-  test.assertEquals("value", s);
+  context.assertEquals("value", s);
 });
 suite.run();
 
@@ -33,9 +33,9 @@ of the test result.
 ----
 var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
-suite.test("my_test_case", function (test) {
+suite.test("my_test_case", function (context) {
   var s = "value";
-  test.assertEquals("value", s);
+  context.assertEquals("value", s);
 });
 suite.run({
   "reporters" : [
@@ -69,13 +69,13 @@ initializing or disposing services used by the test suite.
 ----
 var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
-suite.test("my_test_case_1", function (test) {
+suite.test("my_test_case_1", function (context) {
   // Test 1
 });
-suite.test("my_test_case_2", function (test) {
+suite.test("my_test_case_2", function (context) {
   // Test 2
 });
-suite.test("my_test_case_3", function (test) {
+suite.test("my_test_case_3", function (context) {
   // Test 3
 });
 
@@ -87,11 +87,11 @@ The API is fluent and therefore the test cases can be chained:
 ----
 var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
-suite.test("my_test_case_1", function (test) {
+suite.test("my_test_case_1", function (context) {
   // Test 1
-}).test("my_test_case_2", function (test) {
+}).test("my_test_case_2", function (context) {
   // Test 2
-}).test("my_test_case_3", function (test) {
+}).test("my_test_case_3", function (context) {
   // Test 3
 });
 
@@ -106,15 +106,15 @@ Vertx Unit provides _before_ and _after_ callbacks for doing global setup or cle
 ----
 var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
-suite.before(function (test) {
+suite.before(function (context) {
   // Test suite setup
-}).test("my_test_case_1", function (test) {
+}).test("my_test_case_1", function (context) {
   // Test 1
-}).test("my_test_case_2", function (test) {
+}).test("my_test_case_2", function (context) {
   // Test 2
-}).test("my_test_case_3", function (test) {
+}).test("my_test_case_3", function (context) {
   // Test 3
-}).after(function (test) {
+}).after(function (context) {
   // Test suite cleanup
 });
 
@@ -135,15 +135,15 @@ for each test case:
 ----
 var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("the_test_suite");
-suite.beforeEach(function (test) {
+suite.beforeEach(function (context) {
   // Test case setup
-}).test("my_test_case_1", function (test) {
+}).test("my_test_case_1", function (context) {
   // Test 1
-}).test("my_test_case_2", function (test) {
+}).test("my_test_case_2", function (context) {
   // Test 2
-}).test("my_test_case_3", function (test) {
+}).test("my_test_case_3", function (context) {
   // Test 3
-}).afterEach(function (test) {
+}).afterEach(function (context) {
   // Test case cleanup
 });
 
@@ -164,8 +164,8 @@ Assert two objects are equals, works for _basic_ types or _json_ types.
 
 [source,js]
 ----
-suite.test("my_test_case", function (test) {
-  test.assertEquals(10, callbackCount);
+suite.test("my_test_case", function (context) {
+  context.assertEquals(10, callbackCount);
 });
 
 ----
@@ -174,8 +174,8 @@ There is also an overloaded version for providing a message:
 
 [source,js]
 ----
-suite.test("my_test_case", function (test) {
-  test.assertEquals(10, callbackCount, "Should have been 10 instead of " + callbackCount);
+suite.test("my_test_case", function (context) {
+  context.assertEquals(10, callbackCount, "Should have been 10 instead of " + callbackCount);
 });
 
 ----
@@ -188,8 +188,8 @@ The counter part of _assertEquals_.
 
 [source,js]
 ----
-suite.test("my_test_case", function (test) {
-  test.assertNotEquals(10, callbackCount);
+suite.test("my_test_case", function (context) {
+  context.assertNotEquals(10, callbackCount);
 });
 
 ----
@@ -200,9 +200,9 @@ Asserts the value of a boolean expression.
 
 [source,js]
 ----
-suite.test("my_test_case", function (test) {
-  test.assertTrue(var);
-  test.assertFalse(value > 10);
+suite.test("my_test_case", function (context) {
+  context.assertTrue(var);
+  context.assertFalse(value > 10);
 });
 
 ----
@@ -213,8 +213,8 @@ Last but not least, _test_ provides a _fail_ method that will throw an assertion
 
 [source,js]
 ----
-suite.test("my_test_case", function (test) {
-  test.fail("That should never happen");
+suite.test("my_test_case", function (context) {
+  context.fail("That should never happen");
   // Following statements won't be executed
 });
 
@@ -229,8 +229,8 @@ callback, for instance:
 .The Async object asynchronously completes the test case
 [source,js]
 ----
-suite.test("my_test_case", function (test) {
-  var async = test.async();
+suite.test("my_test_case", function (context) {
+  var async = context.async();
   eventBus.consumer("the-address", function (msg) {
     // <2>
     async.complete();
@@ -242,7 +242,7 @@ suite.test("my_test_case", function (test) {
 <1> The callback exits but the test case is not terminated
 <2> The event callback from the bus terminates the test
 
-Creating an `link:jsdoc/async-Async.html[Async]` object with the `link:jsdoc/test-Test.html#async[async]` method marks the
+Creating an `link:jsdoc/async-Async.html[Async]` object with the `link:jsdoc/test_context-TestContext.html#async[async]` method marks the
 executed test case as non terminated. The test case terminates when the `link:jsdoc/async-Async.html#complete[complete]`
 method is invoked.
 
@@ -254,20 +254,20 @@ the test.
 .Several Async objects provide coordination
 [source,js]
 ----
-suite.test("my_test_case", function (test) {
+suite.test("my_test_case", function (context) {
 
-  var async1 = test.async();
+  var async1 = context.async();
   var client = vertx.createHttpClient();
   var req = client.get(8080, "localhost", "/");
   req.exceptionHandler(function (err) {
-    test.fail(err.getMessage())});
+    context.fail(err.getMessage())});
   req.handler(function (resp) {
-    test.assertEquals(200, resp.statusCode());
+    context.assertEquals(200, resp.statusCode());
     async1.complete();
   });
   req.end();
 
-  var async2 = test.async();
+  var async2 = context.async();
   vertx.eventBus().consumer("the-address", function (msg) {
     async2.complete();
   });
@@ -281,12 +281,12 @@ to implement a setup that depends on one or several asynchronous results:
 .Async start an http server before test cases
 [source,js]
 ----
-suite.before(function (test) {
-  var async = test.async();
+suite.before(function (context) {
+  var async = context.async();
   var server = vertx.createHttpServer();
   server.requestHandler(requestHandler);
   server.listen(8080, function (ar, ar_err) {
-    test.assertTrue((ar != null));
+    context.assertTrue((ar != null));
     async.complete();
   });
 });
@@ -347,7 +347,7 @@ takes a `Future` object, this `Future` will be notified of the test suite execut
 ----
 var TestSuite = require("vertx-unit-js/test_suite");
 var suite = TestSuite.create("my_test_suite");
-suite.test("my_test_case", function (test) {
+suite.test("my_test_case", function (context) {
   // Do something
 });
 suite.run().resolve(startFuture);
@@ -489,7 +489,7 @@ The Java language provides classes and it is possible to create test suites dire
 following mapping rules:
 
 The  argument methods are inspected and the public, non static methods
-with `link:jsdoc/test-Test.html[Test]` parameter are retained and mapped to a Vertx Unit test suite
+with `link:jsdoc/test_context-TestContext.html[TestContext]` parameter are retained and mapped to a Vertx Unit test suite
 via the method name:
 
 * `before` : before callback
@@ -508,6 +508,8 @@ public class MyTestSuite {
   }
 }
 ----
+
+This class can be turned into a Vertx test suite easily:
 
 .Create a test suite from a Java object
 [source,java]
@@ -528,10 +530,10 @@ public class JUnitTestSuite {
 
   public static TestSuite suite() {
     return io.vertx.ext.unit.TestSuite.create("my_test_suite").
-      test("my_test_case", test -> {
-        test.assertTrue(true);
+      test("my_test_case", context -> {
+        context.assertTrue(true);
       }).
-      test("my_test", test -> {
+      test("my_test", context -> {
         // Test 2
       }).toJUnitSuite();
   }
@@ -562,8 +564,8 @@ A single test case can also be executed with a `link:jsdoc/test_case-TestCase.ht
 [source,js]
 ----
 TestCase.
-  create("my_test_case", test -> {
-    test.assertTrue(true);
+  create("my_test_case", context -> {
+    context.assertTrue(true);
   }).
   awaitSuccess(); // <1>
 ----

@@ -38,7 +38,7 @@ public abstract class TestSuiteTestBase {
     run.accept(getRunner.apply((TestSuiteImpl) suite).handler(reporter).setTimeout(timeout));
   }
 
-  protected boolean checkTest(io.vertx.ext.unit.Test test) {
+  protected boolean checkTest(TestContext test) {
     return true;
   }
 
@@ -47,8 +47,8 @@ public abstract class TestSuiteTestBase {
     AtomicInteger count = new AtomicInteger();
     AtomicBoolean sameContext = new AtomicBoolean();
     TestSuite suite = TestSuite.create("my_suite").
-        test("my_test", test -> {
-          sameContext.set(checkTest(test));
+        test("my_test", context -> {
+          sameContext.set(checkTest(context));
           count.compareAndSet(0, 1);
         });
     TestReporter reporter = new TestReporter();
@@ -70,9 +70,9 @@ public abstract class TestSuiteTestBase {
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
     AtomicInteger count = new AtomicInteger();
     TestSuite suite = TestSuite.create("my_suite").
-        test("my_test", test -> {
+        test("my_test", context -> {
           count.compareAndSet(0, 1);
-          queue.add(test.async());
+          queue.add(context.async());
         });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
@@ -95,8 +95,8 @@ public abstract class TestSuiteTestBase {
   public void runTestWithAsyncCompletionCompletedInTest() throws Exception {
     AtomicBoolean ok = new AtomicBoolean();
     TestSuite suite = TestSuite.create("my_suite").
-        test("my_test", test -> {
-          Async async = test.async();
+        test("my_test", context -> {
+          Async async = context.async();
           async.complete();
           try {
             async.complete();
@@ -122,10 +122,10 @@ public abstract class TestSuiteTestBase {
   public void runTestWithAsyncCompletionAfterFailureInTest() throws Exception {
     AtomicBoolean completed = new AtomicBoolean();
     TestSuite suite = TestSuite.create("my_suite").
-        test("my_test", test -> {
-          Async async = test.async();
+        test("my_test", context -> {
+          Async async = context.async();
           try {
-            test.fail("msg");
+            context.fail("msg");
           } catch (AssertionError ignore) {
           }
           async.complete();
@@ -145,25 +145,25 @@ public abstract class TestSuiteTestBase {
 
   @Test
   public void runTestWithAssertionError() {
-    failTest(test -> test.fail("message_failure"));
+    failTest(context -> context.fail("message_failure"));
   }
 
   @Test
   public void runTestWithEmptyRuntimeException() {
-    failTest(test -> { throw new RuntimeException(); });
+    failTest(context -> { throw new RuntimeException(); });
   }
 
   @Test
   public void runTestWithRuntimeException() {
-    failTest(test -> { throw new RuntimeException("message_failure"); });
+    failTest(context -> { throw new RuntimeException("message_failure"); });
   }
 
-  private void failTest(Handler<io.vertx.ext.unit.Test> thrower) {
+  private void failTest(Handler<TestContext> thrower) {
     AtomicReference<Throwable> failure = new AtomicReference<>();
     TestSuite suite = TestSuite.create("my_suite").
-        test("my_test", test -> {
+        test("my_test", context -> {
           try {
-            thrower.handle(test);
+            thrower.handle(context);
           } catch (Error | RuntimeException e) {
             failure.set(e);
             throw e;
@@ -185,15 +185,15 @@ public abstract class TestSuiteTestBase {
 
   @Test
   public void runTestWithAsyncFailure() throws Exception {
-    BlockingQueue<io.vertx.ext.unit.Test> queue = new ArrayBlockingQueue<>(1);
-    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
-      test.async();
-      queue.add(test);
+    BlockingQueue<TestContext> queue = new ArrayBlockingQueue<>(1);
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      context.async();
+      queue.add(context);
     });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
     assertFalse(reporter.completed());
-    io.vertx.ext.unit.Test test = queue.poll(2, TimeUnit.SECONDS);
+    TestContext test = queue.poll(2, TimeUnit.SECONDS);
     try {
       test.fail("the_message");
     } catch (AssertionError ignore) {
@@ -204,8 +204,8 @@ public abstract class TestSuiteTestBase {
 
   @Test
   public void reportFailureAfterTestCompleted() {
-    AtomicReference<io.vertx.ext.unit.Test> testRef = new AtomicReference<>();
-    TestSuite suite = TestSuite.create("my_suite").test("my_test_1", testRef::set).test("my_test_2", test -> {
+    AtomicReference<TestContext> testRef = new AtomicReference<>();
+    TestSuite suite = TestSuite.create("my_suite").test("my_test_1", testRef::set).test("my_test_2", context -> {
       try {
         testRef.get().fail();
       } catch (Exception e) {
@@ -233,10 +233,10 @@ public abstract class TestSuiteTestBase {
       AtomicBoolean sameContext = new AtomicBoolean();
       int val = i;
       TestSuite suite = TestSuite.create("my_suite").
-          test("my_test_1", test -> {
-        sameContext.set(checkTest(test));
-        count.compareAndSet(1, 2);
-      }).test("my_test_2", test -> {
+          test("my_test_1", context -> {
+            sameContext.set(checkTest(context));
+            count.compareAndSet(1, 2);
+          }).test("my_test_2", context -> {
         if (val == 0) {
           count.compareAndSet(3, 4);
         } else {
@@ -244,13 +244,9 @@ public abstract class TestSuiteTestBase {
         }
       });
       if (i == 0) {
-        suite = suite.beforeEach(test -> {
-          count.incrementAndGet();
-        });
+        suite = suite.beforeEach(context -> count.incrementAndGet());
       } else {
-        suite = suite.before(test -> {
-          count.incrementAndGet();
-        });
+        suite = suite.before(context -> count.incrementAndGet());
       }
       TestReporter reporter = new TestReporter();
       run(suite, reporter);
@@ -272,19 +268,19 @@ public abstract class TestSuiteTestBase {
       AtomicInteger count = new AtomicInteger();
       AtomicBoolean sameContext = new AtomicBoolean();
       BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
-      TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
+      TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
         count.compareAndSet(1, 2);
-        sameContext.set(checkTest(test));
+        sameContext.set(checkTest(context));
       });
       if (i == 0) {
-        suite = suite.before(test -> {
+        suite = suite.before(context -> {
           count.compareAndSet(0, 1);
-          queue.add(test.async());
+          queue.add(context.async());
         });
       } else {
-        suite = suite.beforeEach(test -> {
+        suite = suite.beforeEach(context -> {
           count.compareAndSet(0, 1);
-          queue.add(test.async());
+          queue.add(context.async());
         });
       }
       TestReporter reporter = new TestReporter();
@@ -306,19 +302,15 @@ public abstract class TestSuiteTestBase {
     for (int i = 0;i < 2;i++) {
       AtomicInteger count = new AtomicInteger();
       TestSuite suite = TestSuite.create("my_suite").
-          test("my_test_1", test -> {
-            count.incrementAndGet();
-          }).
-          test("my_test_2", test -> {
-            count.incrementAndGet();
-          });
+          test("my_test_1", context -> count.incrementAndGet()).
+          test("my_test_2", context -> count.incrementAndGet());
       if (i == 0) {
-        suite.before(test -> {
+        suite.before(context -> {
           throw new RuntimeException();
         });
       } else {
         AtomicBoolean failed = new AtomicBoolean();
-        suite.beforeEach(test -> {
+        suite.beforeEach(context -> {
           if (failed.compareAndSet(false, true)) {
             throw new RuntimeException();
           }
@@ -348,18 +340,18 @@ public abstract class TestSuiteTestBase {
     for (int i = 0;i < 2;i++) {
       AtomicInteger count = new AtomicInteger();
       BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
-      TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
+      TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
         count.compareAndSet(0, 1);
       });
       if (i == 0) {
-        suite = suite.after(test -> {
+        suite = suite.after(context -> {
           count.compareAndSet(1, 2);
-          queue.add(test.async());
+          queue.add(context.async());
         });
       } else {
-        suite = suite.afterEach(test -> {
+        suite = suite.afterEach(context -> {
           count.compareAndSet(1, 2);
-          queue.add(test.async());
+          queue.add(context.async());
         });
       }
       TestReporter reporter = new TestReporter();
@@ -383,10 +375,10 @@ public abstract class TestSuiteTestBase {
       AtomicBoolean sameContext = new AtomicBoolean();
       int val = i;
       TestSuite suite = TestSuite.create("my_suite").
-          test("my_test_1", test -> {
+          test("my_test_1", context -> {
             count.compareAndSet(0, 1);
           }).
-          test("my_test_2", test -> {
+          test("my_test_2", context -> {
             if (val == 0) {
               count.compareAndSet(1, 2);
             } else {
@@ -394,13 +386,13 @@ public abstract class TestSuiteTestBase {
             }
           });
       if (i == 0) {
-        suite = suite.after(test -> {
-          sameContext.set(checkTest(test));
+        suite = suite.after(context -> {
+          sameContext.set(checkTest(context));
           count.incrementAndGet();
         });
       } else {
-        suite = suite.afterEach(test -> {
-          sameContext.set(checkTest(test));
+        suite = suite.afterEach(context -> {
+          sameContext.set(checkTest(context));
           count.incrementAndGet();
         });
       }
@@ -422,18 +414,14 @@ public abstract class TestSuiteTestBase {
   public void afterIsRunAfterFailure() throws Exception {
     for (int i = 0;i < 2;i++) {
       AtomicInteger count = new AtomicInteger();
-      TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
+      TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
         count.compareAndSet(0, 1);
-        test.fail("the_message");
+        context.fail("the_message");
       });
       if (i == 0) {
-        suite = suite.after(test -> {
-          count.compareAndSet(1, 2);
-        });
+        suite = suite.after(context -> count.compareAndSet(1, 2));
       } else {
-        suite = suite.afterEach(test -> {
-          count.compareAndSet(1, 2);
-        });
+        suite = suite.afterEach(context -> count.compareAndSet(1, 2));
       }
       TestReporter reporter = new TestReporter();
       run(suite, reporter);
@@ -453,10 +441,8 @@ public abstract class TestSuiteTestBase {
       AtomicInteger count = new AtomicInteger();
       int val = i;
       TestSuite suite = TestSuite.create("my_suite").
-          test("my_test_1", test -> {
-            count.compareAndSet(0, 1);
-          }).
-          test("my_test_2", test -> {
+          test("my_test_1", context -> count.compareAndSet(0, 1)).
+          test("my_test_2", context -> {
             if (val == 0) {
               count.compareAndSet(1, 2);
             } else {
@@ -464,16 +450,16 @@ public abstract class TestSuiteTestBase {
             }
           });
       if (i == 0) {
-        suite = suite.after(test -> {
+        suite = suite.after(context -> {
           count.incrementAndGet();
-          test.fail("the_message");
+          context.fail("the_message");
         });
       } else {
         AtomicBoolean failed = new AtomicBoolean();
-        suite = suite.afterEach(test -> {
+        suite = suite.afterEach(context -> {
           count.incrementAndGet();
           if (failed.compareAndSet(false, true)) {
-            test.fail("the_message");
+            context.fail("the_message");
           }
         });
       }
@@ -502,8 +488,8 @@ public abstract class TestSuiteTestBase {
 
   @Test
   public void timeExecution() {
-    TestSuite suite = TestSuite.create("my_suite").test("my_test", test -> {
-      Async async = test.async();
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      Async async = context.async();
       new Thread() {
         @Override
         public void run() {
@@ -530,12 +516,8 @@ public abstract class TestSuiteTestBase {
   public void testTimeout() throws Exception {
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(2);
     TestSuite suite = TestSuite.create("my_suite").
-        test("my_test0", test -> {
-          queue.add(test.async());
-        }).
-        test("my_test1", test -> {
-          queue.add(test.async());
-        });
+        test("my_test0", context -> queue.add(context.async())).
+        test("my_test1", context -> queue.add(context.async()));
     TestReporter reporter = new TestReporter();
     run(suite, reporter, 300); // 300 ms
     reporter.await(); // Wait until timeout and suite completes

@@ -69,10 +69,10 @@ public class TestSuite {
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite before(Handler<Test> callback) {
-    this.delegate.before(new Handler<io.vertx.ext.unit.Test>() {
-      public void handle(io.vertx.ext.unit.Test event) {
-        callback.handle(new Test(event));
+  public TestSuite before(Handler<TestContext> callback) {
+    this.delegate.before(new Handler<io.vertx.ext.unit.TestContext>() {
+      public void handle(io.vertx.ext.unit.TestContext event) {
+        callback.handle(new TestContext(event));
       }
     });
     return this;
@@ -84,10 +84,10 @@ public class TestSuite {
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite beforeEach(Handler<Test> callback) {
-    this.delegate.beforeEach(new Handler<io.vertx.ext.unit.Test>() {
-      public void handle(io.vertx.ext.unit.Test event) {
-        callback.handle(new Test(event));
+  public TestSuite beforeEach(Handler<TestContext> callback) {
+    this.delegate.beforeEach(new Handler<io.vertx.ext.unit.TestContext>() {
+      public void handle(io.vertx.ext.unit.TestContext event) {
+        callback.handle(new TestContext(event));
       }
     });
     return this;
@@ -99,10 +99,10 @@ public class TestSuite {
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite after(Handler<Test> callback) {
-    this.delegate.after(new Handler<io.vertx.ext.unit.Test>() {
-      public void handle(io.vertx.ext.unit.Test event) {
-        callback.handle(new Test(event));
+  public TestSuite after(Handler<TestContext> callback) {
+    this.delegate.after(new Handler<io.vertx.ext.unit.TestContext>() {
+      public void handle(io.vertx.ext.unit.TestContext event) {
+        callback.handle(new TestContext(event));
       }
     });
     return this;
@@ -114,10 +114,10 @@ public class TestSuite {
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite afterEach(Handler<Test> callback) {
-    this.delegate.afterEach(new Handler<io.vertx.ext.unit.Test>() {
-      public void handle(io.vertx.ext.unit.Test event) {
-        callback.handle(new Test(event));
+  public TestSuite afterEach(Handler<TestContext> callback) {
+    this.delegate.afterEach(new Handler<io.vertx.ext.unit.TestContext>() {
+      public void handle(io.vertx.ext.unit.TestContext event) {
+        callback.handle(new TestContext(event));
       }
     });
     return this;
@@ -130,10 +130,10 @@ public class TestSuite {
    * @param testCase the test case
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite test(String name, Handler<Test> testCase) {
-    this.delegate.test(name, new Handler<io.vertx.ext.unit.Test>() {
-      public void handle(io.vertx.ext.unit.Test event) {
-        testCase.handle(new Test(event));
+  public TestSuite test(String name, Handler<TestContext> testCase) {
+    this.delegate.test(name, new Handler<io.vertx.ext.unit.TestContext>() {
+      public void handle(io.vertx.ext.unit.TestContext event) {
+        testCase.handle(new TestContext(event));
       }
     });
     return this;

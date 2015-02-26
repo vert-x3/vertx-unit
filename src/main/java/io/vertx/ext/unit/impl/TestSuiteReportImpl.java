@@ -4,7 +4,7 @@ import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.report.TestSuiteReport;
-import io.vertx.ext.unit.Test;
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.report.TestCaseReport;
 
 /**
@@ -14,17 +14,17 @@ class TestSuiteReportImpl implements TestSuiteReport {
 
   private final String name;
   private final long timeout;
-  private final Handler<Test> before;
-  private final Handler<Test> after;
-  private final Handler<Test> beforeEach;
-  private final Handler<Test> afterEach;
+  private final Handler<TestContext> before;
+  private final Handler<TestContext> after;
+  private final Handler<TestContext> beforeEach;
+  private final Handler<TestContext> afterEach;
   private TestCaseImpl[] tests;
   private Handler<Void> endHandler;
   private Handler<Throwable> exceptionHandler;
   private Handler<TestCaseReport> handler;
 
-  TestSuiteReportImpl(String name, long timeout, Handler<Test> before, Handler<Test> after,
-                      Handler<Test> beforeEach, Handler<Test> afterEach,
+  TestSuiteReportImpl(String name, long timeout, Handler<TestContext> before, Handler<TestContext> after,
+                      Handler<TestContext> beforeEach, Handler<TestContext> afterEach,
                       TestCaseImpl[] tests) {
     this.name = name;
     this.timeout = timeout;
@@ -119,7 +119,7 @@ class TestSuiteReportImpl implements TestSuiteReport {
   }
 
   // For unit testing
-  public void run(TestContext context) {
+  public void run(TestSuiteContext context) {
     context.run(build());
   }
 
@@ -134,11 +134,11 @@ class TestSuiteReportImpl implements TestSuiteReport {
             "be executed in a Verticle");
       }
     }
-    TestContext.create(null, context).run(build());
+    TestSuiteContext.create(null, context).run(build());
   }
 
   public void run(Vertx vertx, Boolean useEventLoop) {
     Context context = Boolean.FALSE.equals(useEventLoop) ? null : vertx.getOrCreateContext();
-    TestContext.create(vertx, context).run(build());
+    TestSuiteContext.create(vertx, context).run(build());
   }
 }

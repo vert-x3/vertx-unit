@@ -2,7 +2,7 @@ package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.Test;
+import io.vertx.ext.unit.TestContext;
 import org.junit.Assert;
 
 import java.util.LinkedList;
@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
-class TestImpl implements Test {
+class TestContextImpl implements TestContext {
 
   private static final int STATUS_RUNNING = 0, STATUS_ASYNC = 1, STATUS_COMPLETED = 2;
 
@@ -29,7 +29,7 @@ class TestImpl implements Test {
 
     void internalComplete() {
       boolean complete;
-      synchronized (TestImpl.this) {
+      synchronized (TestContextImpl.this) {
         complete = asyncs.remove(this);
       }
       if (complete) {
@@ -39,13 +39,13 @@ class TestImpl implements Test {
   }
 
   private final InvokeTask invokeTask;
-  private final TestContext context;
+  private final TestSuiteContext context;
   private int status;
   private Throwable failed;
   private long beginTime;
   private final LinkedList<AsyncImpl> asyncs = new LinkedList<>();
 
-  public TestImpl(InvokeTask invokeTask, TestContext context, Throwable failed) {
+  public TestContextImpl(InvokeTask invokeTask, TestSuiteContext context, Throwable failed) {
     this.invokeTask = invokeTask;
     this.context = context;
     this.failed = failed;
@@ -74,7 +74,7 @@ class TestImpl implements Test {
       failed(t);
     } finally {
       synchronized (this) {
-        status = TestImpl.STATUS_ASYNC;
+        status = TestContextImpl.STATUS_ASYNC;
       }
       tryEnd();
     }
@@ -124,7 +124,7 @@ class TestImpl implements Test {
   }
 
   @Override
-  public Test assertTrue(boolean condition, String message) {
+  public TestContext assertTrue(boolean condition, String message) {
     try {
       Assert.assertTrue(message, condition);
       return this;
@@ -134,7 +134,7 @@ class TestImpl implements Test {
     }
   }
 
-  public Test assertTrue(boolean condition) {
+  public TestContext assertTrue(boolean condition) {
     try {
       Assert.assertTrue(condition);
       return this;
@@ -154,7 +154,7 @@ class TestImpl implements Test {
   }
 
   @Override
-  public Test assertFalse(boolean condition) {
+  public TestContext assertFalse(boolean condition) {
     try {
       Assert.assertFalse(condition);
       return this;
@@ -165,7 +165,7 @@ class TestImpl implements Test {
   }
 
   @Override
-  public Test assertFalse(boolean condition, String message) {
+  public TestContext assertFalse(boolean condition, String message) {
     try {
       Assert.assertFalse(message, condition);
       return this;
@@ -186,7 +186,7 @@ class TestImpl implements Test {
   }
 
   @Override
-  public Test assertEquals(Object expected, Object actual) {
+  public TestContext assertEquals(Object expected, Object actual) {
     try {
       Assert.assertEquals(expected, actual);
       return this;
@@ -197,7 +197,7 @@ class TestImpl implements Test {
   }
 
   @Override
-  public Test assertEquals(Object expected, Object actual, String message) {
+  public TestContext assertEquals(Object expected, Object actual, String message) {
     try {
       Assert.assertEquals(message, expected, actual);
       return this;
@@ -208,7 +208,7 @@ class TestImpl implements Test {
   }
 
   @Override
-  public Test assertInRange(double expected, double actual, double delta) {
+  public TestContext assertInRange(double expected, double actual, double delta) {
     try {
       Assert.assertEquals(expected, actual, delta);
       return this;
@@ -219,7 +219,7 @@ class TestImpl implements Test {
   }
 
   @Override
-  public Test assertInRange(double expected, double actual, double delta, String message) {
+  public TestContext assertInRange(double expected, double actual, double delta, String message) {
     try {
       Assert.assertEquals(message, expected, actual, delta);
       return this;
@@ -230,7 +230,7 @@ class TestImpl implements Test {
   }
 
   @Override
-  public Test assertNotEquals(Object first, Object second, String message) {
+  public TestContext assertNotEquals(Object first, Object second, String message) {
     try {
       Assert.assertNotEquals(message, first, second);
       return this;
@@ -241,7 +241,7 @@ class TestImpl implements Test {
   }
 
   @Override
-  public Test assertNotEquals(Object first, Object second) {
+  public TestContext assertNotEquals(Object first, Object second) {
     try {
       Assert.assertNotEquals(first, second);
       return this;

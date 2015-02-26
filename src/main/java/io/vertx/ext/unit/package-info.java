@@ -90,8 +90,8 @@
  *
  * == Asserting
  *
- * Vertx Unit provides the _test_ object for doing assertions in test cases. The _test_ object provides the usual
- * methods when dealing with assertions.
+ * Vertx Unit provides the {@link io.vertx.ext.unit.TestContext} object for doing assertions in test cases. The _context_
+ * object provides the usual methods when dealing with assertions.
  *
  * === assertEquals
  *
@@ -152,7 +152,7 @@
  * <1> The callback exits but the test case is not terminated
  * <2> The event callback from the bus terminates the test
  *
- * Creating an {@link io.vertx.ext.unit.Async} object with the {@link io.vertx.ext.unit.Test#async()} method marks the
+ * Creating an {@link io.vertx.ext.unit.Async} object with the {@link io.vertx.ext.unit.TestContext#async()} method marks the
  * executed test case as non terminated. The test case terminates when the {@link io.vertx.ext.unit.Async#complete()}
  * method is invoked.
  *
@@ -211,7 +211,7 @@
  * {@link examples.Examples#running_03}
  * ----
  *
- * The `TestCompletion` object provides also a {@link io.vertx.ext.unit.TestCompletion#resolve} method that
+ * The {@link io.vertx.ext.unit.TestCompletion} object provides also a {@link io.vertx.ext.unit.TestCompletion#resolve} method that
  * takes a `Future` object, this `Future` will be notified of the test suite execution:
  *
  * .Resolving the start Future with the test suite
@@ -337,7 +337,7 @@
  * following mapping rules:
  *
  * The {@code testSuiteObject} argument methods are inspected and the public, non static methods
- * with {@link io.vertx.ext.unit.Test} parameter are retained and mapped to a Vertx Unit test suite
+ * with {@link io.vertx.ext.unit.TestContext} parameter are retained and mapped to a Vertx Unit test suite
  * via the method name:
  *
  * * `before` : before callback
@@ -351,8 +351,8 @@
  * ----
  * public class MyTestSuite {
  *
- *   public void testSomething(Test test) {
- *     test.assertFalse(false);
+ *   public void testSomething(TestContext context) {
+ *     context.assertFalse(false);
  *   }
  * }
  * ----
@@ -378,10 +378,10 @@
  *
  *   public static TestSuite suite() {
  *     return io.vertx.ext.unit.TestSuite.create("my_test_suite").
- *       test("my_test_case", test -> {
- *         test.assertTrue(true);
+ *       test("my_test_case", context -> {
+ *         context.assertTrue(true);
  *       }).
- *       test("my_test", test -> {
+ *       test("my_test", context -> {
  *         // Test 2
  *       }).toJUnitSuite();
  *   }
@@ -400,8 +400,8 @@
  *     return io.vertx.ext.unit.TestSuite.create(new MyTestSuite()).toJUnitSuite();
  *   }
  *
- *   public void testSomething(Test test) {
- *     test.assertFalse(false);
+ *   public void testSomething(Context context) {
+ *     context.assertFalse(false);
  *   }
  * }
  * ----
@@ -412,8 +412,8 @@
  * [source,$lang]
  * ----
  * TestCase.
- *   create("my_test_case", test -> {
- *     test.assertTrue(true);
+ *   create("my_test_case", context -> {
+ *     context.assertTrue(true);
  *   }).
  *   awaitSuccess(); // <1>
  * ----

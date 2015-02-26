@@ -48,10 +48,10 @@ public class TestCase {
    * @param testCase the test case
    * @return the created test case
    */
-  public static TestCase create(String name, Handler<Test> testCase) {
-    TestCase ret= TestCase.newInstance(io.vertx.ext.unit.TestCase.create(name, new Handler<io.vertx.ext.unit.Test>() {
-      public void handle(io.vertx.ext.unit.Test event) {
-        testCase.handle(new Test(event));
+  public static TestCase create(String name, Handler<TestContext> testCase) {
+    TestCase ret= TestCase.newInstance(io.vertx.ext.unit.TestCase.create(name, new Handler<io.vertx.ext.unit.TestContext>() {
+      public void handle(io.vertx.ext.unit.TestContext event) {
+        testCase.handle(new TestContext(event));
       }
     }));
     return ret;

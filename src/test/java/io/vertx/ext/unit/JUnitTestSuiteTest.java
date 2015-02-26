@@ -5,8 +5,6 @@ import junit.framework.TestSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.AllTests;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * Junit integration example.
  *
@@ -37,11 +35,11 @@ public class JUnitTestSuiteTest {
 
   int count;
 
-  public void testSomething(Test test) {
+  public void testSomething(TestContext test) {
     count++;
   }
 
-  public void testSomethingElse(Test test) {
+  public void testSomethingElse(TestContext test) {
     count++;
   }
 }

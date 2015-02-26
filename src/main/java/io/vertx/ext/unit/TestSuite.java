@@ -40,7 +40,7 @@ public interface TestSuite {
    * Create and return a new test suite configured after the {@code testSuiteObject} argument.
    *
    * The {@code testSuiteObject} argument methods are inspected and the public, non static methods
-   * with {@link io.vertx.ext.unit.Test} parameter are retained and mapped to a Vertx Unit test suite
+   * with {@link TestContext} parameter are retained and mapped to a Vertx Unit test suite
    * via the method name:
    *
    * <ul>
@@ -66,7 +66,7 @@ public interface TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  TestSuite before(Handler<Test> callback);
+  TestSuite before(Handler<TestContext> callback);
 
   /**
    * Set a callback executed before each test and after the suite {@code before} callback.
@@ -75,7 +75,7 @@ public interface TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  TestSuite beforeEach(Handler<Test> callback);
+  TestSuite beforeEach(Handler<TestContext> callback);
 
   /**
    * Set a callback executed after the tests.
@@ -84,7 +84,7 @@ public interface TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  TestSuite after(Handler<Test> callback);
+  TestSuite after(Handler<TestContext> callback);
 
   /**
    * Set a callback executed after each test and before the suite {@code after} callback.
@@ -93,7 +93,7 @@ public interface TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  TestSuite afterEach(Handler<Test> callback);
+  TestSuite afterEach(Handler<TestContext> callback);
 
   /**
    * Add a new test case to the suite.
@@ -103,7 +103,7 @@ public interface TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  TestSuite test(String name, Handler<Test> testCase);
+  TestSuite test(String name, Handler<TestContext> testCase);
 
   /**
    * Run the testsuite with the default options.<p/>

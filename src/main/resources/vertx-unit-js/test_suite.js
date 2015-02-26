@@ -16,7 +16,7 @@
 
 /** @module vertx-unit-js/test_suite */
 var utils = require('vertx-js/util/utils');
-var Test = require('vertx-unit-js/test');
+var TestContext = require('vertx-unit-js/test_context');
 var TestCompletion = require('vertx-unit-js/test_completion');
 
 var io = Packages.io;
@@ -45,7 +45,7 @@ var TestSuite = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.before(function(jVal) {
-      callback(new Test(jVal));
+      callback(new TestContext(jVal));
     });
       return that;
     } else utils.invalidArgs();
@@ -62,7 +62,7 @@ var TestSuite = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.beforeEach(function(jVal) {
-      callback(new Test(jVal));
+      callback(new TestContext(jVal));
     });
       return that;
     } else utils.invalidArgs();
@@ -79,7 +79,7 @@ var TestSuite = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.after(function(jVal) {
-      callback(new Test(jVal));
+      callback(new TestContext(jVal));
     });
       return that;
     } else utils.invalidArgs();
@@ -96,7 +96,7 @@ var TestSuite = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.afterEach(function(jVal) {
-      callback(new Test(jVal));
+      callback(new TestContext(jVal));
     });
       return that;
     } else utils.invalidArgs();
@@ -114,7 +114,7 @@ var TestSuite = function(j_val) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
       j_testSuite.test(name, function(jVal) {
-      testCase(new Test(jVal));
+      testCase(new TestContext(jVal));
     });
       return that;
     } else utils.invalidArgs();

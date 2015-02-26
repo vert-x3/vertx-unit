@@ -21,7 +21,7 @@ public class UseEventLoopTest {
   @org.junit.Test
   public void testWithoutVertx() {
     List<Context> contexts = Collections.synchronizedList(new ArrayList<>());
-    TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create("my_suite").test("my_test", test -> {
+    TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create("my_suite").test("my_test", context -> {
       contexts.add(Vertx.currentContext());
     });
     try {
@@ -50,7 +50,7 @@ public class UseEventLoopTest {
   public void testWitVertx() {
     Vertx vertx = Vertx.vertx();
     List<Context> contexts = Collections.synchronizedList(new ArrayList<>());
-    TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create("my_suite").test("my_test", test -> {
+    TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create("my_suite").test("my_test", context -> {
       contexts.add(Vertx.currentContext());
     });
     TestReporter reporter = new TestReporter();

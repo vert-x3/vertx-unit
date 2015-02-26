@@ -48,16 +48,16 @@ public class JunitXmlReporterTest extends AsyncTestBase {
     long now = System.currentTimeMillis();
 
     TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(testSuiteName).
-        test(testCaseName1, test -> {
+        test(testCaseName1, context -> {
           try {
             Thread.sleep(10);
           } catch (InterruptedException e) {
             e.printStackTrace();
           }
         }).
-        test(testCaseName2, test -> { test.fail("the_assertion_failure"); }).
-        test(testCaseName3, test -> { throw new RuntimeException("the_error_failure"); }).
-        test(testCaseName4, test -> { throw new RuntimeException(); });
+        test(testCaseName2, context -> context.fail("the_assertion_failure")).
+        test(testCaseName3, context -> { throw new RuntimeException("the_error_failure"); }).
+        test(testCaseName4, context -> { throw new RuntimeException(); });
 
     JunitXmlFormatter reporter = new JunitXmlFormatter(buffer -> {
       Document doc = assertDoc(buffer);
@@ -115,10 +115,10 @@ public class JunitXmlReporterTest extends AsyncTestBase {
     String testCaseName1 = TestUtils.randomAlphaString(10);
 
     TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(testSuiteName).
-        test(testCaseName1, test -> {
+        test(testCaseName1, context -> {
         }).
-        after(test -> {
-          test.fail("the_after_failure");
+        after(context -> {
+          context.fail("the_after_failure");
         });
 
     JunitXmlFormatter reporter = new JunitXmlFormatter(buffer -> {
@@ -155,10 +155,10 @@ public class JunitXmlReporterTest extends AsyncTestBase {
     String testCaseName1 = TestUtils.randomAlphaString(10);
 
     TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(testSuiteName).
-        test(testCaseName1, test -> {
+        test(testCaseName1, context -> {
         }).
-        before(test -> {
-          test.fail("the_before_failure");
+        before(context -> {
+          context.fail("the_before_failure");
         });
 
     JunitXmlFormatter reporter = new JunitXmlFormatter(buffer -> {

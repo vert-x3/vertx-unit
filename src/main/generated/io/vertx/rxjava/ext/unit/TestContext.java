@@ -16,11 +16,13 @@
 
 package io.vertx.rxjava.ext.unit;
 
-import io.vertx.ext.unit.TestContext;
+import java.util.Map;
+import io.vertx.lang.rxjava.InternalHelper;
+import rx.Observable;
 import io.vertx.rxjava.core.Vertx;
 
 /**
- * The test object is used for performing test assertions and manage the completion of the test. This object
+ * The test context is used for performing test assertions and manage the completion of the test. This context
  * is provided by <i>vertx-unit</i> as argument of the test case.
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -28,11 +30,11 @@ import io.vertx.rxjava.core.Vertx;
  * NOTE: This class has been automatically generated from the original non RX-ified interface using Vert.x codegen.
  */
 
-public class Test {
+public class TestContext {
 
-  final TestContext delegate;
+  final io.vertx.ext.unit.TestContext delegate;
 
-  public Test(TestContext delegate) {
+  public TestContext(io.vertx.ext.unit.TestContext delegate) {
     this.delegate = delegate;
   }
 
@@ -47,7 +49,7 @@ public class Test {
    * @param condition the condition to assert
    * @return a reference to this, so the API can be used fluently
    */
-  public Test assertTrue(boolean condition) {
+  public TestContext assertTrue(boolean condition) {
     this.delegate.assertTrue(condition);
     return this;
   }
@@ -60,7 +62,7 @@ public class Test {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public Test assertTrue(boolean condition, String message) {
+  public TestContext assertTrue(boolean condition, String message) {
     this.delegate.assertTrue(condition, message);
     return this;
   }
@@ -72,7 +74,7 @@ public class Test {
    * @param condition the condition to assert
    * @return a reference to this, so the API can be used fluently
    */
-  public Test assertFalse(boolean condition) {
+  public TestContext assertFalse(boolean condition) {
     this.delegate.assertFalse(condition);
     return this;
   }
@@ -85,7 +87,7 @@ public class Test {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public Test assertFalse(boolean condition, String message) {
+  public TestContext assertFalse(boolean condition, String message) {
     this.delegate.assertFalse(condition, message);
     return this;
   }
@@ -98,7 +100,7 @@ public class Test {
    * @param actual the actual object to test
    * @return a reference to this, so the API can be used fluently
    */
-  public Test assertEquals(Object expected, Object actual) {
+  public TestContext assertEquals(Object expected, Object actual) {
     this.delegate.assertEquals(expected, actual);
     return this;
   }
@@ -112,7 +114,7 @@ public class Test {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public Test assertEquals(Object expected, Object actual, String message) {
+  public TestContext assertEquals(Object expected, Object actual, String message) {
     this.delegate.assertEquals(expected, actual, message);
     return this;
   }
@@ -127,7 +129,7 @@ public class Test {
    * @param delta the maximum delta
    * @return a reference to this, so the API can be used fluently
    */
-  public Test assertInRange(double expected, double actual, double delta) {
+  public TestContext assertInRange(double expected, double actual, double delta) {
     this.delegate.assertInRange(expected, actual, delta);
     return this;
   }
@@ -143,7 +145,7 @@ public class Test {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public Test assertInRange(double expected, double actual, double delta, String message) {
+  public TestContext assertInRange(double expected, double actual, double delta, String message) {
     this.delegate.assertInRange(expected, actual, delta, message);
     return this;
   }
@@ -156,7 +158,7 @@ public class Test {
    * @param second the second object to test
    * @return a reference to this, so the API can be used fluently
    */
-  public Test assertNotEquals(Object first, Object second) {
+  public TestContext assertNotEquals(Object first, Object second) {
     this.delegate.assertNotEquals(first, second);
     return this;
   }
@@ -170,7 +172,7 @@ public class Test {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public Test assertNotEquals(Object first, Object second, String message) {
+  public TestContext assertNotEquals(Object first, Object second, String message) {
     this.delegate.assertNotEquals(first, second, message);
     return this;
   }
@@ -222,7 +224,7 @@ public class Test {
 
   private Vertx cached_0;
 
-  public static Test newInstance(TestContext arg) {
-    return new Test(arg);
+  public static TestContext newInstance(io.vertx.ext.unit.TestContext arg) {
+    return new TestContext(arg);
   }
 }

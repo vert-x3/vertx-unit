@@ -1,7 +1,6 @@
 package io.vertx.ext.unit;
 
 import io.vertx.core.Vertx;
-import io.vertx.ext.unit.impl.TestSuiteImpl;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -21,7 +20,7 @@ public class TestSuiteNoEventLoopAsyncTest extends TestSuiteTestBase {
   }
 
   @Override
-  protected boolean checkTest(Test test) {
+  protected boolean checkTest(TestContext test) {
     return Vertx.currentContext() == null && test.vertx() == null;
   }
 }

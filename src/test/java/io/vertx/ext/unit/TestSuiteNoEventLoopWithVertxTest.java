@@ -31,7 +31,7 @@ public class TestSuiteNoEventLoopWithVertxTest extends TestSuiteTestBase {
   }
 
   @Override
-  protected boolean checkTest(Test test) {
+  protected boolean checkTest(TestContext test) {
     return Vertx.currentContext() == null && test.vertx() != null;
   }
 

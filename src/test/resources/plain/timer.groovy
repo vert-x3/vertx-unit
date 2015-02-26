@@ -5,8 +5,8 @@ import io.vertx.groovy.ext.unit.TestSuite
 
 def vertx = Vertx.vertx()
 
-def suite = TestSuite.create("my_suite").test "my_test", { test ->
-  def async = test.async()
+def suite = TestSuite.create("my_suite").test "my_test", { context ->
+  def async = context.async()
   vertx.setTimer 50, {
     async.complete()
   }

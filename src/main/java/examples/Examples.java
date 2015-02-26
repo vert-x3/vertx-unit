@@ -23,111 +23,111 @@ public class Examples {
 
   public static void test_01() {
     TestSuite suite = TestSuite.create("the_test_suite");
-    suite.test("my_test_case", test -> {
+    suite.test("my_test_case", context -> {
       String s = "value";
-      test.assertEquals("value", s);
+      context.assertEquals("value", s);
     });
     suite.run();
   }
 
   public static void test_02() {
     TestSuite suite = TestSuite.create("the_test_suite");
-    suite.test("my_test_case", test -> {
+    suite.test("my_test_case", context -> {
       String s = "value";
-      test.assertEquals("value", s);
+      context.assertEquals("value", s);
     });
     suite.run(new TestOptions().addReporter(new ReportOptions().setTo("console")));
   }
 
   public static void writing_test_suite_01() {
     TestSuite suite = TestSuite.create("the_test_suite");
-    suite.test("my_test_case_1", test -> {
+    suite.test("my_test_case_1", context -> {
       // Test 1
     });
-    suite.test("my_test_case_2", test -> {
+    suite.test("my_test_case_2", context -> {
       // Test 2
     });
-    suite.test("my_test_case_3", test -> {
+    suite.test("my_test_case_3", context -> {
       // Test 3
     });
   }
 
   public static void writing_test_suite_02() {
     TestSuite suite = TestSuite.create("the_test_suite");
-    suite.test("my_test_case_1", test -> {
+    suite.test("my_test_case_1", context -> {
       // Test 1
-    }).test("my_test_case_2", test -> {
+    }).test("my_test_case_2", context -> {
       // Test 2
-    }).test("my_test_case_3", test -> {
+    }).test("my_test_case_3", context -> {
       // Test 3
     });
   }
 
   public static void writing_test_suite_03() {
     TestSuite suite = TestSuite.create("the_test_suite");
-    suite.before(test -> {
+    suite.before(context -> {
       // Test suite setup
-    }).test("my_test_case_1", test -> {
+    }).test("my_test_case_1", context -> {
       // Test 1
-    }).test("my_test_case_2", test -> {
+    }).test("my_test_case_2", context -> {
       // Test 2
-    }).test("my_test_case_3", test -> {
+    }).test("my_test_case_3", context -> {
       // Test 3
-    }).after(test -> {
+    }).after(context -> {
       // Test suite cleanup
     });
   }
 
   public static void writing_test_suite_04() {
     TestSuite suite = TestSuite.create("the_test_suite");
-    suite.beforeEach(test -> {
+    suite.beforeEach(context -> {
       // Test case setup
-    }).test("my_test_case_1", test -> {
+    }).test("my_test_case_1", context -> {
       // Test 1
-    }).test("my_test_case_2", test -> {
+    }).test("my_test_case_2", context -> {
       // Test 2
-    }).test("my_test_case_3", test -> {
+    }).test("my_test_case_3", context -> {
       // Test 3
-    }).afterEach(test -> {
+    }).afterEach(context -> {
       // Test case cleanup
     });
   }
 
   public static void asserting_01(io.vertx.ext.unit.TestSuite suite, int callbackCount) {
-    suite.test("my_test_case", test -> {
-      test.assertEquals(10, callbackCount);
+    suite.test("my_test_case", context -> {
+      context.assertEquals(10, callbackCount);
     });
   }
 
   public static void asserting_02(io.vertx.ext.unit.TestSuite suite, int callbackCount) {
-    suite.test("my_test_case", test -> {
-      test.assertEquals(10, callbackCount, "Should have been 10 instead of " + callbackCount);
+    suite.test("my_test_case", context -> {
+      context.assertEquals(10, callbackCount, "Should have been 10 instead of " + callbackCount);
     });
   }
 
   public static void asserting_03(io.vertx.ext.unit.TestSuite suite, int callbackCount) {
-    suite.test("my_test_case", test -> {
-      test.assertNotEquals(10, callbackCount);
+    suite.test("my_test_case", context -> {
+      context.assertNotEquals(10, callbackCount);
     });
   }
 
   public static void asserting_04(io.vertx.ext.unit.TestSuite suite, boolean var, int value) {
-    suite.test("my_test_case", test -> {
-      test.assertTrue(var);
-      test.assertFalse(value > 10);
+    suite.test("my_test_case", context -> {
+      context.assertTrue(var);
+      context.assertFalse(value > 10);
     });
   }
 
   public static void asserting_05(io.vertx.ext.unit.TestSuite suite) {
-    suite.test("my_test_case", test -> {
-      test.fail("That should never happen");
+    suite.test("my_test_case", context -> {
+      context.fail("That should never happen");
       // Following statements won't be executed
     });
   }
 
   public static void async_01(io.vertx.ext.unit.TestSuite suite, EventBus eventBus) {
-    suite.test("my_test_case", test -> {
-      Async async = test.async();
+    suite.test("my_test_case", context -> {
+      Async async = context.async();
       eventBus.consumer("the-address", msg -> {
         // <2>
         async.complete();
@@ -137,19 +137,19 @@ public class Examples {
   }
 
   public static void async_02(io.vertx.ext.unit.TestSuite suite, Vertx vertx) {
-    suite.test("my_test_case", test -> {
+    suite.test("my_test_case", context -> {
 
-      Async async1 = test.async();
+      Async async1 = context.async();
       HttpClient client = vertx.createHttpClient();
       HttpClientRequest req = client.get(8080, "localhost", "/");
-      req.exceptionHandler(err -> test.fail(err.getMessage()));
+      req.exceptionHandler(err -> context.fail(err.getMessage()));
       req.handler(resp -> {
-        test.assertEquals(200, resp.statusCode());
+        context.assertEquals(200, resp.statusCode());
         async1.complete();
       });
       req.end();
 
-      Async async2 = test.async();
+      Async async2 = context.async();
       vertx.eventBus().consumer("the-address", msg -> {
         async2.complete();
       });
@@ -157,12 +157,12 @@ public class Examples {
   }
 
   public static void async_03(io.vertx.ext.unit.TestSuite suite, Vertx vertx, Handler<HttpServerRequest> requestHandler) {
-    suite.before(test -> {
-      Async async = test.async();
+    suite.before(context -> {
+      Async async = context.async();
       HttpServer server = vertx.createHttpServer();
       server.requestHandler(requestHandler);
       server.listen(8080, ar -> {
-        test.assertTrue(ar.succeeded());
+        context.assertTrue(ar.succeeded());
         async.complete();
       });
     });
@@ -190,7 +190,7 @@ public class Examples {
 
   public static void running_04(Future<Void> startFuture) {
     TestSuite suite = TestSuite.create("my_test_suite");
-    suite.test("my_test_case", test -> {
+    suite.test("my_test_case", context -> {
       // Do something
     });
     suite.run().resolve(startFuture);

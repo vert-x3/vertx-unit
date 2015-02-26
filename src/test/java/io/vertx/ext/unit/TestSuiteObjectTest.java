@@ -14,7 +14,7 @@ public class TestSuiteObjectTest {
 
   public class MySuite1 {
     AtomicInteger count = new AtomicInteger();
-    public void testSomething(Test test) {
+    public void testSomething(TestContext test) {
       count.incrementAndGet();
     }
   }
@@ -35,7 +35,7 @@ public class TestSuiteObjectTest {
   }
 
   public class MySuite2 {
-    public void testSomething(Test test) {
+    public void testSomething(TestContext test) {
       test.fail("the_message");
     }
   }
@@ -61,7 +61,7 @@ public class TestSuiteObjectTest {
     public MySuite3(Throwable error) {
       this.error = error;
     }
-    public void testSomething(Test test) throws Throwable {
+    public void testSomething(TestContext test) throws Throwable {
       throw error;
     }
   }
@@ -85,10 +85,10 @@ public class TestSuiteObjectTest {
 
   public class MySuite4 {
     AtomicInteger count = new AtomicInteger();
-    public void before(Test test) {
+    public void before(TestContext test) {
       count.compareAndSet(0, 1);
     }
-    public void testSomething(Test test) {
+    public void testSomething(TestContext test) {
       count.compareAndSet(1, 2);
     }
   }
@@ -105,10 +105,10 @@ public class TestSuiteObjectTest {
 
   public class MySuite5 {
     AtomicInteger count = new AtomicInteger();
-    public void after(Test test) {
+    public void after(TestContext test) {
       count.compareAndSet(1, 2);
     }
-    public void testSomething(Test test) {
+    public void testSomething(TestContext test) {
       count.compareAndSet(0, 1);
     }
   }
@@ -125,10 +125,10 @@ public class TestSuiteObjectTest {
 
   public class MySuite6 {
     AtomicInteger count = new AtomicInteger();
-    public void beforeEach(Test test) {
+    public void beforeEach(TestContext test) {
       count.compareAndSet(0, 1);
     }
-    public void testSomething(Test test) {
+    public void testSomething(TestContext test) {
       count.compareAndSet(1, 2);
     }
   }
@@ -145,10 +145,10 @@ public class TestSuiteObjectTest {
 
   public class MySuite7 {
     AtomicInteger count = new AtomicInteger();
-    public void afterEach(Test test) {
+    public void afterEach(TestContext test) {
       count.compareAndSet(1, 2);
     }
-    public void testSomething(Test test) {
+    public void testSomething(TestContext test) {
       count.compareAndSet(0, 1);
     }
   }

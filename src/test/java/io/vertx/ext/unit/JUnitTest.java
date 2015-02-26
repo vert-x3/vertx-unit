@@ -22,7 +22,7 @@ public class JUnitTest {
   @org.junit.Test
   public void testSuiteRun() {
     AtomicReference<Vertx> current = new AtomicReference<>();
-    Result result = run(test -> current.set(test.vertx()));
+    Result result = run(context -> current.set(context.vertx()));
     assertEquals(1, result.getRunCount());
     assertEquals(0, result.getFailureCount());
     assertNotNull(current.get());
@@ -30,7 +30,7 @@ public class JUnitTest {
 
   @org.junit.Test
   public void testSuiteFail() {
-    Result result = run(test -> test.fail("the_failure"));
+    Result result = run(context -> context.fail("the_failure"));
     assertEquals(1, result.getRunCount());
     assertEquals(1, result.getFailureCount());
     Failure failure = result.getFailures().get(0);
@@ -41,7 +41,7 @@ public class JUnitTest {
   @org.junit.Test
   public void testSuiteRuntimeException() {
     RuntimeException cause = new RuntimeException("the_runtime_exception");
-    Result result = run(test -> { throw cause; });
+    Result result = run(context -> { throw cause; });
     assertEquals(1, result.getRunCount());
     assertEquals(1, result.getFailureCount());
     Failure failure = result.getFailures().get(0);
@@ -51,7 +51,7 @@ public class JUnitTest {
 
   @org.junit.Test
   public void testSuiteTimeout() {
-    Result result = new JUnitCore().run(TestSuite.create("my_suite").test("my_test", Test::async).toJUnitSuite(100, TimeUnit.MILLISECONDS));
+    Result result = new JUnitCore().run(TestSuite.create("my_suite").test("my_test", TestContext::async).toJUnitSuite(100, TimeUnit.MILLISECONDS));
     assertEquals(1, result.getRunCount());
     assertEquals(1, result.getFailureCount());
     Failure failure = result.getFailures().get(0);
@@ -66,7 +66,7 @@ public class JUnitTest {
       @Override
       public void run() {
         try {
-          Result result = new JUnitCore().run(TestSuite.create("my_suite").test("my_test", Test::async).toJUnitSuite());
+          Result result = new JUnitCore().run(TestSuite.create("my_suite").test("my_test", TestContext::async).toJUnitSuite());
           resultRef.set(result);
         } finally {
           latch.countDown();
@@ -89,20 +89,20 @@ public class JUnitTest {
     assertTrue(result.getFailures().get(0).getException() instanceof InterruptedException);
   }
 
-  private Result run(Handler<Test> test) {
+  private Result run(Handler<TestContext> test) {
     return new JUnitCore().run(TestSuite.create("my_suite").test("my_test", test).toJUnitSuite());
   }
 
   @org.junit.Test
   public void testAssert() {
-    TestCase.create("my_test", test -> {
+    TestCase.create("my_test", context -> {
     }).awaitSuccess();
   }
 
   @org.junit.Test
   public void testAssertFailure() {
     try {
-      TestCase.create("my_test", test -> test.fail("the_failure")).awaitSuccess();
+      TestCase.create("my_test", context -> context.fail("the_failure")).awaitSuccess();
       fail();
     } catch (AssertionError err) {
       assertEquals("the_failure", err.getMessage());
@@ -113,7 +113,7 @@ public class JUnitTest {
   public void testAssertRuntimeException() {
     RuntimeException failure = new RuntimeException();
     try {
-      TestCase.create("my_test", test -> {
+      TestCase.create("my_test", context -> {
         throw failure;
       }).awaitSuccess();
       fail();
@@ -125,7 +125,7 @@ public class JUnitTest {
   @org.junit.Test
   public void testAssertTimeout() {
     try {
-      TestCase.create("my_test", Test::async).awaitSuccess(300, TimeUnit.MILLISECONDS);
+      TestCase.create("my_test", TestContext::async).awaitSuccess(300, TimeUnit.MILLISECONDS);
       fail();
     } catch (IllegalStateException ignore) {
     }
@@ -139,7 +139,7 @@ public class JUnitTest {
       @Override
       public void run() {
         try {
-          TestCase.create("my_test", Test::async).awaitSuccess();
+          TestCase.create("my_test", TestContext::async).awaitSuccess();
         } catch (IllegalStateException e) {
           ise.set(true);
         } finally {

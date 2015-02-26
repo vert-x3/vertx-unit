@@ -4,9 +4,11 @@ import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 
 /**
+ * The test suite global context.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-interface TestContext {
+interface TestSuiteContext {
 
   Vertx vertx();
 
@@ -16,8 +18,8 @@ interface TestContext {
     run(task, null);
   }
 
-  static TestContext create(Vertx vertx, Context context) {
-    return new TestContext() {
+  static TestSuiteContext create(Vertx vertx, Context context) {
+    return new TestSuiteContext() {
       @Override
       public Vertx vertx() {
         return vertx;

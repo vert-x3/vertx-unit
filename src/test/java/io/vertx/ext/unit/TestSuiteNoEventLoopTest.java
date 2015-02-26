@@ -24,7 +24,7 @@ public class TestSuiteNoEventLoopTest extends TestSuiteTestBase {
   }
 
   @Override
-  protected boolean checkTest(Test test) {
+  protected boolean checkTest(TestContext test) {
     return Vertx.currentContext() == null && test.vertx() == null;
   }
 
@@ -33,15 +33,15 @@ public class TestSuiteNoEventLoopTest extends TestSuiteTestBase {
     AtomicBoolean ok = new AtomicBoolean();
     AtomicBoolean after = new AtomicBoolean();
     TestSuite suite = TestSuite.create("my_suite").
-        test("my_test", test -> {
+        test("my_test", context -> {
           try {
-            test.fail();
+            context.fail();
           } catch (AssertionError e) {
           }
           if (!after.get()) {
             ok.set(true);
           }
-        }).after(test -> {
+        }).after(context -> {
       after.set(true);
     });
     TestReporter reporter = new TestReporter();

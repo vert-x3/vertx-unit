@@ -6,13 +6,13 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Vertx;
 
 /**
- * The test object is used for performing test assertions and manage the completion of the test. This object
+ * The test context is used for performing test assertions and manage the completion of the test. This context
  * is provided by <i>vertx-unit</i> as argument of the test case.
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @VertxGen
-public interface Test {
+public interface TestContext {
 
   /**
    * Assert the specified {@code condition} is {@code true}. If the condition is {@code false}, an assertion error is thrown
@@ -22,7 +22,7 @@ public interface Test {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  Test assertTrue(boolean condition);
+  TestContext assertTrue(boolean condition);
 
   /**
    * Assert the specified {@code condition} is {@code true}. If the condition is {@code false}, an assertion error is thrown
@@ -33,7 +33,7 @@ public interface Test {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  Test assertTrue(boolean condition, String message);
+  TestContext assertTrue(boolean condition, String message);
 
   /**
    * Assert the specified {@code condition} is {@code false}. If the condition is {@code true}, an assertion error is thrown
@@ -43,7 +43,7 @@ public interface Test {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  Test assertFalse(boolean condition);
+  TestContext assertFalse(boolean condition);
 
   /**
    * Assert the specified {@code condition} is {@code false}. If the condition is {@code true}, an assertion error is thrown
@@ -54,7 +54,7 @@ public interface Test {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  Test assertFalse(boolean condition, String message);
+  TestContext assertFalse(boolean condition, String message);
 
   /**
    * Assert the {@code expected} argument is equals to the {@code actual} argument. If the arguments are not equals
@@ -65,7 +65,7 @@ public interface Test {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  Test assertEquals(Object expected, Object actual);
+  TestContext assertEquals(Object expected, Object actual);
 
   /**
    * Assert the {@code expected} argument is equals to the {@code actual} argument. If the arguments are not equals
@@ -77,7 +77,7 @@ public interface Test {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  Test assertEquals(Object expected, Object actual, String message);
+  TestContext assertEquals(Object expected, Object actual, String message);
 
   /**
    * Asserts that the {@code expected} double argument is equals to the {@code actual} double argument
@@ -90,7 +90,7 @@ public interface Test {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  Test assertInRange(double expected, double actual, double delta);
+  TestContext assertInRange(double expected, double actual, double delta);
 
   /**
    * Asserts that the {@code expected} double argument is equals to the {@code actual} double argument
@@ -104,7 +104,7 @@ public interface Test {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  Test assertInRange(double expected, double actual, double delta, String message);
+  TestContext assertInRange(double expected, double actual, double delta, String message);
 
   /**
    * Assert the {@code first} argument is not equals to the {@code second} argument. If the arguments are equals
@@ -115,7 +115,7 @@ public interface Test {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  Test assertNotEquals(Object first, Object second);
+  TestContext assertNotEquals(Object first, Object second);
 
   /**
    * Assert the {@code first} argument is not equals to the {@code second} argument. If the arguments are equals
@@ -127,7 +127,7 @@ public interface Test {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  Test assertNotEquals(Object first, Object second, String message);
+  TestContext assertNotEquals(Object first, Object second, String message);
 
   /**
    * Throw a failure.

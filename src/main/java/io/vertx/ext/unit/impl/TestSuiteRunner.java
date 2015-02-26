@@ -2,7 +2,7 @@ package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.ext.unit.Test;
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.report.TestSuiteReport;
 
 /**
@@ -13,18 +13,18 @@ import io.vertx.ext.unit.report.TestSuiteReport;
 public class TestSuiteRunner {
 
   private final String name;
-  private final Handler<Test> before;
-  private final Handler<Test> after;
-  private final Handler<Test> beforeEach;
-  private final Handler<Test> afterEach;
+  private final Handler<TestContext> before;
+  private final Handler<TestContext> after;
+  private final Handler<TestContext> beforeEach;
+  private final Handler<TestContext> afterEach;
   private final TestCaseImpl[] tests;
   private Vertx vertx;
   private Handler<TestSuiteReport> handler;
   private long timeout;
   private Boolean useEventLoop;
 
-  public TestSuiteRunner(String name, Handler<Test> before, Handler<Test> after, Handler<Test> beforeEach,
-                         Handler<Test> afterEach, TestCaseImpl[] tests) {
+  public TestSuiteRunner(String name, Handler<TestContext> before, Handler<TestContext> after, Handler<TestContext> beforeEach,
+                         Handler<TestContext> afterEach, TestCaseImpl[] tests) {
     this.name = name;
     this.timeout = 0;
     this.before = before;

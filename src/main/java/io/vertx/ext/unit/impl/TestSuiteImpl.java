@@ -5,7 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.ext.unit.TestCompletion;
 import io.vertx.ext.unit.TestOptions;
 import io.vertx.ext.unit.TestSuite;
-import io.vertx.ext.unit.Test;
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.report.Reporter;
 
@@ -26,10 +26,10 @@ import java.util.concurrent.TimeoutException;
 public class TestSuiteImpl implements TestSuite {
 
   private final String name;
-  private volatile Handler<Test> before;
-  private volatile Handler<Test> beforeEach;
-  private volatile Handler<Test> after;
-  private volatile Handler<Test> afterEach;
+  private volatile Handler<TestContext> before;
+  private volatile Handler<TestContext> beforeEach;
+  private volatile Handler<TestContext> after;
+  private volatile Handler<TestContext> afterEach;
   private final List<TestCaseImpl> tests = new ArrayList<>();
 
   public TestSuiteImpl(String name) {
@@ -43,10 +43,10 @@ public class TestSuiteImpl implements TestSuite {
       int modifiers = method.getModifiers();
       String methodName = method.getName();
       if (Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers) &&
-          Arrays.equals(method.getParameterTypes(), new Class[]{Test.class})) {
-        Handler<Test> handler = test -> {
+          Arrays.equals(method.getParameterTypes(), new Class[]{TestContext.class})) {
+        Handler<TestContext> handler = context -> {
           try {
-            method.invoke(testSuiteObject, test);
+            method.invoke(testSuiteObject, context);
           } catch (IllegalAccessException e) {
             Helper.uncheckedThrow(e);
           } catch (InvocationTargetException e) {
@@ -77,31 +77,31 @@ public class TestSuiteImpl implements TestSuite {
   }
 
   @Override
-  public TestSuite before(Handler<Test> callback) {
+  public TestSuite before(Handler<TestContext> callback) {
     this.before = callback;
     return this;
   }
 
   @Override
-  public TestSuite beforeEach(Handler<Test> callback) {
+  public TestSuite beforeEach(Handler<TestContext> callback) {
     beforeEach = callback;
     return this;
   }
 
   @Override
-  public TestSuite after(Handler<Test> handler) {
+  public TestSuite after(Handler<TestContext> handler) {
     this.after = handler;
     return this;
   }
 
   @Override
-  public TestSuite afterEach(Handler<Test> handler) {
+  public TestSuite afterEach(Handler<TestContext> handler) {
     afterEach = handler;
     return this;
   }
 
   @Override
-  public TestSuite test(String name, Handler<Test> testCase) {
+  public TestSuite test(String name, Handler<TestContext> testCase) {
     tests.add(new TestCaseImpl(name, testCase));
     return this;
   }
@@ -160,7 +160,7 @@ public class TestSuiteImpl implements TestSuite {
             latch.add(testResult1);
           });
           testResult.startTest(this);
-          TestContext testContext = TestContext.create(vertx, vertx.getOrCreateContext());
+          TestSuiteContext testContext = TestSuiteContext.create(vertx, vertx.getOrCreateContext());
           testContext.run(task);
           try {
             TestResult result = latch.poll(timeout, unit);
