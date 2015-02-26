@@ -85,9 +85,10 @@ public interface TestSuite {
   /**
    * Run the testsuite with the default options.<p/>
    *
-   * The test suite will be executed on the event loop when one is available otherwise the suite will be executed
-   * in the current thread. The returned {@link io.vertx.ext.unit.TestCompletion} object can be used to get
-   * a completion callback.
+   * When the test suite is executed in a Vertx context (i.e `Vertx.currentContext()` returns a context) this
+   * context's event loop is used for running the test suite. Otherwise it is executed in the current thread.<p/>
+   *
+   * The returned {@link io.vertx.ext.unit.TestCompletion} object can be used to get a completion callback.
    *
    * @return the related test completion
    */
@@ -96,9 +97,14 @@ public interface TestSuite {
   /**
    * Run the testsuite with the specified {@code options}.<p/>
    *
-   * The test suite will be executed on the event loop when one is available otherwise the suite will be executed
-   * in the current thread. The returned {@link io.vertx.ext.unit.TestCompletion} object can be used to get
-   * a completion callback.
+   * When the test suite is executed in a Vertx context (i.e `Vertx.currentContext()` returns a context) this
+   * context's event loop is used for running the test suite unless the {@link io.vertx.ext.unit.TestOptions#setUseEventLoop(Boolean)}
+   * is set to {@code false}. In this case it is executed by the current thread.<p/>
+   *
+   * Otherwise, the test suite will be executed in the current thread when {@link io.vertx.ext.unit.TestOptions#setUseEventLoop(Boolean)} is
+   * set to {@code false} or {@code null}. If the value is {@code true}, this methods throws an {@code IllegalStateException}.<p/>
+   *
+   * The returned {@link io.vertx.ext.unit.TestCompletion} object can be used to get a completion callback.
    *
    * @param options the test options
    * @return the related test completion
@@ -108,8 +114,8 @@ public interface TestSuite {
   /**
    * Run the testsuite with the default options and the specified {@code vertx} instance.<p/>
    *
-   * The test suite will be executed on the provided Vert.x event loop. The returned
-   * {@link io.vertx.ext.unit.TestCompletion} object can be used to get a completion callback.
+   * The test suite will be executed on the event loop provided by the {@code vertx} argument. The returned
+   * {@link io.vertx.ext.unit.TestCompletion} object can be used to get a completion callback.<p/>
    *
    * @param vertx the vertx instance
    * @return the related test completion
@@ -119,7 +125,8 @@ public interface TestSuite {
   /**
    * Run the testsuite with the specified {@code options} and the specified {@code vertx} instance.<p/>
    *
-   * The test suite will be executed on the provided Vert.x event loop. The returned
+   * The test suite will be executed on the event loop provided by the {@code vertx} argument when
+   * {@link io.vertx.ext.unit.TestOptions#setUseEventLoop(Boolean)} is not set to {@code false}. The returned
    * {@link io.vertx.ext.unit.TestCompletion} object can be used to get a completion callback.
    *
    * @param vertx the vertx instance
