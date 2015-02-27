@@ -307,6 +307,63 @@ suite.before({ context ->
 
 ----
 
+== Sharing objects
+
+The `link:groovydoc/io/vertx/groovy/ext/unit/TestContext.html[TestContext]` has `get`/`put`/`remove` operations for sharing state between callbacks.
+
+Any object added during the _before_ callback is available in any other callbacks. Each test case will operate on
+a copy of the shared state, so updates will only be visible for a test case.
+
+.Sharing state between callbacks
+[source,groovy]
+----
+import io.vertx.groovy.ext.unit.TestSuite
+TestSuite.create("my_suite").before({ context ->
+
+  // host is available for all test cases
+  context.put("host", "localhost")
+}).beforeEach({ context ->
+
+  // Generate a random port for each test
+  def port = helper.randomPort()
+
+  // Get host
+  def host = context.get("host")
+
+  // Setup server
+  def server = vertx.createHttpServer()
+  def async = context.async()
+  server.requestHandler({ req ->
+    req.response().setStatusCode(200).end()
+  })
+  server.listen(port, host, { ar ->
+    context.assertTrue(ar.succeeded())
+    context.put("port", port)
+    async.complete()
+  })
+
+}).test("my_test", { context ->
+
+  // Get the shared state
+  def port = context.get("port")
+  def host = context.get("host")
+
+  // Do request
+  def client = vertx.createHttpClient()
+  def req = client.get(port, host, "/resource")
+  def async = context.async()
+  req.handler({ resp ->
+    context.assertEquals(200, resp.statusCode())
+    async.complete()
+  })
+  req.end()
+})
+
+----
+
+WARNING: sharing any object is only supported in Java, other languages can share only basic or json types.
+Other objects should be shared using the features of that language.
+
 [[reporting]]
 == Running
 

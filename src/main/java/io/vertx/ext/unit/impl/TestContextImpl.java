@@ -7,6 +7,7 @@ import io.vertx.ext.unit.TestContext;
 import org.junit.Assert;
 
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -41,6 +42,7 @@ class TestContextImpl implements TestContext, Task<Result> {
     }
   }
 
+  private final Map<String, Object> attributes;
   private final Handler<TestContext> callback;
   private final Handler<Throwable> unhandledFailureHandler;
   private final Function<Result, Task<Result>> next;
@@ -52,10 +54,12 @@ class TestContextImpl implements TestContext, Task<Result> {
   private final LinkedList<AsyncImpl> asyncs = new LinkedList<>();
 
   public TestContextImpl(
+      Map<String, Object> attributes,
       Handler<TestContext> callback,
       Handler<Throwable> unhandledFailureHandler,
       Task<Result> next,
       long timeout) {
+    this.attributes = attributes;
     this.next = result -> next;
     this.timeout = timeout;
     this.callback = callback;
@@ -64,10 +68,12 @@ class TestContextImpl implements TestContext, Task<Result> {
   }
 
   public TestContextImpl(
+      Map<String, Object> attributes,
       Handler<TestContext> callback,
       Handler<Throwable> unhandledFailureHandler,
       Function<Result, Task<Result>> next,
       long timeout) {
+    this.attributes = attributes;
     this.next = next;
     this.timeout = timeout;
     this.callback = callback;
@@ -87,9 +93,28 @@ class TestContextImpl implements TestContext, Task<Result> {
     }
     if (end) {
       long endTime = System.currentTimeMillis();
-      Result result = new Result(beginTime, endTime, failed);
+      Result result = new Result(attributes, beginTime, endTime, failed);
       ctx.run(next.apply(result), result);
     }
+  }
+
+  @Override
+  public synchronized <T> T get(String key) {
+    return (T) attributes.get(key);
+  }
+
+  @Override
+  public synchronized void put(String key, Object value) {
+    if (value != null) {
+      attributes.put(key, value);
+    } else {
+      attributes.remove(key);
+    }
+  }
+
+  @Override
+  public synchronized boolean remove(String key) {
+    return attributes.remove(key) != null;
   }
 
   @Override

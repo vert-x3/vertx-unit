@@ -6,6 +6,10 @@ import io.vertx.ext.unit.impl.TestSuiteRunner;
 import io.vertx.ext.unit.report.TestResult;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -534,5 +538,50 @@ public abstract class TestSuiteTestBase {
       assertTrue(reporter.results.get(i).failure().cause() instanceof TimeoutException);
       async.complete();
     }
+  }
+
+  @Test
+  public void testScopedAttributes() throws Exception {
+    List<Integer> before = Collections.synchronizedList(new ArrayList<>());
+    List<Integer> beforeEach = Collections.synchronizedList(new ArrayList<>());
+    AtomicInteger count = new AtomicInteger();
+    AtomicInteger test0 = new AtomicInteger(-1);
+    AtomicInteger test1 = new AtomicInteger(-1);
+    List<Integer> afterEach = Collections.synchronizedList(new ArrayList<>());
+    List<Integer> after = Collections.synchronizedList(new ArrayList<>());
+    TestSuite suite = TestSuite.create("my_suite").before(context -> {
+      Integer value = context.get("value");
+      if (value != null) {
+        before.add(value);
+      }
+      context.put("value", -10);
+    }).beforeEach(context -> {
+      Integer value = context.get("value");
+      beforeEach.add(value);
+      context.put("value", count.getAndIncrement());
+    }).test("my_test0", context -> {
+      int value = context.get("value");
+      test0.set(value);
+      context.put("value", value * 2);
+    }).test("my_test1", context -> {
+      int value = context.get("value");
+      test1.set(context.get("value"));
+      context.put("value", value * 2);
+    }).afterEach(context -> {
+      int value = context.get("value");
+      afterEach.add(value);
+    }).after(context -> {
+      int value = context.get("value");
+      after.add(value);
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertEquals(Arrays.<Integer>asList(), before);
+    assertEquals(Arrays.<Integer>asList(-10, -10), beforeEach);
+    assertEquals(0, test0.get());
+    assertEquals(1, test1.get());
+    assertEquals(Arrays.<Integer>asList(0, 2), afterEach);
+    assertEquals(Arrays.<Integer>asList(-10), after);
   }
 }

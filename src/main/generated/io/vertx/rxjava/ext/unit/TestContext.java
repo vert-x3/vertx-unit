@@ -43,6 +43,41 @@ public class TestContext {
   }
 
   /**
+   * Get some data from the context.
+   *
+   * @param key  the key of the data
+   * @param <T>  the type of the data
+   * @return the data
+   */
+  public <T> T get(String key) {
+    T ret = (T) this.delegate.get(key);
+    return ret;
+  }
+
+  /**
+   * Put some data in the context.
+   * <p>
+   * This can be used to share data between different tests and before/after phases.
+   *
+   * @param key  the key of the data
+   * @param value  the data
+   */
+  public void put(String key, Object value) {
+    this.delegate.put(key, value);
+  }
+
+  /**
+   * Remove some data from the context.
+   *
+   * @param key  the key to remove
+   * @return true if removed successfully, false otherwise
+   */
+  public boolean remove(String key) {
+    boolean ret = this.delegate.remove(key);
+    return ret;
+  }
+
+  /**
    * Assert the specified {@code condition} is {@code true}. If the condition is {@code false}, an assertion error is thrown
    * otherwise the execution continue.
    *

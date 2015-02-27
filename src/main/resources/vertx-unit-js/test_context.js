@@ -34,6 +34,50 @@ var TestContext = function(j_val) {
   var that = this;
 
   /**
+   Get some data from the context.
+
+   @public
+   @param key {string} the key of the data 
+   @return {Object} the data
+   */
+  this.get = function(key) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'string') {
+      return utils.convReturnTypeUnknown(j_testContext.get(key));
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Put some data in the context.
+   <p>
+   This can be used to share data between different tests and before/after phases.
+
+   @public
+   @param key {string} the key of the data 
+   @param value {Object} the data 
+   */
+  this.put = function(key, value) {
+    var __args = arguments;
+    if (__args.length === 2 && typeof __args[0] === 'string' && true) {
+      j_testContext.put(key, utils.convParamTypeUnknown(value));
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Remove some data from the context.
+
+   @public
+   @param key {string} the key to remove 
+   @return {boolean} true if removed successfully, false otherwise
+   */
+  this.remove = function(key) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'string') {
+      return j_testContext.remove(key);
+    } else utils.invalidArgs();
+  };
+
+  /**
    Assert the specified <code>condition</code> is <code>true</code>. If the condition is <code>false</code>, an assertion error is thrown
    otherwise the execution continue.
 

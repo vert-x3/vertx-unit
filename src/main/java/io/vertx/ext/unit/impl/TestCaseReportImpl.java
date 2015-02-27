@@ -5,6 +5,7 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.report.TestCaseReport;
 
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -14,6 +15,7 @@ public class TestCaseReportImpl implements TestCaseReport {
 
   private final String name;
   private final long timeout;
+  private final Map<String, Object> attributes;
   private final Handler<TestContext> before;
   private final Handler<TestContext> test;
   private final Handler<TestContext> after;
@@ -22,11 +24,13 @@ public class TestCaseReportImpl implements TestCaseReport {
 
   public TestCaseReportImpl(String name,
                             long timeout,
+                            Map<String, Object> attributes,
                             Handler<TestContext> before,
                             Handler<TestContext> test,
                             Handler<TestContext> after,
                             Handler<Throwable> unhandledFailureHandler) {
 
+    this.attributes = attributes;
     this.timeout = timeout;
     this.name = name;
     this.before = before;
@@ -45,12 +49,11 @@ public class TestCaseReportImpl implements TestCaseReport {
     };
     Task<Result> afterHandler;
     if (after != null) {
-      afterHandler = new TestContextImpl(after, unhandledFailureHandler, completeHandler, timeout);
+      afterHandler = new TestContextImpl(attributes, after, unhandledFailureHandler, completeHandler, timeout);
     } else {
       afterHandler = completeHandler;
     }
-    Task<Result> testHandler = new TestContextImpl(test, unhandledFailureHandler, afterHandler, timeout);
-    Task<?> task;
+    Task<Result> testHandler = new TestContextImpl(attributes, test, unhandledFailureHandler, afterHandler, timeout);
     if (before != null) {
       Function<Result, Task<Result>> tmp = result -> {
         if (result.failure != null) {
@@ -59,7 +62,7 @@ public class TestCaseReportImpl implements TestCaseReport {
           return testHandler;
         }
       };
-      return new TestContextImpl(before, unhandledFailureHandler, tmp, timeout);
+      return new TestContextImpl(attributes, before, unhandledFailureHandler, tmp, timeout);
     } else {
       return testHandler;
     }

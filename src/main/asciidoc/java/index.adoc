@@ -279,6 +279,61 @@ suite.before(context -> {
 });
 ----
 
+== Sharing objects
+
+The `link:apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` has `get`/`put`/`remove` operations for sharing state between callbacks.
+
+Any object added during the _before_ callback is available in any other callbacks. Each test case will operate on
+a copy of the shared state, so updates will only be visible for a test case.
+
+.Sharing state between callbacks
+[source,java]
+----
+TestSuite.create("my_suite").before(context -> {
+
+  // host is available for all test cases
+  context.put("host", "localhost");
+}).beforeEach(context -> {
+
+  // Generate a random port for each test
+  int port = helper.randomPort();
+
+  // Get host
+  String host = context.get("host");
+
+  // Setup server
+  HttpServer server = vertx.createHttpServer();
+  Async async = context.async();
+  server.requestHandler(req -> {
+    req.response().setStatusCode(200).end();
+  });
+  server.listen(port, host, ar -> {
+    context.assertTrue(ar.succeeded());
+    context.put("port", port);
+    async.complete();
+  });
+  
+}).test("my_test", context -> {
+
+  // Get the shared state
+  int port = context.get("port");
+  String host = context.get("host");
+
+  // Do request
+  HttpClient client = vertx.createHttpClient();
+  HttpClientRequest req = client.get(port, host, "/resource");
+  Async async = context.async();
+  req.handler(resp -> {
+    context.assertEquals(200, resp.statusCode());
+    async.complete();
+  });
+  req.end();
+});
+----
+
+WARNING: sharing any object is only supported in Java, other languages can share only basic or json types.
+Other objects should be shared using the features of that language.
+
 [[reporting]]
 == Running
 

@@ -7,6 +7,9 @@ import io.vertx.ext.unit.report.TestSuiteReport;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.report.TestCaseReport;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
@@ -68,11 +71,11 @@ class TestSuiteReportImpl implements TestSuiteReport {
     return this;
   }
 
-  private Task<?> buildTestCasesTasks(TestCaseImpl[] tests, int index, Task<?> last) {
+  private Task<?> buildTestCasesTasks(Map<String, Object> attributes, TestCaseImpl[] tests, int index, Task<Result> endTask) {
     if (tests.length > index) {
-      Task<?> nextTask = buildTestCasesTasks(tests, index + 1, last);
+      Task<?> nextTask = buildTestCasesTasks(attributes, tests, index + 1, endTask);
       TestCaseImpl test = tests[index];
-      TestCaseReportImpl runner = new TestCaseReportImpl(test.name, timeout, beforeEach, test.handler, afterEach, exceptionHandler);
+      TestCaseReportImpl runner = new TestCaseReportImpl(test.name, timeout, new HashMap<>(attributes), beforeEach, test.handler, afterEach, exceptionHandler);
       return (v, context) -> {
         if (handler != null) {
           handler.handle(runner);
@@ -81,7 +84,11 @@ class TestSuiteReportImpl implements TestSuiteReport {
         task.execute(null, context);
       };
     } else {
-      return last;
+      if (after != null) {
+        return new TestContextImpl(new HashMap<>(attributes), after, exceptionHandler, endTask, 0);
+      } else {
+        return endTask;
+      }
     }
   }
 
@@ -94,23 +101,17 @@ class TestSuiteReportImpl implements TestSuiteReport {
         endHandler.handle(null);
       }
     };
-    Task<Result> afterTask;
-    if (after != null) {
-      afterTask = new TestContextImpl(after, exceptionHandler, endTask, 0);
-    } else {
-      afterTask = endTask;
-    }
-    Task<?> runTask = buildTestCasesTasks(tests, 0, afterTask);
     if (before != null) {
-      return new TestContextImpl(before, exceptionHandler, result -> {
+      return new TestContextImpl(new HashMap<>(), before, exceptionHandler, result -> {
         if (result.failure == null) {
+          Task<?> runTask = buildTestCasesTasks(result.attributes, tests, 0, endTask);
           return (result_, context) -> runTask.execute(null, context);
         } else {
           return endTask;
         }
       }, 0);
     } else {
-      return runTask;
+      return buildTestCasesTasks(new HashMap<>(), tests, 0, endTask);
     }
   }
 

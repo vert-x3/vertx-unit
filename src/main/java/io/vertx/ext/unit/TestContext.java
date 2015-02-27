@@ -15,6 +15,33 @@ import io.vertx.core.Vertx;
 public interface TestContext {
 
   /**
+   * Get some data from the context.
+   *
+   * @param key  the key of the data
+   * @param <T>  the type of the data
+   * @return the data
+   */
+  <T> T get(String key);
+
+  /**
+   * Put some data in the context.
+   * <p>
+   * This can be used to share data between different tests and before/after phases.
+   *
+   * @param key  the key of the data
+   * @param value  the data
+   */
+  void put(String key, Object value);
+
+  /**
+   * Remove some data from the context.
+   *
+   * @param key  the key to remove
+   * @return true if removed successfully, false otherwise
+   */
+  boolean remove(String key);
+
+  /**
    * Assert the specified {@code condition} is {@code true}. If the condition is {@code false}, an assertion error is thrown
    * otherwise the execution continue.
    *

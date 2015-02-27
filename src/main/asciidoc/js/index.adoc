@@ -307,6 +307,63 @@ suite.before(function (context) {
 
 ----
 
+== Sharing objects
+
+The `link:jsdoc/test_context-TestContext.html[TestContext]` has `get`/`put`/`remove` operations for sharing state between callbacks.
+
+Any object added during the _before_ callback is available in any other callbacks. Each test case will operate on
+a copy of the shared state, so updates will only be visible for a test case.
+
+.Sharing state between callbacks
+[source,js]
+----
+var TestSuite = require("vertx-unit-js/test_suite");
+TestSuite.create("my_suite").before(function (context) {
+
+  // host is available for all test cases
+  context.put("host", "localhost");
+}).beforeEach(function (context) {
+
+  // Generate a random port for each test
+  var port = helper.randomPort();
+
+  // Get host
+  var host = context.get("host");
+
+  // Setup server
+  var server = vertx.createHttpServer();
+  var async = context.async();
+  server.requestHandler(function (req) {
+    req.response().setStatusCode(200).end();
+  });
+  server.listen(port, host, function (ar, ar_err) {
+    context.assertTrue((ar != null));
+    context.put("port", port);
+    async.complete();
+  });
+
+}).test("my_test", function (context) {
+
+  // Get the shared state
+  var port = context.get("port");
+  var host = context.get("host");
+
+  // Do request
+  var client = vertx.createHttpClient();
+  var req = client.get(port, host, "/resource");
+  var async = context.async();
+  req.handler(function (resp) {
+    context.assertEquals(200, resp.statusCode());
+    async.complete();
+  });
+  req.end();
+});
+
+----
+
+WARNING: sharing any object is only supported in Java, other languages can share only basic or json types.
+Other objects should be shared using the features of that language.
+
 [[reporting]]
 == Running
 

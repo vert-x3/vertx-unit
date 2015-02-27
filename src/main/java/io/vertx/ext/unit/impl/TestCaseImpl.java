@@ -7,6 +7,7 @@ import io.vertx.ext.unit.TestCase;
 import io.vertx.ext.unit.report.TestCaseReport;
 import io.vertx.ext.unit.report.TestResult;
 
+import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,7 +26,7 @@ public class TestCaseImpl implements TestCase {
   }
 
   private TestCaseReport runner() {
-    return new TestCaseReportImpl(name, 0, null, handler, null, null);
+    return new TestCaseReportImpl(name, 0, new HashMap<>(), null, handler, null, null);
   }
 
   public String name() {

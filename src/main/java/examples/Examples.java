@@ -16,6 +16,8 @@ import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.ext.unit.report.ReportOptions;
 import io.vertx.ext.unit.report.ReportingOptions;
 
+import java.util.Random;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -174,6 +176,50 @@ public class Examples {
         context.assertTrue(ar.succeeded());
         async.complete();
       });
+    });
+  }
+
+  public static void sharing_01(Vertx vertx, Helper helper) {
+    TestSuite.create("my_suite").before(context -> {
+
+      // host is available for all test cases
+      context.put("host", "localhost");
+
+    }).beforeEach(context -> {
+
+      // Generate a random port for each test
+      int port = helper.randomPort();
+
+      // Get host
+      String host = context.get("host");
+
+      // Setup server
+      Async async = context.async();
+      HttpServer server = vertx.createHttpServer();
+      server.requestHandler(req -> {
+        req.response().setStatusCode(200).end();
+      });
+      server.listen(port, host, ar -> {
+        context.assertTrue(ar.succeeded());
+        context.put("port", port);
+        async.complete();
+      });
+
+    }).test("my_test", context -> {
+
+      // Get the shared state
+      int port = context.get("port");
+      String host = context.get("host");
+
+      // Do request
+      HttpClient client = vertx.createHttpClient();
+      HttpClientRequest req = client.get(port, host, "/resource");
+      Async async = context.async();
+      req.handler(resp -> {
+        context.assertEquals(200, resp.statusCode());
+        async.complete();
+      });
+      req.end();
     });
   }
 

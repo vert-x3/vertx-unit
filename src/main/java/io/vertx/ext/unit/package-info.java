@@ -184,6 +184,22 @@
  * {@link examples.Examples#async_03}
  * ----
  *
+ * == Sharing objects
+ *
+ * The {@link io.vertx.ext.unit.TestContext} has `get`/`put`/`remove` operations for sharing state between callbacks.
+ *
+ * Any object added during the _before_ callback is available in any other callbacks. Each test case will operate on
+ * a copy of the shared state, so updates will only be visible for a test case.
+ *
+ * .Sharing state between callbacks
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#sharing_01}
+ * ----
+ *
+ * WARNING: sharing any object is only supported in Java, other languages can share only basic or json types.
+ * Other objects should be shared using the features of that language.
+ *
  * [[reporting]]
  * == Running
  *
