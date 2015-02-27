@@ -18,7 +18,7 @@ See https://github.com/vert-x3/vertx-unit/blob/initial-work/src/main/asciidoc/ja
 - provide subtest programming model (i.e add a tests in a test)
 - consider making TestResult an @DataObject instead
 - add closeable resource to register for automatic cleanup or do something like this
-- object sharing via io.vertx.core.Context#put
+- see how to extend state sharing to non json / non basic
 - report to directory instead of file (for multiplexing based on test suite name)
 - filtering
 - handle reporter/formatter failures
