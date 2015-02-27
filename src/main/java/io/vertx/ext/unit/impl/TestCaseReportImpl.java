@@ -5,37 +5,63 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.report.TestCaseReport;
 
+import java.util.function.Function;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class TestCaseReportImpl implements TestCaseReport, Task<Void> {
+public class TestCaseReportImpl implements TestCaseReport {
 
   private final String name;
-  private final Task<?> task;
+  private final long timeout;
+  private final Handler<TestContext> before;
+  private final Handler<TestContext> test;
+  private final Handler<TestContext> after;
+  private final Handler<Throwable> unhandledFailureHandler;
   private volatile Handler<TestResult> completionHandler;
-  private volatile TestResult result;
 
   public TestCaseReportImpl(String name,
                             long timeout,
                             Handler<TestContext> before,
                             Handler<TestContext> test,
                             Handler<TestContext> after,
-                            Handler<Throwable> exceptionHandler,
-                            Task<?> next) {
+                            Handler<Throwable> unhandledFailureHandler) {
+
+    this.timeout = timeout;
     this.name = name;
-    this.task = InvokeTask.runTestTask(name, timeout, before, test, after, exceptionHandler, (testResult, executor) -> {
-      result = testResult;
-      if (completionHandler != null) {
-        completionHandler.handle(testResult);
-      }
-      next.execute(null, executor);
-    });
+    this.before = before;
+    this.test = test;
+    this.after = after;
+    this.unhandledFailureHandler = unhandledFailureHandler;
   }
 
-  @Override
-  public void execute(Void v, TestSuiteContext executor) {
-    if (result == null) {
-      executor.run(task, null);
+  Task<?> buildTask(Task<?> nextTask) {
+    // Build task assemblies for the test case
+    Task<Result> completeHandler = (result, context) -> {
+      if (completionHandler != null) {
+        completionHandler.handle(new TestResultImpl(name, result.beginTime, result.duration(), result.failure));
+      }
+      nextTask.execute(null, context);
+    };
+    Task<Result> afterHandler;
+    if (after != null) {
+      afterHandler = new TestContextImpl(after, unhandledFailureHandler, completeHandler, timeout);
+    } else {
+      afterHandler = completeHandler;
+    }
+    Task<Result> testHandler = new TestContextImpl(test, unhandledFailureHandler, afterHandler, timeout);
+    Task<?> task;
+    if (before != null) {
+      Function<Result, Task<Result>> tmp = result -> {
+        if (result.failure != null) {
+          return completeHandler;
+        } else {
+          return testHandler;
+        }
+      };
+      return new TestContextImpl(before, unhandledFailureHandler, tmp, timeout);
+    } else {
+      return testHandler;
     }
   }
 
@@ -47,9 +73,6 @@ public class TestCaseReportImpl implements TestCaseReport, Task<Void> {
   @Override
   public TestCaseReport endHandler(Handler<TestResult> handler) {
     completionHandler = handler;
-    if (completionHandler != null && result != null) {
-      completionHandler.handle(result);
-    }
     return this;
   }
 }

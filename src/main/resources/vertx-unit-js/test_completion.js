@@ -23,6 +23,7 @@ var JsonObject = io.vertx.core.json.JsonObject;
 var JTestCompletion = io.vertx.ext.unit.TestCompletion;
 
 /**
+ This object provides callback-ability for the end of a test suite.
 
  @class
 */
@@ -32,9 +33,10 @@ var TestCompletion = function(j_val) {
   var that = this;
 
   /**
+   Completes the future when all test cases of the test suite passes, otherwise fails it.
 
    @public
-   @param future {Future} 
+   @param future {Future} the future to resolve 
    */
   this.resolve = function(future) {
     var __args = arguments;
@@ -44,9 +46,11 @@ var TestCompletion = function(j_val) {
   };
 
   /**
+   Completion handler for the end of the test, the result is successful when all test cases pass otherwise
+   it is failed.
 
    @public
-   @param completionHandler {function} 
+   @param completionHandler {function} the completion handler 
    */
   this.handler = function(completionHandler) {
     var __args = arguments;

@@ -24,6 +24,8 @@ import io.vertx.core.Handler;
 import io.vertx.rxjava.core.Future;
 
 /**
+ * This object provides callback-ability for the end of a test suite.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  *
  * NOTE: This class has been automatically generated from the original non RX-ified interface using Vert.x codegen.
@@ -41,10 +43,21 @@ public class TestCompletion {
     return delegate;
   }
 
+  /**
+   * Completes the future when all test cases of the test suite passes, otherwise fails it.
+   *
+   * @param future the future to resolve
+   */
   public void resolve(Future future) {
     this.delegate.resolve((io.vertx.core.Future) future.getDelegate());
   }
 
+  /**
+   * Completion handler for the end of the test, the result is successful when all test cases pass otherwise
+   * it is failed.
+   *
+   * @param completionHandler the completion handler
+   */
   public void handler(Handler<AsyncResult<Void>> completionHandler) {
     this.delegate.handler(completionHandler);
   }

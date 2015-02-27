@@ -25,9 +25,7 @@ public class TestCaseImpl implements TestCase {
   }
 
   private TestCaseReport runner() {
-    return new TestCaseReportImpl(name, 0, null, handler, null, null, (o, executor) -> {
-      // ?
-    });
+    return new TestCaseReportImpl(name, 0, null, handler, null, null);
   }
 
   public String name() {
@@ -41,17 +39,17 @@ public class TestCaseImpl implements TestCase {
 
   @Override
   public void awaitSuccess(long timeout, TimeUnit unit) {
-    awaitSuccess(TestSuiteContext.create(null, Vertx.currentContext()), timeout, unit);
+    awaitSuccess(new TestSuiteContext(null, Vertx.currentContext()), timeout, unit);
   }
 
   @Override
   public void awaitSuccess(Vertx vertx, long timeout, TimeUnit unit) {
-    awaitSuccess(TestSuiteContext.create(vertx, vertx.getOrCreateContext()), timeout, unit);
+    awaitSuccess(new TestSuiteContext(vertx, vertx.getOrCreateContext()), timeout, unit);
   }
 
   @Override
   public void awaitSuccess(Vertx vertx) {
-    awaitSuccess(TestSuiteContext.create(vertx, vertx.getOrCreateContext()), 2, TimeUnit.MINUTES);
+    awaitSuccess(new TestSuiteContext(vertx, vertx.getOrCreateContext()), 2, TimeUnit.MINUTES);
   }
 
   private void awaitSuccess(TestSuiteContext context, long timeout, TimeUnit unit) {
@@ -62,7 +60,8 @@ public class TestCaseImpl implements TestCase {
       resultRef.set(result);
       latch.countDown();
     });
-    testCase.execute(null, context);
+    Task<?> task = testCase.buildTask((v, executor) -> {});
+    context.run(task);
     try {
       latch.await(timeout, unit);
     } catch (InterruptedException e) {

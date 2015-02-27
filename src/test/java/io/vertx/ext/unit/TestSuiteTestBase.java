@@ -244,9 +244,13 @@ public abstract class TestSuiteTestBase {
         }
       });
       if (i == 0) {
-        suite = suite.beforeEach(context -> count.incrementAndGet());
+        suite = suite.beforeEach(context -> {
+          count.incrementAndGet();
+        });
       } else {
-        suite = suite.before(context -> count.incrementAndGet());
+        suite = suite.before(context -> {
+          count.incrementAndGet();
+        });
       }
       TestReporter reporter = new TestReporter();
       run(suite, reporter);

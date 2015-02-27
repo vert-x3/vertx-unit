@@ -1,17 +1,20 @@
 package io.vertx.ext.unit.impl;
 
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Assert;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
-class TestContextImpl implements TestContext {
+class TestContextImpl implements TestContext, Task<Result> {
 
   private static final int STATUS_RUNNING = 0, STATUS_ASYNC = 1, STATUS_COMPLETED = 2;
 
@@ -38,38 +41,85 @@ class TestContextImpl implements TestContext {
     }
   }
 
-  private final InvokeTask invokeTask;
-  private final TestSuiteContext context;
+  private final Handler<TestContext> callback;
+  private final Handler<Throwable> unhandledFailureHandler;
+  private final Function<Result, Task<Result>> next;
+  private final long timeout;
   private int status;
   private Throwable failed;
   private long beginTime;
+  private TestSuiteContext context;
   private final LinkedList<AsyncImpl> asyncs = new LinkedList<>();
 
-  public TestContextImpl(InvokeTask invokeTask, TestSuiteContext context, Throwable failed) {
-    this.invokeTask = invokeTask;
-    this.context = context;
-    this.failed = failed;
+  public TestContextImpl(
+      Handler<TestContext> callback,
+      Handler<Throwable> unhandledFailureHandler,
+      Task<Result> next,
+      long timeout) {
+    this.next = result -> next;
+    this.timeout = timeout;
+    this.callback = callback;
+    this.unhandledFailureHandler = unhandledFailureHandler;
+    this.status = STATUS_RUNNING;
+  }
+
+  public TestContextImpl(
+      Handler<TestContext> callback,
+      Handler<Throwable> unhandledFailureHandler,
+      Function<Result, Task<Result>> next,
+      long timeout) {
+    this.next = next;
+    this.timeout = timeout;
+    this.callback = callback;
+    this.unhandledFailureHandler = unhandledFailureHandler;
     this.status = STATUS_RUNNING;
   }
 
   private void tryEnd() {
     boolean end = false;
+    TestSuiteContext ctx;
     synchronized (this) {
       if (asyncs.isEmpty() && status == STATUS_ASYNC) {
         status = STATUS_COMPLETED;
         end = true;
       }
+      ctx = context;
     }
     if (end) {
       long endTime = System.currentTimeMillis();
-      context.run(invokeTask.next, new Result(beginTime, endTime, failed));
+      Result result = new Result(beginTime, endTime, failed);
+      ctx.run(next.apply(result), result);
     }
   }
 
-  void run() {
-    beginTime = System.currentTimeMillis();
+  @Override
+  public void execute(Result prev, TestSuiteContext context) {
+    synchronized (this) {
+      this.context = context;
+      if (prev != null) {
+        failed = prev.failure;
+        beginTime = prev.beginTime;
+      } else {
+        beginTime = System.currentTimeMillis();
+      }
+    }
+    run();
+  }
+
+  private void run() {
+    if (timeout > 0) {
+      Runnable cancel = () -> {
+        try {
+          Thread.sleep(timeout);
+          failed(new TimeoutException());
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
+      };
+      new Thread(cancel).start();
+    }
     try {
-      invokeTask.handler.handle(this);
+      callback.handle(this);
     } catch (Throwable t) {
       failed(t);
     } finally {
@@ -84,8 +134,8 @@ class TestContextImpl implements TestContext {
     synchronized (this) {
       switch (status) {
         case STATUS_COMPLETED:
-          if (failed == null && invokeTask.unhandledFailureHandler != null) {
-            invokeTask.unhandledFailureHandler.handle(t);
+          if (failed == null && unhandledFailureHandler != null) {
+            unhandledFailureHandler.handle(t);
           }
           return;
         case STATUS_RUNNING:

@@ -18,7 +18,7 @@ class TestSuiteReportImpl implements TestSuiteReport {
   private final Handler<TestContext> after;
   private final Handler<TestContext> beforeEach;
   private final Handler<TestContext> afterEach;
-  private TestCaseImpl[] tests;
+  private final TestCaseImpl[] tests;
   private Handler<Void> endHandler;
   private Handler<Throwable> exceptionHandler;
   private Handler<TestCaseReport> handler;
@@ -68,59 +68,55 @@ class TestSuiteReportImpl implements TestSuiteReport {
     return this;
   }
 
-  private Task<Throwable> build(TestCaseImpl[] tests, int index, Task<Throwable> last) {
+  private Task<?> buildTestCasesTasks(TestCaseImpl[] tests, int index, Task<?> last) {
     if (tests.length > index) {
-      Task<?> next = build(tests, index + 1, last);
+      Task<?> nextTask = buildTestCasesTasks(tests, index + 1, last);
       TestCaseImpl test = tests[index];
-      TestCaseReportImpl runner = new TestCaseReportImpl(test.name, timeout, beforeEach, test.handler, afterEach, exceptionHandler, next);
+      TestCaseReportImpl runner = new TestCaseReportImpl(test.name, timeout, beforeEach, test.handler, afterEach, exceptionHandler);
       return (v, context) -> {
         if (handler != null) {
           handler.handle(runner);
         }
-        runner.execute(null, context);
+        Task<?> task = runner.buildTask(nextTask);
+        task.execute(null, context);
       };
     } else {
       return last;
     }
   }
 
-  private Task<?> build() {
-    Task<Throwable> last = (failure, context) -> {
-      if (failure != null && exceptionHandler != null) {
-        exceptionHandler.handle(failure);
+  private Task<?> buildTask() {
+    Task<Result> endTask = (result, context) -> {
+      if (result != null && result.failure != null && exceptionHandler != null) {
+        exceptionHandler.handle(result.failure);
       }
       if (endHandler != null) {
         endHandler.handle(null);
       }
     };
+    Task<Result> afterTask;
     if (after != null) {
-      Task<Throwable> next = last;
-      last = new InvokeTask(after, exceptionHandler, (result, context) -> {
-        next.execute(result.failure, context);
-      });
+      afterTask = new TestContextImpl(after, exceptionHandler, endTask, 0);
+    } else {
+      afterTask = endTask;
     }
-    last = build(tests, 0, last);
+    Task<?> runTask = buildTestCasesTasks(tests, 0, afterTask);
     if (before != null) {
-      Task<?> next = last;
-      last = new InvokeTask(before, exceptionHandler, (result,context) -> {
+      return new TestContextImpl(before, exceptionHandler, result -> {
         if (result.failure == null) {
-          context.run(next, null);
+          return (result_, context) -> runTask.execute(null, context);
         } else {
-          if (exceptionHandler != null) {
-            exceptionHandler.handle(result.failure);
-          }
-          if (endHandler != null) {
-            endHandler.handle(null);
-          }
+          return endTask;
         }
-      });
+      }, 0);
+    } else {
+      return runTask;
     }
-    return last;
   }
 
   // For unit testing
   public void run(TestSuiteContext context) {
-    context.run(build());
+    context.run(buildTask());
   }
 
   public void run(Boolean useEventLoop) {
@@ -134,11 +130,12 @@ class TestSuiteReportImpl implements TestSuiteReport {
             "be executed in a Verticle");
       }
     }
-    TestSuiteContext.create(null, context).run(build());
+    new TestSuiteContext(null, context).run(buildTask());
   }
 
   public void run(Vertx vertx, Boolean useEventLoop) {
     Context context = Boolean.FALSE.equals(useEventLoop) ? null : vertx.getOrCreateContext();
-    TestSuiteContext.create(vertx, context).run(build());
+    Task<?> task = buildTask();
+    new TestSuiteContext(vertx, context).run(task);
   }
 }
