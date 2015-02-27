@@ -293,6 +293,7 @@ TestSuite.create("my_suite").before(context -> {
 
   // host is available for all test cases
   context.put("host", "localhost");
+
 }).beforeEach(context -> {
 
   // Generate a random port for each test
@@ -302,8 +303,8 @@ TestSuite.create("my_suite").before(context -> {
   String host = context.get("host");
 
   // Setup server
-  HttpServer server = vertx.createHttpServer();
   Async async = context.async();
+  HttpServer server = vertx.createHttpServer();
   server.requestHandler(req -> {
     req.response().setStatusCode(200).end();
   });
@@ -312,7 +313,7 @@ TestSuite.create("my_suite").before(context -> {
     context.put("port", port);
     async.complete();
   });
-  
+
 }).test("my_test", context -> {
 
   // Get the shared state

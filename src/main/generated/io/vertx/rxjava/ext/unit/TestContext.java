@@ -61,19 +61,21 @@ public class TestContext {
    *
    * @param key  the key of the data
    * @param value  the data
+   * @return the previous object when it exists
    */
-  public void put(String key, Object value) {
-    this.delegate.put(key, value);
+  public <T> T put(String key, Object value) {
+    T ret = (T) this.delegate.put(key, value);
+    return ret;
   }
 
   /**
    * Remove some data from the context.
    *
    * @param key  the key to remove
-   * @return true if removed successfully, false otherwise
+   * @return the removed object when it exists
    */
-  public boolean remove(String key) {
-    boolean ret = this.delegate.remove(key);
+  public <T> T remove(String key) {
+    T ret = (T) this.delegate.remove(key);
     return ret;
   }
 

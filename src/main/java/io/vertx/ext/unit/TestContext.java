@@ -30,16 +30,17 @@ public interface TestContext {
    *
    * @param key  the key of the data
    * @param value  the data
+   * @return the previous object when it exists
    */
-  void put(String key, Object value);
+  <T> T put(String key, Object value);
 
   /**
    * Remove some data from the context.
    *
    * @param key  the key to remove
-   * @return true if removed successfully, false otherwise
+   * @return the removed object when it exists
    */
-  boolean remove(String key);
+  <T> T remove(String key);
 
   /**
    * Assert the specified {@code condition} is {@code true}. If the condition is {@code false}, an assertion error is thrown

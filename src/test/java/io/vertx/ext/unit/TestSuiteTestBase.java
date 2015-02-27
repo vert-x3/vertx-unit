@@ -583,5 +583,31 @@ public abstract class TestSuiteTestBase {
     assertEquals(1, test1.get());
     assertEquals(Arrays.<Integer>asList(0, 2), afterEach);
     assertEquals(Arrays.<Integer>asList(-10), after);
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(2, reporter.results.size());
+    assertEquals("my_test0", reporter.results.get(0).name());
+    assertFalse(reporter.results.get(0).failed());
+    assertEquals("my_test1", reporter.results.get(1).name());
+    assertFalse(reporter.results.get(1).failed());
+  }
+
+  @Test
+  public void testAttributesOperations() throws Exception {
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      context.assertEquals(null, context.get("value"));
+      context.assertEquals(null, context.put("value", 4));
+      context.assertEquals(4, context.get("value"));
+      context.assertEquals(4, context.put("value", 5));
+      context.assertEquals(5, context.get("value"));
+      context.assertEquals(5, context.remove("value"));
+      context.assertEquals(null, context.get("value"));
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertFalse(reporter.results.get(0).failed());
   }
 }

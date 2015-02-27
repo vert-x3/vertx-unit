@@ -322,6 +322,7 @@ TestSuite.create("my_suite").before({ context ->
 
   // host is available for all test cases
   context.put("host", "localhost")
+
 }).beforeEach({ context ->
 
   // Generate a random port for each test
@@ -331,8 +332,8 @@ TestSuite.create("my_suite").before({ context ->
   def host = context.get("host")
 
   // Setup server
-  def server = vertx.createHttpServer()
   def async = context.async()
+  def server = vertx.createHttpServer()
   server.requestHandler({ req ->
     req.response().setStatusCode(200).end()
   })

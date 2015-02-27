@@ -55,11 +55,12 @@ var TestContext = function(j_val) {
    @public
    @param key {string} the key of the data 
    @param value {Object} the data 
+   @return {Object} the previous object when it exists
    */
   this.put = function(key, value) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'string' && true) {
-      j_testContext.put(key, utils.convParamTypeUnknown(value));
+      return utils.convReturnTypeUnknown(j_testContext.put(key, utils.convParamTypeUnknown(value)));
     } else utils.invalidArgs();
   };
 
@@ -68,12 +69,12 @@ var TestContext = function(j_val) {
 
    @public
    @param key {string} the key to remove 
-   @return {boolean} true if removed successfully, false otherwise
+   @return {Object} the removed object when it exists
    */
   this.remove = function(key) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
-      return j_testContext.remove(key);
+      return utils.convReturnTypeUnknown(j_testContext.remove(key));
     } else utils.invalidArgs();
   };
 

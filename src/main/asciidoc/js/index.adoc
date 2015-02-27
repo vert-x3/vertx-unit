@@ -322,6 +322,7 @@ TestSuite.create("my_suite").before(function (context) {
 
   // host is available for all test cases
   context.put("host", "localhost");
+
 }).beforeEach(function (context) {
 
   // Generate a random port for each test
@@ -331,8 +332,8 @@ TestSuite.create("my_suite").before(function (context) {
   var host = context.get("host");
 
   // Setup server
-  var server = vertx.createHttpServer();
   var async = context.async();
+  var server = vertx.createHttpServer();
   server.requestHandler(function (req) {
     req.response().setStatusCode(200).end();
   });

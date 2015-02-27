@@ -104,17 +104,17 @@ class TestContextImpl implements TestContext, Task<Result> {
   }
 
   @Override
-  public synchronized void put(String key, Object value) {
+  public synchronized <T> T put(String key, Object value) {
     if (value != null) {
-      attributes.put(key, value);
+      return (T) attributes.put(key, value);
     } else {
-      attributes.remove(key);
+      return (T) attributes.remove(key);
     }
   }
 
   @Override
-  public synchronized boolean remove(String key) {
-    return attributes.remove(key) != null;
+  public synchronized <T> T remove(String key) {
+    return (T) attributes.remove(key);
   }
 
   @Override
