@@ -194,6 +194,30 @@ suite.test("my_test_case", function (context) {
 
 ----
 
+=== assertNull
+
+Assert an object is null, works for _basic_ types or _json_ types.
+
+[source,js]
+----
+suite.test("my_test_case", function (context) {
+  context.assertNull(null);
+});
+
+----
+
+=== assertNotNull
+
+The counter part of _assertNull_.
+
+[source,js]
+----
+suite.test("my_test_case", function (context) {
+  context.assertNotNull("not null!");
+});
+
+----
+
 === assertInRange
 
 The `link:jsdoc/test_context-TestContext.html#assertInRange[assertInRange]` targets real numbers.

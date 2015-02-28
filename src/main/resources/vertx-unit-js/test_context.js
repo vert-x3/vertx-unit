@@ -79,6 +79,46 @@ var TestContext = function(j_val) {
   };
 
   /**
+   Assert the <code>expected</code> argument is <code>null</code>. If the argument is not, an assertion error is thrown
+   otherwise the execution continue.
+
+   @public
+   @param expected {Object} the argument being asserted to be null 
+   @param message {string} the failure message 
+   @return {TestContext} a reference to this, so the API can be used fluently
+   */
+  this.assertNull = function() {
+    var __args = arguments;
+    if (__args.length === 1 && true) {
+      j_testContext.assertNull(utils.convParamTypeUnknown(__args[0]));
+      return that;
+    }  else if (__args.length === 2 && true && typeof __args[1] === 'string') {
+      j_testContext.assertNull(utils.convParamTypeUnknown(__args[0]), __args[1]);
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Assert the <code>expected</code> argument is not <code>null</code>. If the argument is <code>null</code>, an assertion error is thrown
+   otherwise the execution continue.
+
+   @public
+   @param expected {Object} the argument being asserted to be not null 
+   @param message {string} the failure message 
+   @return {TestContext} a reference to this, so the API can be used fluently
+   */
+  this.assertNotNull = function() {
+    var __args = arguments;
+    if (__args.length === 1 && true) {
+      j_testContext.assertNotNull(utils.convParamTypeUnknown(__args[0]));
+      return that;
+    }  else if (__args.length === 2 && true && typeof __args[1] === 'string') {
+      j_testContext.assertNotNull(utils.convParamTypeUnknown(__args[0]), __args[1]);
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
    Assert the specified <code>condition</code> is <code>true</code>. If the condition is <code>false</code>, an assertion error is thrown
    otherwise the execution continue.
 

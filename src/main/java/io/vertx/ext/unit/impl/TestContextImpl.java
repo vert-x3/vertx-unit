@@ -199,6 +199,50 @@ class TestContextImpl implements TestContext, Task<Result> {
   }
 
   @Override
+  public TestContext assertNull(Object expected) {
+    try {
+      Assert.assertNull(expected);
+      return this;
+    } catch (AssertionError err) {
+      failed(err);
+      throw err;
+    }
+  }
+
+  @Override
+  public TestContext assertNull(Object expected, String message) {
+    try {
+      Assert.assertNull(message, expected);
+      return this;
+    } catch (AssertionError err) {
+      failed(err);
+      throw err;
+    }
+  }
+
+  @Override
+  public TestContext assertNotNull(Object expected) {
+    try {
+      Assert.assertNotNull(expected);
+      return this;
+    } catch (AssertionError err) {
+      failed(err);
+      throw err;
+    }
+  }
+
+  @Override
+  public TestContext assertNotNull(Object expected, String message) {
+    try {
+      Assert.assertNotNull(message, expected);
+      return this;
+    } catch (AssertionError err) {
+      failed(err);
+      throw err;
+    }
+  }
+
+  @Override
   public TestContext assertTrue(boolean condition, String message) {
     try {
       Assert.assertTrue(message, condition);

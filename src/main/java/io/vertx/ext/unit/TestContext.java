@@ -43,6 +43,48 @@ public interface TestContext {
   <T> T remove(String key);
 
   /**
+   * Assert the {@code expected} argument is {@code null}. If the argument is not, an assertion error is thrown
+   * otherwise the execution continue.
+   *
+   * @param expected the argument being asserted to be null
+   * @return a reference to this, so the API can be used fluently
+   */
+  @Fluent
+  TestContext assertNull(Object expected);
+
+  /**
+   * Assert the {@code expected} argument is {@code null}. If the argument is not, an assertion error is thrown
+   * otherwise the execution continue.
+   *
+   * @param expected the argument being asserted to be null
+   * @param message the failure message
+   * @return a reference to this, so the API can be used fluently
+   */
+  @Fluent
+  TestContext assertNull(Object expected, String message);
+
+  /**
+   * Assert the {@code expected} argument is not {@code null}. If the argument is {@code null}, an assertion error is thrown
+   * otherwise the execution continue.
+   *
+   * @param expected the argument being asserted to be not null
+   * @return a reference to this, so the API can be used fluently
+   */
+  @Fluent
+  TestContext assertNotNull(Object expected);
+
+  /**
+   * Assert the {@code expected} argument is not {@code null}. If the argument is {@code null}, an assertion error is thrown
+   * otherwise the execution continue.
+   *
+   * @param expected the argument being asserted to be not null
+   * @param message the failure message
+   * @return a reference to this, so the API can be used fluently
+   */
+  @Fluent
+  TestContext assertNotNull(Object expected, String message);
+
+  /**
    * Assert the specified {@code condition} is {@code true}. If the condition is {@code false}, an assertion error is thrown
    * otherwise the execution continue.
    *

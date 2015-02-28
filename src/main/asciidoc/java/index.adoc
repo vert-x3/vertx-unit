@@ -173,6 +173,28 @@ suite.test("my_test_case", context -> {
 });
 ----
 
+=== assertNull
+
+Assert an object is null, works for _basic_ types or _json_ types.
+
+[source,java]
+----
+suite.test("my_test_case", context -> {
+  context.assertNull(null);
+});
+----
+
+=== assertNotNull
+
+The counter part of _assertNull_.
+
+[source,java]
+----
+suite.test("my_test_case", context -> {
+  context.assertNotNull("not null!");
+});
+----
+
 === assertInRange
 
 The `link:apidocs/io/vertx/ext/unit/TestContext.html#assertInRange-double-double-double-[assertInRange]` targets real numbers.

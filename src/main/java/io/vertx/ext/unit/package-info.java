@@ -120,12 +120,30 @@
  * {@link examples.Examples#asserting_03}
  * ----
  *
+ * === assertNull
+ *
+ * Assert an object is null, works for _basic_ types or _json_ types.
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#asserting_04}
+ * ----
+ *
+ * === assertNotNull
+ *
+ * The counter part of _assertNull_.
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#asserting_05}
+ * ----
+ *
  * === assertInRange
  *
  * The {@link io.vertx.ext.unit.TestContext#assertInRange} targets real numbers.
  *
  * ----
- * {@link examples.Examples#asserting_04}
+ * {@link examples.Examples#asserting_06}
  * ----
  *
  * === assertTrue and assertFalse
@@ -134,7 +152,7 @@
  *
  * [source,$lang]
  * ----
- * {@link examples.Examples#asserting_05}
+ * {@link examples.Examples#asserting_07}
  * ----
  *
  * === Failing
@@ -143,7 +161,7 @@
  *
  * [source,$lang]
  * ----
- * {@link examples.Examples#asserting_06}
+ * {@link examples.Examples#asserting_08}
  * ----
  *
  * == Asynchronous testing

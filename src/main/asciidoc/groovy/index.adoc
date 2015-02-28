@@ -194,6 +194,30 @@ suite.test("my_test_case", { context ->
 
 ----
 
+=== assertNull
+
+Assert an object is null, works for _basic_ types or _json_ types.
+
+[source,groovy]
+----
+suite.test("my_test_case", { context ->
+  context.assertNull(null)
+})
+
+----
+
+=== assertNotNull
+
+The counter part of _assertNull_.
+
+[source,groovy]
+----
+suite.test("my_test_case", { context ->
+  context.assertNotNull("not null!")
+})
+
+----
+
 === assertInRange
 
 The `link:groovydoc/io/vertx/groovy/ext/unit/TestContext.html#assertInRange(double,%20double,%20double)[assertInRange]` targets real numbers.

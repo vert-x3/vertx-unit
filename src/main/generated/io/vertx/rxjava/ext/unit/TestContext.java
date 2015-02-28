@@ -80,6 +80,56 @@ public class TestContext {
   }
 
   /**
+   * Assert the {@code expected} argument is {@code null}. If the argument is not, an assertion error is thrown
+   * otherwise the execution continue.
+   *
+   * @param expected the argument being asserted to be null
+   * @return a reference to this, so the API can be used fluently
+   */
+  public TestContext assertNull(Object expected) {
+    this.delegate.assertNull(expected);
+    return this;
+  }
+
+  /**
+   * Assert the {@code expected} argument is {@code null}. If the argument is not, an assertion error is thrown
+   * otherwise the execution continue.
+   *
+   * @param expected the argument being asserted to be null
+   * @param message the failure message
+   * @return a reference to this, so the API can be used fluently
+   */
+  public TestContext assertNull(Object expected, String message) {
+    this.delegate.assertNull(expected, message);
+    return this;
+  }
+
+  /**
+   * Assert the {@code expected} argument is not {@code null}. If the argument is {@code null}, an assertion error is thrown
+   * otherwise the execution continue.
+   *
+   * @param expected the argument being asserted to be not null
+   * @return a reference to this, so the API can be used fluently
+   */
+  public TestContext assertNotNull(Object expected) {
+    this.delegate.assertNotNull(expected);
+    return this;
+  }
+
+  /**
+   * Assert the {@code expected} argument is not {@code null}. If the argument is {@code null}, an assertion error is thrown
+   * otherwise the execution continue.
+   *
+   * @param expected the argument being asserted to be not null
+   * @param message the failure message
+   * @return a reference to this, so the API can be used fluently
+   */
+  public TestContext assertNotNull(Object expected, String message) {
+    this.delegate.assertNotNull(expected, message);
+    return this;
+  }
+
+  /**
    * Assert the specified {@code condition} is {@code true}. If the condition is {@code false}, an assertion error is thrown
    * otherwise the execution continue.
    *

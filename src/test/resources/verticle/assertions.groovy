@@ -2,7 +2,67 @@ package verticle
 
 import io.vertx.groovy.ext.unit.TestSuite;
 
-def suite = TestSuite.create("the_suite"); 
+def suite = TestSuite.create("the_suite");
+
+suite.test("assert_null", { context ->
+    context.assertNull(null);
+}).test("fail_assert_null_1", { context ->
+    context.assertNull(0);
+}).test("fail_assert_null_2", { context ->
+    context.assertNull("string");
+}).test("fail_assert_null_3", { context ->
+    context.assertNull(0.12);
+}).test("fail_assert_null_4", { context ->
+    context.assertNull(true);
+}).test("fail_assert_null_5", { context ->
+    context.assertNull(false);
+}).test("fail_assert_null_6", { context ->
+    context.assertNull([:]);
+}).test("fail_assert_null_7", { context ->
+    context.assertNull([]);
+});
+
+suite.test("assert_null_with_message", { context ->
+    context.assertNull(null, "the_message");
+}).test("fail_assert_null_1", { context ->
+    context.assertNull(0, "the_message");
+}).test("fail_assert_null_2", { context ->
+    context.assertNull("string", "the_message");
+}).test("fail_assert_null_3", { context ->
+    context.assertNull(0.12, "the_message");
+}).test("fail_assert_null_4", { context ->
+    context.assertNull(true, "the_message");
+}).test("fail_assert_null_5", { context ->
+    context.assertNull(false, "the_message");
+}).test("fail_assert_null_6", { context ->
+    context.assertNull([:], "the_message");
+}).test("fail_assert_null_7", { context ->
+    context.assertNull([], "the_message");
+});
+
+suite.test("assert_not_null", { context ->
+    context.assertNotNull(0);
+    context.assertNotNull("string");
+    context.assertNotNull(0.12);
+    context.assertNotNull(true);
+    context.assertNotNull(false);
+    context.assertNotNull([:]);
+    context.assertNotNull([]);
+}).test("fail_assert_null", { context ->
+    context.assertNotNull(null);
+});
+
+suite.test("assert_not_null_with_message", { context ->
+    context.assertNotNull(0, "the_message");
+    context.assertNotNull("string", "the_message");
+    context.assertNotNull(0.12, "the_message");
+    context.assertNotNull(true, "the_message");
+    context.assertNotNull(false, "the_message");
+    context.assertNotNull([:], "the_message");
+    context.assertNotNull([], "the_message");
+}).test("fail_assert_null", { context ->
+    context.assertNotNull(null, "the_message");
+});
 
 suite.test("assert_equals", { context ->
     context.assertEquals(0, 0);
