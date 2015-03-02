@@ -73,8 +73,8 @@ public class EventBusCollector {
    * @param address the registration address
    * @return the subscribed message consumer
    */
-  public MessageConsumer<?> register(String address) {
-    MessageConsumer<?> ret= MessageConsumer.newInstance(this.delegate.register(address));
+  public MessageConsumer register(String address) {
+    MessageConsumer ret= MessageConsumer.newInstance(this.delegate.register(address));
     return ret;
   }
 

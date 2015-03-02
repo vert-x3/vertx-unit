@@ -576,7 +576,19 @@ and achieve custom reporting:
 
 [source,groovy]
 ----
-todo
+import io.vertx.groovy.ext.unit.collect.EventBusCollector
+def collector = EventBusCollector.create(vertx, [
+  reporters:[
+    [
+      to:"file",
+      at:"report.xml",
+      format:"junit"
+    ]
+  ]
+])
+
+collector.register("the-address")
+
 ----
 
 == Junit integration

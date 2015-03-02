@@ -122,7 +122,7 @@ public class EventBusCollectorImpl implements EventBusCollector, Handler<Message
   }
 
   @Override
-  public MessageConsumer<?> register(String address) {
+  public MessageConsumer<JsonObject> register(String address) {
     return vertx.eventBus().consumer(address, this);
   }
 

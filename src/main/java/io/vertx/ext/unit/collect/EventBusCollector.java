@@ -75,7 +75,7 @@ public interface EventBusCollector {
    * @param address the registration address
    * @return the subscribed message consumer
    */
-  MessageConsumer<?> register(String address);
+  MessageConsumer register(String address);
 
   @GenIgnore
   Handler<Message<JsonObject>> asMessageHandler();
