@@ -49,11 +49,6 @@
       <artifactId>vertx-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-    </dependency>
-    <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-lang-groovy</artifactId>
       <optional>true</optional>
@@ -68,6 +63,15 @@
       <artifactId>vertx-rx-java</artifactId>
       <optional>true</optional>
     </dependency>
+
+    <!-- Not needed at runtime unless you use the JUnit extension -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <optional>true</optional>
+    </dependency>
+
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-docgen</artifactId>

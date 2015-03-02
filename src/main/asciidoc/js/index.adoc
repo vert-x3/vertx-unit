@@ -324,7 +324,7 @@ suite.before(function (context) {
   var server = vertx.createHttpServer();
   server.requestHandler(requestHandler);
   server.listen(8080, function (ar, ar_err) {
-    context.assertTrue((ar != null));
+    context.assertTrue((ar_err == null));
     async.complete();
   });
 });
@@ -362,7 +362,7 @@ TestSuite.create("my_suite").before(function (context) {
     req.response().setStatusCode(200).end();
   });
   server.listen(port, host, function (ar, ar_err) {
-    context.assertTrue((ar != null));
+    context.assertTrue((ar_err == null));
     context.put("port", port);
     async.complete();
   });
@@ -425,7 +425,7 @@ after the test suite, it should either be in the test suite _after_ callback or 
 ----
 var completion = suite.run(vertx);
 completion.handler(function (ar, ar_err) {
-  if ((ar != null)) {
+  if ((ar_err == null)) {
     console.log("Test suite passed!");
   } else {
     console.log("Test suite failed:");

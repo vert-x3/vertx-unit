@@ -4,7 +4,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
-import org.junit.Assert;
 
 import java.util.LinkedList;
 import java.util.Map;
@@ -200,173 +199,131 @@ class TestContextImpl implements TestContext, Task<Result> {
 
   @Override
   public TestContext assertNull(Object expected) {
-    try {
-      Assert.assertNull(expected);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
-    }
+    return assertNull(expected, null);
   }
 
   @Override
   public TestContext assertNull(Object expected, String message) {
-    try {
-      Assert.assertNull(message, expected);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
+    if (expected != null) {
+      throw reportAssertionError(formatMessage(message, "Expected null"));
     }
+    return this;
   }
 
   @Override
   public TestContext assertNotNull(Object expected) {
-    try {
-      Assert.assertNotNull(expected);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
-    }
+    return assertNotNull(expected, null);
   }
 
   @Override
   public TestContext assertNotNull(Object expected, String message) {
-    try {
-      Assert.assertNotNull(message, expected);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
+    if (expected == null) {
+      throw reportAssertionError(formatMessage(message, "Expected not null"));
     }
+    return this;
   }
 
   @Override
   public TestContext assertTrue(boolean condition, String message) {
-    try {
-      Assert.assertTrue(message, condition);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
+    if (!condition) {
+      throw reportAssertionError(formatMessage(message, "Expected true"));
     }
+    return this;
   }
 
   public TestContext assertTrue(boolean condition) {
-    try {
-      Assert.assertTrue(condition);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
-    }
+    return assertTrue(condition, null);
   }
 
   public void fail(String message) {
-    try {
-      Assert.fail(message);
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
-    }
+    throw reportAssertionError(message != null ? message : "Test failed");
   }
 
   @Override
   public TestContext assertFalse(boolean condition) {
-    try {
-      Assert.assertFalse(condition);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
-    }
+    return assertFalse(condition, null);
   }
 
   @Override
   public TestContext assertFalse(boolean condition, String message) {
-    try {
-      Assert.assertFalse(message, condition);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
+    if (condition) {
+      throw reportAssertionError(formatMessage(message, "Expected false"));
     }
+    return this;
   }
 
   @Override
   public void fail() {
-    try {
-      Assert.fail();
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
-    }
+    fail(null);
   }
 
   @Override
   public TestContext assertEquals(Object expected, Object actual) {
-    try {
-      Assert.assertEquals(expected, actual);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
-    }
+    return assertEquals(expected, actual, null);
   }
 
   @Override
   public TestContext assertEquals(Object expected, Object actual, String message) {
-    try {
-      Assert.assertEquals(message, expected, actual);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
+    if (actual == null) {
+      if (expected != null) {
+        throw reportAssertionError(formatMessage(message, "Expected " + expected + " got null"));
+      }
+    } else {
+      if (expected == null) {
+        throw reportAssertionError(formatMessage(message, "Expected null instead of " + actual));
+      } else if (!expected.equals(actual)) {
+        throw reportAssertionError(formatMessage(message, "Not equals : " + expected + " != " + actual));
+      }
     }
+    return this;
   }
 
   @Override
   public TestContext assertInRange(double expected, double actual, double delta) {
-    try {
-      Assert.assertEquals(expected, actual, delta);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
-    }
+    return assertInRange(expected, actual, delta, null);
   }
 
   @Override
   public TestContext assertInRange(double expected, double actual, double delta, String message) {
-    try {
-      Assert.assertEquals(message, expected, actual, delta);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
+    if (Double.compare(expected, actual) != 0 && Math.abs((actual - expected)) > delta) {
+      throw reportAssertionError(formatMessage(message, "Expected " + actual + " to belong to [" +
+          (expected - delta) + "," + (expected + delta) + "]"));
     }
+      return this;
   }
 
   @Override
   public TestContext assertNotEquals(Object first, Object second, String message) {
-    try {
-      Assert.assertNotEquals(message, first, second);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
+    if (first == null) {
+      if (second == null) {
+        throw reportAssertionError(formatMessage(message, "Expected null != null"));
+      }
+    } else {
+      if (first.equals(second)) {
+        throw reportAssertionError(formatMessage(message, "Expected different values " + first + " != " + second));
+      }
     }
+    return this;
   }
 
   @Override
   public TestContext assertNotEquals(Object first, Object second) {
-    try {
-      Assert.assertNotEquals(first, second);
-      return this;
-    } catch (AssertionError err) {
-      failed(err);
-      throw err;
-    }
+    return assertNotEquals(first, second, null);
+  }
+
+  /**
+   * Create and report an assertion error, the returned throwable can be thrown to change
+   * the control flow.
+   *
+   * @return an assertion error to eventually throw
+   */
+  private AssertionError reportAssertionError(String message) {
+    AssertionError err = new AssertionError(message);
+    failed(err);
+    return err;
+  }
+
+  private static String formatMessage(String providedMessage, String defaultMessage) {
+    return providedMessage == null ? defaultMessage : (providedMessage + ". " + defaultMessage);
   }
 }
