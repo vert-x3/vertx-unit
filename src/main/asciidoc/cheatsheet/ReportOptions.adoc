@@ -1,0 +1,27 @@
+== ReportOptions
+
+++++
+ Configures a reporter consisting in a name <code>to</code>, an address <code>at</code> and an optional <code>format</code>.
+++++
+'''
+
+[cols=">25%,^25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+
+|`to`
+|`String`
+|+++
+Set the current reporter name.+++
+
+|`at`
+|`String`
+|+++
+Set the current reporter address+++
+
+|`format`
+|`String`
+|+++
+Set the current reporter format.+++
+|===

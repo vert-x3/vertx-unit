@@ -9,26 +9,32 @@
      <ul>
        <li><code>true</code> always runs with an event loop</li>
        <li><code>false</code> never runs with an event loop</li>
-       <li><code>null</code> uses an event loop if there is one (provided by {@link Vertx#currentContext})
+       <li><code>null</code> uses an event loop if there is one (provided by link)
        otherwise run without</li>
      </ul>
    </li>
    <li>the <code>reporters</code> is an array of reporter configurations</li>
  </ul>
 ++++
+'''
 
+[cols=">25%,^25%,50%"]
+[frame="topbot"]
 |===
-|Name | Type | Description
+^|Name | Type ^| Description
 
-|timeout
-|Number
-| Set the test timeout.
+|`timeout`
+|`Number`
+|+++
+Set the test timeout.+++
 
-|useEventLoop
-|Boolean
-| Configure the execution to use an event loop when there is no one existing.
+|`useEventLoop`
+|`Boolean`
+|+++
+Configure the execution to use an event loop when there is no one existing.+++
 
-|reporters
-|Array of link:ReportOptions.html[ReportOptions]
-| Replace the current list of reporters with a new one.
+|`reporters`
+|`Array of link:ReportOptions.html[ReportOptions]`
+|+++
+Replace the current list of reporters with a new one.+++
 |===
