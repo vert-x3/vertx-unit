@@ -107,7 +107,7 @@ public class EventBusTest extends VertxTestBase {
         context.fail("the_" + testCaseName2 + "_failure");
       }).test(testCaseName3, context -> {
         throw new RuntimeException();
-      }).run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt(address)));
+      }).run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus:" + address)));
     });
     await();
   }
@@ -165,7 +165,7 @@ public class EventBusTest extends VertxTestBase {
         // Ok
       }).after(context -> {
         throw new RuntimeException("the_after_failure");
-      }).run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt(address)));
+      }).run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus:" + address)));
     });
     await();
   }
@@ -300,7 +300,7 @@ public class EventBusTest extends VertxTestBase {
       TestSuite suite = TestSuite.create(testSuiteName).
           test(testCaseName1, context -> {
           }).test(testCaseName2, context -> context.fail("the_failure"));
-      suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt("the-address")));
+      suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus:the-address")));
     });
     testReporter.await();
     assertEquals(0, testReporter.exceptions.size());
@@ -335,7 +335,7 @@ public class EventBusTest extends VertxTestBase {
           }).after(context -> {
         throw error;
       });
-      suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt(address)));
+      suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus:" + address)));
     });
     testReporter.await();
     assertEquals(1, testReporter.results.size());

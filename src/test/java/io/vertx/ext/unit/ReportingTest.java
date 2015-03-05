@@ -87,9 +87,9 @@ public class ReportingTest extends VertxTestBase {
   @org.junit.Test
   public void testReportToLog() {
     String s = testLog("mylogger", () -> {
-      Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("log").setAt("mylogger"));
+      Reporter<?> reporter = Reporter.reporter(vertx, new ReportOptions().setTo("log:mylogger"));
       assertTrue(reporter instanceof SimpleFormatter);
-      suite.run(new TestOptions().addReporter(new ReportOptions().setTo("log").setAt("mylogger")));
+      suite.run(new TestOptions().addReporter(new ReportOptions().setTo("log:mylogger")));
     });
     assertTrue(s.length() > 0);
   }
@@ -99,7 +99,7 @@ public class ReportingTest extends VertxTestBase {
     FileSystem fs = vertx.fileSystem();
     String file = "target/report.txt";
     assertFalse(fs.existsBlocking(file));
-    suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("file").setAt(file)));
+    suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("file:" + file)));
     assertTrue(fs.existsBlocking(file));
     FileProps props = fs.propsBlocking(file);
     assertTrue(props.size() > 0);
@@ -116,7 +116,7 @@ public class ReportingTest extends VertxTestBase {
     });
     consumer.completionHandler(ar -> {
       assertTrue(ar.succeeded());
-      suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus").setAt("the_address")));
+      suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus:the_address")));
     });
     await();
   }

@@ -16,4 +16,4 @@ var suite = TestSuite.create("my_suite").
         }).end();
     });
 
-suite.run(vertx, { reporters : [{ to: "bus", at: "test" }] });
+suite.run(vertx, { reporters : [{ to: "bus:test"}] });

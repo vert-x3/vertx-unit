@@ -16,8 +16,6 @@ import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.ext.unit.report.ReportOptions;
 import io.vertx.ext.unit.report.ReportingOptions;
 
-import java.util.Random;
-
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -275,8 +273,7 @@ public class Examples {
             addReporter(new ReportOptions().
                 setTo("console")).
             addReporter(new ReportOptions().
-                setTo("file").
-                setAt("report.xml").
+                setTo("file:report.xml").
                 setFormat("junit"))
     );
   }
@@ -285,7 +282,7 @@ public class Examples {
     EventBusCollector collector = EventBusCollector.create(
         vertx,
         new ReportingOptions().addReporter(
-            new ReportOptions().setTo("file").setAt("report.xml").setFormat("junit")));
+            new ReportOptions().setTo("file:report.xml").setFormat("junit")));
 
     collector.register("the-address");
   }

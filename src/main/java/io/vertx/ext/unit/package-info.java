@@ -339,29 +339,29 @@
  * Reports to a file, a `Vertx` instance must be provided:
  *
  * to::
- * _file_
- * at::
- * the file name
+ * _file_ `:` _file name_
  * format::
  * _simple_ or _junit_
+ * example::
+ * `file:report.xml`
  *
  * === Log reporting
  *
  * Reports to a logger, a `Vertx` instance must be provided:
  *
  * to::
- * _log_
- * at::
- * the logger name
+ * _log_ `:` _logger name_
+ * example::
+ * `log:mylogger`
  *
  * === Event bus reporting
  *
  * Reports events to the event bus, a `Vertx` instance must be provided:
  *
  * to::
- * _bus_
- * at::
- * the event bus address to which events will be sent
+ * _bus_ `:` _event bus address_
+ * example::
+ * `bus:the-address`
  *
  * It allow to decouple the execution of the test suite from the reporting.
  *

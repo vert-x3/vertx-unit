@@ -15,11 +15,6 @@
 |+++
 Set the current reporter name.+++
 
-|`at`
-|`String`
-|+++
-Set the current reporter address+++
-
 |`format`
 |`String`
 |+++

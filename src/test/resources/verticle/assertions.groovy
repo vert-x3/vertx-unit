@@ -209,4 +209,4 @@ suite.test("fail_with_message", { context ->
     context.fail("the_message");
 });
 
-suite.run(vertx, [reporters:[[to: "bus", at: "assert_tests"]]]);
+suite.run(vertx, [reporters:[[to: "bus:assert_tests"]]]);

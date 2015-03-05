@@ -57,13 +57,10 @@ public class OptionsTest {
     ReportOptions options = new ReportOptions();
     assertEquals(ReportOptions.DEFAULT_TO, options.getTo());
     assertEquals(ReportOptions.DEFAULT_FORMAT, options.getFormat());
-    assertEquals(null, options.getAt());
     String to = TestUtils.randomAlphaString(10);
     assertSame(options, options.setTo(to));
     assertEquals(to, options.getTo());
     String at = TestUtils.randomAlphaString(10);
-    assertSame(options, options.setAt(at));
-    assertEquals(at, options.getAt());
     String format = TestUtils.randomAlphaString(10);
     assertSame(options, options.setFormat(format));
     assertEquals(format, options.getFormat());
@@ -77,19 +74,17 @@ public class OptionsTest {
     String to = TestUtils.randomAlphaString(10);
     String at = TestUtils.randomAlphaString(10);
     String format = TestUtils.randomAlphaString(10);
-    ReportOptions reporter = new ReportOptions().setTo(to).setAt(at).setFormat(format);
+    ReportOptions reporter = new ReportOptions().setTo(to).setFormat(format);
     options.setUseEventLoop(useEventLoop).setTimeout(timeout).addReporter(reporter);
     TestOptions copy = new TestOptions(options);
     options.setTimeout(TestUtils.randomLong());
     options.setUseEventLoop(randomBoolean());
     reporter.setTo(TestUtils.randomAlphaString(10));
-    reporter.setAt(TestUtils.randomAlphaString(10));
     reporter.setFormat(TestUtils.randomAlphaString(10));
     options.getReporters().clear();
     assertEquals(timeout, copy.getTimeout());
     assertEquals(useEventLoop, copy.isUseEventLoop());
     assertEquals(1, copy.getReporters().size());
-    assertEquals(at, copy.getReporters().get(0).getAt());
     assertEquals(to, copy.getReporters().get(0).getTo());
     assertEquals(format, copy.getReporters().get(0).getFormat());
   }
@@ -108,7 +103,6 @@ public class OptionsTest {
     ReportOptions def = new ReportOptions();
     ReportOptions json = new ReportOptions(new JsonObject());
     assertEquals(json.getTo(), def.getTo());
-    assertEquals(json.getAt(), def.getAt());
     assertEquals(json.getFormat(), def.getFormat());
   }
 
@@ -133,7 +127,6 @@ public class OptionsTest {
     assertEquals(timeout, options.getTimeout());
     assertEquals(useEventLoop, options.isUseEventLoop());
     assertEquals(1, options.getReporters().size());
-    assertEquals(at, options.getReporters().get(0).getAt());
     assertEquals(to, options.getReporters().get(0).getTo());
     assertEquals(format, options.getReporters().get(0).getFormat());
   }

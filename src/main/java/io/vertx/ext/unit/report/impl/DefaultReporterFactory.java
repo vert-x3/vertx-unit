@@ -24,21 +24,30 @@ public class DefaultReporterFactory implements ReporterFactory {
 
   @Override
   public Reporter reporter(Vertx vertx, ReportOptions options) {
-    String to = options.getTo().toLowerCase();
-    String at = options.getAt();
-    if (to.equals("bus")) {
-      if (at == null) {
-        throw new IllegalArgumentException("Missing 'dest' field in report options specifying the event bus address");
+    String to = options.getTo();
+    String prefix;
+    String location;
+    int pos = to.indexOf(':');
+    if (pos != -1) {
+      prefix = to.substring(0, pos);
+      location = to.substring(pos + 1);
+    } else {
+      prefix = to;
+      location = null;
+    }
+    if (prefix.equals("bus")) {
+      if (location == null) {
+        throw new IllegalArgumentException("Invalid bus report configuration: " + to + " must follow bus: + address");
       }
       if (vertx == null) {
         throw new IllegalArgumentException("No vertx provided for event bus reporting");
       }
-      return new EventBusReporter(vertx, at);
+      return new EventBusReporter(vertx, location);
     } else {
       Consumer<Buffer> infoHandler;
       BiConsumer<Buffer, Throwable> errorHandler;
       Handler<Void> endHandler;
-      switch (to) {
+      switch (prefix) {
         case "console":
           infoHandler = System.out::println;
           errorHandler = (msg, error) -> {
@@ -48,23 +57,22 @@ public class DefaultReporterFactory implements ReporterFactory {
           endHandler = null;
           break;
         case "log":
-          if (at == null) {
-            throw new IllegalArgumentException("Missing 'dest' field in report options specifying the logger name");
+          if (location == null) {
+            throw new IllegalArgumentException("Invalid log report configuration: " + to + " must follow log: + address");
           }
-          Logger log = LoggerFactory.getLogger(at);
+          Logger log = LoggerFactory.getLogger(location);
           infoHandler = log::info;
           errorHandler = log::error;
           endHandler = null;
           break;
         case "file": {
-          String path = options.getAt();
-          if (path == null) {
-            throw new IllegalArgumentException("Missing 'dest' field in report options specifying the file name");
+          if (location == null) {
+            throw new IllegalArgumentException("Invalid file report configuration: " + to + " must follow file: + address");
           }
           if (vertx == null) {
             throw new IllegalArgumentException("No vertx provided for filesystem reporting");
           }
-          AsyncFile file = vertx.fileSystem().openBlocking(path, new OpenOptions());
+          AsyncFile file = vertx.fileSystem().openBlocking(location, new OpenOptions());
           infoHandler = msg -> file.write(msg.appendString(System.lineSeparator()));
           PrintWriter writer = new PrintWriter(new Writer() {
             public void write(char[] cbuf, int off, int len) throws IOException {
@@ -90,7 +98,7 @@ public class DefaultReporterFactory implements ReporterFactory {
           throw new IllegalArgumentException("Illegal reporter name <" + to + ">");
       }
       String format = options.getFormat();
-      switch (format.toLowerCase()) {
+      switch (format) {
         case "simple":
           return new SimpleFormatter(infoHandler, errorHandler, endHandler);
         case "junit":
