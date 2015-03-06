@@ -402,7 +402,7 @@ suite.run()
 
 ----
 
-The test suite can also be ran with a specified `Vertx` instance:
+The test suite can also be ran with a specified `link:groovydoc/io/vertx/groovy/core/Vertx.html[Vertx]` instance:
 
 .Provides a Vertx instance to run the test suite
 [source,groovy]

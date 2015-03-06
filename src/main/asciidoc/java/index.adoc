@@ -137,7 +137,7 @@ the _beforeEach_ callback reported a failure.
 
 == Asserting
 
-Vertx Unit provides the `link:apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` object for doing assertions in test cases. The _context_
+Vertx Unit provides the `link:../../apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` object for doing assertions in test cases. The _context_
 object provides the usual methods when dealing with assertions.
 
 === assertEquals
@@ -197,7 +197,7 @@ suite.test("my_test_case", context -> {
 
 === assertInRange
 
-The `link:apidocs/io/vertx/ext/unit/TestContext.html#assertInRange-double-double-double-[assertInRange]` targets real numbers.
+The `link:../../apidocs/io/vertx/ext/unit/TestContext.html#assertInRange-double-double-double-[assertInRange]` targets real numbers.
 
 ----
 suite.test("my_test_case", context -> {
@@ -253,8 +253,8 @@ suite.test("my_test_case", context -> {
 <1> The callback exits but the test case is not terminated
 <2> The event callback from the bus terminates the test
 
-Creating an `link:apidocs/io/vertx/ext/unit/Async.html[Async]` object with the `link:apidocs/io/vertx/ext/unit/TestContext.html#async--[async]` method marks the
-executed test case as non terminated. The test case terminates when the `link:apidocs/io/vertx/ext/unit/Async.html#complete--[complete]`
+Creating an `link:../../apidocs/io/vertx/ext/unit/Async.html[Async]` object with the `link:../../apidocs/io/vertx/ext/unit/TestContext.html#async--[async]` method marks the
+executed test case as non terminated. The test case terminates when the `link:../../apidocs/io/vertx/ext/unit/Async.html#complete--[complete]`
 method is invoked.
 
 NOTE: When the `complete` callback is not invoked, the test case fails after a certain timeout.
@@ -303,7 +303,7 @@ suite.before(context -> {
 
 == Sharing objects
 
-The `link:apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` has `get`/`put`/`remove` operations for sharing state between callbacks.
+The `link:../../apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` has `get`/`put`/`remove` operations for sharing state between callbacks.
 
 Any object added during the _before_ callback is available in any other callbacks. Each test case will operate on
 a copy of the shared state, so updates will only be visible for a test case.
@@ -360,7 +360,7 @@ Other objects should be shared using the features of that language.
 [[reporting]]
 == Running
 
-When a test suite is created, it won't be executed until the `link:apidocs/io/vertx/ext/unit/TestSuite.html#run--[run]` method
+When a test suite is created, it won't be executed until the `link:../../apidocs/io/vertx/ext/unit/TestSuite.html#run--[run]` method
 is called.
 
 .Running a test suite
@@ -369,7 +369,7 @@ is called.
 suite.run();
 ----
 
-The test suite can also be ran with a specified `Vertx` instance:
+The test suite can also be ran with a specified `link:../../apidocs/io/vertx/core/Vertx.html[Vertx]` instance:
 
 .Provides a Vertx instance to run the test suite
 [source,java]
@@ -384,7 +384,7 @@ section for more details.
 
 No assumptions can be made about when the test suite will be completed, and if some code needs to be executed
 after the test suite, it should either be in the test suite _after_ callback or as callback of the
-`link:apidocs/io/vertx/ext/unit/TestCompletion.html[TestCompletion]`:
+`link:../../apidocs/io/vertx/ext/unit/TestCompletion.html[TestCompletion]`:
 
 .Test suite execution callback
 [source,java]
@@ -400,7 +400,7 @@ completion.handler(ar -> {
 });
 ----
 
-The `link:apidocs/io/vertx/ext/unit/TestCompletion.html[TestCompletion]` object provides also a `link:apidocs/io/vertx/ext/unit/TestCompletion.html#resolve-io.vertx.core.Future-[resolve]` method that
+The `link:../../apidocs/io/vertx/ext/unit/TestCompletion.html[TestCompletion]` object provides also a `link:../../apidocs/io/vertx/ext/unit/TestCompletion.html#resolve-io.vertx.core.Future-[resolve]` method that
 takes a `Future` object, this `Future` will be notified of the test suite execution:
 
 .Resolving the start Future with the test suite
@@ -438,7 +438,7 @@ of the previous task. These tasks should leverage Vert.x event loop when possibl
 current execution context (i.e the test suite is executed in a `main` or embedded in a `Verticle`) and
 wether or not a `Vertx` instance is configured.
 
-The `link:apidocs/io/vertx/ext/unit/TestOptions.html#setUseEventLoop-java.lang.Boolean-[setUseEventLoop]` configures the usage of the event
+The `link:../../apidocs/io/vertx/ext/unit/TestOptions.html#setUseEventLoop-java.lang.Boolean-[setUseEventLoop]` configures the usage of the event
 loop:
 
 .Event loop usage
@@ -525,7 +525,7 @@ example::
 
 It allow to decouple the execution of the test suite from the reporting.
 
-The messages sent over the event bus can be collected by the `link:apidocs/io/vertx/ext/unit/collect/EventBusCollector.html[EventBusCollector]`
+The messages sent over the event bus can be collected by the `link:../../apidocs/io/vertx/ext/unit/collect/EventBusCollector.html[EventBusCollector]`
 and achieve custom reporting:
 
 [source,java]
@@ -556,14 +556,14 @@ public class JUnitTestSuite {
 }
 ----
 
-The `link:apidocs/io/vertx/ext/unit/junit/VertxUnitRunner.html[VertxUnitRunner]` uses the junit annotations for introspecting the class
-and create a test suite after the class. The methods should declare a `link:apidocs/io/vertx/ext/unit/TestContext.html[TestContext]`
+The `link:../../apidocs/io/vertx/ext/unit/junit/VertxUnitRunner.html[VertxUnitRunner]` uses the junit annotations for introspecting the class
+and create a test suite after the class. The methods should declare a `link:../../apidocs/io/vertx/ext/unit/TestContext.html[TestContext]`
 argument, if they don't it is fine too. However the `TestContext` is the only way to retrieve the associated
 Vertx instance of perform asynchronous tests.
 
-The runner controls a Vertx instance for the test suite, it can be retrieved using `link:apidocs/io/vertx/ext/unit/TestContext.html#vertx--[vertx]`.
+The runner controls a Vertx instance for the test suite, it can be retrieved using `link:../../apidocs/io/vertx/ext/unit/TestContext.html#vertx--[vertx]`.
 
-A single test case can also be executed with a `link:apidocs/io/vertx/ext/unit/TestCase.html[TestCase]`:
+A single test case can also be executed with a `link:../../apidocs/io/vertx/ext/unit/TestCase.html[TestCase]`:
 
 .Run a test case in a JUnit test
 [source,java]
@@ -582,7 +582,7 @@ The Java language provides classes and it is possible to create test suites dire
 following mapping rules:
 
 The  argument methods are inspected and the public, non static methods
-with `link:apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` parameter are retained and mapped to a Vertx Unit test suite
+with `link:../../apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` parameter are retained and mapped to a Vertx Unit test suite
 via the method name:
 
 * `before` : before callback

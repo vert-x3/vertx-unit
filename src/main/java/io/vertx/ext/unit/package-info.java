@@ -230,7 +230,7 @@
  * {@link examples.Examples#running_01}
  * ----
  *
- * The test suite can also be ran with a specified `Vertx` instance:
+ * The test suite can also be ran with a specified {@link io.vertx.core.Vertx} instance:
  *
  * .Provides a Vertx instance to run the test suite
  * [source,$lang]
