@@ -390,6 +390,8 @@ after the test suite, it should either be in the test suite _after_ callback or 
 [source,java]
 ----
 TestCompletion completion = suite.run(vertx);
+
+// Simple completion callback
 completion.handler(ar -> {
   if (ar.succeeded()) {
     System.out.println("Test suite passed!");
@@ -406,15 +408,26 @@ takes a `Future` object, this `Future` will be notified of the test suite execut
 .Resolving the start Future with the test suite
 [source,java]
 ----
-TestSuite suite = TestSuite.create("my_test_suite");
-suite.test("my_test_case", context -> {
-  // Do something
-});
-suite.run().resolve(startFuture);
+TestCompletion completion = suite.run();
+
+// When the suite completes, the future is resolved
+completion.resolve(startFuture);
 ----
 
 This allow to easily create a _test_ verticle whose deployment is the test suite execution, allowing the
 code that deploys it to be easily aware of the success or failure.
+
+The completion object can also be used like a latch to block until the test suite completes. This should
+be used when the thread running the test suite is not the same than the current thread:
+
+.Blocking until the test suite completes
+[source,java]
+----
+TestCompletion completion = suite.run();
+
+// Wait until the test suite completes
+completion.await();
+----
 
 === Time out
 

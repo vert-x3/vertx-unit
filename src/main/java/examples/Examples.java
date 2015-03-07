@@ -241,8 +241,10 @@ public class Examples {
     suite.run(vertx);
   }
 
-  public static void running_03(TestSuite suite, Vertx vertx) {
+  public static void completion_01(TestSuite suite, Vertx vertx) {
     TestCompletion completion = suite.run(vertx);
+
+    // Simple completion callback
     completion.handler(ar -> {
       if (ar.succeeded()) {
         System.out.println("Test suite passed!");
@@ -253,12 +255,18 @@ public class Examples {
     });
   }
 
-  public static void running_04(Future<Void> startFuture) {
-    TestSuite suite = TestSuite.create("my_test_suite");
-    suite.test("my_test_case", context -> {
-      // Do something
-    });
-    suite.run().resolve(startFuture);
+  public static void completion_02(TestSuite suite, Future<Void> startFuture) {
+    TestCompletion completion = suite.run();
+
+    // When the suite completes, the future is resolved
+    completion.resolve(startFuture);
+  }
+
+  public static void completion_03(TestSuite suite) {
+    TestCompletion completion = suite.run();
+
+    // Wait until the test suite completes
+    completion.await();
   }
 
   public static void running_05(TestSuite suite) {

@@ -250,7 +250,7 @@
  * .Test suite execution callback
  * [source,$lang]
  * ----
- * {@link examples.Examples#running_03}
+ * {@link examples.Examples#completion_01}
  * ----
  *
  * The {@link io.vertx.ext.unit.TestCompletion} object provides also a {@link io.vertx.ext.unit.TestCompletion#resolve} method that
@@ -259,11 +259,20 @@
  * .Resolving the start Future with the test suite
  * [source,$lang]
  * ----
- * {@link examples.Examples#running_04}
+ * {@link examples.Examples#completion_02}
  * ----
  *
  * This allow to easily create a _test_ verticle whose deployment is the test suite execution, allowing the
  * code that deploys it to be easily aware of the success or failure.
+ *
+ * The completion object can also be used like a latch to block until the test suite completes. This should
+ * be used when the thread running the test suite is not the same than the current thread:
+ *
+ * .Blocking until the test suite completes
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#completion_03}
+ * ----
  *
  * === Time out
  *

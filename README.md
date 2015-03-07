@@ -13,7 +13,6 @@ See https://github.com/vert-x3/vertx-unit/blob/master/src/main/asciidoc/java/ind
     - check the same context is used when running with a context (configurable)
     - ensure that any assert is done before the completion of a test, at the moment we are doing that
       but only in the case of failure
-- add a blocking mode to wait for the result of a test suite using a latch
 - provide subtest programming model (i.e add a tests in a test)
 - consider making TestResult an @DataObject instead
 - add closeable resource to register for automatic cleanup or do something like this

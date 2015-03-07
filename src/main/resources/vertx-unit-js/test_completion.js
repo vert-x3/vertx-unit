@@ -46,6 +46,48 @@ var TestCompletion = function(j_val) {
   };
 
   /**
+   @return true if the test suite completed
+
+   @public
+
+   @return {boolean}
+   */
+  this.isCompleted = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      return j_testCompletion.isCompleted();
+    } else utils.invalidArgs();
+  };
+
+  /**
+   @return true if the test suite completed and succeeded
+
+   @public
+
+   @return {boolean}
+   */
+  this.isSucceeded = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      return j_testCompletion.isSucceeded();
+    } else utils.invalidArgs();
+  };
+
+  /**
+   @return true if the test suite completed and failed
+
+   @public
+
+   @return {boolean}
+   */
+  this.isFailed = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      return j_testCompletion.isFailed();
+    } else utils.invalidArgs();
+  };
+
+  /**
    Completion handler for the end of the test, the result is successful when all test cases pass otherwise
    it is failed.
 
@@ -62,6 +104,23 @@ var TestCompletion = function(j_val) {
         completionHandler(null, ar.cause());
       }
     });
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Cause the current thread to wait until the test suite completes with a configurable timeout.<p/>
+  
+   If completion times out or the current thread is interrupted, an exception will be thrown.
+
+   @public
+   @param timeoutMillis {number} the timeout in milliseconds 
+   */
+  this.await = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      j_testCompletion.await();
+    }  else if (__args.length === 1 && typeof __args[0] ==='number') {
+      j_testCompletion.await(__args[0]);
     } else utils.invalidArgs();
   };
 

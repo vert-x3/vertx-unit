@@ -124,8 +124,8 @@ var TestSuite = function(j_val) {
    Run the testsuite with the specified <code>options</code> and the specified <code>vertx</code> instance.<p/>
   
    The test suite will be executed on the event loop provided by the <code>vertx</code> argument when
-   <a href="../../cheatsheet/TestOptions.html">TestOptions</a> is not set to <code>false</code>. The returned
-   {@link TestCompletion} object can be used to get a completion callback.
+   link is not set to <code>false</code>. The returned
+   link object can be used to get a completion callback.
 
    @public
    @param vertx {Vertx} the vertx instance 

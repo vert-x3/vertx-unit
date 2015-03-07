@@ -7,6 +7,9 @@ import io.vertx.ext.unit.TestCompletion;
 import io.vertx.ext.unit.report.TestSuiteReport;
 import io.vertx.ext.unit.report.Reporter;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -14,6 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion {
 
+  private final CountDownLatch latch = new CountDownLatch(1);
   private final Reporter[] reporters;
 
   private volatile Future<?> completion;
@@ -40,6 +44,21 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
         future.fail(failure.get());
       }
     }
+  }
+
+  @Override
+  public boolean isCompleted() {
+    return completed;
+  }
+
+  @Override
+  public boolean isSucceeded() {
+    return completed && failure.get() == null;
+  }
+
+  @Override
+  public boolean isFailed() {
+    return completed && failure.get() != null;
   }
 
   @Override
@@ -82,6 +101,7 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
         reporters[i].reportEndTestSuite(reports[i]);
       }
       completed = true;
+      latch.countDown();
       if (completion != null) {
         if (failure.get() == null) {
           completion.complete();
@@ -90,5 +110,28 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
         }
       }
     });
+  }
+
+  @Override
+  public void await() {
+    try {
+      latch.await();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      Helper.uncheckedThrow(e);
+    }
+  }
+
+  @Override
+  public void await(long timeoutMillis) {
+    try {
+      boolean ok = latch.await(timeoutMillis, TimeUnit.MILLISECONDS);
+      if (!ok) {
+        Helper.uncheckedThrow(new TimeoutException("Timed out"));
+      }
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      Helper.uncheckedThrow(e);
+    }
   }
 }

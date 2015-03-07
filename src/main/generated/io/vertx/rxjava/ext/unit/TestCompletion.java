@@ -53,6 +53,30 @@ public class TestCompletion {
   }
 
   /**
+   * @return true if the test suite completed
+   */
+  public boolean isCompleted() {
+    boolean ret = this.delegate.isCompleted();
+    return ret;
+  }
+
+  /**
+   * @return true if the test suite completed and succeeded
+   */
+  public boolean isSucceeded() {
+    boolean ret = this.delegate.isSucceeded();
+    return ret;
+  }
+
+  /**
+   * @return true if the test suite completed and failed
+   */
+  public boolean isFailed() {
+    boolean ret = this.delegate.isFailed();
+    return ret;
+  }
+
+  /**
    * Completion handler for the end of the test, the result is successful when all test cases pass otherwise
    * it is failed.
    *
@@ -66,6 +90,26 @@ public class TestCompletion {
     io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
     handler(completionHandler.toHandler());
     return completionHandler;
+  }
+
+  /**
+   * Cause the current thread to wait until the test suite completes.<p/>
+   *
+   * If the current thread is interrupted, an exception will be thrown.
+   */
+  public void await() {
+    this.delegate.await();
+  }
+
+  /**
+   * Cause the current thread to wait until the test suite completes with a configurable timeout.<p/>
+   *
+   * If completion times out or the current thread is interrupted, an exception will be thrown.
+   *
+   * @param timeoutMillis the timeout in milliseconds
+   */
+  public void await(long timeoutMillis) {
+    this.delegate.await(timeoutMillis);
   }
 
 
