@@ -1,7 +1,6 @@
 package io.vertx.ext.unit.report.impl;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
-import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.impl.TestResultImpl;
@@ -23,7 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -44,10 +43,10 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
   }
 
   private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.ENGLISH);
-  private final Handler<String> dataHandler;
+  private final Function<String, ReportStream> streamFactory;
 
-  public JunitXmlFormatter(Consumer<Buffer> dataHandler) {
-    this.dataHandler = msg -> dataHandler.accept(Buffer.buffer(msg, "UTF-8"));
+  public JunitXmlFormatter(Function<String, ReportStream> streamFactory) {
+    this.streamFactory = streamFactory;
   }
 
   @Override
@@ -81,6 +80,7 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
   @Override
   public void reportEndTestSuite(XmlReport report) {
     // Create xml and send it
+    ReportStream stream = streamFactory.apply(report.name);
     try {
       StringWriter buffer = new StringWriter();
       XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
@@ -119,9 +119,11 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
       buffer.getBuffer().setLength(0);
       StreamResult result = new StreamResult(buffer);
       transformer.transform(source, result);
-      dataHandler.handle(buffer.toString());
+      stream.info(Buffer.buffer(buffer.toString(), "UTF-8"));
     } catch (Exception e) {
       e.printStackTrace();
+    } finally {
+      stream.end();
     }
   }
 

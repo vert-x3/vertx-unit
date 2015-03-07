@@ -277,12 +277,19 @@ public class Examples {
   }
 
   public static void reporter_01(TestSuite suite) {
+
+    // Report to console
+    ReportOptions consoleReport = new ReportOptions().
+        setTo("console");
+
+    // Report junit files to the current directory
+    ReportOptions junitReport = new ReportOptions().
+        setTo("file:.").
+        setFormat("junit");
+
     suite.run(new TestOptions().
-            addReporter(new ReportOptions().
-                setTo("console")).
-            addReporter(new ReportOptions().
-                setTo("file:report.xml").
-                setFormat("junit"))
+            addReporter(consoleReport).
+            addReporter(junitReport)
     );
   }
 

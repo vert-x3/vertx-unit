@@ -17,7 +17,6 @@ See https://github.com/vert-x3/vertx-unit/blob/master/src/main/asciidoc/java/ind
 - consider making TestResult an @DataObject instead
 - add closeable resource to register for automatic cleanup or do something like this
 - see how to extend state sharing to non json / non basic
-- report to directory instead of file (for multiplexing based on test suite name)
 - filtering
 - handle reporter/formatter failures
 - same name test replaces previous ?

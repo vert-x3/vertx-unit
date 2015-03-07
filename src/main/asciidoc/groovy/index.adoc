@@ -529,15 +529,22 @@ configure one or several:
 .Using the console reporter and as a junit xml file
 [source,groovy]
 ----
+
+// Report to console
+def consoleReport = [
+  to:"console"
+]
+
+// Report junit files to the current directory
+def junitReport = [
+  to:"file:.",
+  format:"junit"
+]
+
 suite.run([
   reporters:[
-    [
-      to:"console"
-    ],
-    [
-      to:"file:report.xml",
-      format:"junit"
-    ]
+    consoleReport,
+    junitReport
   ]
 ])
 
@@ -557,11 +564,15 @@ _simple_ or _junit_
 Reports to a file, a `Vertx` instance must be provided:
 
 to::
-_file_ `:` _file name_
+_file_ `:` _dir name_
 format::
 _simple_ or _junit_
 example::
-`file:report.xml`
+`file:.`
+
+The file reporter will create files in the configured directory, the files will be named after the
+test suite name executed and the format (i.e _simple_ creates _txt_ files and _junit_ creates _xml_
+files).
 
 === Log reporting
 

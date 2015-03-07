@@ -348,11 +348,15 @@
  * Reports to a file, a `Vertx` instance must be provided:
  *
  * to::
- * _file_ `:` _file name_
+ * _file_ `:` _dir name_
  * format::
  * _simple_ or _junit_
  * example::
- * `file:report.xml`
+ * `file:.`
+ *
+ * The file reporter will create files in the configured directory, the files will be named after the
+ * test suite name executed and the format (i.e _simple_ creates _txt_ files and _junit_ creates _xml_
+ * files).
  *
  * === Log reporting
  *

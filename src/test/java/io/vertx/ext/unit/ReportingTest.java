@@ -13,6 +13,8 @@ import io.vertx.ext.unit.report.impl.SimpleFormatter;
 import io.vertx.test.core.VertxTestBase;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
@@ -97,12 +99,28 @@ public class ReportingTest extends VertxTestBase {
   @org.junit.Test
   public void testReportToFile() {
     FileSystem fs = vertx.fileSystem();
-    String file = "target/report.txt";
-    assertFalse(fs.existsBlocking(file));
-    suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("file:" + file)));
+    String file = "target";
     assertTrue(fs.existsBlocking(file));
-    FileProps props = fs.propsBlocking(file);
-    assertTrue(props.size() > 0);
+    assertTrue(fs.propsBlocking(file).isDirectory());
+    suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("file:" + file)));
+    String path = file + File.separator + "my_suite.txt";
+    assertTrue(fs.existsBlocking(path));
+    int count = 1000;
+    while (true) {
+      FileProps props = fs.propsBlocking(path);
+      if (props.isRegularFile() && props.size() > 0) {
+        break;
+      } else {
+        if (count-- > 0) {
+          try {
+            Thread.sleep(1);
+          } catch (InterruptedException ignore) {
+          }
+        } else {
+          fail();
+        }
+      }
+    }
   }
 
   @org.junit.Test
