@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-class Result {
+public class Result {
 
   final Map<String, Object> attributes;
   final long beginTime;
@@ -21,5 +21,9 @@ class Result {
 
   long duration() {
     return endTime - beginTime;
+  }
+
+  public Throwable getFailure() {
+    return failure;
   }
 }

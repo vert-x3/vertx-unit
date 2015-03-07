@@ -14,7 +14,7 @@ import java.util.function.Function;
 /**
 * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
 */
-class TestContextImpl implements TestContext, Task<Result> {
+public class TestContextImpl implements TestContext, Task<Result> {
 
   private static final int STATUS_RUNNING = 0, STATUS_ASYNC = 1, STATUS_COMPLETED = 2;
 

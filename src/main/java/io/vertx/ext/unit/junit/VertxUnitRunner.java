@@ -1,137 +1,185 @@
 package io.vertx.ext.unit.junit;
 
-import io.vertx.core.Vertx;
+import io.vertx.core.Handler;
 import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.TestSuite;
 import io.vertx.ext.unit.impl.Helper;
-import io.vertx.ext.unit.impl.TestCaseImpl;
-import io.vertx.ext.unit.impl.TestSuiteImpl;
-import io.vertx.ext.unit.impl.TestSuiteRunner;
+import io.vertx.ext.unit.impl.Result;
+import io.vertx.ext.unit.impl.Task;
+import io.vertx.ext.unit.impl.TestContextImpl;
+import io.vertx.ext.unit.impl.TestSuiteContext;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.Description;
-import org.junit.runner.Runner;
-import org.junit.runner.notification.Failure;
-import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.MultipleFailureException;
+import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.function.Supplier;
+import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
- * Runner for running a Vertx Unit suite as a JUnit test class.
- *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class VertxUnitRunner extends Runner {
+public class VertxUnitRunner extends BlockJUnit4ClassRunner {
 
-  private final Class<?> testClass;
-  private Description suiteDesc;
-  private TestSuiteImpl suite;
-  private Long timeout;
+  private final TestClass testClass;
+  private final Long timeout;
+  private Map<String, Object> classAttributes = new HashMap<>();
+  private Map<String, Object> testAttributes;
 
-  public VertxUnitRunner(Class<?> testClass) throws InitializationError {
-    this(testClass, null);
+  public VertxUnitRunner(Class<?> klass) throws InitializationError {
+    this(klass, null);
   }
 
-  private static final Class<?>[] abc = {TestContext.class};
-
-  private static List<Method> scan(TestClass testClass, Class<? extends Annotation> annotation) {
-    List<Method> methods = new ArrayList<>();
-    for (FrameworkMethod testCaseFrameworkMethod : testClass.getAnnotatedMethods(annotation)) {
-      Method method = testCaseFrameworkMethod.getMethod();
-      Class<?>[] paramTypes = method.getParameterTypes();
-      if (Modifier.isPublic(method.getModifiers()) && paramTypes.length == 0 || Arrays.equals(abc, paramTypes)) {
-        methods.add(method);
-      }
-    }
-    return methods;
-  }
-
-  public VertxUnitRunner(Class<?> testClass, Long timeout) throws InitializationError {
-    TestClass tc = new TestClass(testClass);
-
-    // Create an instance now, maybe defer to later.
-    Object instance;
-    try {
-      instance = testClass.newInstance();
-    } catch (Exception e) {
-      throw new InitializationError(e);
-    }
-    Supplier<?> supplier = () -> instance;
-
-    this.suite = (TestSuiteImpl) TestSuite.create(testClass.getName());
-
-    scan(tc, Test.class).forEach(method -> suite.test(method.getName(), Helper.invoker(method, supplier)));
-    scan(tc, Before.class).forEach(method -> suite.beforeEach(Helper.invoker(method, supplier)));
-    scan(tc, After.class).forEach(method -> suite.afterEach(Helper.invoker(method, supplier)));
-    scan(tc, BeforeClass.class).forEach(method -> suite.before(Helper.invoker(method, supplier)));
-    scan(tc, AfterClass.class).forEach(method -> suite.after(Helper.invoker(method, supplier)));
-
+  public VertxUnitRunner(Class<?> klass, Long timeout) throws InitializationError {
+    super(klass);
     this.timeout = timeout;
-    this.testClass = testClass;
-    this.suiteDesc = Description.createTestDescription(testClass.getName(), "foo");
-    for (TestCaseImpl testCase : suite.testCases()) {
-      suiteDesc.addChild(Description.createTestDescription(testClass.getName(), testCase.name()));
+    this.testClass = new TestClass(klass);
+  }
+
+  @Override
+  protected void validatePublicVoidNoArgMethods(Class<? extends Annotation> annotation, boolean isStatic, List<Throwable> errors) {
+    if (annotation == Test.class || annotation == Before.class || annotation == After.class ||
+        annotation == BeforeClass.class || annotation == AfterClass.class) {
+      List<FrameworkMethod> fMethods = getTestClass().getAnnotatedMethods(annotation);
+      for (FrameworkMethod fMethod : fMethods) {
+        fMethod.validatePublicVoid(isStatic, errors);
+        Class<?>[] paramTypes = fMethod.getMethod().getParameterTypes();
+        if (!(paramTypes.length == 0 || (paramTypes.length == 1 && paramTypes[0].equals(TestContext.class)))) {
+          errors.add(new Exception("Method " + fMethod.getName() + " should have no parameters or " +
+              "the " + TestContext.class.getName() + " parameter"));
+        }
+      }
+    } else {
+      super.validatePublicVoidNoArgMethods(annotation, isStatic, errors);
     }
   }
 
   @Override
-  public Description getDescription() {
-    Description suiteDesc = Description.createSuiteDescription(testClass.getName());
-    suiteDesc.addChild(this.suiteDesc);
-    return suiteDesc;
+  protected Statement methodInvoker(FrameworkMethod method, Object test) {
+    return new Statement() {
+      @Override
+      public void evaluate() throws Throwable {
+        invokeExplosively(testAttributes, method, test);
+      }
+    };
   }
 
-  @Override
-  public void run(RunNotifier notifier) {
-    CountDownLatch doneLatch = new CountDownLatch(1);
-    Vertx vertx = Vertx.vertx();
-    TestSuiteRunner runner = suite.runner();
-    if (timeout != null) {
-      runner.setTimeout(timeout);
-    }
-    runner.setVertx(vertx);
-    runner.handler(testSuiteReport -> {
-      testSuiteReport.handler(testCaseReport -> {
-        Description testCaseDesc = Description.createTestDescription(testClass.getName(), testCaseReport.name());
-        notifier.fireTestStarted(testCaseDesc);
-        testCaseReport.endHandler(result -> {
-          if (result.succeeded()) {
-            notifier.fireTestFinished(testCaseDesc);
-          } else {
-            notifier.fireTestFailure(new Failure(testCaseDesc, result.failure().cause()));
-          }
-        });
-      });
-      testSuiteReport.exceptionHandler(err -> {
-        notifier.fireTestFailure(new Failure(suiteDesc, err));
-      });
-      testSuiteReport.endHandler(v -> {
-        doneLatch.countDown();
-      });
-    });
-    runner.run();
+  private void invokeExplosively(Map<String, Object> attributes, FrameworkMethod fMethod, Object test) throws Throwable {
+    BlockingQueue<Result> queue = new ArrayBlockingQueue<>(1);
+    Task<Result> task = (result, context) -> queue.add(result);
+    Handler<TestContext> callback = context -> {
+      Method method = fMethod.getMethod();
+      Class<?>[] paramTypes = method.getParameterTypes();
+      try {
+        if (paramTypes.length == 0) {
+          method.invoke(test);
+        } else {
+          method.invoke(test, context);
+        }
+      } catch (InvocationTargetException e) {
+        Helper.uncheckedThrow(e.getCause());
+      } catch (IllegalAccessException e) {
+        Helper.uncheckedThrow(e);
+      }
+    };
+    TestContextImpl context = new TestContextImpl(
+        attributes,
+        callback,
+        err -> {},
+        task,
+        timeout != null ? timeout : 2 * 60 * 1000);
+    context.execute(null, new TestSuiteContext(null, null));
+    Result result;
     try {
-      doneLatch.await();
-      CountDownLatch closeLatch = new CountDownLatch(1);
-      vertx.close(v -> {
-        closeLatch.countDown();
-      });
-      closeLatch.await();
+      result = queue.take();
     } catch (InterruptedException e) {
+      // Should we do something ?
       Thread.currentThread().interrupt();
+      throw e;
+    }
+    Throwable failure = result.getFailure();
+    if (failure != null) {
+      throw failure;
+    }
+  }
+
+  @Override
+  protected Statement withBefores(FrameworkMethod method, Object target, Statement statement) {
+    testAttributes = new HashMap<>(classAttributes);
+    return withBefores(testAttributes, getTestClass().getAnnotatedMethods(Before.class), target, statement);
+  }
+
+  @Override
+  protected Statement withAfters(FrameworkMethod method, Object target, Statement statement) {
+    List<FrameworkMethod> afters = getTestClass().getAnnotatedMethods(After.class);
+    return withAfters(testAttributes, afters, target, statement);
+  }
+
+  @Override
+  protected Statement withBeforeClasses(Statement statement) {
+    List<FrameworkMethod> befores = testClass.getAnnotatedMethods(BeforeClass.class);
+    return withBefores(classAttributes, befores, null, statement);
+  }
+
+  @Override
+  protected Statement withAfterClasses(Statement statement) {
+    List<FrameworkMethod> afters = getTestClass().getAnnotatedMethods(AfterClass.class);
+    return withAfters(classAttributes, afters, null, statement);
+  }
+
+  private Statement withBefores(Map<String, Object> attributes, List<FrameworkMethod> befores, Object target, Statement statement) {
+    if (befores.isEmpty()) {
+      return statement;
+    } else {
+      return new Statement() {
+        @Override
+        public void evaluate() throws Throwable {
+          for (FrameworkMethod before : befores) {
+            invokeExplosively(attributes, before, target);
+          }
+          statement.evaluate();
+        }
+      };
+    }
+  }
+
+  private Statement withAfters(Map<String, Object> attributes, List<FrameworkMethod> afters, Object target, Statement statement) {
+    if (afters.isEmpty()) {
+      return statement;
+    } else {
+      return new Statement() {
+        @Override
+        public void evaluate() throws Throwable {
+          List<Throwable> errors = new ArrayList<Throwable>();
+          try {
+            statement.evaluate();
+          } catch (Throwable e) {
+            errors.add(e);
+          } finally {
+            for (FrameworkMethod after : afters) {
+              try {
+                invokeExplosively(attributes, after, target);
+              } catch (Throwable e) {
+                errors.add(e);
+              }
+            }
+          }
+          MultipleFailureException.assertEmpty(errors);
+        }
+      };
     }
   }
 }

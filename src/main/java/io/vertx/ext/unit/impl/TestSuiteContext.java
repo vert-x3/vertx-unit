@@ -8,7 +8,7 @@ import io.vertx.core.Vertx;
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-class TestSuiteContext {
+public class TestSuiteContext {
 
   private final Vertx vertx;
   private final Context context;

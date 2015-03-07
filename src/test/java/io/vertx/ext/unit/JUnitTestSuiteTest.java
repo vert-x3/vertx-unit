@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 public class JUnitTestSuiteTest {
 
   @BeforeClass
-  public void before(TestContext context) {
+  public static void before(TestContext context) {
     System.out.println("before");
   }
 
@@ -42,7 +42,7 @@ public class JUnitTestSuiteTest {
   }
 
   @AfterClass
-  public void after(TestContext context) {
+  public static void after(TestContext context) {
     System.out.println("after");
   }
 }
