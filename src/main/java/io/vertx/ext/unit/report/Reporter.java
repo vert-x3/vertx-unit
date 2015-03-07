@@ -18,19 +18,12 @@ public interface Reporter<R> {
   }
 
   /**
-   * Create an empty report.
-   *
-   * @return a new empty report
-   */
-  R createReport();
-
-  /**
    * Signals the test suite began.
    *
-   * @param report the report
    * @param name the test suite name
+   * @return the report object
    */
-  void reportBeginTestSuite(R report, String name);
+  R reportBeginTestSuite(String name);
 
   /**
    * Signals a test case began.

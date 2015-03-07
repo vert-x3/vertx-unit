@@ -31,12 +31,16 @@ import java.util.function.Consumer;
 public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> {
 
   public static class XmlReport {
-    Date timestamp;
-    String name;
+    final Date timestamp;
+    final String name;
     List<TestResult> results = new ArrayList<>();
     AtomicInteger errors = new AtomicInteger();
     AtomicInteger failures = new AtomicInteger();
     AtomicLong time = new AtomicLong();
+    private XmlReport(Date timestamp, String name) {
+      this.timestamp = timestamp;
+      this.name = name;
+    }
   }
 
   private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.ENGLISH);
@@ -47,14 +51,8 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
   }
 
   @Override
-  public XmlReport createReport() {
-    return new XmlReport();
-  }
-
-  @Override
-  public void reportBeginTestSuite(XmlReport report, String name) {
-    report.name = name;
-    report.timestamp = new Date();
+  public XmlReport reportBeginTestSuite(String name) {
+    return new XmlReport(new Date(), name);
   }
 
   @Override

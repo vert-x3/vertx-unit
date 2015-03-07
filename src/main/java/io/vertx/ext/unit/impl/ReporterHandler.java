@@ -72,8 +72,7 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
   public void handle(TestSuiteReport testsuite) {
     Object[] reports = new Object[reporters.length];
     for (int i = 0;i < reporters.length;i++) {
-      reports[i] = reporters[i].createReport();
-      reporters[i].reportBeginTestSuite(reports[i], testsuite.name());
+      reports[i] = reporters[i].reportBeginTestSuite(testsuite.name());
     }
     testsuite.handler(testcase -> {
       for (int i = 0;i < reporters.length;i++) {

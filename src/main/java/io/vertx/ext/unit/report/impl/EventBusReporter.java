@@ -14,7 +14,10 @@ import io.vertx.ext.unit.report.Reporter;
 public class EventBusReporter implements Reporter<EventBusReporter.EventBusReport> {
 
   public static class EventBusReport {
-    String name;
+    final String name;
+    public EventBusReport(String name) {
+      this.name = name;
+    }
   }
 
   private final Vertx vertx;
@@ -26,16 +29,12 @@ public class EventBusReporter implements Reporter<EventBusReporter.EventBusRepor
   }
 
   @Override
-  public EventBusReport createReport() {
-    return new EventBusReport();
-  }
-
-  @Override
-  public void reportBeginTestSuite(EventBusReport report, String name) {
-    report.name = name;
+  public EventBusReport reportBeginTestSuite(String name) {
+    EventBusReport report = new EventBusReport(name);
     vertx.eventBus().publish(address, new JsonObject().
         put("type", EventBusCollector.EVENT_TEST_SUITE_BEGIN).
         put("name", name));
+    return report;
   }
 
   @Override

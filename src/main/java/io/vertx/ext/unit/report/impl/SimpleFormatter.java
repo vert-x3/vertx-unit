@@ -24,21 +24,20 @@ public class SimpleFormatter implements Reporter<SimpleFormatter.ReportImpl> {
   }
 
   public static class ReportImpl {
-    private String name;
+    private final String name;
     private int run;
     private int failures;
     private int errors;
+    public ReportImpl(String name) {
+      this.name = name;
+    }
   }
 
   @Override
-  public ReportImpl createReport() {
-    return new ReportImpl();
-  }
-
-  @Override
-  public void reportBeginTestSuite(ReportImpl report, String name) {
-    report.name = name;
+  public ReportImpl reportBeginTestSuite(String name) {
+    ReportImpl report = new ReportImpl(name);
     info.accept(Buffer.buffer("Begin test suite " + name));
+    return report;
   }
 
   @Override
