@@ -47,7 +47,7 @@ public class EventBusCollector {
   }
 
   /**
-   * Create a message handler reportsing with the specified options. The returned
+   * Create a message handler reporting with the specified options. The returned
    * message handler can be registered to an event bus.
    *
    * @param options the reporting options

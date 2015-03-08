@@ -53,7 +53,7 @@ public interface EventBusCollector {
   String EVENT_TEST_CASE_END = "testCaseEnd";
 
   /**
-   * Create a message handler reportsing with the specified options. The returned
+   * Create a message handler reporting with the specified options. The returned
    * message handler can be registered to an event bus.
    *
    * @param options the reporting options
