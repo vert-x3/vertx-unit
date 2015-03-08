@@ -409,8 +409,6 @@
  * argument, if they don't it is fine too. However the `TestContext` is the only way to retrieve the associated
  * Vertx instance of perform asynchronous tests.
  *
- * The runner controls a Vertx instance for the test suite, it can be retrieved using {@link io.vertx.ext.unit.TestContext#vertx()}.
- *
  * A single test case can also be executed with a {@link io.vertx.ext.unit.TestCase}:
  *
  * .Run a test case in a JUnit test

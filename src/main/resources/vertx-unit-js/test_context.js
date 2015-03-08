@@ -239,24 +239,6 @@ var TestContext = function(j_val) {
   };
 
   /**
-   Returns the vertx instance associated with this test. The value may be null if no vertx instance was
-   specified when running the test suite.
-
-   @public
-
-   @return {Vertx} the vertx instance
-   */
-  this.vertx = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      if (that.cachedvertx == null) {
-        that.cachedvertx = new Vertx(j_testContext.vertx());
-      }
-      return that.cachedvertx;
-    } else utils.invalidArgs();
-  };
-
-  /**
    Create and returns a new async object, the returned async controls the completion of the test. The test case
    will complete when all the async objects have their link method called
    at least once.<p/>

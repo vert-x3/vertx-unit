@@ -131,12 +131,12 @@ class TestSuiteReportImpl implements TestSuiteReport {
             "be executed in a Verticle");
       }
     }
-    new TestSuiteContext(null, context).run(buildTask());
+    new TestSuiteContext(context).run(buildTask());
   }
 
   public void run(Vertx vertx, Boolean useEventLoop) {
     Context context = Boolean.FALSE.equals(useEventLoop) ? null : vertx.getOrCreateContext();
     Task<?> task = buildTask();
-    new TestSuiteContext(vertx, context).run(task);
+    new TestSuiteContext(context).run(task);
   }
 }

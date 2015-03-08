@@ -1,7 +1,6 @@
 package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 
@@ -177,11 +176,6 @@ public class TestContextImpl implements TestContext, Task<Result> {
       }
     }
     tryEnd();
-  }
-
-  @Override
-  public Vertx vertx() {
-    return context.vertx();
   }
 
   @Override

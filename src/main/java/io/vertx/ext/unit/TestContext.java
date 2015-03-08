@@ -212,15 +212,6 @@ public interface TestContext {
   void fail(String message);
 
   /**
-   * Returns the vertx instance associated with this test. The value may be null if no vertx instance was
-   * specified when running the test suite.
-   *
-   * @return the vertx instance
-   */
-  @CacheReturn
-  Vertx vertx();
-
-  /**
    * Create and returns a new async object, the returned async controls the completion of the test. The test case
    * will complete when all the async objects have their {@link io.vertx.ext.unit.Async#complete()} method called
    * at least once.<p/>

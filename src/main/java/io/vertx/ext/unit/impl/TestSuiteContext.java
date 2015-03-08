@@ -1,7 +1,6 @@
 package io.vertx.ext.unit.impl;
 
 import io.vertx.core.Context;
-import io.vertx.core.Vertx;
 
 /**
  * The test suite global context.
@@ -10,16 +9,10 @@ import io.vertx.core.Vertx;
  */
 public class TestSuiteContext {
 
-  private final Vertx vertx;
   private final Context context;
 
-  public TestSuiteContext(Vertx vertx, Context context) {
-    this.vertx = vertx;
+  public TestSuiteContext(Context context) {
     this.context = context;
-  }
-
-  Vertx vertx() {
-    return vertx;
   }
 
   <T> void run(Task<T> task, T value) {

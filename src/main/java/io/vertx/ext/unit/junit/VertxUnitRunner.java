@@ -101,7 +101,7 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
         err -> {},
         task,
         timeout != null ? timeout : 2 * 60 * 1000);
-    context.execute(null, new TestSuiteContext(null, null));
+    context.execute(null, new TestSuiteContext(null));
     Result result;
     try {
       result = queue.take();

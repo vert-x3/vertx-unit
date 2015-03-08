@@ -19,7 +19,6 @@ package io.vertx.rxjava.ext.unit;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
-import io.vertx.rxjava.core.Vertx;
 
 /**
  * The test context is used for performing test assertions and manage the completion of the test. This context
@@ -281,21 +280,6 @@ public class TestContext {
   }
 
   /**
-   * Returns the vertx instance associated with this test. The value may be null if no vertx instance was
-   * specified when running the test suite.
-   *
-   * @return the vertx instance
-   */
-  public Vertx vertx() {
-    if (cached_0 != null) {
-      return cached_0;
-    }
-    Vertx ret= Vertx.newInstance(this.delegate.vertx());
-    cached_0 = ret;
-    return ret;
-  }
-
-  /**
    * Create and returns a new async object, the returned async controls the completion of the test. The test case
    * will complete when all the async objects have their {@link io.vertx.ext.unit.Async#complete()} method called
    * at least once.<p/>
@@ -309,7 +293,6 @@ public class TestContext {
     return ret;
   }
 
-  private Vertx cached_0;
 
   public static TestContext newInstance(io.vertx.ext.unit.TestContext arg) {
     return new TestContext(arg);

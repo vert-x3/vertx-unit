@@ -40,17 +40,17 @@ public class TestCaseImpl implements TestCase {
 
   @Override
   public void awaitSuccess(long timeout, TimeUnit unit) {
-    awaitSuccess(new TestSuiteContext(null, Vertx.currentContext()), timeout, unit);
+    awaitSuccess(new TestSuiteContext(Vertx.currentContext()), timeout, unit);
   }
 
   @Override
   public void awaitSuccess(Vertx vertx, long timeout, TimeUnit unit) {
-    awaitSuccess(new TestSuiteContext(vertx, vertx.getOrCreateContext()), timeout, unit);
+    awaitSuccess(new TestSuiteContext(vertx.getOrCreateContext()), timeout, unit);
   }
 
   @Override
   public void awaitSuccess(Vertx vertx) {
-    awaitSuccess(new TestSuiteContext(vertx, vertx.getOrCreateContext()), 2, TimeUnit.MINUTES);
+    awaitSuccess(new TestSuiteContext(vertx.getOrCreateContext()), 2, TimeUnit.MINUTES);
   }
 
   private void awaitSuccess(TestSuiteContext context, long timeout, TimeUnit unit) {
