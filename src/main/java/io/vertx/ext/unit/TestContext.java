@@ -1,9 +1,7 @@
 package io.vertx.ext.unit;
 
-import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.Vertx;
 
 /**
  * The test context is used for performing test assertions and manage the completion of the test. This context
