@@ -402,7 +402,7 @@ suite.run();
 
 ----
 
-The test suite can also be ran with a specified `link:jsdoc/vertx-Vertx.html[Vertx]` instance:
+The test suite can also be ran with a specified `link:../../vertx-core/js/jsdoc/vertx-Vertx.html[Vertx]` instance:
 
 .Provides a Vertx instance to run the test suite
 [source,js]
