@@ -44,7 +44,7 @@ public class Async {
    * Signals the asynchronous operation is done, this method should be called only once, if the method is called
    * another time it will throw an {@code IllegalStateException} to signal the error.
    */
-  public void complete() {
+  public void complete() { 
     this.delegate.complete();
   }
 

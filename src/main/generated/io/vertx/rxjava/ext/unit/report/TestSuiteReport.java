@@ -56,7 +56,7 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
   /**
    * @return the test suite name
    */
-  public String name() {
+  public String name() { 
     if (cached_0 != null) {
       return cached_0;
     }
@@ -72,12 +72,12 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
    * @param handler the exception handler
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuiteReport exceptionHandler(Handler<Throwable> handler) {
+  public TestSuiteReport exceptionHandler(Handler<Throwable> handler) { 
     this.delegate.exceptionHandler(handler);
     return this;
   }
 
-  public TestSuiteReport handler(Handler<TestCaseReport> handler) {
+  public TestSuiteReport handler(Handler<TestCaseReport> handler) { 
     this.delegate.handler(new Handler<io.vertx.ext.unit.report.TestCaseReport>() {
       public void handle(io.vertx.ext.unit.report.TestCaseReport event) {
         handler.handle(new TestCaseReport(event));
@@ -86,17 +86,17 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
     return this;
   }
 
-  public TestSuiteReport pause() {
+  public TestSuiteReport pause() { 
     this.delegate.pause();
     return this;
   }
 
-  public TestSuiteReport resume() {
+  public TestSuiteReport resume() { 
     this.delegate.resume();
     return this;
   }
 
-  public TestSuiteReport endHandler(Handler<Void> endHandler) {
+  public TestSuiteReport endHandler(Handler<Void> endHandler) { 
     this.delegate.endHandler(endHandler);
     return this;
   }

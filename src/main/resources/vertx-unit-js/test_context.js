@@ -240,7 +240,7 @@ var TestContext = function(j_val) {
 
   /**
    Create and returns a new async object, the returned async controls the completion of the test. The test case
-   will complete when all the async objects have their link method called
+   will complete when all the async objects have their {@link Async#complete} method called
    at least once.<p/>
   
    This method shall be used for creating asynchronous exit points for the executed test.

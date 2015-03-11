@@ -53,12 +53,12 @@ public class EventBusCollector {
    * @param options the reporting options
    * @return the message handler
    */
-  public static EventBusCollector create(Vertx vertx, ReportingOptions options) {
+  public static EventBusCollector create(Vertx vertx, ReportingOptions options) { 
     EventBusCollector ret= EventBusCollector.newInstance(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx) vertx.getDelegate(), options));
     return ret;
   }
 
-  public static EventBusCollector create(Vertx vertx, Handler<TestSuiteReport> reporter) {
+  public static EventBusCollector create(Vertx vertx, Handler<TestSuiteReport> reporter) { 
     EventBusCollector ret= EventBusCollector.newInstance(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx) vertx.getDelegate(), new Handler<io.vertx.ext.unit.report.TestSuiteReport>() {
       public void handle(io.vertx.ext.unit.report.TestSuiteReport event) {
         reporter.handle(new TestSuiteReport(event));
@@ -73,7 +73,7 @@ public class EventBusCollector {
    * @param address the registration address
    * @return the subscribed message consumer
    */
-  public MessageConsumer register(String address) {
+  public MessageConsumer register(String address) { 
     MessageConsumer ret= MessageConsumer.newInstance(this.delegate.register(address));
     return ret;
   }

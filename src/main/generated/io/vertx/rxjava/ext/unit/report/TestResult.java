@@ -43,7 +43,7 @@ public class TestResult {
   /**
    * The test description, may be null if none was provided.
    */
-  public String name() {
+  public String name() { 
     if (cached_0 != null) {
       return cached_0;
     }
@@ -55,7 +55,7 @@ public class TestResult {
   /**
    * The time at which the test began in millis.
    */
-  public long beginTime() {
+  public long beginTime() { 
     if (cached_1 != null) {
       return cached_1;
     }
@@ -67,7 +67,7 @@ public class TestResult {
   /**
    * How long the test lasted in millis.
    */
-  public long durationTime() {
+  public long durationTime() { 
     if (cached_2 != null) {
       return cached_2;
     }
@@ -79,7 +79,7 @@ public class TestResult {
   /**
    * Did it succeed?
    */
-  public boolean succeeded() {
+  public boolean succeeded() { 
     if (cached_3 != null) {
       return cached_3;
     }
@@ -91,7 +91,7 @@ public class TestResult {
   /**
    * Did it fail?
    */
-  public boolean failed() {
+  public boolean failed() { 
     if (cached_4 != null) {
       return cached_4;
     }
@@ -103,7 +103,7 @@ public class TestResult {
   /**
    * An exception describing failure, null if the test succeeded.
    */
-  public Failure failure() {
+  public Failure failure() { 
     if (cached_5 != null) {
       return cached_5;
     }

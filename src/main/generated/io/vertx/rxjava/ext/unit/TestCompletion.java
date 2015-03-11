@@ -48,14 +48,14 @@ public class TestCompletion {
    *
    * @param future the future to resolve
    */
-  public void resolve(Future future) {
+  public void resolve(Future future) { 
     this.delegate.resolve((io.vertx.core.Future) future.getDelegate());
   }
 
   /**
    * @return true if the test suite completed
    */
-  public boolean isCompleted() {
+  public boolean isCompleted() { 
     boolean ret = this.delegate.isCompleted();
     return ret;
   }
@@ -63,7 +63,7 @@ public class TestCompletion {
   /**
    * @return true if the test suite completed and succeeded
    */
-  public boolean isSucceeded() {
+  public boolean isSucceeded() { 
     boolean ret = this.delegate.isSucceeded();
     return ret;
   }
@@ -71,7 +71,7 @@ public class TestCompletion {
   /**
    * @return true if the test suite completed and failed
    */
-  public boolean isFailed() {
+  public boolean isFailed() { 
     boolean ret = this.delegate.isFailed();
     return ret;
   }
@@ -82,11 +82,17 @@ public class TestCompletion {
    *
    * @param completionHandler the completion handler
    */
-  public void handler(Handler<AsyncResult<Void>> completionHandler) {
+  public void handler(Handler<AsyncResult<Void>> completionHandler) { 
     this.delegate.handler(completionHandler);
   }
 
-  public Observable<Void> handlerObservable() {
+  /**
+   * Completion handler for the end of the test, the result is successful when all test cases pass otherwise
+   * it is failed.
+   *
+   * @param completionHandler the completion handler
+   */
+  public Observable<Void> handlerObservable() { 
     io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
     handler(completionHandler.toHandler());
     return completionHandler;
@@ -97,7 +103,7 @@ public class TestCompletion {
    *
    * If the current thread is interrupted, an exception will be thrown.
    */
-  public void await() {
+  public void await() { 
     this.delegate.await();
   }
 
@@ -108,7 +114,7 @@ public class TestCompletion {
    *
    * @param timeoutMillis the timeout in milliseconds
    */
-  public void await(long timeoutMillis) {
+  public void await(long timeoutMillis) { 
     this.delegate.await(timeoutMillis);
   }
 

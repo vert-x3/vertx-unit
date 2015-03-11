@@ -14,7 +14,7 @@
 |===
 ^|Name | Type ^| Description
 
-|`reporters`
+|[[reporters]]`reporters`
 |`Array of link:ReportOptions.html[ReportOptions]`
 |+++
 Replace the current list of reporters with a new one.+++

@@ -44,7 +44,7 @@ public class TestCaseReport {
   /**
    * @return the test case name
    */
-  public String name() {
+  public String name() { 
     if (cached_0 != null) {
       return cached_0;
     }
@@ -59,7 +59,7 @@ public class TestCaseReport {
    * @param handler the completion handler
    * @return a reference to this, so the API can be used fluently
    */
-  public TestCaseReport endHandler(Handler<TestResult> handler) {
+  public TestCaseReport endHandler(Handler<TestResult> handler) { 
     this.delegate.endHandler(new Handler<io.vertx.ext.unit.report.TestResult>() {
       public void handle(io.vertx.ext.unit.report.TestResult event) {
         handler.handle(new TestResult(event));

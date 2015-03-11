@@ -23,17 +23,17 @@
 |===
 ^|Name | Type ^| Description
 
-|`timeout`
+|[[timeout]]`timeout`
 |`Number`
 |+++
 Set the test timeout.+++
 
-|`useEventLoop`
+|[[useEventLoop]]`useEventLoop`
 |`Boolean`
 |+++
 Configure the execution to use an event loop when there is no one existing.+++
 
-|`reporters`
+|[[reporters]]`reporters`
 |`Array of link:ReportOptions.html[ReportOptions]`
 |+++
 Replace the current list of reporters with a new one.+++

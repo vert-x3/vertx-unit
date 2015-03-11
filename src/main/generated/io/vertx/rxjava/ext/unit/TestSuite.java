@@ -58,7 +58,7 @@ public class TestSuite {
    * @param name the test suite name
    * @return the created test suite
    */
-  public static TestSuite create(String name) {
+  public static TestSuite create(String name) { 
     TestSuite ret= TestSuite.newInstance(io.vertx.ext.unit.TestSuite.create(name));
     return ret;
   }
@@ -69,7 +69,7 @@ public class TestSuite {
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite before(Handler<TestContext> callback) {
+  public TestSuite before(Handler<TestContext> callback) { 
     this.delegate.before(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
         callback.handle(new TestContext(event));
@@ -84,7 +84,7 @@ public class TestSuite {
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite beforeEach(Handler<TestContext> callback) {
+  public TestSuite beforeEach(Handler<TestContext> callback) { 
     this.delegate.beforeEach(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
         callback.handle(new TestContext(event));
@@ -99,7 +99,7 @@ public class TestSuite {
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite after(Handler<TestContext> callback) {
+  public TestSuite after(Handler<TestContext> callback) { 
     this.delegate.after(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
         callback.handle(new TestContext(event));
@@ -114,7 +114,7 @@ public class TestSuite {
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite afterEach(Handler<TestContext> callback) {
+  public TestSuite afterEach(Handler<TestContext> callback) { 
     this.delegate.afterEach(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
         callback.handle(new TestContext(event));
@@ -130,7 +130,7 @@ public class TestSuite {
    * @param testCase the test case
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite test(String name, Handler<TestContext> testCase) {
+  public TestSuite test(String name, Handler<TestContext> testCase) { 
     this.delegate.test(name, new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
         testCase.handle(new TestContext(event));
@@ -149,7 +149,7 @@ public class TestSuite {
    *
    * @return the related test completion
    */
-  public TestCompletion run() {
+  public TestCompletion run() { 
     TestCompletion ret= TestCompletion.newInstance(this.delegate.run());
     return ret;
   }
@@ -169,7 +169,7 @@ public class TestSuite {
    * @param options the test options
    * @return the related test completion
    */
-  public TestCompletion run(TestOptions options) {
+  public TestCompletion run(TestOptions options) { 
     TestCompletion ret= TestCompletion.newInstance(this.delegate.run(options));
     return ret;
   }
@@ -183,7 +183,7 @@ public class TestSuite {
    * @param vertx the vertx instance
    * @return the related test completion
    */
-  public TestCompletion run(Vertx vertx) {
+  public TestCompletion run(Vertx vertx) { 
     TestCompletion ret= TestCompletion.newInstance(this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate()));
     return ret;
   }
@@ -199,7 +199,7 @@ public class TestSuite {
    * @param options the test options
    * @return the related test completion
    */
-  public TestCompletion run(Vertx vertx, TestOptions options) {
+  public TestCompletion run(Vertx vertx, TestOptions options) { 
     TestCompletion ret= TestCompletion.newInstance(this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options));
     return ret;
   }
