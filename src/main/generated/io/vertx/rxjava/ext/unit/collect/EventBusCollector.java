@@ -29,9 +29,8 @@ import io.vertx.ext.unit.report.ReportingOptions;
  * The event bus collector listen to events on the Vert.x event bus and translate them
  * into reports.
  *
- * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
- *
- * NOTE: This class has been automatically generated from the original non RX-ified interface using Vert.x codegen.
+ * <p/>
+ * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.collect.EventBusCollector original} non RX-ified interface using Vert.x codegen.
  */
 
 public class EventBusCollector {
@@ -49,7 +48,7 @@ public class EventBusCollector {
   /**
    * Create a message handler reporting with the specified options. The returned
    * message handler can be registered to an event bus.
-   *
+   * @param vertx 
    * @param options the reporting options
    * @return the message handler
    */
@@ -69,7 +68,6 @@ public class EventBusCollector {
 
   /**
    * Register the collector as a consumer of the event bus with the specified address.
-   *
    * @param address the registration address
    * @return the subscribed message consumer
    */

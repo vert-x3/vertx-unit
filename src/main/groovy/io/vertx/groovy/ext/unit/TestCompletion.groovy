@@ -14,110 +14,78 @@
  * under the License.
  */
 
-package io.vertx.rxjava.ext.unit;
-
-import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
-import rx.Observable;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.rxjava.core.Future;
-
+package io.vertx.groovy.ext.unit;
+import groovy.transform.CompileStatic
+import io.vertx.lang.groovy.InternalHelper
+import io.vertx.core.AsyncResult
+import io.vertx.core.Handler
+import io.vertx.groovy.core.Future
 /**
  * This object provides callback-ability for the end of a test suite.
- *
- * <p/>
- * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.TestCompletion original} non RX-ified interface using Vert.x codegen.
- */
-
+*/
+@CompileStatic
 public class TestCompletion {
-
-  final io.vertx.ext.unit.TestCompletion delegate;
-
+  final def io.vertx.ext.unit.TestCompletion delegate;
   public TestCompletion(io.vertx.ext.unit.TestCompletion delegate) {
     this.delegate = delegate;
   }
-
   public Object getDelegate() {
     return delegate;
   }
-
   /**
    * Completes the future when all test cases of the test suite passes, otherwise fails it.
    * @param future the future to resolve
    */
-  public void resolve(Future future) { 
-    this.delegate.resolve((io.vertx.core.Future) future.getDelegate());
+  public void resolve(Future future) {
+    this.delegate.resolve((io.vertx.core.Future)future.getDelegate());
   }
-
   /**
    * @return true if the test suite completed
    * @return 
    */
-  public boolean isCompleted() { 
-    boolean ret = this.delegate.isCompleted();
+  public boolean isCompleted() {
+    def ret = this.delegate.isCompleted();
     return ret;
   }
-
   /**
    * @return true if the test suite completed and succeeded
    * @return 
    */
-  public boolean isSucceeded() { 
-    boolean ret = this.delegate.isSucceeded();
+  public boolean isSucceeded() {
+    def ret = this.delegate.isSucceeded();
     return ret;
   }
-
   /**
    * @return true if the test suite completed and failed
    * @return 
    */
-  public boolean isFailed() { 
-    boolean ret = this.delegate.isFailed();
+  public boolean isFailed() {
+    def ret = this.delegate.isFailed();
     return ret;
   }
-
   /**
    * Completion handler for the end of the test, the result is successful when all test cases pass otherwise
    * it is failed.
    * @param completionHandler the completion handler
    */
-  public void handler(Handler<AsyncResult<Void>> completionHandler) { 
+  public void handler(Handler<AsyncResult<Void>> completionHandler) {
     this.delegate.handler(completionHandler);
   }
-
-  /**
-   * Completion handler for the end of the test, the result is successful when all test cases pass otherwise
-   * it is failed.
-   * @return 
-   */
-  public Observable<Void> handlerObservable() { 
-    io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
-    handler(completionHandler.toHandler());
-    return completionHandler;
-  }
-
   /**
    * Cause the current thread to wait until the test suite completes.<p/>
    *
    * If the current thread is interrupted, an exception will be thrown.
    */
-  public void await() { 
+  public void await() {
     this.delegate.await();
   }
-
   /**
    * Cause the current thread to wait until the test suite completes with a configurable timeout.<p/>
    *
    * If completion times out or the current thread is interrupted, an exception will be thrown.
    * @param timeoutMillis the timeout in milliseconds
    */
-  public void await(long timeoutMillis) { 
+  public void await(long timeoutMillis) {
     this.delegate.await(timeoutMillis);
-  }
-
-
-  public static TestCompletion newInstance(io.vertx.ext.unit.TestCompletion arg) {
-    return new TestCompletion(arg);
   }
 }

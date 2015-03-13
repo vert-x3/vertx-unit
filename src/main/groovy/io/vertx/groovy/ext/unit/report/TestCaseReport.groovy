@@ -14,62 +14,46 @@
  * under the License.
  */
 
-package io.vertx.rxjava.ext.unit.report;
-
-import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
-import rx.Observable;
-import io.vertx.core.Handler;
-
+package io.vertx.groovy.ext.unit.report;
+import groovy.transform.CompileStatic
+import io.vertx.lang.groovy.InternalHelper
+import io.vertx.core.Handler
 /**
  * Report the execution of a test case.
- *
- * <p/>
- * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.report.TestCaseReport original} non RX-ified interface using Vert.x codegen.
- */
-
+*/
+@CompileStatic
 public class TestCaseReport {
-
-  final io.vertx.ext.unit.report.TestCaseReport delegate;
-
+  final def io.vertx.ext.unit.report.TestCaseReport delegate;
   public TestCaseReport(io.vertx.ext.unit.report.TestCaseReport delegate) {
     this.delegate = delegate;
   }
-
   public Object getDelegate() {
     return delegate;
   }
-
   /**
    * @return the test case name
    * @return 
    */
-  public String name() { 
+  public String name() {
     if (cached_0 != null) {
       return cached_0;
     }
-    String ret = this.delegate.name();
+    def ret = this.delegate.name();
     cached_0 = ret;
     return ret;
   }
-
   /**
    * Set a callback for completion, the specified <code>handler</code> is invoked when the test exec has completed.
    * @param handler the completion handler
    * @return a reference to this, so the API can be used fluently
    */
-  public TestCaseReport endHandler(Handler<TestResult> handler) { 
+  public TestCaseReport endHandler(Handler<TestResult> handler) {
     this.delegate.endHandler(new Handler<io.vertx.ext.unit.report.TestResult>() {
       public void handle(io.vertx.ext.unit.report.TestResult event) {
-        handler.handle(new TestResult(event));
+        handler.handle(new io.vertx.groovy.ext.unit.report.TestResult(event));
       }
     });
     return this;
   }
-
   private java.lang.String cached_0;
-
-  public static TestCaseReport newInstance(io.vertx.ext.unit.report.TestCaseReport arg) {
-    return new TestCaseReport(arg);
-  }
 }

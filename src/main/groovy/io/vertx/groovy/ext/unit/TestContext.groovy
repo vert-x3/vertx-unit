@@ -14,42 +14,32 @@
  * under the License.
  */
 
-package io.vertx.rxjava.ext.unit;
-
-import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
-import rx.Observable;
-
+package io.vertx.groovy.ext.unit;
+import groovy.transform.CompileStatic
+import io.vertx.lang.groovy.InternalHelper
 /**
  * The test context is used for performing test assertions and manage the completion of the test. This context
  * is provided by <i>vertx-unit</i> as argument of the test case.
- *
- * <p/>
- * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.TestContext original} non RX-ified interface using Vert.x codegen.
- */
-
+*/
+@CompileStatic
 public class TestContext {
-
-  final io.vertx.ext.unit.TestContext delegate;
-
+  final def io.vertx.ext.unit.TestContext delegate;
   public TestContext(io.vertx.ext.unit.TestContext delegate) {
     this.delegate = delegate;
   }
-
   public Object getDelegate() {
     return delegate;
   }
-
   /**
    * Get some data from the context.
    * @param key the key of the data
    * @return the data
    */
-  public <T> T get(String key) { 
-    T ret = (T) this.delegate.get(key);
+  public <T> T get(String key) {
+    // This cast is cleary flawed
+    def ret = (T) InternalHelper.wrapObject(this.delegate.get(key));
     return ret;
   }
-
   /**
    * Put some data in the context.
    * <p>
@@ -58,32 +48,31 @@ public class TestContext {
    * @param value the data
    * @return the previous object when it exists
    */
-  public <T> T put(String key, Object value) { 
-    T ret = (T) this.delegate.put(key, value);
+  public <T> T put(String key, Object value) {
+    // This cast is cleary flawed
+    def ret = (T) InternalHelper.wrapObject(this.delegate.put(key, InternalHelper.unwrapObject(value)));
     return ret;
   }
-
   /**
    * Remove some data from the context.
    * @param key the key to remove
    * @return the removed object when it exists
    */
-  public <T> T remove(String key) { 
-    T ret = (T) this.delegate.remove(key);
+  public <T> T remove(String key) {
+    // This cast is cleary flawed
+    def ret = (T) InternalHelper.wrapObject(this.delegate.remove(key));
     return ret;
   }
-
   /**
    * Assert the <code>expected</code> argument is <code>null</code>. If the argument is not, an assertion error is thrown
    * otherwise the execution continue.
    * @param expected the argument being asserted to be null
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertNull(Object expected) { 
-    this.delegate.assertNull(expected);
+  public TestContext assertNull(Object expected) {
+    this.delegate.assertNull(InternalHelper.unwrapObject(expected));
     return this;
   }
-
   /**
    * Assert the <code>expected</code> argument is <code>null</code>. If the argument is not, an assertion error is thrown
    * otherwise the execution continue.
@@ -91,22 +80,20 @@ public class TestContext {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertNull(Object expected, String message) { 
-    this.delegate.assertNull(expected, message);
+  public TestContext assertNull(Object expected, String message) {
+    this.delegate.assertNull(InternalHelper.unwrapObject(expected), message);
     return this;
   }
-
   /**
    * Assert the <code>expected</code> argument is not <code>null</code>. If the argument is <code>null</code>, an assertion error is thrown
    * otherwise the execution continue.
    * @param expected the argument being asserted to be not null
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertNotNull(Object expected) { 
-    this.delegate.assertNotNull(expected);
+  public TestContext assertNotNull(Object expected) {
+    this.delegate.assertNotNull(InternalHelper.unwrapObject(expected));
     return this;
   }
-
   /**
    * Assert the <code>expected</code> argument is not <code>null</code>. If the argument is <code>null</code>, an assertion error is thrown
    * otherwise the execution continue.
@@ -114,22 +101,20 @@ public class TestContext {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertNotNull(Object expected, String message) { 
-    this.delegate.assertNotNull(expected, message);
+  public TestContext assertNotNull(Object expected, String message) {
+    this.delegate.assertNotNull(InternalHelper.unwrapObject(expected), message);
     return this;
   }
-
   /**
    * Assert the specified <code>condition</code> is <code>true</code>. If the condition is <code>false</code>, an assertion error is thrown
    * otherwise the execution continue.
    * @param condition the condition to assert
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertTrue(boolean condition) { 
+  public TestContext assertTrue(boolean condition) {
     this.delegate.assertTrue(condition);
     return this;
   }
-
   /**
    * Assert the specified <code>condition</code> is <code>true</code>. If the condition is <code>false</code>, an assertion error is thrown
    * otherwise the execution continue.
@@ -137,22 +122,20 @@ public class TestContext {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertTrue(boolean condition, String message) { 
+  public TestContext assertTrue(boolean condition, String message) {
     this.delegate.assertTrue(condition, message);
     return this;
   }
-
   /**
    * Assert the specified <code>condition</code> is <code>false</code>. If the condition is <code>true</code>, an assertion error is thrown
    * otherwise the execution continue.
    * @param condition the condition to assert
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertFalse(boolean condition) { 
+  public TestContext assertFalse(boolean condition) {
     this.delegate.assertFalse(condition);
     return this;
   }
-
   /**
    * Assert the specified <code>condition</code> is <code>false</code>. If the condition is <code>true</code>, an assertion error is thrown
    * otherwise the execution continue.
@@ -160,11 +143,10 @@ public class TestContext {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertFalse(boolean condition, String message) { 
+  public TestContext assertFalse(boolean condition, String message) {
     this.delegate.assertFalse(condition, message);
     return this;
   }
-
   /**
    * Assert the <code>expected</code> argument is equals to the <code>actual</code> argument. If the arguments are not equals
    * an assertion error is thrown otherwise the execution continue.
@@ -172,11 +154,10 @@ public class TestContext {
    * @param actual the actual object to test
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertEquals(Object expected, Object actual) { 
-    this.delegate.assertEquals(expected, actual);
+  public TestContext assertEquals(Object expected, Object actual) {
+    this.delegate.assertEquals(InternalHelper.unwrapObject(expected), InternalHelper.unwrapObject(actual));
     return this;
   }
-
   /**
    * Assert the <code>expected</code> argument is equals to the <code>actual</code> argument. If the arguments are not equals
    * an assertion error is thrown otherwise the execution continue.
@@ -185,11 +166,10 @@ public class TestContext {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertEquals(Object expected, Object actual, String message) { 
-    this.delegate.assertEquals(expected, actual, message);
+  public TestContext assertEquals(Object expected, Object actual, String message) {
+    this.delegate.assertEquals(InternalHelper.unwrapObject(expected), InternalHelper.unwrapObject(actual), message);
     return this;
   }
-
   /**
    * Asserts that the <code>expected</code> double argument is equals to the <code>actual</code> double argument
    * within a positive delta. If the arguments do not satisfy this, an assertion error is thrown otherwise
@@ -199,11 +179,10 @@ public class TestContext {
    * @param delta the maximum delta
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertInRange(double expected, double actual, double delta) { 
+  public TestContext assertInRange(double expected, double actual, double delta) {
     this.delegate.assertInRange(expected, actual, delta);
     return this;
   }
-
   /**
    * Asserts that the <code>expected</code> double argument is equals to the <code>actual</code> double argument
    * within a positive delta. If the arguments do not satisfy this, an assertion error is thrown otherwise
@@ -214,11 +193,10 @@ public class TestContext {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertInRange(double expected, double actual, double delta, String message) { 
+  public TestContext assertInRange(double expected, double actual, double delta, String message) {
     this.delegate.assertInRange(expected, actual, delta, message);
     return this;
   }
-
   /**
    * Assert the <code>first</code> argument is not equals to the <code>second</code> argument. If the arguments are equals
    * an assertion error is thrown otherwise the execution continue.
@@ -226,11 +204,10 @@ public class TestContext {
    * @param second the second object to test
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertNotEquals(Object first, Object second) { 
-    this.delegate.assertNotEquals(first, second);
+  public TestContext assertNotEquals(Object first, Object second) {
+    this.delegate.assertNotEquals(InternalHelper.unwrapObject(first), InternalHelper.unwrapObject(second));
     return this;
   }
-
   /**
    * Assert the <code>first</code> argument is not equals to the <code>second</code> argument. If the arguments are equals
    * an assertion error is thrown otherwise the execution continue.
@@ -239,41 +216,33 @@ public class TestContext {
    * @param message the failure message
    * @return a reference to this, so the API can be used fluently
    */
-  public TestContext assertNotEquals(Object first, Object second, String message) { 
-    this.delegate.assertNotEquals(first, second, message);
+  public TestContext assertNotEquals(Object first, Object second, String message) {
+    this.delegate.assertNotEquals(InternalHelper.unwrapObject(first), InternalHelper.unwrapObject(second), message);
     return this;
   }
-
   /**
    * Throw a failure.
    */
-  public void fail() { 
+  public void fail() {
     this.delegate.fail();
   }
-
   /**
    * Throw a failure with the specified failure <code>message</code>.
    * @param message the failure message
    */
-  public void fail(String message) { 
+  public void fail(String message) {
     this.delegate.fail(message);
   }
-
   /**
    * Create and returns a new async object, the returned async controls the completion of the test. The test case
-   * will complete when all the async objects have their {@link  io.vertx.rxjava.ext.unit.Async#complete()} method called
+   * will complete when all the async objects have their {@link io.vertx.groovy.ext.unit.Async#complete} method called
    * at least once.<p/>
    *
    * This method shall be used for creating asynchronous exit points for the executed test.
    * @return the async instance
    */
-  public Async async() { 
-    Async ret= Async.newInstance(this.delegate.async());
+  public Async async() {
+    def ret= new io.vertx.groovy.ext.unit.Async(this.delegate.async());
     return ret;
-  }
-
-
-  public static TestContext newInstance(io.vertx.ext.unit.TestContext arg) {
-    return new TestContext(arg);
   }
 }

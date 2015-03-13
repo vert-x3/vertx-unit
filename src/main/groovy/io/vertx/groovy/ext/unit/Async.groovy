@@ -14,41 +14,26 @@
  * under the License.
  */
 
-package io.vertx.rxjava.ext.unit;
-
-import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
-import rx.Observable;
-
+package io.vertx.groovy.ext.unit;
+import groovy.transform.CompileStatic
+import io.vertx.lang.groovy.InternalHelper
 /**
  * An asynchronous exit point for a test.
- *
- * <p/>
- * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.Async original} non RX-ified interface using Vert.x codegen.
- */
-
+*/
+@CompileStatic
 public class Async {
-
-  final io.vertx.ext.unit.Async delegate;
-
+  final def io.vertx.ext.unit.Async delegate;
   public Async(io.vertx.ext.unit.Async delegate) {
     this.delegate = delegate;
   }
-
   public Object getDelegate() {
     return delegate;
   }
-
   /**
    * Signals the asynchronous operation is done, this method should be called only once, if the method is called
    * another time it will throw an <code>IllegalStateException</code> to signal the error.
    */
-  public void complete() { 
+  public void complete() {
     this.delegate.complete();
-  }
-
-
-  public static Async newInstance(io.vertx.ext.unit.Async arg) {
-    return new Async(arg);
   }
 }

@@ -14,49 +14,34 @@
  * under the License.
  */
 
-package io.vertx.rxjava.ext.unit;
-
-import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
-import rx.Observable;
-import io.vertx.core.Handler;
-
+package io.vertx.groovy.ext.unit;
+import groovy.transform.CompileStatic
+import io.vertx.lang.groovy.InternalHelper
+import io.vertx.core.Handler
 /**
  * A test case object can be used to create a single test.
- *
- * <p/>
- * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.TestCase original} non RX-ified interface using Vert.x codegen.
- */
-
+*/
+@CompileStatic
 public class TestCase {
-
-  final io.vertx.ext.unit.TestCase delegate;
-
+  final def io.vertx.ext.unit.TestCase delegate;
   public TestCase(io.vertx.ext.unit.TestCase delegate) {
     this.delegate = delegate;
   }
-
   public Object getDelegate() {
     return delegate;
   }
-
   /**
    * Create a test case.
    * @param name the test case name
    * @param testCase the test case
    * @return the created test case
    */
-  public static TestCase create(String name, Handler<TestContext> testCase) { 
-    TestCase ret= TestCase.newInstance(io.vertx.ext.unit.TestCase.create(name, new Handler<io.vertx.ext.unit.TestContext>() {
+  public static TestCase create(String name, Handler<TestContext> testCase) {
+    def ret= new io.vertx.groovy.ext.unit.TestCase(io.vertx.ext.unit.TestCase.create(name, new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        testCase.handle(new TestContext(event));
+        testCase.handle(new io.vertx.groovy.ext.unit.TestContext(event));
       }
     }));
     return ret;
-  }
-
-
-  public static TestCase newInstance(io.vertx.ext.unit.TestCase arg) {
-    return new TestCase(arg);
   }
 }

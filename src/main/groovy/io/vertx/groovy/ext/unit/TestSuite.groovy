@@ -14,187 +14,163 @@
  * under the License.
  */
 
-package io.vertx.rxjava.ext.unit;
-
-import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
-import rx.Observable;
-import io.vertx.ext.unit.TestOptions;
-import io.vertx.rxjava.core.Vertx;
-import io.vertx.core.Handler;
-
+package io.vertx.groovy.ext.unit;
+import groovy.transform.CompileStatic
+import io.vertx.lang.groovy.InternalHelper
+import io.vertx.ext.unit.TestOptions
+import io.vertx.groovy.core.Vertx
+import io.vertx.core.Handler
 /**
  * A named suite of test cases that are executed altogether. The suite suite is created with
- * the {@link  #create(String)} and the returned suite contains initially no tests.<p/>
+ * the {@link io.vertx.groovy.ext.unit.TestSuite#create} and the returned suite contains initially no tests.<p/>
  *
- * The suite can declare a callback before the suite with {@link  #before(io.vertx.rxjava.core.Handler)} or after
- * the suite with {@link  #after(io.vertx.rxjava.core.Handler)}.<p/>
+ * The suite can declare a callback before the suite with {@link io.vertx.groovy.ext.unit.TestSuite#before} or after
+ * the suite with {@link io.vertx.groovy.ext.unit.TestSuite#after}.<p/>
  *
- * The suite can declare a callback before each test with {@link  #beforeEach(io.vertx.rxjava.core.Handler)} or after
- * each test with {@link  #afterEach(io.vertx.rxjava.core.Handler)}.<p/>
+ * The suite can declare a callback before each test with {@link io.vertx.groovy.ext.unit.TestSuite#beforeEach} or after
+ * each test with {@link io.vertx.groovy.ext.unit.TestSuite#afterEach}.<p/>
  *
- * Each test case of the suite is declared by calling the {@link  #test(String, io.vertx.rxjava.core.Handler)} method.
- *
- * <p/>
- * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.TestSuite original} non RX-ified interface using Vert.x codegen.
- */
-
+ * Each test case of the suite is declared by calling the {@link io.vertx.groovy.ext.unit.TestSuite#test} method.
+*/
+@CompileStatic
 public class TestSuite {
-
-  final io.vertx.ext.unit.TestSuite delegate;
-
+  final def io.vertx.ext.unit.TestSuite delegate;
   public TestSuite(io.vertx.ext.unit.TestSuite delegate) {
     this.delegate = delegate;
   }
-
   public Object getDelegate() {
     return delegate;
   }
-
   /**
    * Create and return a new test suite.
    * @param name the test suite name
    * @return the created test suite
    */
-  public static TestSuite create(String name) { 
-    TestSuite ret= TestSuite.newInstance(io.vertx.ext.unit.TestSuite.create(name));
+  public static TestSuite create(String name) {
+    def ret= new io.vertx.groovy.ext.unit.TestSuite(io.vertx.ext.unit.TestSuite.create(name));
     return ret;
   }
-
   /**
    * Set a callback executed before the tests.
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite before(Handler<TestContext> callback) { 
+  public TestSuite before(Handler<TestContext> callback) {
     this.delegate.before(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new TestContext(event));
+        callback.handle(new io.vertx.groovy.ext.unit.TestContext(event));
       }
     });
     return this;
   }
-
   /**
    * Set a callback executed before each test and after the suite <code>before</code> callback.
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite beforeEach(Handler<TestContext> callback) { 
+  public TestSuite beforeEach(Handler<TestContext> callback) {
     this.delegate.beforeEach(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new TestContext(event));
+        callback.handle(new io.vertx.groovy.ext.unit.TestContext(event));
       }
     });
     return this;
   }
-
   /**
    * Set a callback executed after the tests.
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite after(Handler<TestContext> callback) { 
+  public TestSuite after(Handler<TestContext> callback) {
     this.delegate.after(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new TestContext(event));
+        callback.handle(new io.vertx.groovy.ext.unit.TestContext(event));
       }
     });
     return this;
   }
-
   /**
    * Set a callback executed after each test and before the suite <code>after</code> callback.
    * @param callback the callback
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite afterEach(Handler<TestContext> callback) { 
+  public TestSuite afterEach(Handler<TestContext> callback) {
     this.delegate.afterEach(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new TestContext(event));
+        callback.handle(new io.vertx.groovy.ext.unit.TestContext(event));
       }
     });
     return this;
   }
-
   /**
    * Add a new test case to the suite.
    * @param name the test case name
    * @param testCase the test case
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuite test(String name, Handler<TestContext> testCase) { 
+  public TestSuite test(String name, Handler<TestContext> testCase) {
     this.delegate.test(name, new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        testCase.handle(new TestContext(event));
+        testCase.handle(new io.vertx.groovy.ext.unit.TestContext(event));
       }
     });
     return this;
   }
-
   /**
    * Run the testsuite with the default options.<p/>
    *
    * When the test suite is executed in a Vertx context (i.e `Vertx.currentContext()` returns a context) this
    * context's event loop is used for running the test suite. Otherwise it is executed in the current thread.<p/>
    *
-   * The returned {@link  io.vertx.rxjava.ext.unit.TestCompletion} object can be used to get a completion callback.
+   * The returned {@link io.vertx.groovy.ext.unit.TestCompletion} object can be used to get a completion callback.
    * @return the related test completion
    */
-  public TestCompletion run() { 
-    TestCompletion ret= TestCompletion.newInstance(this.delegate.run());
+  public TestCompletion run() {
+    def ret= new io.vertx.groovy.ext.unit.TestCompletion(this.delegate.run());
     return ret;
   }
-
   /**
    * Run the testsuite with the specified <code>options</code>.<p/>
    *
    * When the test suite is executed in a Vertx context (i.e `Vertx.currentContext()` returns a context) this
-   * context's event loop is used for running the test suite unless the {@link  io.vertx.ext.unit.TestOptions#setUseEventLoop(Boolean)}
+   * context's event loop is used for running the test suite unless the <a href="../../../../../../../cheatsheet/TestOptions.html">TestOptions</a>
    * is set to <code>false</code>. In this case it is executed by the current thread.<p/>
    *
-   * Otherwise, the test suite will be executed in the current thread when {@link  io.vertx.ext.unit.TestOptions#setUseEventLoop(Boolean)} is
+   * Otherwise, the test suite will be executed in the current thread when <a href="../../../../../../../cheatsheet/TestOptions.html">TestOptions</a> is
    * set to <code>false</code> or <code>null</code>. If the value is <code>true</code>, this methods throws an <code>IllegalStateException</code>.<p/>
    *
-   * The returned {@link  io.vertx.rxjava.ext.unit.TestCompletion} object can be used to get a completion callback.
-   * @param options the test options
+   * The returned {@link io.vertx.groovy.ext.unit.TestCompletion} object can be used to get a completion callback.
+   * @param options the test options (see <a href="../../../../../../../cheatsheet/TestOptions.html">TestOptions</a>)
    * @return the related test completion
    */
-  public TestCompletion run(TestOptions options) { 
-    TestCompletion ret= TestCompletion.newInstance(this.delegate.run(options));
+  public TestCompletion run(Map<String, Object> options) {
+    def ret= new io.vertx.groovy.ext.unit.TestCompletion(this.delegate.run(options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null));
     return ret;
   }
-
   /**
    * Run the testsuite with the default options and the specified <code>vertx</code> instance.<p/>
    *
    * The test suite will be executed on the event loop provided by the <code>vertx</code> argument. The returned
-   * {@link  io.vertx.rxjava.ext.unit.TestCompletion} object can be used to get a completion callback.<p/>
+   * {@link io.vertx.groovy.ext.unit.TestCompletion} object can be used to get a completion callback.<p/>
    * @param vertx the vertx instance
    * @return the related test completion
    */
-  public TestCompletion run(Vertx vertx) { 
-    TestCompletion ret= TestCompletion.newInstance(this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate()));
+  public TestCompletion run(Vertx vertx) {
+    def ret= new io.vertx.groovy.ext.unit.TestCompletion(this.delegate.run((io.vertx.core.Vertx)vertx.getDelegate()));
     return ret;
   }
-
   /**
    * Run the testsuite with the specified <code>options</code> and the specified <code>vertx</code> instance.<p/>
    *
    * The test suite will be executed on the event loop provided by the <code>vertx</code> argument when
-   * {@link  io.vertx.ext.unit.TestOptions#setUseEventLoop(Boolean)} is not set to <code>false</code>. The returned
-   * {@link  io.vertx.rxjava.ext.unit.TestCompletion} object can be used to get a completion callback.
+   * <a href="../../../../../../../cheatsheet/TestOptions.html">TestOptions</a> is not set to <code>false</code>. The returned
+   * {@link io.vertx.groovy.ext.unit.TestCompletion} object can be used to get a completion callback.
    * @param vertx the vertx instance
-   * @param options the test options
+   * @param options the test options (see <a href="../../../../../../../cheatsheet/TestOptions.html">TestOptions</a>)
    * @return the related test completion
    */
-  public TestCompletion run(Vertx vertx, TestOptions options) { 
-    TestCompletion ret= TestCompletion.newInstance(this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options));
+  public TestCompletion run(Vertx vertx, Map<String, Object> options) {
+    def ret= new io.vertx.groovy.ext.unit.TestCompletion(this.delegate.run((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null));
     return ret;
-  }
-
-
-  public static TestSuite newInstance(io.vertx.ext.unit.TestSuite arg) {
-    return new TestSuite(arg);
   }
 }
