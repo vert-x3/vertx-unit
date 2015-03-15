@@ -61,16 +61,10 @@ var TestSuiteReport = function(j_val) {
    */
   this.exceptionHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && (typeof __args[0] === 'function' || (typeof __args[0] === 'object' && __args[0].handle != null))) {
+    if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuiteReport.exceptionHandler(function(jVal) {
-      var event = utils.convReturnTypeUnknown(jVal);
-      if (typeof handler === 'function') {
-         handler(event);
-      } else {
-         handler.handle(event);
-      }
-    }
-);
+      handler(utils.convReturnTypeUnknown(jVal));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -83,16 +77,10 @@ var TestSuiteReport = function(j_val) {
    */
   this.handler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && (typeof __args[0] === 'function' || (typeof __args[0] === 'object' && __args[0].handle != null))) {
+    if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuiteReport.handler(function(jVal) {
-      var event = new TestCaseReport(jVal);
-      if (typeof handler === 'function') {
-         handler(event);
-      } else {
-         handler.handle(event);
-      }
-    }
-);
+      handler(new TestCaseReport(jVal));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -133,7 +121,7 @@ var TestSuiteReport = function(j_val) {
    */
   this.endHandler = function(endHandler) {
     var __args = arguments;
-    if (__args.length === 1 && (typeof __args[0] === 'function' || (typeof __args[0] === 'object' && __args[0].handle != null))) {
+    if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuiteReport.endHandler(endHandler);
       return that;
     } else utils.invalidArgs();

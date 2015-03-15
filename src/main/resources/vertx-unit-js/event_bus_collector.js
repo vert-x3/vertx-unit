@@ -66,16 +66,10 @@ EventBusCollector.create = function() {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
     return new EventBusCollector(JEventBusCollector.create(__args[0]._jdel, __args[1] != null ? new ReportingOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
-  }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'function' || (typeof __args[1] === 'object' && __args[1].handle != null))) {
+  }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'function') {
     return new EventBusCollector(JEventBusCollector.create(__args[0]._jdel, function(jVal) {
-    var event = new TestSuiteReport(jVal);
-    if (typeof __args[1] === 'function') {
-       __args[1](event);
-    } else {
-       __args[1].handle(event);
-    }
-  }
-));
+    __args[1](new TestSuiteReport(jVal));
+  }));
   } else utils.invalidArgs();
 };
 

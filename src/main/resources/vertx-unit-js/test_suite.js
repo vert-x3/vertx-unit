@@ -43,16 +43,10 @@ var TestSuite = function(j_val) {
    */
   this.before = function(callback) {
     var __args = arguments;
-    if (__args.length === 1 && (typeof __args[0] === 'function' || (typeof __args[0] === 'object' && __args[0].handle != null))) {
+    if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.before(function(jVal) {
-      var event = new TestContext(jVal);
-      if (typeof callback === 'function') {
-         callback(event);
-      } else {
-         callback.handle(event);
-      }
-    }
-);
+      callback(new TestContext(jVal));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -66,16 +60,10 @@ var TestSuite = function(j_val) {
    */
   this.beforeEach = function(callback) {
     var __args = arguments;
-    if (__args.length === 1 && (typeof __args[0] === 'function' || (typeof __args[0] === 'object' && __args[0].handle != null))) {
+    if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.beforeEach(function(jVal) {
-      var event = new TestContext(jVal);
-      if (typeof callback === 'function') {
-         callback(event);
-      } else {
-         callback.handle(event);
-      }
-    }
-);
+      callback(new TestContext(jVal));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -89,16 +77,10 @@ var TestSuite = function(j_val) {
    */
   this.after = function(callback) {
     var __args = arguments;
-    if (__args.length === 1 && (typeof __args[0] === 'function' || (typeof __args[0] === 'object' && __args[0].handle != null))) {
+    if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.after(function(jVal) {
-      var event = new TestContext(jVal);
-      if (typeof callback === 'function') {
-         callback(event);
-      } else {
-         callback.handle(event);
-      }
-    }
-);
+      callback(new TestContext(jVal));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -112,16 +94,10 @@ var TestSuite = function(j_val) {
    */
   this.afterEach = function(callback) {
     var __args = arguments;
-    if (__args.length === 1 && (typeof __args[0] === 'function' || (typeof __args[0] === 'object' && __args[0].handle != null))) {
+    if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuite.afterEach(function(jVal) {
-      var event = new TestContext(jVal);
-      if (typeof callback === 'function') {
-         callback(event);
-      } else {
-         callback.handle(event);
-      }
-    }
-);
+      callback(new TestContext(jVal));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -136,16 +112,10 @@ var TestSuite = function(j_val) {
    */
   this.test = function(name, testCase) {
     var __args = arguments;
-    if (__args.length === 2 && typeof __args[0] === 'string' && (typeof __args[1] === 'function' || (typeof __args[1] === 'object' && __args[1].handle != null))) {
+    if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
       j_testSuite.test(name, function(jVal) {
-      var event = new TestContext(jVal);
-      if (typeof testCase === 'function') {
-         testCase(event);
-      } else {
-         testCase.handle(event);
-      }
-    }
-);
+      testCase(new TestContext(jVal));
+    });
       return that;
     } else utils.invalidArgs();
   };
