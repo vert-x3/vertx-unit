@@ -96,7 +96,7 @@ var TestCompletion = function(j_val) {
    */
   this.handler = function(completionHandler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'function') {
+    if (__args.length === 1 && (typeof __args[0] === 'function' || (typeof __args[0] === 'object' && __args[0].handle != null))) {
       j_testCompletion.handler(function(ar) {
       if (ar.succeeded()) {
         completionHandler(null, null);

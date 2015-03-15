@@ -160,22 +160,22 @@ public class TestContextImpl implements TestContext, Task<Result> {
           if (failed == null && unhandledFailureHandler != null) {
             unhandledFailureHandler.handle(t);
           }
-          return;
+          break;
         case STATUS_RUNNING:
           if (failed == null) {
             failed = t;
+            asyncs.clear();
           }
-          return;
+          break;
         case STATUS_ASYNC:
-          if (failed != null) {
-            return;
+          if (failed == null) {
+            asyncs.clear();
+            failed = t;
+            tryEnd();
           }
-          asyncs.clear();
-          failed = t;
           break;
       }
     }
-    tryEnd();
   }
 
   @Override
@@ -183,7 +183,9 @@ public class TestContextImpl implements TestContext, Task<Result> {
     synchronized (this) {
       if (status != STATUS_COMPLETED) {
         AsyncImpl async = new AsyncImpl();
-        asyncs.add(async);
+        if (failed == null) {
+          asyncs.add(async);
+        }
         return async;
       } else {
         throw new IllegalStateException("Test already completed");

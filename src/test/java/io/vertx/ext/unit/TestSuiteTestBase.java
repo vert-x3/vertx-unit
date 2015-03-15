@@ -96,6 +96,60 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
+  public void runTestWithFailAfterAsync() throws Exception {
+    RuntimeException failure = new RuntimeException();
+    BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
+    TestSuite suite = TestSuite.create("my_suite").
+        test("my_test", context -> {
+          queue.add(context.async());
+          throw failure;
+        });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    Async async = queue.poll(2, TimeUnit.SECONDS);
+    async.complete();
+    assertTrue(reporter.completed());
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    TestResult result = reporter.results.get(0);
+    assertEquals("my_test", result.name());
+    assertFalse(result.succeeded());
+    assertTrue(result.failed());
+    assertNotNull(result.failure());
+    assertSame(failure, result.failure().cause());
+  }
+
+  @Test
+  public void runTestWithFailBeforeAsync() throws Exception {
+    AtomicReference<AssertionError> failure = new AtomicReference<>();
+    BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
+    TestSuite suite = TestSuite.create("my_suite").
+        test("my_test", context -> {
+          try {
+            context.fail();
+          } catch (AssertionError e) {
+            failure.set(e);
+          }
+          queue.add(context.async());
+        });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    Async async = queue.poll(2, TimeUnit.SECONDS);
+    async.complete();
+    assertTrue(reporter.completed());
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    TestResult result = reporter.results.get(0);
+    assertEquals("my_test", result.name());
+    assertFalse(result.succeeded());
+    assertTrue(result.failed());
+    assertNotNull(result.failure());
+    assertSame(failure.get(), result.failure().cause());
+  }
+
+  @Test
   public void runTestWithAsyncCompletionCompletedInTest() throws Exception {
     AtomicBoolean ok = new AtomicBoolean();
     TestSuite suite = TestSuite.create("my_suite").

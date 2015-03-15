@@ -48,10 +48,16 @@ var TestCase = function(j_val) {
  */
 TestCase.create = function(name, testCase) {
   var __args = arguments;
-  if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
+  if (__args.length === 2 && typeof __args[0] === 'string' && (typeof __args[1] === 'function' || (typeof __args[1] === 'object' && __args[1].handle != null))) {
     return new TestCase(JTestCase.create(name, function(jVal) {
-    testCase(new TestContext(jVal));
-  }));
+    var event = new TestContext(jVal);
+    if (typeof testCase === 'function') {
+       testCase(event);
+    } else {
+       testCase.handle(event);
+    }
+  }
+));
   } else utils.invalidArgs();
 };
 

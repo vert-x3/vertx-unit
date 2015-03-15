@@ -58,10 +58,16 @@ var TestCaseReport = function(j_val) {
    */
   this.endHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'function') {
+    if (__args.length === 1 && (typeof __args[0] === 'function' || (typeof __args[0] === 'object' && __args[0].handle != null))) {
       j_testCaseReport.endHandler(function(jVal) {
-      handler(new TestResult(jVal));
-    });
+      var event = new TestResult(jVal);
+      if (typeof handler === 'function') {
+         handler(event);
+      } else {
+         handler.handle(event);
+      }
+    }
+);
       return that;
     } else utils.invalidArgs();
   };
