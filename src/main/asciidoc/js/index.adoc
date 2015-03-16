@@ -316,7 +316,7 @@ suite.test("my_test_case", function (context) {
 Async objects can also be used in _before_ or _after_ callbacks, it can be very convenient in a _before_ callback
 to implement a setup that depends on one or several asynchronous results:
 
-.Async start an http server before test cases
+.Async starts an http server before test cases
 [source,js]
 ----
 suite.before(function (context) {
@@ -327,6 +327,19 @@ suite.before(function (context) {
     context.assertTrue(ar_err == null);
     async.complete();
   });
+});
+
+----
+
+An `Async` can also be used as a completion handler saving some boiler plate code when closing
+tested objects such as `link:../../vertx-core/js/jsdoc/vertx-Vertx.html[Vertx]` or an `link:../../vertx-core/js/jsdoc/http_server-HttpServer.html[HttpServer]`:
+
+.Async used as a completion handler
+[source,js]
+----
+suite.after(function (context) {
+  var async = context.async();
+  vertx.close(async);
 });
 
 ----

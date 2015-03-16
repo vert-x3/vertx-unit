@@ -1,6 +1,7 @@
 package io.vertx.ext.unit;
 
 import io.vertx.codegen.annotations.Fluent;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 
 /**
@@ -208,6 +209,14 @@ public interface TestContext {
    * @param message the failure message
    */
   void fail(String message);
+
+  /**
+   * Throw a failure with the specified failure {@code cause}.
+   *
+   * @param cause the failure cause
+   */
+  @GenIgnore
+  void fail(Throwable cause);
 
   /**
    * Create and returns a new async object, the returned async controls the completion of the test. The test case

@@ -19,15 +19,17 @@ package io.vertx.rxjava.ext.unit;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 
 /**
- * An asynchronous exit point for a test.
+ * An asynchronous exit point for a test, this object can be used as an asynchronous result handler.
  *
  * <p/>
  * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.Async original} non RX-ified interface using Vert.x codegen.
  */
 
-public class Async {
+public class Async implements Handler<AsyncResult<Void>> {
 
   final io.vertx.ext.unit.Async delegate;
 
@@ -37,6 +39,10 @@ public class Async {
 
   public Object getDelegate() {
     return delegate;
+  }
+
+  public void handle(AsyncResult<Void> arg0) { 
+    this.delegate.handle(arg0);
   }
 
   /**

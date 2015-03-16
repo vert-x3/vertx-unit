@@ -196,10 +196,19 @@
  * Async objects can also be used in _before_ or _after_ callbacks, it can be very convenient in a _before_ callback
  * to implement a setup that depends on one or several asynchronous results:
  *
- * .Async start an http server before test cases
+ * .Async starts an http server before test cases
  * [source,$lang]
  * ----
  * {@link examples.Examples#async_03}
+ * ----
+ *
+ * An `Async` can also be used as a completion handler saving some boiler plate code when closing
+ * tested objects such as {@link io.vertx.core.Vertx} or an {@link io.vertx.core.http.HttpServer}:
+ *
+ * .Async used as a completion handler
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#async_04}
  * ----
  *
  * == Sharing objects

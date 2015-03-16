@@ -287,7 +287,7 @@ suite.test("my_test_case", context -> {
 Async objects can also be used in _before_ or _after_ callbacks, it can be very convenient in a _before_ callback
 to implement a setup that depends on one or several asynchronous results:
 
-.Async start an http server before test cases
+.Async starts an http server before test cases
 [source,java]
 ----
 suite.before(context -> {
@@ -298,6 +298,18 @@ suite.before(context -> {
     context.assertTrue(ar.succeeded());
     async.complete();
   });
+});
+----
+
+An `Async` can also be used as a completion handler saving some boiler plate code when closing
+tested objects such as `link:../../apidocs/io/vertx/core/Vertx.html[Vertx]` or an `link:../../apidocs/io/vertx/core/http/HttpServer.html[HttpServer]`:
+
+.Async used as a completion handler
+[source,java]
+----
+suite.after(context -> {
+  Async async = context.async();
+  vertx.close(async);
 });
 ----
 

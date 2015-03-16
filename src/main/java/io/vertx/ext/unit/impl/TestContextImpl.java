@@ -1,5 +1,6 @@
 package io.vertx.ext.unit.impl;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -20,6 +21,15 @@ public class TestContextImpl implements TestContext, Task<Result> {
   class AsyncImpl implements Async {
 
     private final AtomicBoolean completeCalled = new AtomicBoolean();
+
+    @Override
+    public void handle(AsyncResult<Void> event) {
+      if (event.succeeded()) {
+        complete();
+      } else {
+        fail(event.cause());
+      }
+    }
 
     @Override
     public void complete() {
@@ -231,10 +241,6 @@ public class TestContextImpl implements TestContext, Task<Result> {
     return assertTrue(condition, null);
   }
 
-  public void fail(String message) {
-    throw reportAssertionError(message != null ? message : "Test failed");
-  }
-
   @Override
   public TestContext assertFalse(boolean condition) {
     return assertFalse(condition, null);
@@ -250,7 +256,16 @@ public class TestContextImpl implements TestContext, Task<Result> {
 
   @Override
   public void fail() {
-    fail(null);
+    fail((String) null);
+  }
+
+  public void fail(String message) {
+    throw reportAssertionError(message != null ? message : "Test failed");
+  }
+
+  public void fail(Throwable cause) {
+    failed(cause);
+    Helper.uncheckedThrow(cause);
   }
 
   @Override

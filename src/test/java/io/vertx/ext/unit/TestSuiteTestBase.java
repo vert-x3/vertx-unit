@@ -1,6 +1,8 @@
 package io.vertx.ext.unit;
 
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.ext.unit.impl.TestSuiteImpl;
 import io.vertx.ext.unit.impl.TestSuiteRunner;
 import io.vertx.ext.unit.report.TestResult;
@@ -663,5 +665,35 @@ public abstract class TestSuiteTestBase {
     assertEquals(1, reporter.results.size());
     assertEquals("my_test", reporter.results.get(0).name());
     assertFalse(reporter.results.get(0).failed());
+  }
+
+  @Test
+  public void testAsyncResult() throws Exception {
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      context.async().handle(Future.succeededFuture());
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertFalse(reporter.results.get(0).failed());
+  }
+
+  @Test
+  public void testAsyncResultFailure() throws Exception {
+    Exception cause = new Exception();
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      context.async().handle(Future.failedFuture(cause));
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertTrue(reporter.results.get(0).failed());
+    assertSame(cause, reporter.results.get(0).failure().cause());
   }
 }

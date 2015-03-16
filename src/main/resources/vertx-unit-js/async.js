@@ -22,7 +22,7 @@ var JsonObject = io.vertx.core.json.JsonObject;
 var JAsync = io.vertx.ext.unit.Async;
 
 /**
- An asynchronous exit point for a test.
+ An asynchronous exit point for a test, this object can be used as an asynchronous result handler.
 
  @class
 */
@@ -30,6 +30,18 @@ var Async = function(j_val) {
 
   var j_async = j_val;
   var that = this;
+
+  /**
+
+   @public
+   @param arg0 {todo} 
+   */
+  this.handle = function(arg0) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'object') {
+      j_async.handle(arg0._jdel);
+    } else utils.invalidArgs();
+  };
 
   /**
    Signals the asynchronous operation is done, this method should be called only once, if the method is called
