@@ -301,18 +301,6 @@ suite.before(context -> {
 });
 ----
 
-An `Async` can also be used as a completion handler saving some boiler plate code when closing
-tested objects such as `link:../../apidocs/io/vertx/core/Vertx.html[Vertx]` or an `link:../../apidocs/io/vertx/core/http/HttpServer.html[HttpServer]`:
-
-.Async used as a completion handler
-[source,java]
-----
-suite.after(context -> {
-  Async async = context.async();
-  vertx.close(async);
-});
-----
-
 == Sharing objects
 
 The `link:../../apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` has `get`/`put`/`remove` operations for sharing state between callbacks.

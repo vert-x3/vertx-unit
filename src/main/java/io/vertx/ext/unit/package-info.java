@@ -202,15 +202,6 @@
  * {@link examples.Examples#async_03}
  * ----
  *
- * An `Async` can also be used as a completion handler saving some boiler plate code when closing
- * tested objects such as {@link io.vertx.core.Vertx} or an {@link io.vertx.core.http.HttpServer}:
- *
- * .Async used as a completion handler
- * [source,$lang]
- * ----
- * {@link examples.Examples#async_04}
- * ----
- *
  * == Sharing objects
  *
  * The {@link io.vertx.ext.unit.TestContext} has `get`/`put`/`remove` operations for sharing state between callbacks.

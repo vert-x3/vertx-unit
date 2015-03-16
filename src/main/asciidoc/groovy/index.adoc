@@ -200,10 +200,7 @@ Assert an object is null, works for _basic_ types or _json_ types.
 
 [source,groovy]
 ----
-suite.test("my_test_case", { context ->
-  context.assertNull(null)
-})
-
+todo
 ----
 
 === assertNotNull
@@ -327,19 +324,6 @@ suite.before({ context ->
     context.assertTrue(ar.succeeded())
     async.complete()
   })
-})
-
-----
-
-An `Async` can also be used as a completion handler saving some boiler plate code when closing
-tested objects such as `link:../../vertx-core/groovy/groovydoc/io/vertx/groovy/core/Vertx.html[Vertx]` or an `link:../../vertx-core/groovy/groovydoc/io/vertx/groovy/core/http/HttpServer.html[HttpServer]`:
-
-.Async used as a completion handler
-[source,groovy]
-----
-suite.after({ context ->
-  def async = context.async()
-  vertx.close(async)
 })
 
 ----

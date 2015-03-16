@@ -17,22 +17,17 @@
 package io.vertx.groovy.ext.unit;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
-import io.vertx.core.AsyncResult
-import io.vertx.core.Handler
 /**
- * An asynchronous exit point for a test, this object can be used as an asynchronous result handler.
+ * An asynchronous exit point for a test.
 */
 @CompileStatic
-public class Async implements Handler<AsyncResult<Void>> {
+public class Async {
   final def io.vertx.ext.unit.Async delegate;
   public Async(io.vertx.ext.unit.Async delegate) {
     this.delegate = delegate;
   }
   public Object getDelegate() {
     return delegate;
-  }
-  public void handle(AsyncResult<Void> arg0) {
-    ((io.vertx.core.Handler) this.delegate).handle(arg0);
   }
   /**
    * Signals the asynchronous operation is done, this method should be called only once, if the method is called

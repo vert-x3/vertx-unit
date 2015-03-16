@@ -23,15 +23,6 @@ public class TestContextImpl implements TestContext, Task<Result> {
     private final AtomicBoolean completeCalled = new AtomicBoolean();
 
     @Override
-    public void handle(AsyncResult<Void> event) {
-      if (event.succeeded()) {
-        complete();
-      } else {
-        fail(event.cause());
-      }
-    }
-
-    @Override
     public void complete() {
       if (!completeCalled.compareAndSet(false, true)) {
         throw new IllegalStateException("The Async complete method cannot be called more than one time, check your test.");
@@ -47,6 +38,17 @@ public class TestContextImpl implements TestContext, Task<Result> {
       if (complete) {
         tryEnd();
       }
+    }
+
+    @Override
+    public <T> Handler<AsyncResult<T>> handler() {
+      return ar -> {
+        if (ar.succeeded()) {
+          complete();
+        } else {
+          fail(ar.cause());
+        }
+      };
     }
   }
 

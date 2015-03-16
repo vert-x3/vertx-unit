@@ -670,7 +670,7 @@ public abstract class TestSuiteTestBase {
   @Test
   public void testAsyncResult() throws Exception {
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
-      context.async().handle(Future.succeededFuture());
+      context.async().handler().handle(Future.succeededFuture());
     });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
@@ -685,7 +685,7 @@ public abstract class TestSuiteTestBase {
   public void testAsyncResultFailure() throws Exception {
     Exception cause = new Exception();
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
-      context.async().handle(Future.failedFuture(cause));
+      context.async().handler().handle(Future.failedFuture(cause));
     });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);

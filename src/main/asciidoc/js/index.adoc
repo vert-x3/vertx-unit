@@ -200,10 +200,7 @@ Assert an object is null, works for _basic_ types or _json_ types.
 
 [source,js]
 ----
-suite.test("my_test_case", function (context) {
-  context.assertNull(null);
-});
-
+todo
 ----
 
 === assertNotNull
@@ -327,19 +324,6 @@ suite.before(function (context) {
     context.assertTrue(ar_err == null);
     async.complete();
   });
-});
-
-----
-
-An `Async` can also be used as a completion handler saving some boiler plate code when closing
-tested objects such as `link:../../vertx-core/js/jsdoc/vertx-Vertx.html[Vertx]` or an `link:../../vertx-core/js/jsdoc/http_server-HttpServer.html[HttpServer]`:
-
-.Async used as a completion handler
-[source,js]
-----
-suite.after(function (context) {
-  var async = context.async();
-  vertx.close(async);
 });
 
 ----

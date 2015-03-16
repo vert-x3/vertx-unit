@@ -189,13 +189,6 @@ public class Examples {
     });
   }
 
-  public static void async_04(io.vertx.ext.unit.TestSuite suite, Vertx vertx) {
-    suite.after(context -> {
-      Async async = context.async();
-      vertx.close(async);
-    });
-  }
-
   public static void sharing_01(Vertx vertx, Helper helper) {
     TestSuite.create("my_suite").before(context -> {
 
