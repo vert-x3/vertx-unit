@@ -124,6 +124,23 @@ var TestCompletion = function(j_val) {
     } else utils.invalidArgs();
   };
 
+  /**
+   Cause the current thread to wait until the test suite completes and succeeds with a configurable timeout.<p/>
+  
+   If completion times out or the current thread is interrupted or the suite fails, an exception will be thrown.
+
+   @public
+   @param timeoutMillis {number} the timeout in milliseconds 
+   */
+  this.awaitSuccess = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      j_testCompletion.awaitSuccess();
+    }  else if (__args.length === 1 && typeof __args[0] ==='number') {
+      j_testCompletion.awaitSuccess(__args[0]);
+    } else utils.invalidArgs();
+  };
+
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.

@@ -7,6 +7,8 @@ import io.vertx.ext.unit.TestCompletion;
 import io.vertx.ext.unit.report.TestSuiteReport;
 import io.vertx.ext.unit.report.Reporter;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -131,6 +133,46 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       Helper.uncheckedThrow(e);
+    }
+  }
+
+  @Override
+  public void awaitSuccess() {
+    BlockingQueue<AsyncResult<?>> queue = new ArrayBlockingQueue<>(1);
+    Future<?> future = Future.future();
+    future.setHandler(queue::add);
+    AsyncResult<?> result = null;
+    resolve(future);
+    try {
+      result = queue.take();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      Helper.uncheckedThrow(e);
+    }
+    if (result == null) {
+      Helper.uncheckedThrow(new TimeoutException("Timed out"));
+    } else if (result.failed()) {
+      Helper.uncheckedThrow(result.cause());
+    }
+  }
+
+  @Override
+  public void awaitSuccess(long timeoutMillis) {
+    BlockingQueue<AsyncResult<?>> queue = new ArrayBlockingQueue<>(1);
+    Future<?> future = Future.future();
+    future.setHandler(queue::add);
+    AsyncResult<?> result = null;
+    resolve(future);
+    try {
+      result = queue.poll(timeoutMillis, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      Helper.uncheckedThrow(e);
+    }
+    if (result == null) {
+      Helper.uncheckedThrow(new TimeoutException("Timed out"));
+    } else if (result.failed()) {
+      Helper.uncheckedThrow(result.cause());
     }
   }
 }

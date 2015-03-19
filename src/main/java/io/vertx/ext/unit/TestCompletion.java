@@ -59,4 +59,20 @@ public interface TestCompletion {
    */
   void await(long timeoutMillis);
 
+  /**
+   * Cause the current thread to wait until the test suite completes and succeeds.<p/>
+   *
+   * If the current thread is interrupted or the suite fails, an exception will be thrown.
+   */
+  void awaitSuccess();
+
+  /**
+   * Cause the current thread to wait until the test suite completes and succeeds with a configurable timeout.<p/>
+   *
+   * If completion times out or the current thread is interrupted or the suite fails, an exception will be thrown.
+   *
+   * @param timeoutMillis the timeout in milliseconds
+   */
+  void awaitSuccess(long timeoutMillis);
+
 }

@@ -463,6 +463,21 @@ completion.await();
 
 ----
 
+The `await` throws an exception when the thread is interrupted or a timeout is fired.
+
+The `link:jsdoc/test_completion-TestCompletion.html#awaitSuccess[awaitSuccess]` is a variation that throws an exception when
+the test suite fails.
+
+.Blocking until the test suite succeeds
+[source,js]
+----
+var completion = suite.run();
+
+// Wait until the test suite completes
+completion.await();
+
+----
+
 === Time out
 
 Each test case of a test suite must execute before a certain timeout is reached. The default timeout is

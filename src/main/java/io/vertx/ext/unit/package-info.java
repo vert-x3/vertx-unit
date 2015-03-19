@@ -274,6 +274,17 @@
  * {@link examples.Examples#completion_03}
  * ----
  *
+ * The `await` throws an exception when the thread is interrupted or a timeout is fired.
+ *
+ * The {@link io.vertx.ext.unit.TestCompletion#awaitSuccess()} is a variation that throws an exception when
+ * the test suite fails.
+ *
+ * .Blocking until the test suite succeeds
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#completion_03}
+ * ----
+ *
  * === Time out
  *
  * Each test case of a test suite must execute before a certain timeout is reached. The default timeout is

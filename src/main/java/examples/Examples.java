@@ -269,6 +269,13 @@ public class Examples {
     completion.await();
   }
 
+  public static void completion_04(TestSuite suite) {
+    TestCompletion completion = suite.run();
+
+    // Wait until the test suite succeeds otherwise throw an exception
+    completion.awaitSuccess();
+  }
+
   public static void running_05(TestSuite suite) {
     TestOptions options = new TestOptions().setTimeout(10000);
 

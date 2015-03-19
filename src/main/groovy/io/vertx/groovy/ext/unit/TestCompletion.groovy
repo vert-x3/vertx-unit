@@ -88,4 +88,21 @@ public class TestCompletion {
   public void await(long timeoutMillis) {
     this.delegate.await(timeoutMillis);
   }
+  /**
+   * Cause the current thread to wait until the test suite completes and succeeds.<p/>
+   *
+   * If the current thread is interrupted or the suite fails, an exception will be thrown.
+   */
+  public void awaitSuccess() {
+    this.delegate.awaitSuccess();
+  }
+  /**
+   * Cause the current thread to wait until the test suite completes and succeeds with a configurable timeout.<p/>
+   *
+   * If completion times out or the current thread is interrupted or the suite fails, an exception will be thrown.
+   * @param timeoutMillis the timeout in milliseconds
+   */
+  public void awaitSuccess(long timeoutMillis) {
+    this.delegate.awaitSuccess(timeoutMillis);
+  }
 }
