@@ -282,7 +282,7 @@
  * .Blocking until the test suite succeeds
  * [source,$lang]
  * ----
- * {@link examples.Examples#completion_03}
+ * {@link examples.Examples#completion_04}
  * ----
  *
  * === Time out
