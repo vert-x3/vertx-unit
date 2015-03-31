@@ -44,7 +44,7 @@ var TestSuite = function(j_val) {
   this.before = function(callback) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuite.before(function(jVal) {
+      j_testSuite["before(io.vertx.core.Handler)"](function(jVal) {
       callback(new TestContext(jVal));
     });
       return that;
@@ -61,7 +61,7 @@ var TestSuite = function(j_val) {
   this.beforeEach = function(callback) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuite.beforeEach(function(jVal) {
+      j_testSuite["beforeEach(io.vertx.core.Handler)"](function(jVal) {
       callback(new TestContext(jVal));
     });
       return that;
@@ -78,7 +78,7 @@ var TestSuite = function(j_val) {
   this.after = function(callback) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuite.after(function(jVal) {
+      j_testSuite["after(io.vertx.core.Handler)"](function(jVal) {
       callback(new TestContext(jVal));
     });
       return that;
@@ -95,7 +95,7 @@ var TestSuite = function(j_val) {
   this.afterEach = function(callback) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuite.afterEach(function(jVal) {
+      j_testSuite["afterEach(io.vertx.core.Handler)"](function(jVal) {
       callback(new TestContext(jVal));
     });
       return that;
@@ -113,7 +113,7 @@ var TestSuite = function(j_val) {
   this.test = function(name, testCase) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-      j_testSuite.test(name, function(jVal) {
+      j_testSuite["test(java.lang.String,io.vertx.core.Handler)"](name, function(jVal) {
       testCase(new TestContext(jVal));
     });
       return that;
@@ -135,13 +135,13 @@ var TestSuite = function(j_val) {
   this.run = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return new TestCompletion(j_testSuite.run());
+      return new TestCompletion(j_testSuite["run()"]());
     }  else if (__args.length === 1 && typeof __args[0] === 'object') {
-      return new TestCompletion(j_testSuite.run(__args[0] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[0]))) : null));
+      return new TestCompletion(j_testSuite["run(io.vertx.ext.unit.TestOptions)"](__args[0] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[0]))) : null));
     }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      return new TestCompletion(j_testSuite.run(__args[0]._jdel));
+      return new TestCompletion(j_testSuite["run(io.vertx.core.Vertx)"](__args[0]._jdel));
     }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
-      return new TestCompletion(j_testSuite.run(__args[0]._jdel, __args[1] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
+      return new TestCompletion(j_testSuite["run(io.vertx.core.Vertx,io.vertx.ext.unit.TestOptions)"](__args[0]._jdel, __args[1] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
     } else utils.invalidArgs();
   };
 
@@ -161,7 +161,7 @@ var TestSuite = function(j_val) {
 TestSuite.create = function(name) {
   var __args = arguments;
   if (__args.length === 1 && typeof __args[0] === 'string') {
-    return new TestSuite(JTestSuite.create(name));
+    return new TestSuite(JTestSuite["create(java.lang.String)"](name));
   } else utils.invalidArgs();
 };
 

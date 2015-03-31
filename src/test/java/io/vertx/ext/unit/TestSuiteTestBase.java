@@ -265,12 +265,15 @@ public abstract class TestSuiteTestBase {
   @Test
   public void reportFailureAfterTestCompleted() {
     AtomicReference<TestContext> testRef = new AtomicReference<>();
-    TestSuite suite = TestSuite.create("my_suite").test("my_test_1", testRef::set).test("my_test_2", context -> {
-      try {
-        testRef.get().fail();
-      } catch (Exception e) {
-      }
-    });
+    TestSuite suite = TestSuite.
+        create("my_suite").
+        test("my_test_1", testRef::set).
+        test("my_test_2", context -> {
+          try {
+            testRef.get().fail();
+          } catch (AssertionError e) {
+          }
+        });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
     reporter.await();
@@ -282,8 +285,8 @@ public abstract class TestSuiteTestBase {
     assertNull(result.failure());
     result = reporter.results.get(1);
     assertEquals("my_test_2", result.name());
-    assertTrue(result.failed());
-    assertNotNull(result.failure());
+    assertTrue(result.succeeded());
+    assertNull(result.failure());
   }
 
   @Test

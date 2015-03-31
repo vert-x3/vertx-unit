@@ -200,7 +200,10 @@ Assert an object is null, works for _basic_ types or _json_ types.
 
 [source,js]
 ----
-todo
+suite.test("my_test_case", function (context) {
+  context.assertNull(null);
+});
+
 ----
 
 === assertNotNull
@@ -473,8 +476,8 @@ the test suite fails.
 ----
 var completion = suite.run();
 
-// Wait until the test suite completes
-completion.await();
+// Wait until the test suite succeeds otherwise throw an exception
+completion.awaitSuccess();
 
 ----
 

@@ -45,7 +45,7 @@ var EventBusCollector = function(j_val) {
   this.register = function(address) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
-      return new MessageConsumer(j_eventBusCollector.register(address));
+      return new MessageConsumer(j_eventBusCollector["register(java.lang.String)"](address));
     } else utils.invalidArgs();
   };
 
@@ -65,9 +65,9 @@ var EventBusCollector = function(j_val) {
 EventBusCollector.create = function() {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
-    return new EventBusCollector(JEventBusCollector.create(__args[0]._jdel, __args[1] != null ? new ReportingOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
+    return new EventBusCollector(JEventBusCollector["create(io.vertx.core.Vertx,io.vertx.ext.unit.report.ReportingOptions)"](__args[0]._jdel, __args[1] != null ? new ReportingOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
   }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'function') {
-    return new EventBusCollector(JEventBusCollector.create(__args[0]._jdel, function(jVal) {
+    return new EventBusCollector(JEventBusCollector["create(io.vertx.core.Vertx,io.vertx.core.Handler)"](__args[0]._jdel, function(jVal) {
     __args[1](new TestSuiteReport(jVal));
   }));
   } else utils.invalidArgs();

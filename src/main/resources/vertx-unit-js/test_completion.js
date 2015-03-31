@@ -41,7 +41,7 @@ var TestCompletion = function(j_val) {
   this.resolve = function(future) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_testCompletion.resolve(future._jdel);
+      j_testCompletion["resolve(io.vertx.core.Future)"](future._jdel);
     } else utils.invalidArgs();
   };
 
@@ -55,7 +55,7 @@ var TestCompletion = function(j_val) {
   this.isCompleted = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_testCompletion.isCompleted();
+      return j_testCompletion["isCompleted()"]();
     } else utils.invalidArgs();
   };
 
@@ -69,7 +69,7 @@ var TestCompletion = function(j_val) {
   this.isSucceeded = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_testCompletion.isSucceeded();
+      return j_testCompletion["isSucceeded()"]();
     } else utils.invalidArgs();
   };
 
@@ -83,7 +83,7 @@ var TestCompletion = function(j_val) {
   this.isFailed = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_testCompletion.isFailed();
+      return j_testCompletion["isFailed()"]();
     } else utils.invalidArgs();
   };
 
@@ -97,7 +97,7 @@ var TestCompletion = function(j_val) {
   this.handler = function(completionHandler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testCompletion.handler(function(ar) {
+      j_testCompletion["handler(io.vertx.core.Handler)"](function(ar) {
       if (ar.succeeded()) {
         completionHandler(null, null);
       } else {
@@ -118,9 +118,9 @@ var TestCompletion = function(j_val) {
   this.await = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      j_testCompletion.await();
+      j_testCompletion["await()"]();
     }  else if (__args.length === 1 && typeof __args[0] ==='number') {
-      j_testCompletion.await(__args[0]);
+      j_testCompletion["await(long)"](__args[0]);
     } else utils.invalidArgs();
   };
 
@@ -135,9 +135,9 @@ var TestCompletion = function(j_val) {
   this.awaitSuccess = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      j_testCompletion.awaitSuccess();
+      j_testCompletion["awaitSuccess()"]();
     }  else if (__args.length === 1 && typeof __args[0] ==='number') {
-      j_testCompletion.awaitSuccess(__args[0]);
+      j_testCompletion["awaitSuccess(long)"](__args[0]);
     } else utils.invalidArgs();
   };
 

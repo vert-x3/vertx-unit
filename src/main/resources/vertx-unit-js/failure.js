@@ -49,7 +49,7 @@ var Failure = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedisError == null) {
-        that.cachedisError = j_failure.isError();
+        that.cachedisError = j_failure["isError()"]();
       }
       return that.cachedisError;
     } else utils.invalidArgs();
@@ -66,7 +66,7 @@ var Failure = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedmessage == null) {
-        that.cachedmessage = j_failure.message();
+        that.cachedmessage = j_failure["message()"]();
       }
       return that.cachedmessage;
     } else utils.invalidArgs();
@@ -83,7 +83,7 @@ var Failure = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedstackTrace == null) {
-        that.cachedstackTrace = j_failure.stackTrace();
+        that.cachedstackTrace = j_failure["stackTrace()"]();
       }
       return that.cachedstackTrace;
     } else utils.invalidArgs();

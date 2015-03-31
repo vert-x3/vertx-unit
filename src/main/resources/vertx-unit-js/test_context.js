@@ -43,7 +43,7 @@ var TestContext = function(j_val) {
   this.get = function(key) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
-      return utils.convReturnTypeUnknown(j_testContext.get(key));
+      return utils.convReturnTypeUnknown(j_testContext["get(java.lang.String)"](key));
     } else utils.invalidArgs();
   };
 
@@ -60,7 +60,7 @@ var TestContext = function(j_val) {
   this.put = function(key, value) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'string' && true) {
-      return utils.convReturnTypeUnknown(j_testContext.put(key, utils.convParamTypeUnknown(value)));
+      return utils.convReturnTypeUnknown(j_testContext["put(java.lang.String,java.lang.Object)"](key, utils.convParamTypeUnknown(value)));
     } else utils.invalidArgs();
   };
 
@@ -74,7 +74,7 @@ var TestContext = function(j_val) {
   this.remove = function(key) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
-      return utils.convReturnTypeUnknown(j_testContext.remove(key));
+      return utils.convReturnTypeUnknown(j_testContext["remove(java.lang.String)"](key));
     } else utils.invalidArgs();
   };
 
@@ -90,10 +90,10 @@ var TestContext = function(j_val) {
   this.assertNull = function() {
     var __args = arguments;
     if (__args.length === 1 && true) {
-      j_testContext.assertNull(utils.convParamTypeUnknown(__args[0]));
+      j_testContext["assertNull(java.lang.Object)"](utils.convParamTypeUnknown(__args[0]));
       return that;
     }  else if (__args.length === 2 && true && typeof __args[1] === 'string') {
-      j_testContext.assertNull(utils.convParamTypeUnknown(__args[0]), __args[1]);
+      j_testContext["assertNull(java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), __args[1]);
       return that;
     } else utils.invalidArgs();
   };
@@ -110,10 +110,10 @@ var TestContext = function(j_val) {
   this.assertNotNull = function() {
     var __args = arguments;
     if (__args.length === 1 && true) {
-      j_testContext.assertNotNull(utils.convParamTypeUnknown(__args[0]));
+      j_testContext["assertNotNull(java.lang.Object)"](utils.convParamTypeUnknown(__args[0]));
       return that;
     }  else if (__args.length === 2 && true && typeof __args[1] === 'string') {
-      j_testContext.assertNotNull(utils.convParamTypeUnknown(__args[0]), __args[1]);
+      j_testContext["assertNotNull(java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), __args[1]);
       return that;
     } else utils.invalidArgs();
   };
@@ -130,10 +130,10 @@ var TestContext = function(j_val) {
   this.assertTrue = function() {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] ==='boolean') {
-      j_testContext.assertTrue(__args[0]);
+      j_testContext["assertTrue(boolean)"](__args[0]);
       return that;
     }  else if (__args.length === 2 && typeof __args[0] ==='boolean' && typeof __args[1] === 'string') {
-      j_testContext.assertTrue(__args[0], __args[1]);
+      j_testContext["assertTrue(boolean,java.lang.String)"](__args[0], __args[1]);
       return that;
     } else utils.invalidArgs();
   };
@@ -150,10 +150,10 @@ var TestContext = function(j_val) {
   this.assertFalse = function() {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] ==='boolean') {
-      j_testContext.assertFalse(__args[0]);
+      j_testContext["assertFalse(boolean)"](__args[0]);
       return that;
     }  else if (__args.length === 2 && typeof __args[0] ==='boolean' && typeof __args[1] === 'string') {
-      j_testContext.assertFalse(__args[0], __args[1]);
+      j_testContext["assertFalse(boolean,java.lang.String)"](__args[0], __args[1]);
       return that;
     } else utils.invalidArgs();
   };
@@ -171,10 +171,10 @@ var TestContext = function(j_val) {
   this.assertEquals = function() {
     var __args = arguments;
     if (__args.length === 2 && true && true) {
-      j_testContext.assertEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
+      j_testContext["assertEquals(java.lang.Object,java.lang.Object)"](utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
       return that;
     }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
-      j_testContext.assertEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
+      j_testContext["assertEquals(java.lang.Object,java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
       return that;
     } else utils.invalidArgs();
   };
@@ -194,10 +194,10 @@ var TestContext = function(j_val) {
   this.assertInRange = function() {
     var __args = arguments;
     if (__args.length === 3 && typeof __args[0] ==='number' && typeof __args[1] ==='number' && typeof __args[2] ==='number') {
-      j_testContext.assertInRange(__args[0], __args[1], __args[2]);
+      j_testContext["assertInRange(double,double,double)"](__args[0], __args[1], __args[2]);
       return that;
     }  else if (__args.length === 4 && typeof __args[0] ==='number' && typeof __args[1] ==='number' && typeof __args[2] ==='number' && typeof __args[3] === 'string') {
-      j_testContext.assertInRange(__args[0], __args[1], __args[2], __args[3]);
+      j_testContext["assertInRange(double,double,double,java.lang.String)"](__args[0], __args[1], __args[2], __args[3]);
       return that;
     } else utils.invalidArgs();
   };
@@ -215,10 +215,10 @@ var TestContext = function(j_val) {
   this.assertNotEquals = function() {
     var __args = arguments;
     if (__args.length === 2 && true && true) {
-      j_testContext.assertNotEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
+      j_testContext["assertNotEquals(java.lang.Object,java.lang.Object)"](utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
       return that;
     }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
-      j_testContext.assertNotEquals(utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
+      j_testContext["assertNotEquals(java.lang.Object,java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
       return that;
     } else utils.invalidArgs();
   };
@@ -232,9 +232,9 @@ var TestContext = function(j_val) {
   this.fail = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      j_testContext.fail();
+      j_testContext["fail()"]();
     }  else if (__args.length === 1 && typeof __args[0] === 'string') {
-      j_testContext.fail(__args[0]);
+      j_testContext["fail(java.lang.String)"](__args[0]);
     } else utils.invalidArgs();
   };
 
@@ -252,7 +252,7 @@ var TestContext = function(j_val) {
   this.async = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return new Async(j_testContext.async());
+      return new Async(j_testContext["async()"]());
     } else utils.invalidArgs();
   };
 

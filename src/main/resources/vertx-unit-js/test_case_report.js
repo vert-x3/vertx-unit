@@ -43,7 +43,7 @@ var TestCaseReport = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedname == null) {
-        that.cachedname = j_testCaseReport.name();
+        that.cachedname = j_testCaseReport["name()"]();
       }
       return that.cachedname;
     } else utils.invalidArgs();
@@ -59,7 +59,7 @@ var TestCaseReport = function(j_val) {
   this.endHandler = function(handler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testCaseReport.endHandler(function(jVal) {
+      j_testCaseReport["endHandler(io.vertx.core.Handler)"](function(jVal) {
       handler(new TestResult(jVal));
     });
       return that;

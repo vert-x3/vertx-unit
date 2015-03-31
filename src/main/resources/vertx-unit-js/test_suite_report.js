@@ -45,7 +45,7 @@ var TestSuiteReport = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedname == null) {
-        that.cachedname = j_testSuiteReport.name();
+        that.cachedname = j_testSuiteReport["name()"]();
       }
       return that.cachedname;
     } else utils.invalidArgs();
@@ -62,7 +62,7 @@ var TestSuiteReport = function(j_val) {
   this.exceptionHandler = function(handler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuiteReport.exceptionHandler(function(jVal) {
+      j_testSuiteReport["exceptionHandler(io.vertx.core.Handler)"](function(jVal) {
       handler(utils.convReturnTypeUnknown(jVal));
     });
       return that;
@@ -78,7 +78,7 @@ var TestSuiteReport = function(j_val) {
   this.handler = function(handler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuiteReport.handler(function(jVal) {
+      j_testSuiteReport["handler(io.vertx.core.Handler)"](function(jVal) {
       handler(new TestCaseReport(jVal));
     });
       return that;
@@ -94,7 +94,7 @@ var TestSuiteReport = function(j_val) {
   this.pause = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      j_testSuiteReport.pause();
+      j_testSuiteReport["pause()"]();
       return that;
     } else utils.invalidArgs();
   };
@@ -108,7 +108,7 @@ var TestSuiteReport = function(j_val) {
   this.resume = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      j_testSuiteReport.resume();
+      j_testSuiteReport["resume()"]();
       return that;
     } else utils.invalidArgs();
   };
@@ -122,7 +122,7 @@ var TestSuiteReport = function(j_val) {
   this.endHandler = function(endHandler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_testSuiteReport.endHandler(endHandler);
+      j_testSuiteReport["endHandler(io.vertx.core.Handler)"](endHandler);
       return that;
     } else utils.invalidArgs();
   };

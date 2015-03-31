@@ -41,7 +41,7 @@ var Async = function(j_val) {
   this.complete = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      j_async.complete();
+      j_async["complete()"]();
     } else utils.invalidArgs();
   };
 

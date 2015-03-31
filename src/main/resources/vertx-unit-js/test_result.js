@@ -43,7 +43,7 @@ var TestResult = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedname == null) {
-        that.cachedname = j_testResult.name();
+        that.cachedname = j_testResult["name()"]();
       }
       return that.cachedname;
     } else utils.invalidArgs();
@@ -60,7 +60,7 @@ var TestResult = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedbeginTime == null) {
-        that.cachedbeginTime = j_testResult.beginTime();
+        that.cachedbeginTime = j_testResult["beginTime()"]();
       }
       return that.cachedbeginTime;
     } else utils.invalidArgs();
@@ -77,7 +77,7 @@ var TestResult = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cacheddurationTime == null) {
-        that.cacheddurationTime = j_testResult.durationTime();
+        that.cacheddurationTime = j_testResult["durationTime()"]();
       }
       return that.cacheddurationTime;
     } else utils.invalidArgs();
@@ -94,7 +94,7 @@ var TestResult = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedsucceeded == null) {
-        that.cachedsucceeded = j_testResult.succeeded();
+        that.cachedsucceeded = j_testResult["succeeded()"]();
       }
       return that.cachedsucceeded;
     } else utils.invalidArgs();
@@ -111,7 +111,7 @@ var TestResult = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedfailed == null) {
-        that.cachedfailed = j_testResult.failed();
+        that.cachedfailed = j_testResult["failed()"]();
       }
       return that.cachedfailed;
     } else utils.invalidArgs();
@@ -128,7 +128,7 @@ var TestResult = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedfailure == null) {
-        that.cachedfailure = new Failure(j_testResult.failure());
+        that.cachedfailure = new Failure(j_testResult["failure()"]());
       }
       return that.cachedfailure;
     } else utils.invalidArgs();

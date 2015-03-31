@@ -439,8 +439,8 @@ the test suite fails.
 ----
 TestCompletion completion = suite.run();
 
-// Wait until the test suite completes
-completion.await();
+// Wait until the test suite succeeds otherwise throw an exception
+completion.awaitSuccess();
 ----
 
 === Time out
