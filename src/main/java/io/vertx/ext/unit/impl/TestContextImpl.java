@@ -39,17 +39,6 @@ public class TestContextImpl implements TestContext, Task<Result> {
         tryEnd();
       }
     }
-
-    @Override
-    public <T> Handler<AsyncResult<T>> handler() {
-      return ar -> {
-        if (ar.succeeded()) {
-          complete();
-        } else {
-          fail(ar.cause());
-        }
-      };
-    }
   }
 
   private final Map<String, Object> attributes;
@@ -317,6 +306,30 @@ public class TestContextImpl implements TestContext, Task<Result> {
       }
     }
     return this;
+  }
+
+  @Override
+  public <T> Handler<AsyncResult<T>> asyncAssertSuccess() {
+    return asyncAssertSuccess(result -> {
+    });
+  }
+
+  @Override
+  public <T> Handler<AsyncResult<T>> asyncAssertSuccess(Handler<T> resultHandler) {
+    Async async = async();
+    return ar -> {
+      if (ar.succeeded()) {
+        T result = ar.result();
+        try {
+          resultHandler.handle(result);
+          async.complete();
+        } catch (Throwable e) {
+          failed(e);
+        }
+      } else {
+        failed(ar.cause());
+      }
+    };
   }
 
   @Override

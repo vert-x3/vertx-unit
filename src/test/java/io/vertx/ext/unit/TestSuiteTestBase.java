@@ -1,8 +1,8 @@
 package io.vertx.ext.unit;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.ext.unit.impl.TestSuiteImpl;
 import io.vertx.ext.unit.impl.TestSuiteRunner;
 import io.vertx.ext.unit.report.TestResult;
@@ -671,12 +671,20 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
-  public void testAsyncResult() throws Exception {
+  public void testAssertAsyncResultHandlerSucceeded() throws Exception {
+    BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
+    BlockingQueue<String> resultQueue = new ArrayBlockingQueue<>(1);
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
-      context.async().handler().handle(Future.succeededFuture());
+      handlerQueue.add(context.<String>asyncAssertSuccess(r -> {
+        resultQueue.add(r);
+      }));
     });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
+    Handler<AsyncResult<String>> handler = handlerQueue.poll(2, TimeUnit.SECONDS);
+    handler.handle(Future.succeededFuture("foo"));
+    String result = resultQueue.poll(2, TimeUnit.SECONDS);
+    assertEquals("foo", result);
     reporter.await();
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
@@ -685,14 +693,64 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
-  public void testAsyncResultFailure() throws Exception {
-    Exception cause = new Exception();
+  public void testAssertAsyncResultHandlerThrowsFailure() throws Exception {
+    RuntimeException cause = new RuntimeException();
+    BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
-      context.async().handler().handle(Future.failedFuture(cause));
+      handlerQueue.add(context.<String>asyncAssertSuccess(r -> {
+        throw cause;
+      }));
     });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
+    Handler<AsyncResult<String>> handler = handlerQueue.poll(2, TimeUnit.SECONDS);
+    handler.handle(Future.succeededFuture("foo"));
     reporter.await();
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertTrue(reporter.results.get(0).failed());
+    assertSame(cause, reporter.results.get(0).failure().cause());
+  }
+
+  @Test
+  public void testAssertAsyncResultHandlerSucceededAsync() throws Exception {
+    BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
+    BlockingQueue<Async> resultQueue = new ArrayBlockingQueue<>(1);
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      handlerQueue.add(context.<String>asyncAssertSuccess(r -> {
+        resultQueue.add(context.async());
+      }));
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    Handler<AsyncResult<String>> handler = handlerQueue.poll(2, TimeUnit.SECONDS);
+    handler.handle(Future.succeededFuture("foo"));
+    Async result = resultQueue.poll(2, TimeUnit.SECONDS);
+    assertFalse(reporter.completed());
+    result.complete();
+    reporter.await();
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertFalse(reporter.results.get(0).failed());
+  }
+
+  @Test
+  public void testAssertAsyncResultFailed() throws Exception {
+    BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
+    AtomicBoolean called = new AtomicBoolean();
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      handlerQueue.add(context.<String>asyncAssertSuccess(r -> {
+        called.set(true);
+      }));
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    Handler<AsyncResult<String>> handler = handlerQueue.poll(2, TimeUnit.SECONDS);
+    RuntimeException cause = new RuntimeException();
+    handler.handle(Future.failedFuture(cause));
+    reporter.await();
+    assertFalse(called.get());
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
     assertEquals("my_test", reporter.results.get(0).name());

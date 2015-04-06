@@ -3,6 +3,8 @@ package io.vertx.ext.unit;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 
 /**
  * The test context is used for performing test assertions and manage the completion of the test. This context
@@ -219,13 +221,45 @@ public interface TestContext {
   void fail(Throwable cause);
 
   /**
-   * Create and returns a new async object, the returned async controls the completion of the test. The test case
-   * will complete when all the async objects have their {@link io.vertx.ext.unit.Async#complete()} method called
-   * at least once.<p/>
+   * Create and returns a new async object, the returned async controls the completion of the test. Calling the
+   * {@link Async#complete()} completes the async operation.<p/>
+   *
+   * The test case will complete when all the async objects have their {@link io.vertx.ext.unit.Async#complete()}
+   * method called at least once.<p/>
    *
    * This method shall be used for creating asynchronous exit points for the executed test.
    *
    * @return the async instance
    */
   Async async();
+
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it completes the async operation.<p/>
+   *
+   * When the returned handler is called back with a failed result it fails the test with the cause of the failure.<p/>
+   *
+   * @return the async result handler
+   */
+  @GenIgnore
+  <T> Handler<AsyncResult<T>> asyncAssertSuccess();
+
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it invokes the {@code resultHandler} argument
+   * with the async result. The test completes after the result handler is invoked and does not fails.<p/>
+   *
+   * When the returned handler is called back with a failed result it fails the test with the cause of the failure.<p/>
+   *
+   * Note that the result handler can create other async objects during its invocation that would postpone
+   * the completion of the test case until those objects are resolved.
+   *
+   * @param resultHandler the result handler
+   * @return the async result handler
+   */
+  @GenIgnore
+  <T> Handler<AsyncResult<T>> asyncAssertSuccess(Handler<T> resultHandler);
+
 }

@@ -1,9 +1,6 @@
 package io.vertx.ext.unit;
 
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 
 /**
  * An asynchronous exit point for a test.
@@ -18,13 +15,5 @@ public interface Async {
    * another time it will throw an {@code IllegalStateException} to signal the error.
    */
   void complete();
-
-  /**
-   * Return an async result handler calling {@link #complete()} or {@link TestContext#fail()} on callback.
-   *
-   * @return the async result handler
-   */
-  @GenIgnore
-  <T> Handler<AsyncResult<T>> handler();
 
 }
