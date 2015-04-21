@@ -32,6 +32,11 @@ public class LangTest extends VertxTestBase {
     testAssertions("groovy:verticle/assertions.groovy");
   }
 
+  @org.junit.Test
+  public void testAssertionsRuby() throws Exception {
+    testAssertions("rb:verticle/assertions.rb");
+  }
+
   private void testAssertions(String verticle) throws Exception {
     vertx.eventBus().<JsonObject>consumer("assert_tests").bodyStream().handler(msg -> {
       String type = msg.getString("type");

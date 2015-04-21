@@ -24,19 +24,19 @@ suite.test("assert_null", { context ->
 
 suite.test("assert_null_with_message", { context ->
     context.assertNull(null, "the_message");
-}).test("fail_assert_null_1", { context ->
+}).test("fail_assert_null_with_message_1", { context ->
     context.assertNull(0, "the_message");
-}).test("fail_assert_null_2", { context ->
+}).test("fail_assert_null_with_message_2", { context ->
     context.assertNull("string", "the_message");
-}).test("fail_assert_null_3", { context ->
+}).test("fail_assert_null_with_message_3", { context ->
     context.assertNull(0.12, "the_message");
-}).test("fail_assert_null_4", { context ->
+}).test("fail_assert_null_with_message_4", { context ->
     context.assertNull(true, "the_message");
-}).test("fail_assert_null_5", { context ->
+}).test("fail_assert_null_with_message_5", { context ->
     context.assertNull(false, "the_message");
-}).test("fail_assert_null_6", { context ->
+}).test("fail_assert_null_with_message_6", { context ->
     context.assertNull([:], "the_message");
-}).test("fail_assert_null_7", { context ->
+}).test("fail_assert_null_with_message_7", { context ->
     context.assertNull([], "the_message");
 });
 
@@ -60,7 +60,7 @@ suite.test("assert_not_null_with_message", { context ->
     context.assertNotNull(false, "the_message");
     context.assertNotNull([:], "the_message");
     context.assertNotNull([], "the_message");
-}).test("fail_assert_null", { context ->
+}).test("fail_assert_null_with_message", { context ->
     context.assertNotNull(null, "the_message");
 });
 

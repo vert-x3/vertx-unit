@@ -1,0 +1,699 @@
+= Vertx unit
+
+Asynchronous polyglot unit testing.
+
+== Introduction
+
+Vertx Unit is designed for writing asynchronous unit tests with a polyglot API and running these tests
+in the JVM. Vertx Unit Api borrows from existing test frameworks like http://junit.org[JUnit] or http://qunitjs.com[QUnit]
+and follows the Vert.x practices.
+
+As a consequence Vertx Unit is the natural choice for testing Vert.x applications.
+
+It can be used in different ways and run anywhere your code runs, it is just a matter of reporting
+the results the right way, this example shows the bare minimum test suite:
+
+[source,ruby]
+----
+require 'vertx-unit/test_suite'
+suite = VertxUnit::TestSuite.create("the_test_suite")
+suite.test("my_test_case") { |context|
+  s = "value"
+  context.assert_equals("value", s)
+}
+suite.run()
+
+----
+
+The  method will execute the suite and go through all the
+tests of the suite. The suite can fail or pass, this does not matter if the outer world is not aware
+of the test result.
+
+[source,ruby]
+----
+require 'vertx-unit/test_suite'
+suite = VertxUnit::TestSuite.create("the_test_suite")
+suite.test("my_test_case") { |context|
+  s = "value"
+  context.assert_equals("value", s)
+}
+suite.run({
+  'reporters' => [
+    {
+      'to' => "console"
+    }
+  ]
+})
+
+----
+
+When executed, the test suite now reports to the console the steps of the test suite:
+
+----
+Begin test suite the_test_suite
+Begin test my_test
+Passed my_test
+End test suite the_test_suite , run: 1, Failures: 0, Errors: 0
+----
+
+The  option configures the reporters used by the suite runner for reporting the execution
+of the tests, see the <<reporting>> section for more info.
+
+== Writing a test suite
+
+A test suite is a named collection of test case, a test case is a straight callback to execute. The suite can
+have lifecycle callbacks to execute _before_ and/or _after_ the test cases or the test suite that are used for
+initializing or disposing services used by the test suite.
+
+[source,ruby]
+----
+require 'vertx-unit/test_suite'
+suite = VertxUnit::TestSuite.create("the_test_suite")
+suite.test("my_test_case_1") { |context|
+  # Test 1
+}
+suite.test("my_test_case_2") { |context|
+  # Test 2
+}
+suite.test("my_test_case_3") { |context|
+  # Test 3
+}
+
+----
+
+The API is fluent and therefore the test cases can be chained:
+
+[source,ruby]
+----
+require 'vertx-unit/test_suite'
+suite = VertxUnit::TestSuite.create("the_test_suite")
+suite.test("my_test_case_1") { |context|
+  # Test 1
+}.test("my_test_case_2") { |context|
+  # Test 2
+}.test("my_test_case_3") { |context|
+  # Test 3
+}
+
+----
+
+The test cases declaration order is not guaranteed, so test cases should not rely on the execution of
+another test case to run. Such practice is considered as a bad one.
+
+Vertx Unit provides _before_ and _after_ callbacks for doing global setup or cleanup:
+
+[source,ruby]
+----
+require 'vertx-unit/test_suite'
+suite = VertxUnit::TestSuite.create("the_test_suite")
+suite.before() { |context|
+  # Test suite setup
+}.test("my_test_case_1") { |context|
+  # Test 1
+}.test("my_test_case_2") { |context|
+  # Test 2
+}.test("my_test_case_3") { |context|
+  # Test 3
+}.after() { |context|
+  # Test suite cleanup
+}
+
+----
+
+The declaration order of the method does not matter, the example declares the _before_ callback before
+the test cases and _after_ callback after the test cases but it could be anywhere, as long as it is done before
+running the test suite.
+
+The _before_ callback is executed before any tests, when it fails, the test suite execution will stop and the
+failure is reported. The _after_ callback is the last callback executed by the testsuite, unless
+the _before_ callback reporter a failure.
+
+Likewise, Vertx Unit provides the _beforeEach_ and _afterEach_ callback that do the same but are executed
+for each test case:
+
+[source,ruby]
+----
+require 'vertx-unit/test_suite'
+suite = VertxUnit::TestSuite.create("the_test_suite")
+suite.before_each() { |context|
+  # Test case setup
+}.test("my_test_case_1") { |context|
+  # Test 1
+}.test("my_test_case_2") { |context|
+  # Test 2
+}.test("my_test_case_3") { |context|
+  # Test 3
+}.after_each() { |context|
+  # Test case cleanup
+}
+
+----
+
+The _beforeEach_ callback is executed before each test case, when it fails, the test case is not executed and the
+failure is reported. The _afterEach_ callback is the executed just after the test case callback, unless
+the _beforeEach_ callback reported a failure.
+
+== Asserting
+
+Vertx Unit provides the `link:yardoc/VertxUnit/TestContext.html[TestContext]` object for doing assertions in test cases. The _context_
+object provides the usual methods when dealing with assertions.
+
+=== assertEquals
+
+Assert two objects are equals, works for _basic_ types or _json_ types.
+
+[source,ruby]
+----
+suite.test("my_test_case") { |context|
+  context.assert_equals(10, callbackCount)
+}
+
+----
+
+There is also an overloaded version for providing a message:
+
+[source,ruby]
+----
+suite.test("my_test_case") { |context|
+  context.assert_equals(10, callbackCount, "Should have been 10 instead of #{callbackCount}")
+}
+
+----
+
+Usually each assertion provides an overloaded version.
+
+=== assertNotEquals
+
+The counter part of _assertEquals_.
+
+[source,ruby]
+----
+suite.test("my_test_case") { |context|
+  context.assert_not_equals(10, callbackCount)
+}
+
+----
+
+=== assertNull
+
+Assert an object is null, works for _basic_ types or _json_ types.
+
+[source,ruby]
+----
+suite.test("my_test_case") { |context|
+  context.assert_null(nil)
+}
+
+----
+
+=== assertNotNull
+
+The counter part of _assertNull_.
+
+[source,ruby]
+----
+suite.test("my_test_case") { |context|
+  context.assert_not_null("not null!")
+}
+
+----
+
+=== assertInRange
+
+The `link:yardoc/VertxUnit/TestContext.html#assert_in_range-instance_method[assertInRange]` targets real numbers.
+
+----
+suite.test("my_test_case") { |context|
+
+  # Assert that 0.1 is equals to 0.2 +/- 0.5
+
+  context.assert_in_range(0.1, 0.2, 0.5)
+}
+
+----
+
+=== assertTrue and assertFalse
+
+Asserts the value of a boolean expression.
+
+[source,ruby]
+----
+suite.test("my_test_case") { |context|
+  context.assert_true(var)
+  context.assert_false(value > 10)
+}
+
+----
+
+=== Failing
+
+Last but not least, _test_ provides a _fail_ method that will throw an assertion error:
+
+[source,ruby]
+----
+suite.test("my_test_case") { |context|
+  context.fail("That should never happen")
+  # Following statements won't be executed
+}
+
+----
+
+== Asynchronous testing
+
+The previous examples supposed that test cases were terminated after their respective callbacks, this is the
+default behavior of a test case callback. Often it is desirable to terminate the test after the test case
+callback, for instance:
+
+.The Async object asynchronously completes the test case
+[source,ruby]
+----
+suite.test("my_test_case") { |context|
+  async = context.async()
+  eventBus.consumer("the-address") { |msg|
+    # <2>
+    async.complete()
+  }
+  # <1>
+}
+
+----
+<1> The callback exits but the test case is not terminated
+<2> The event callback from the bus terminates the test
+
+Creating an `link:yardoc/VertxUnit/Async.html[Async]` object with the `link:yardoc/VertxUnit/TestContext.html#async-instance_method[async]` method marks the
+executed test case as non terminated. The test case terminates when the `link:yardoc/VertxUnit/Async.html#complete-instance_method[complete]`
+method is invoked.
+
+NOTE: When the `complete` callback is not invoked, the test case fails after a certain timeout.
+
+Several `Async` objects can be created during the same test case, all of them must be _completed_ to terminate
+the test.
+
+.Several Async objects provide coordination
+[source,ruby]
+----
+suite.test("my_test_case") { |context|
+
+  async1 = context.async()
+  client = vertx.create_http_client()
+  req = client.get(8080, "localhost", "/")
+  req.exception_handler() { |err|
+    context.fail(err.get_message())}
+  req.handler() { |resp|
+    context.assert_equals(200, resp.status_code())
+    async1.complete()
+  }
+  req.end()
+
+  async2 = context.async()
+  vertx.event_bus().consumer("the-address") { |msg|
+    async2.complete()
+  }
+}
+
+----
+
+Async objects can also be used in _before_ or _after_ callbacks, it can be very convenient in a _before_ callback
+to implement a setup that depends on one or several asynchronous results:
+
+.Async starts an http server before test cases
+[source,ruby]
+----
+suite.before() { |context|
+  async = context.async()
+  server = vertx.create_http_server()
+  server.request_handler(&requestHandler)
+  server.listen(8080) { |ar,ar_err|
+    context.assert_true(ar_err == nil)
+    async.complete()
+  }
+}
+
+----
+
+== Sharing objects
+
+The `link:yardoc/VertxUnit/TestContext.html[TestContext]` has `get`/`put`/`remove` operations for sharing state between callbacks.
+
+Any object added during the _before_ callback is available in any other callbacks. Each test case will operate on
+a copy of the shared state, so updates will only be visible for a test case.
+
+.Sharing state between callbacks
+[source,ruby]
+----
+require 'vertx-unit/test_suite'
+VertxUnit::TestSuite.create("my_suite").before() { |context|
+
+  # host is available for all test cases
+  context.put("host", "localhost")
+
+}.before_each() { |context|
+
+  # Generate a random port for each test
+  port = helper.random_port()
+
+  # Get host
+  host = context.get("host")
+
+  # Setup server
+  async = context.async()
+  server = vertx.create_http_server()
+  server.request_handler() { |req|
+    req.response().set_status_code(200).end()
+  }
+  server.listen(port, host) { |ar,ar_err|
+    context.assert_true(ar_err == nil)
+    context.put("port", port)
+    async.complete()
+  }
+
+}.test("my_test") { |context|
+
+  # Get the shared state
+  port = context.get("port")
+  host = context.get("host")
+
+  # Do request
+  client = vertx.create_http_client()
+  req = client.get(port, host, "/resource")
+  async = context.async()
+  req.handler() { |resp|
+    context.assert_equals(200, resp.status_code())
+    async.complete()
+  }
+  req.end()
+}
+
+----
+
+WARNING: sharing any object is only supported in Java, other languages can share only basic or json types.
+Other objects should be shared using the features of that language.
+
+[[reporting]]
+== Running
+
+When a test suite is created, it won't be executed until the `link:yardoc/VertxUnit/TestSuite.html#run-instance_method[run]` method
+is called.
+
+.Running a test suite
+[source,ruby]
+----
+suite.run()
+
+----
+
+The test suite can also be ran with a specified `link:../../vertx-core/ruby/yardoc/Vertx/Vertx.html[Vertx]` instance:
+
+.Provides a Vertx instance to run the test suite
+[source,ruby]
+----
+suite.run(vertx)
+
+----
+
+When running with a `Vertx` instance, the test suite is executed using the Vertx event loop, see the <<eventloop>>
+section for more details.
+
+=== Test suite completion
+
+No assumptions can be made about when the test suite will be completed, and if some code needs to be executed
+after the test suite, it should either be in the test suite _after_ callback or as callback of the
+`link:yardoc/VertxUnit/TestCompletion.html[TestCompletion]`:
+
+.Test suite execution callback
+[source,ruby]
+----
+completion = suite.run(vertx)
+
+# Simple completion callback
+completion.handler() { |ar,ar_err|
+  if (ar_err == nil)
+    puts "Test suite passed!"
+  else
+    puts "Test suite failed:"
+    ar_err.print_stack_trace()
+  end
+}
+
+----
+
+The `link:yardoc/VertxUnit/TestCompletion.html[TestCompletion]` object provides also a `link:yardoc/VertxUnit/TestCompletion.html#resolve-instance_method[resolve]` method that
+takes a `Future` object, this `Future` will be notified of the test suite execution:
+
+.Resolving the start Future with the test suite
+[source,ruby]
+----
+completion = suite.run()
+
+# When the suite completes, the future is resolved
+completion.resolve(startFuture)
+
+----
+
+This allow to easily create a _test_ verticle whose deployment is the test suite execution, allowing the
+code that deploys it to be easily aware of the success or failure.
+
+The completion object can also be used like a latch to block until the test suite completes. This should
+be used when the thread running the test suite is not the same than the current thread:
+
+.Blocking until the test suite completes
+[source,ruby]
+----
+completion = suite.run()
+
+# Wait until the test suite completes
+completion.await()
+
+----
+
+The `await` throws an exception when the thread is interrupted or a timeout is fired.
+
+The `link:yardoc/VertxUnit/TestCompletion.html#await_success-instance_method[awaitSuccess]` is a variation that throws an exception when
+the test suite fails.
+
+.Blocking until the test suite succeeds
+[source,ruby]
+----
+completion = suite.run()
+
+# Wait until the test suite succeeds otherwise throw an exception
+completion.await_success()
+
+----
+
+=== Time out
+
+Each test case of a test suite must execute before a certain timeout is reached. The default timeout is
+of _2 minutes_, it can be changed using _test options_:
+
+.Setting the test suite timeout
+[source,ruby]
+----
+options = {
+  'timeout' => 10000
+}
+
+# Run with a 10 seconds time out
+suite.run(options)
+
+----
+
+[[event_loop]]
+=== Event loop
+
+Vertx Unit execution is a list of tasks to execute, the execution of each task is driven by the completion
+of the previous task. These tasks should leverage Vert.x event loop when possible but that depends on the
+current execution context (i.e the test suite is executed in a `main` or embedded in a `Verticle`) and
+wether or not a `Vertx` instance is configured.
+
+The `link:../cheatsheet/TestOptions.html#useEventLoop[useEventLoop]` configures the usage of the event
+loop:
+
+.Event loop usage
+|===
+| | useEventLoop:null | useEventLoop:true | useEventLoop:false
+
+| `Vertx` instance
+| use vertx event loop
+| use vertx event loop
+| force no event loop
+
+| in a `Verticle`
+| use current event loop
+| use current event loop
+| force no event loop
+
+| in a _main_
+| use no event loop
+| raise an error
+| use no event loop
+
+|===
+
+The default `useEventLoop` value is `null`, that means that it will uses an event loop when possible and fallback
+to no event loop when no one is available.
+
+== Reporting
+
+Reporting is an important piece of a test suite, Vertx Unit can be configured to run with different kind
+of reporters.
+
+By default no reporter is configured, when running a test suite, _test options_ can be provided to
+configure one or several:
+
+.Using the console reporter and as a junit xml file
+[source,ruby]
+----
+
+# Report to console
+consoleReport = {
+  'to' => "console"
+}
+
+# Report junit files to the current directory
+junitReport = {
+  'to' => "file:.",
+  'format' => "junit"
+}
+
+suite.run({
+  'reporters' => [
+    consoleReport,
+    junitReport
+  ]
+})
+
+----
+
+=== Console reporting
+
+Reports to the JVM `System.out` and `System.err`:
+
+to::
+_console_
+format::
+_simple_ or _junit_
+
+=== File reporting
+
+Reports to a file, a `Vertx` instance must be provided:
+
+to::
+_file_ `:` _dir name_
+format::
+_simple_ or _junit_
+example::
+`file:.`
+
+The file reporter will create files in the configured directory, the files will be named after the
+test suite name executed and the format (i.e _simple_ creates _txt_ files and _junit_ creates _xml_
+files).
+
+=== Log reporting
+
+Reports to a logger, a `Vertx` instance must be provided:
+
+to::
+_log_ `:` _logger name_
+example::
+`log:mylogger`
+
+=== Event bus reporting
+
+Reports events to the event bus, a `Vertx` instance must be provided:
+
+to::
+_bus_ `:` _event bus address_
+example::
+`bus:the-address`
+
+It allow to decouple the execution of the test suite from the reporting.
+
+The messages sent over the event bus can be collected by the `link:yardoc/VertxUnit/EventBusCollector.html[EventBusCollector]`
+and achieve custom reporting:
+
+[source,ruby]
+----
+require 'vertx-unit/event_bus_collector'
+collector = VertxUnit::EventBusCollector.create(vertx, {
+  'reporters' => [
+    {
+      'to' => "file:report.xml",
+      'format' => "junit"
+    }
+  ]
+})
+
+collector.register("the-address")
+
+----
+
+== Junit integration
+
+Although Vertx Unit is polyglot and not based on JUnit, it is possible to run a Vertx Unit test suite or a test case
+from JUnit, allowing you to integrate your tests with JUnit and your build system or IDE.
+
+.Run a Java class as a JUnit test suite
+[source,java]
+----
+RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
+public class JUnitTestSuite {
+
+  Test
+  public void testSomething(Context context) {
+    context.assertFalse(false);
+  }
+}
+----
+
+The `link:unavailable[VertxUnitRunner]` uses the junit annotations for introspecting the class
+and create a test suite after the class. The methods should declare a `link:yardoc/VertxUnit/TestContext.html[TestContext]`
+argument, if they don't it is fine too. However the `TestContext` is the only way to retrieve the associated
+Vertx instance of perform asynchronous tests.
+
+A single test case can also be executed with a `link:yardoc/VertxUnit/TestCase.html[TestCase]`:
+
+.Run a test case in a JUnit test
+[source,ruby]
+----
+TestCase.
+  create("my_test_case", context -> {
+    context.assertTrue(true);
+  }).
+  awaitSuccess(); // <1>
+----
+<1> Block until the test case is executed
+
+== Java language integration
+
+The Java language provides classes and it is possible to create test suites directly from Java classes with the
+following mapping rules:
+
+The  argument methods are inspected and the public, non static methods
+with `link:yardoc/VertxUnit/TestContext.html[TestContext]` parameter are retained and mapped to a Vertx Unit test suite
+via the method name:
+
+* `before` : before callback
+* `after` : after callback
+* `beforeEach` : beforeEach callback
+* `afterEach` : afterEach callback
+*  when the name starts with _test_ : test case callback named after the method name
+
+.Test suite written using a Java class
+[source,java]
+----
+public class MyTestSuite {
+
+  public void testSomething(TestContext context) {
+    context.assertFalse(false);
+  }
+}
+----
+
+This class can be turned into a Vertx test suite easily:
+
+.Create a test suite from a Java object
+[source,java]
+----
+TestSuite suite = TestSuite.create(new MyTestSuite());
+----
