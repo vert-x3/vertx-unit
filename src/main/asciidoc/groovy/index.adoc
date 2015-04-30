@@ -646,7 +646,7 @@ public class JUnitTestSuite {
 }
 ----
 
-The `link:groovydoc/io/vertx/groovy/ext/unit/junit/VertxUnitRunner.html[VertxUnitRunner]` uses the junit annotations for introspecting the class
+The `VertxUnitRunner` uses the junit annotations for introspecting the class
 and create a test suite after the class. The methods should declare a `link:groovydoc/io/vertx/groovy/ext/unit/TestContext.html[TestContext]`
 argument, if they don't it is fine too. However the `TestContext` is the only way to retrieve the associated
 Vertx instance of perform asynchronous tests.

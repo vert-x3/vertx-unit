@@ -262,4 +262,28 @@ public interface TestContext {
   @GenIgnore
   <T> Handler<AsyncResult<T>> asyncAssertSuccess(Handler<T> resultHandler);
 
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a failed result it completes the async operation.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it fails the test.<p/>
+   *
+   * @return the async result handler
+   */
+  @GenIgnore
+  <T> Handler<AsyncResult<T>> asyncAssertFailure();
+
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a failed result it completes the async operation.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it fails the test.<p/>
+   *
+   * @param causeHandler the cause handler
+   * @return the async result handler
+   */
+  @GenIgnore
+  <T> Handler<AsyncResult<T>> asyncAssertFailure(Handler<Throwable> causeHandler);
 }

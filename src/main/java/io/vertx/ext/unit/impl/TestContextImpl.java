@@ -333,6 +333,30 @@ public class TestContextImpl implements TestContext, Task<Result> {
   }
 
   @Override
+  public <T> Handler<AsyncResult<T>> asyncAssertFailure() {
+    return asyncAssertFailure(cause -> {
+    });
+  }
+
+  @Override
+  public <T> Handler<AsyncResult<T>> asyncAssertFailure(Handler<Throwable> causeHandler) {
+    Async async = async();
+    return ar -> {
+      if (ar.failed()) {
+        Throwable result = ar.cause();
+        try {
+          causeHandler.handle(result);
+          async.complete();
+        } catch (Throwable e) {
+          failed(e);
+        }
+      } else {
+        failed(reportAssertionError("Was expecting a failure instead of of success"));
+      }
+    };
+  }
+
+  @Override
   public TestContext assertNotEquals(Object first, Object second) {
     return assertNotEquals(first, second, null);
   }

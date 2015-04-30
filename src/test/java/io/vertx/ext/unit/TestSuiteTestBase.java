@@ -671,7 +671,7 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
-  public void testAssertAsyncResultHandlerSucceeded() throws Exception {
+  public void testAssertAsyncSuccessHandlerSucceeded() throws Exception {
     BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
     BlockingQueue<String> resultQueue = new ArrayBlockingQueue<>(1);
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
@@ -693,7 +693,7 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
-  public void testAssertAsyncResultHandlerThrowsFailure() throws Exception {
+  public void testAssertAsyncSuccessHandlerThrowsFailure() throws Exception {
     RuntimeException cause = new RuntimeException();
     BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
@@ -713,7 +713,7 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
-  public void testAssertAsyncResultHandlerSucceededAsync() throws Exception {
+  public void testAssertAsyncSuccessHandlerSucceededAsync() throws Exception {
     BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
     BlockingQueue<Async> resultQueue = new ArrayBlockingQueue<>(1);
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
@@ -736,7 +736,7 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
-  public void testAssertAsyncResultFailed() throws Exception {
+  public void testAssertAsyncSuccessFailed() throws Exception {
     BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
     AtomicBoolean called = new AtomicBoolean();
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
@@ -756,5 +756,90 @@ public abstract class TestSuiteTestBase {
     assertEquals("my_test", reporter.results.get(0).name());
     assertTrue(reporter.results.get(0).failed());
     assertSame(cause, reporter.results.get(0).failure().cause());
+  }
+
+  @Test
+  public void testAssertAsyncFailureHandlerSucceeded() throws Exception {
+    BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
+    BlockingQueue<Throwable> resultQueue = new ArrayBlockingQueue<>(1);
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      handlerQueue.add(context.<String>asyncAssertFailure(resultQueue::add));
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    Handler<AsyncResult<String>> handler = handlerQueue.poll(2, TimeUnit.SECONDS);
+    Throwable expected = new Throwable();
+    handler.handle(Future.failedFuture(expected));
+    Throwable cause = resultQueue.poll(2, TimeUnit.SECONDS);
+    assertSame(expected, cause);
+    reporter.await();
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertFalse(reporter.results.get(0).failed());
+  }
+
+  @Test
+  public void testAssertAsyncFailureHandlerThrowsFailure() throws Exception {
+    RuntimeException cause = new RuntimeException();
+    BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      handlerQueue.add(context.<String>asyncAssertFailure(r -> {
+        throw cause;
+      }));
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    Handler<AsyncResult<String>> handler = handlerQueue.poll(2, TimeUnit.SECONDS);
+    handler.handle(Future.failedFuture(new Throwable()));
+    reporter.await();
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertTrue(reporter.results.get(0).failed());
+    assertSame(cause, reporter.results.get(0).failure().cause());
+  }
+
+  @Test
+  public void testAssertAsyncFailureHandlerSucceededAsync() throws Exception {
+    BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
+    BlockingQueue<Async> resultQueue = new ArrayBlockingQueue<>(1);
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      handlerQueue.add(context.<String>asyncAssertFailure(r -> {
+        resultQueue.add(context.async());
+      }));
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    Handler<AsyncResult<String>> handler = handlerQueue.poll(2, TimeUnit.SECONDS);
+    handler.handle(Future.failedFuture(new Throwable()));
+    Async result = resultQueue.poll(2, TimeUnit.SECONDS);
+    assertFalse(reporter.completed());
+    result.complete();
+    reporter.await();
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertFalse(reporter.results.get(0).failed());
+  }
+
+  @Test
+  public void testAssertAsyncFailureFailed() throws Exception {
+    BlockingQueue<Handler<AsyncResult<String>>> handlerQueue = new ArrayBlockingQueue<>(1);
+    AtomicBoolean called = new AtomicBoolean();
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      handlerQueue.add(context.<String>asyncAssertFailure(r -> {
+        called.set(true);
+      }));
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    Handler<AsyncResult<String>> handler = handlerQueue.poll(2, TimeUnit.SECONDS);
+    handler.handle(Future.succeededFuture("foo"));
+    reporter.await();
+    assertFalse(called.get());
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertTrue(reporter.results.get(0).failed());
   }
 }
