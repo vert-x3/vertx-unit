@@ -26,8 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -78,8 +77,8 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
   }
 
   private void invokeExplosively(Map<String, Object> attributes, FrameworkMethod fMethod, Object test) throws Throwable {
-    BlockingQueue<Result> queue = new ArrayBlockingQueue<>(1);
-    Task<Result> task = (result, context) -> queue.add(result);
+    CompletableFuture<Result> future = new CompletableFuture<>();
+    Task<Result> task = (result, context) -> future.complete(result);
     Handler<TestContext> callback = context -> {
       Method method = fMethod.getMethod();
       Class<?>[] paramTypes = method.getParameterTypes();
@@ -104,9 +103,9 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
     context.execute(null, new TestSuiteContext(null));
     Result result;
     try {
-      result = queue.take();
+      result = future.get();
     } catch (InterruptedException e) {
-      // Should we do something ?
+      // Should we do something else ?
       Thread.currentThread().interrupt();
       throw e;
     }
