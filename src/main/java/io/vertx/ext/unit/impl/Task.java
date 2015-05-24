@@ -5,6 +5,6 @@ package io.vertx.ext.unit.impl;
  */
 public interface Task<T> {
 
-  void execute(T t, TestSuiteContext context);
+  void execute(T t, ExecutionContext context);
 
 }

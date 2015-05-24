@@ -1,12 +1,13 @@
 package io.vertx.ext.unit.junit;
 
+import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.impl.Helper;
 import io.vertx.ext.unit.impl.Result;
 import io.vertx.ext.unit.impl.Task;
 import io.vertx.ext.unit.impl.TestContextImpl;
-import io.vertx.ext.unit.impl.TestSuiteContext;
+import io.vertx.ext.unit.impl.ExecutionContext;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -24,15 +25,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
+ * A JUnit runner for writing asynchronous tests.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class VertxUnitRunner extends BlockJUnit4ClassRunner {
 
+  private static final LinkedList<Context> contextStack = new LinkedList<>();
   private final TestClass testClass;
   private final Long timeout;
   private Map<String, Object> classAttributes = new HashMap<>();
@@ -100,7 +105,7 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
         err -> {},
         task,
         timeout != null ? timeout : 2 * 60 * 1000);
-    context.execute(null, new TestSuiteContext(null));
+    new ExecutionContext(contextStack.peek()).run(context);
     Result result;
     try {
       result = future.get();
@@ -180,5 +185,13 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
         }
       };
     }
+  }
+
+  static void pushContext(Context context) {
+    contextStack.push(context);
+  }
+
+  static void popContext() {
+    contextStack.pop();
   }
 }

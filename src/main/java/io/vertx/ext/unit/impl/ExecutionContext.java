@@ -7,15 +7,15 @@ import io.vertx.core.Context;
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-public class TestSuiteContext {
+public class ExecutionContext {
 
   private final Context context;
 
-  public TestSuiteContext(Context context) {
+  public ExecutionContext(Context context) {
     this.context = context;
   }
 
-  <T> void run(Task<T> task, T value) {
+  public <T> void run(Task<T> task, T value) {
     if (context != null) {
       context.runOnContext(v -> task.execute(value, this));
     } else {
@@ -23,7 +23,7 @@ public class TestSuiteContext {
     }
   }
 
-  void run(Task<?> task) {
+  public void run(Task<?> task) {
     run(task, null);
   }
 }

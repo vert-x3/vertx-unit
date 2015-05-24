@@ -116,7 +116,7 @@ class TestSuiteReportImpl implements TestSuiteReport {
   }
 
   // For unit testing
-  public void run(TestSuiteContext context) {
+  public void run(ExecutionContext context) {
     context.run(buildTask());
   }
 
@@ -131,12 +131,12 @@ class TestSuiteReportImpl implements TestSuiteReport {
             "be executed in a Verticle");
       }
     }
-    new TestSuiteContext(context).run(buildTask());
+    new ExecutionContext(context).run(buildTask());
   }
 
   public void run(Vertx vertx, Boolean useEventLoop) {
     Context context = Boolean.FALSE.equals(useEventLoop) ? null : vertx.getOrCreateContext();
     Task<?> task = buildTask();
-    new TestSuiteContext(context).run(task);
+    new ExecutionContext(context).run(task);
   }
 }

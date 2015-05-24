@@ -420,18 +420,33 @@
  * argument, if they don't it is fine too. However the `TestContext` is the only way to retrieve the associated
  * Vertx instance of perform asynchronous tests.
  *
- * A single test case can also be executed with a {@link io.vertx.ext.unit.TestCase}:
+ * By default the thread invoking the test methods is the JUnit thread. The {@link io.vertx.ext.unit.junit.RunTestOnContext}
+ * JUnit rule can be used to alter this behavior for running these test methods with a Vert.x event loop thread.
  *
- * .Run a test case in a JUnit test
- * [source,$lang]
+ * For this purpose the {@link io.vertx.ext.unit.junit.RunTestOnContext} rule needs a {@link io.vertx.core.Vertx}
+ * instance. Such instance can be provided, otherwise the rule will manage an instance under the hood. Such
+ * instance can be retrieved when the test is running, making this rule a way to manage a {@link io.vertx.core.Vertx}
+ * instance as well.
+ *
+ * .Run a Java class as a JUnit test suite
+ * [source,java]
  * ----
- * TestCase.
- *   create("my_test_case", context -> {
- *     context.assertTrue(true);
- *   }).
- *   awaitSuccess(); // <1>
+ * &#64;RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
+ * public class JUnitTestSuite {
+ *
+ *   &#64;Rule
+ *   RunTestOnContext rule = new RunTestOnContext();
+ *
+ *   &#64;Test
+ *   public void testSomething(Context context) {
+ *     // Use the underlying vertx instance
+ *     Vertx vertx = rule.vertx();
+ *   }
+ * }
  * ----
- * <1> Block until the test case is executed
+ *
+ * The rule can be annotated by {@literal @Rule} or {@literal @ClassRule}, the former manages a Vert.x instance
+ * per test, the later a single Vert.x for the test methods of the class.
  *
  * == Java language integration
  *

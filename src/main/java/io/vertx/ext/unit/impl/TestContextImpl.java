@@ -49,7 +49,7 @@ public class TestContextImpl implements TestContext, Task<Result> {
   private int status;
   private Throwable failed;
   private long beginTime;
-  private TestSuiteContext context;
+  private ExecutionContext context;
   private final LinkedList<AsyncImpl> asyncs = new LinkedList<>();
 
   public TestContextImpl(
@@ -82,7 +82,7 @@ public class TestContextImpl implements TestContext, Task<Result> {
 
   private void tryEnd() {
     boolean end = false;
-    TestSuiteContext ctx;
+    ExecutionContext ctx;
     synchronized (this) {
       if (asyncs.isEmpty() && status == STATUS_ASYNC) {
         status = STATUS_COMPLETED;
@@ -117,7 +117,7 @@ public class TestContextImpl implements TestContext, Task<Result> {
   }
 
   @Override
-  public void execute(Result prev, TestSuiteContext context) {
+  public void execute(Result prev, ExecutionContext context) {
     synchronized (this) {
       this.context = context;
       if (prev != null) {

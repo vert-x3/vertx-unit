@@ -40,20 +40,20 @@ public class TestCaseImpl implements TestCase {
 
   @Override
   public void awaitSuccess(long timeout, TimeUnit unit) {
-    awaitSuccess(new TestSuiteContext(Vertx.currentContext()), timeout, unit);
+    awaitSuccess(new ExecutionContext(Vertx.currentContext()), timeout, unit);
   }
 
   @Override
   public void awaitSuccess(Vertx vertx, long timeout, TimeUnit unit) {
-    awaitSuccess(new TestSuiteContext(vertx.getOrCreateContext()), timeout, unit);
+    awaitSuccess(new ExecutionContext(vertx.getOrCreateContext()), timeout, unit);
   }
 
   @Override
   public void awaitSuccess(Vertx vertx) {
-    awaitSuccess(new TestSuiteContext(vertx.getOrCreateContext()), 2, TimeUnit.MINUTES);
+    awaitSuccess(new ExecutionContext(vertx.getOrCreateContext()), 2, TimeUnit.MINUTES);
   }
 
-  private void awaitSuccess(TestSuiteContext context, long timeout, TimeUnit unit) {
+  private void awaitSuccess(ExecutionContext context, long timeout, TimeUnit unit) {
     CountDownLatch latch = new CountDownLatch(1);
     TestCaseReportImpl testCase = (TestCaseReportImpl) runner();
     AtomicReference<TestResult> resultRef = new AtomicReference<>();

@@ -1,5 +1,8 @@
 package io.vertx.ext.unit;
 
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
+import io.vertx.ext.unit.junit.RunTestOnContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.test.core.Repeat;
 import io.vertx.test.core.RepeatRule;
@@ -7,9 +10,11 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
+import org.junit.rules.TestName;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -21,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -618,5 +625,101 @@ public class JUnitTest {
     assertEquals(1, result.getRunCount());
     assertEquals(0, result.getFailureCount());
     assertEquals(Arrays.asList("test0", "complete0", "test1", "complete1", "test2", "complete2"), RepeatRuleTestSuite.events);
+  }
+
+  public static class UseRunOnContextRule {
+    static final ConcurrentMap<String, Context> before = new ConcurrentHashMap<>();
+    static final ConcurrentMap<String, Context> method = new ConcurrentHashMap<>();
+    static final ConcurrentMap<String, Context> after = new ConcurrentHashMap<>();
+    @Rule
+    public final TestName testName = new TestName();
+    @Rule
+    public final RunTestOnContext rule = new RunTestOnContext();
+    @Before
+    public void before() {
+      before.put(testName.getMethodName(), Vertx.currentContext());
+    }
+    @Test
+    public void testMethod1() {
+      method.put(testName.getMethodName(), Vertx.currentContext());
+    }
+    @Test
+    public void testMethod2() {
+      method.put(testName.getMethodName(), Vertx.currentContext());
+    }
+    @After
+    public void after() {
+      after.put(testName.getMethodName(), Vertx.currentContext());
+    }
+  }
+
+  @Test
+  public void testRunTestOnContext() throws Exception {
+    Result result = run(UseRunOnContextRule.class);
+    assertEquals(2, result.getRunCount());
+    assertEquals(0, result.getFailureCount());
+    for (String name : Arrays.asList("testMethod1","testMethod2")) {
+      Context methodCtx = UseRunOnContextRule.method.get(name);
+      Context beforeCtx = UseRunOnContextRule.before.get(name);
+      Context afterCtx = UseRunOnContextRule.after.get(name);
+      assertNotNull(methodCtx);
+      assertSame(methodCtx, beforeCtx);
+      assertSame(methodCtx, afterCtx);
+    }
+    assertNotSame(UseRunOnContextRule.method.get("testMethod1"), UseRunOnContextRule.method.get("testMethod2"));
+  }
+
+  public static class StaticUseRunOnContextRule {
+    static volatile Context beforeClass;
+    static final ConcurrentMap<String, Context> before = new ConcurrentHashMap<>();
+    static final ConcurrentMap<String, Context> method = new ConcurrentHashMap<>();
+    static final ConcurrentMap<String, Context> after = new ConcurrentHashMap<>();
+    static volatile Context afterClass;
+    @Rule
+    public final TestName testName = new TestName();
+    @ClassRule
+    public static final RunTestOnContext rule = new RunTestOnContext();
+    @BeforeClass
+    public static void beforeClass() {
+      beforeClass = Vertx.currentContext();
+    }
+    @Before
+    public void before() {
+      before.put(testName.getMethodName(), Vertx.currentContext());
+    }
+    @Test
+    public void testMethod1() {
+      method.put(testName.getMethodName(), Vertx.currentContext());
+    }
+    @Test
+    public void testMethod2() {
+      method.put(testName.getMethodName(), Vertx.currentContext());
+    }
+    @After
+    public void after() {
+      after.put(testName.getMethodName(), Vertx.currentContext());
+    }
+    @AfterClass
+    public static void afterClass() {
+      afterClass = Vertx.currentContext();
+    }
+  }
+
+  @Test
+  public void testStaticRunTestOnContext() throws Exception {
+    Result result = run(StaticUseRunOnContextRule.class);
+    assertEquals(2, result.getRunCount());
+    assertEquals(0, result.getFailureCount());
+    for (String name : Arrays.asList("testMethod1","testMethod2")) {
+      Context methodCtx = StaticUseRunOnContextRule.method.get(name);
+      Context beforeCtx = StaticUseRunOnContextRule.before.get(name);
+      Context afterCtx = StaticUseRunOnContextRule.after.get(name);
+      assertNotNull(methodCtx);
+      assertSame(methodCtx, beforeCtx);
+      assertSame(methodCtx, afterCtx);
+    }
+    assertSame(StaticUseRunOnContextRule.method.get("testMethod1"), StaticUseRunOnContextRule.method.get("testMethod2"));
+    assertSame(StaticUseRunOnContextRule.beforeClass, StaticUseRunOnContextRule.method.get("testMethod1"));
+    assertSame(StaticUseRunOnContextRule.afterClass, StaticUseRunOnContextRule.method.get("testMethod1"));
   }
 }
