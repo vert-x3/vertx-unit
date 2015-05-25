@@ -420,6 +420,8 @@
  * argument, if they don't it is fine too. However the `TestContext` is the only way to retrieve the associated
  * Vertx instance of perform asynchronous tests.
  *
+ * === Running a test on a Vert.x context
+ *
  * By default the thread invoking the test methods is the JUnit thread. The {@link io.vertx.ext.unit.junit.RunTestOnContext}
  * JUnit rule can be used to alter this behavior for running these test methods with a Vert.x event loop thread.
  *
@@ -447,6 +449,34 @@
  *
  * The rule can be annotated by {@literal @Rule} or {@literal @ClassRule}, the former manages a Vert.x instance
  * per test, the later a single Vert.x for the test methods of the class.
+ *
+ * === Parameterized tests
+ *
+ * JUnit provides useful `Parameterized` tests, Vert.x Unit tests can be ran with this particular runner thanks to
+ * the {@link io.vertx.ext.unit.junit.VertxUnitRunnerWithParametersFactory}:
+ *
+ * .Running a Vert.x Unit parameterized test
+ * [source,java]
+ * ----
+ * &#64;RunWith(Parameterized.class)
+ * &#64;Parameterized.UseParametersRunnerFactory(VertxUnitRunnerWithParametersFactory.class)
+ * public class SimpleParameterizedTest {
+ *
+ *       &#64;Parameterized.Parameters
+ *       public static Iterable<Integer> data() {
+ *         return Arrays.asList(0,1,2);
+ *       }
+ *
+ *    public SimpleParameterizedTest(int value) {
+ *       ...
+ *    }
+ *
+ *   &#64;Test
+ *   public void testSomething(Context context) {
+ *     // Execute test with the current value
+ *   }
+ * }
+ * ----
  *
  * == Java language integration
  *
