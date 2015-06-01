@@ -637,14 +637,14 @@ the `link:../../apidocs/io/vertx/ext/unit/junit/VertxUnitRunnerWithParametersFac
 ----
 RunWith(Parameterized.class)
 Parameterized.UseParametersRunnerFactory(VertxUnitRunnerWithParametersFactory.class)
-public class JUnitTestSuite {
+public class SimpleParameterizedTest {
 
       Parameterized.Parameters
       public static Iterable<Integer> data() {
         return Arrays.asList(0,1,2);
       }
 
-   public SimpleParameterizedTestSuite(int value) {
+   public SimpleParameterizedTest(int value) {
       ...
    }
 
