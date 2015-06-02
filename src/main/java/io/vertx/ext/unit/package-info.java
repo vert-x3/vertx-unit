@@ -425,6 +425,11 @@
  * By default the thread invoking the test methods is the JUnit thread. The {@link io.vertx.ext.unit.junit.RunTestOnContext}
  * JUnit rule can be used to alter this behavior for running these test methods with a Vert.x event loop thread.
  *
+ * Thus there must be some care when state is shared between test methods and Vert.x handlers as they won't be
+ * on the same thread, e.g incrementing a counter in a Vert.x handler and asserting the counter in the test method.
+ * One way to solve this is to use proper synchronization, another is to execute test methods on a Vert.x context
+ * that will be propagated to the created handlers.
+ *
  * For this purpose the {@link io.vertx.ext.unit.junit.RunTestOnContext} rule needs a {@link io.vertx.core.Vertx}
  * instance. Such instance can be provided, otherwise the rule will manage an instance under the hood. Such
  * instance can be retrieved when the test is running, making this rule a way to manage a {@link io.vertx.core.Vertx}
@@ -449,6 +454,9 @@
  *
  * The rule can be annotated by {@literal @Rule} or {@literal @ClassRule}, the former manages a Vert.x instance
  * per test, the later a single Vert.x for the test methods of the class.
+ *
+ * WARNING: keep in mind that you cannot block the event loop when using this rule. Usage of classes like
+ * `CountDownLatch` or similar classes must be done with care.
  *
  * === Parameterized tests
  *
