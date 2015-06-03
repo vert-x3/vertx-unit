@@ -701,22 +701,124 @@ TestSuite suite = TestSuite.create(new MyTestSuite());
 
 === Java specific assertions
 
-In Java, the `link:../../apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` provides useful extra methods that provides powerful constructs
+In Java, the `link:../../apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` provides useful extra methods that provides powerful constructs:
 
 The `link:../../apidocs/io/vertx/ext/unit/TestContext.html#asyncAssertSuccess--[asyncAssertSuccess]` method returns an `Handler<AsyncResult<T>>`
 instance that acts like `link:../../apidocs/io/vertx/ext/unit/Async.html[Async]`, resolving the `Async` on success and failing the test
 on failure with the failure cause.
 
+[source,java]
+----
+Async async = context.async();
+vertx.deployVerticle("my.verticle", ar -> {
+  if (ar.succeeded()) {
+    async.complete();
+  } else {
+    context.fail(ar.cause());
+  }
+});
+
+// Can be replaced by
+
+vertx.deployVerticle("my.verticle", context.asyncAssertSuccess());
+----
+
 The `link:../../apidocs/io/vertx/ext/unit/TestContext.html#asyncAssertSuccess-io.vertx.core.Handler-[asyncAssertSuccess]` method returns an `Handler<AsyncResult<T>>`
 instance that acts like `link:../../apidocs/io/vertx/ext/unit/Async.html[Async]`, invoking the delegating `Handler<T>` on success
-and failing the test on failure with the failure cause. The async is completed when the `Handler` exits,
-unless new asyncs were created during the invocation.
+and failing the test on failure with the failure cause.
+
+[source,java]
+----
+AtomicBoolean started = new AtomicBoolean();
+Async async = context.async();
+vertx.deployVerticle(new AbstractVerticle() {
+  public void start() throws Exception {
+    started.set(true);
+  }
+}, ar -> {
+  if (ar.succeeded()) {
+    context.assertTrue(started.get());
+    async.complete();
+  } else {
+    context.fail(ar.cause());
+  }
+});
+
+// Can be replaced by
+
+vertx.deployVerticle("my.verticle", context.asyncAssertSuccess(id -> {
+  context.assertTrue(started.get());
+}));
+----
+
+The async is completed when the `Handler` exits, unless new asyncs were created during the invocation, which
+can be handy to _chain_ asynchronous behaviors:
+
+[source,java]
+----
+Async async = context.async();
+vertx.deployVerticle("my.verticle", ar1 -> {
+  if (ar1.succeeded()) {
+    vertx.deployVerticle("my.otherverticle" ,ar2 -> {
+      if (ar2.succeeded()) {
+        async.complete();
+      } else {
+        context.fail(ar2.cause());
+      }
+    });
+  } else {
+    context.fail(ar1.cause());
+  }
+});
+
+// Can be replaced by
+
+vertx.deployVerticle("my.verticle", context.asyncAssertSuccess( id ->
+    vertx.deployVerticle("my_otherverticle", context.asyncAssertSuccess())
+));
+----
 
 The `link:../../apidocs/io/vertx/ext/unit/TestContext.html#asyncAssertFailure--[asyncAssertFailure]` method returns an `Handler<AsyncResult<T>>`
 instance that acts like `link:../../apidocs/io/vertx/ext/unit/Async.html[Async]`, resolving the `Async` on failure and failing the test
 on success.
 
+[source,java]
+----
+Async async = context.async();
+vertx.deployVerticle("my.verticle", ar -> {
+  if (ar.succeeded()) {
+    context.fail();
+  } else {
+    async.complete();
+  }
+});
+
+// Can be replaced by
+
+vertx.deployVerticle("my.verticle", context.asyncAssertFailure());
+----
+
 The `link:../../apidocs/io/vertx/ext/unit/TestContext.html#asyncAssertFailure-io.vertx.core.Handler-[asyncAssertFailure]` method returns an `Handler<AsyncResult<T>>`
 instance that acts like `link:../../apidocs/io/vertx/ext/unit/Async.html[Async]`, invoking the delegating `Handler<Throwalbe>` on failure
-and failing the test on success. The async is completed when the `Handler exits, unless new asyncs were created
-during the invocation.
+and failing the test on success.
+
+[source,java]
+----
+Async async = context.async();
+vertx.deployVerticle("my.verticle", ar -> {
+  if (ar.succeeded()) {
+    context.fail();
+  } else {
+    context.assertTrue(ar.cause() instanceof IllegalArgumentException);
+    async.complete();
+  }
+});
+
+// Can be replaced by
+
+vertx.deployVerticle("my.verticle", context.asyncAssertFailure(cause -> {
+  context.assertTrue(cause instanceof IllegalArgumentException);
+}));
+----
+
+The async is completed when the `Handler` exits, unless new asyncs were created during the invocation.

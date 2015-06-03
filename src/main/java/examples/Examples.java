@@ -1,5 +1,6 @@
 package examples;
 
+import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -8,13 +9,17 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.docgen.Source;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestCompletion;
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.TestOptions;
 import io.vertx.ext.unit.TestSuite;
 import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.ext.unit.report.ReportOptions;
 import io.vertx.ext.unit.report.ReportingOptions;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -187,6 +192,105 @@ public class Examples {
         async.complete();
       });
     });
+  }
+
+  @Source(translate = false)
+  public static void asyncAssertSuccess_01(Vertx vertx, TestContext context) {
+    Async async = context.async();
+    vertx.deployVerticle("my.verticle", ar -> {
+      if (ar.succeeded()) {
+        async.complete();
+      } else {
+        context.fail(ar.cause());
+      }
+    });
+
+    // Can be replaced by
+
+    vertx.deployVerticle("my.verticle", context.asyncAssertSuccess());
+  }
+
+  @Source(translate = false)
+  public static void asyncAssertSuccess_02(Vertx vertx, TestContext context) {
+    AtomicBoolean started = new AtomicBoolean();
+    Async async = context.async();
+    vertx.deployVerticle(new AbstractVerticle() {
+      public void start() throws Exception {
+        started.set(true);
+      }
+    }, ar -> {
+      if (ar.succeeded()) {
+        context.assertTrue(started.get());
+        async.complete();
+      } else {
+        context.fail(ar.cause());
+      }
+    });
+
+    // Can be replaced by
+
+    vertx.deployVerticle("my.verticle", context.asyncAssertSuccess(id -> {
+      context.assertTrue(started.get());
+    }));
+  }
+
+  @Source(translate = false)
+  public static void asyncAssertSuccess_03(Vertx vertx, TestContext context) {
+    Async async = context.async();
+    vertx.deployVerticle("my.verticle", ar1 -> {
+      if (ar1.succeeded()) {
+        vertx.deployVerticle("my.otherverticle" ,ar2 -> {
+          if (ar2.succeeded()) {
+            async.complete();
+          } else {
+            context.fail(ar2.cause());
+          }
+        });
+      } else {
+        context.fail(ar1.cause());
+      }
+    });
+
+    // Can be replaced by
+
+    vertx.deployVerticle("my.verticle", context.asyncAssertSuccess( id ->
+        vertx.deployVerticle("my_otherverticle", context.asyncAssertSuccess())
+    ));
+  }
+
+  @Source(translate = false)
+  public static void asyncAssertFailure_01(Vertx vertx, TestContext context) {
+    Async async = context.async();
+    vertx.deployVerticle("my.verticle", ar -> {
+      if (ar.succeeded()) {
+        context.fail();
+      } else {
+        async.complete();
+      }
+    });
+
+    // Can be replaced by
+
+    vertx.deployVerticle("my.verticle", context.asyncAssertFailure());
+  }
+
+  @Source(translate = false)
+  public static void asyncAssertFailure_02(Vertx vertx, TestContext context) {
+    Async async = context.async();
+    vertx.deployVerticle("my.verticle", ar -> {
+      if (ar.succeeded()) {
+        context.fail();
+      } else {
+        context.assertTrue(ar.cause() instanceof IllegalArgumentException);
+        async.complete();
+      }
+    });
+
+    // Can be replaced by
+
+    vertx.deployVerticle("my.verticle", context.asyncAssertFailure(cause -> {
+      context.assertTrue(cause instanceof IllegalArgumentException);
+    }));
   }
 
   public static void sharing_01(Vertx vertx, Helper helper) {
