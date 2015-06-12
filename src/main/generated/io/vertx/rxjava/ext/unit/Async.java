@@ -49,6 +49,6 @@ public class Async {
 
 
   public static Async newInstance(io.vertx.ext.unit.Async arg) {
-    return new Async(arg);
+    return arg != null ? new Async(arg) : null;
   }
 }

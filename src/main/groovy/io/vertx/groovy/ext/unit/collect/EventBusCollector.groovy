@@ -43,15 +43,15 @@ public class EventBusCollector {
    * @return the message handler
    */
   public static EventBusCollector create(Vertx vertx, Map<String, Object> options) {
-    def ret= new io.vertx.groovy.ext.unit.collect.EventBusCollector(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.unit.report.ReportingOptions(new io.vertx.core.json.JsonObject(options)) : null));
+    def ret= InternalHelper.safeCreate(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.unit.report.ReportingOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.ext.unit.collect.EventBusCollector.class, io.vertx.groovy.ext.unit.collect.EventBusCollector.class);
     return ret;
   }
   public static EventBusCollector create(Vertx vertx, Handler<TestSuiteReport> reporter) {
-    def ret= new io.vertx.groovy.ext.unit.collect.EventBusCollector(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx)vertx.getDelegate(), new Handler<io.vertx.ext.unit.report.TestSuiteReport>() {
+    def ret= InternalHelper.safeCreate(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx)vertx.getDelegate(), new Handler<io.vertx.ext.unit.report.TestSuiteReport>() {
       public void handle(io.vertx.ext.unit.report.TestSuiteReport event) {
         reporter.handle(new io.vertx.groovy.ext.unit.report.TestSuiteReport(event));
       }
-    }));
+    }), io.vertx.ext.unit.collect.EventBusCollector.class, io.vertx.groovy.ext.unit.collect.EventBusCollector.class);
     return ret;
   }
   /**
@@ -60,7 +60,7 @@ public class EventBusCollector {
    * @return the subscribed message consumer
    */
   public MessageConsumer register(String address) {
-    def ret= new io.vertx.groovy.core.eventbus.MessageConsumer(this.delegate.register(address));
+    def ret= InternalHelper.safeCreate(this.delegate.register(address), io.vertx.core.eventbus.MessageConsumer.class, io.vertx.groovy.core.eventbus.MessageConsumer.class);
     return ret;
   }
 }

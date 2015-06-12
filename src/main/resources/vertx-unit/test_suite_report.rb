@@ -42,7 +42,7 @@ module VertxUnit
     # @return [self]
     def handler
       if block_given?
-        @j_del.java_method(:handler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::VertxUnit::TestCaseReport.new(event)) }))
+        @j_del.java_method(:handler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxUnit::TestCaseReport)) }))
         return self
       end
       raise ArgumentError, "Invalid arguments when calling handler()"

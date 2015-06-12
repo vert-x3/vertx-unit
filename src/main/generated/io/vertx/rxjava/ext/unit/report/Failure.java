@@ -89,6 +89,6 @@ public class Failure {
   private java.lang.String cached_2;
 
   public static Failure newInstance(io.vertx.ext.unit.report.Failure arg) {
-    return new Failure(arg);
+    return arg != null ? new Failure(arg) : null;
   }
 }

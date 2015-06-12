@@ -57,6 +57,6 @@ public class TestCase {
 
 
   public static TestCase newInstance(io.vertx.ext.unit.TestCase arg) {
-    return new TestCase(arg);
+    return arg != null ? new TestCase(arg) : null;
   }
 }

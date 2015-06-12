@@ -244,7 +244,7 @@ public class TestContext {
    * @return the async instance
    */
   public Async async() {
-    def ret= new io.vertx.groovy.ext.unit.Async(this.delegate.async());
+    def ret= InternalHelper.safeCreate(this.delegate.async(), io.vertx.ext.unit.Async.class, io.vertx.groovy.ext.unit.Async.class);
     return ret;
   }
 }

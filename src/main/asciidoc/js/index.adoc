@@ -298,7 +298,8 @@ suite.test("my_test_case", function (context) {
   var client = vertx.createHttpClient();
   var req = client.get(8080, "localhost", "/");
   req.exceptionHandler(function (err) {
-    context.fail(err.getMessage())});
+    context.fail(err.getMessage());
+  });
   req.handler(function (resp) {
     context.assertEquals(200, resp.statusCode());
     async1.complete();
@@ -432,7 +433,8 @@ completion.handler(function (ar, ar_err) {
   } else {
     console.log("Test suite failed:");
     ar_err.printStackTrace();
-  }});
+  }
+});
 
 ----
 

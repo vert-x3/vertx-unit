@@ -49,9 +49,9 @@ var TestCase = function(j_val) {
 TestCase.create = function(name, testCase) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-    return new TestCase(JTestCase["create(java.lang.String,io.vertx.core.Handler)"](name, function(jVal) {
-    testCase(new TestContext(jVal));
-  }));
+    return utils.convReturnVertxGen(JTestCase["create(java.lang.String,io.vertx.core.Handler)"](name, function(jVal) {
+    testCase(utils.convReturnVertxGen(jVal, TestContext));
+  }), TestCase);
   } else utils.invalidArgs();
 };
 

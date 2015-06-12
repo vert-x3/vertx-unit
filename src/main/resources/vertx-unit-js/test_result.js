@@ -128,7 +128,7 @@ var TestResult = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedfailure == null) {
-        that.cachedfailure = new Failure(j_testResult["failure()"]());
+        that.cachedfailure = utils.convReturnVertxGen(j_testResult["failure()"](), Failure);
       }
       return that.cachedfailure;
     } else utils.invalidArgs();

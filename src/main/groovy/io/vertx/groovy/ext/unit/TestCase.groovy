@@ -37,11 +37,11 @@ public class TestCase {
    * @return the created test case
    */
   public static TestCase create(String name, Handler<TestContext> testCase) {
-    def ret= new io.vertx.groovy.ext.unit.TestCase(io.vertx.ext.unit.TestCase.create(name, new Handler<io.vertx.ext.unit.TestContext>() {
+    def ret= InternalHelper.safeCreate(io.vertx.ext.unit.TestCase.create(name, new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
         testCase.handle(new io.vertx.groovy.ext.unit.TestContext(event));
       }
-    }));
+    }), io.vertx.ext.unit.TestCase.class, io.vertx.groovy.ext.unit.TestCase.class);
     return ret;
   }
 }

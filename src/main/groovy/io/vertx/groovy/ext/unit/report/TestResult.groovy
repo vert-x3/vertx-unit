@@ -97,7 +97,7 @@ public class TestResult {
     if (cached_5 != null) {
       return cached_5;
     }
-    def ret= new io.vertx.groovy.ext.unit.report.Failure(this.delegate.failure());
+    def ret= InternalHelper.safeCreate(this.delegate.failure(), io.vertx.ext.unit.report.Failure.class, io.vertx.groovy.ext.unit.report.Failure.class);
     cached_5 = ret;
     return ret;
   }

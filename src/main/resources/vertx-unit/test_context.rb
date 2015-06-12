@@ -176,7 +176,7 @@ module VertxUnit
     # @return [::VertxUnit::Async] the async instance
     def async
       if !block_given?
-        return ::VertxUnit::Async.new(@j_del.java_method(:async, []).call())
+        return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:async, []).call(),::VertxUnit::Async)
       end
       raise ArgumentError, "Invalid arguments when calling async()"
     end

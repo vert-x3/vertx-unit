@@ -103,6 +103,6 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
   private java.lang.String cached_0;
 
   public static TestSuiteReport newInstance(io.vertx.ext.unit.report.TestSuiteReport arg) {
-    return new TestSuiteReport(arg);
+    return arg != null ? new TestSuiteReport(arg) : null;
   }
 }

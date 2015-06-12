@@ -254,7 +254,7 @@ var TestContext = function(j_val) {
   this.async = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return new Async(j_testContext["async()"]());
+      return utils.convReturnVertxGen(j_testContext["async()"](), Async);
     } else utils.invalidArgs();
   };
 

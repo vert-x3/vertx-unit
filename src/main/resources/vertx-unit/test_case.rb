@@ -20,7 +20,7 @@ module VertxUnit
     # @return [::VertxUnit::TestCase] the created test case
     def self.create(name=nil)
       if name.class == String && block_given?
-        return ::VertxUnit::TestCase.new(Java::IoVertxExtUnit::TestCase.java_method(:create, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(name,(Proc.new { |event| yield(::VertxUnit::TestContext.new(event)) })))
+        return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtUnit::TestCase.java_method(:create, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(name,(Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxUnit::TestContext)) })),::VertxUnit::TestCase)
       end
       raise ArgumentError, "Invalid arguments when calling create(name)"
     end

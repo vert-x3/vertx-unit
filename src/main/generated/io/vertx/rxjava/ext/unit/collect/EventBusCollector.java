@@ -78,6 +78,6 @@ public class EventBusCollector {
 
 
   public static EventBusCollector newInstance(io.vertx.ext.unit.collect.EventBusCollector arg) {
-    return new EventBusCollector(arg);
+    return arg != null ? new EventBusCollector(arg) : null;
   }
 }

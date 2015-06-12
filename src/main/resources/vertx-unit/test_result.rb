@@ -76,7 +76,7 @@ module VertxUnit
         if @cached_failure != nil
           return @cached_failure
         end
-        return @cached_failure = ::VertxUnit::Failure.new(@j_del.java_method(:failure, []).call())
+        return @cached_failure = ::Vertx::Util::Utils.safe_create(@j_del.java_method(:failure, []).call(),::VertxUnit::Failure)
       end
       raise ArgumentError, "Invalid arguments when calling failure()"
     end

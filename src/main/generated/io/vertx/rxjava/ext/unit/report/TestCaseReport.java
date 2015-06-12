@@ -70,6 +70,6 @@ public class TestCaseReport {
   private java.lang.String cached_0;
 
   public static TestCaseReport newInstance(io.vertx.ext.unit.report.TestCaseReport arg) {
-    return new TestCaseReport(arg);
+    return arg != null ? new TestCaseReport(arg) : null;
   }
 }

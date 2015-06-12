@@ -29,7 +29,7 @@ module VertxUnit
     # @return [::VertxUnit::TestSuite] the created test suite
     def self.create(name=nil)
       if name.class == String && !block_given?
-        return ::VertxUnit::TestSuite.new(Java::IoVertxExtUnit::TestSuite.java_method(:create, [Java::java.lang.String.java_class]).call(name))
+        return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtUnit::TestSuite.java_method(:create, [Java::java.lang.String.java_class]).call(name),::VertxUnit::TestSuite)
       end
       raise ArgumentError, "Invalid arguments when calling create(name)"
     end
@@ -38,7 +38,7 @@ module VertxUnit
     # @return [self]
     def before
       if block_given?
-        @j_del.java_method(:before, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::VertxUnit::TestContext.new(event)) }))
+        @j_del.java_method(:before, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxUnit::TestContext)) }))
         return self
       end
       raise ArgumentError, "Invalid arguments when calling before()"
@@ -48,7 +48,7 @@ module VertxUnit
     # @return [self]
     def before_each
       if block_given?
-        @j_del.java_method(:beforeEach, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::VertxUnit::TestContext.new(event)) }))
+        @j_del.java_method(:beforeEach, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxUnit::TestContext)) }))
         return self
       end
       raise ArgumentError, "Invalid arguments when calling before_each()"
@@ -58,7 +58,7 @@ module VertxUnit
     # @return [self]
     def after
       if block_given?
-        @j_del.java_method(:after, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::VertxUnit::TestContext.new(event)) }))
+        @j_del.java_method(:after, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxUnit::TestContext)) }))
         return self
       end
       raise ArgumentError, "Invalid arguments when calling after()"
@@ -68,7 +68,7 @@ module VertxUnit
     # @return [self]
     def after_each
       if block_given?
-        @j_del.java_method(:afterEach, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::VertxUnit::TestContext.new(event)) }))
+        @j_del.java_method(:afterEach, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxUnit::TestContext)) }))
         return self
       end
       raise ArgumentError, "Invalid arguments when calling after_each()"
@@ -79,7 +79,7 @@ module VertxUnit
     # @return [self]
     def test(name=nil)
       if name.class == String && block_given?
-        @j_del.java_method(:test, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(name,(Proc.new { |event| yield(::VertxUnit::TestContext.new(event)) }))
+        @j_del.java_method(:test, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(name,(Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxUnit::TestContext)) }))
         return self
       end
       raise ArgumentError, "Invalid arguments when calling test(name)"
@@ -87,7 +87,7 @@ module VertxUnit
     #  Run the testsuite with the specified <code>options</code> and the specified <code>vertx</code> instance.<p/>
     # 
     #  The test suite will be executed on the event loop provided by the <code>vertx</code> argument when
-    #  {::VertxUnit::TestOptions#set_use_event_loop} is not set to <code>false</code>. The returned
+    #  {Hash#set_use_event_loop} is not set to <code>false</code>. The returned
     #  {::VertxUnit::TestCompletion} object can be used to get a completion callback.
     # @overload run()
     # @overload run(options)
@@ -100,13 +100,13 @@ module VertxUnit
     # @return [::VertxUnit::TestCompletion] the related test completion
     def run(param_1=nil,param_2=nil)
       if !block_given? && param_1 == nil && param_2 == nil
-        return ::VertxUnit::TestCompletion.new(@j_del.java_method(:run, []).call())
+        return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:run, []).call(),::VertxUnit::TestCompletion)
       elsif param_1.class == Hash && !block_given? && param_2 == nil
-        return ::VertxUnit::TestCompletion.new(@j_del.java_method(:run, [Java::IoVertxExtUnit::TestOptions.java_class]).call(Java::IoVertxExtUnit::TestOptions.new(::Vertx::Util::Utils.to_json_object(param_1))))
+        return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:run, [Java::IoVertxExtUnit::TestOptions.java_class]).call(Java::IoVertxExtUnit::TestOptions.new(::Vertx::Util::Utils.to_json_object(param_1))),::VertxUnit::TestCompletion)
       elsif param_1.class.method_defined?(:j_del) && !block_given? && param_2 == nil
-        return ::VertxUnit::TestCompletion.new(@j_del.java_method(:run, [Java::IoVertxCore::Vertx.java_class]).call(param_1.j_del))
+        return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:run, [Java::IoVertxCore::Vertx.java_class]).call(param_1.j_del),::VertxUnit::TestCompletion)
       elsif param_1.class.method_defined?(:j_del) && param_2.class == Hash && !block_given?
-        return ::VertxUnit::TestCompletion.new(@j_del.java_method(:run, [Java::IoVertxCore::Vertx.java_class,Java::IoVertxExtUnit::TestOptions.java_class]).call(param_1.j_del,Java::IoVertxExtUnit::TestOptions.new(::Vertx::Util::Utils.to_json_object(param_2))))
+        return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:run, [Java::IoVertxCore::Vertx.java_class,Java::IoVertxExtUnit::TestOptions.java_class]).call(param_1.j_del,Java::IoVertxExtUnit::TestOptions.new(::Vertx::Util::Utils.to_json_object(param_2))),::VertxUnit::TestCompletion)
       end
       raise ArgumentError, "Invalid arguments when calling run(param_1,param_2)"
     end

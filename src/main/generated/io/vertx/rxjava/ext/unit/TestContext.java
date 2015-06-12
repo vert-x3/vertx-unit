@@ -261,9 +261,9 @@ public class TestContext {
 
   /**
    * Create and returns a new async object, the returned async controls the completion of the test. Calling the
-   * {@link  Async#complete()} completes the async operation.<p/>
+   * {@link io.vertx.ext.unit.Async} completes the async operation.<p/>
    *
-   * The test case will complete when all the async objects have their {@link  io.vertx.rxjava.ext.unit.Async#complete()}
+   * The test case will complete when all the async objects have their {@link io.vertx.ext.unit.Async}
    * method called at least once.<p/>
    *
    * This method shall be used for creating asynchronous exit points for the executed test.
@@ -276,6 +276,6 @@ public class TestContext {
 
 
   public static TestContext newInstance(io.vertx.ext.unit.TestContext arg) {
-    return new TestContext(arg);
+    return arg != null ? new TestContext(arg) : null;
   }
 }

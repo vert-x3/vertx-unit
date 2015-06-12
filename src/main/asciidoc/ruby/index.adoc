@@ -298,7 +298,8 @@ suite.test("my_test_case") { |context|
   client = vertx.create_http_client()
   req = client.get(8080, "localhost", "/")
   req.exception_handler() { |err|
-    context.fail(err.get_message())}
+    context.fail(err.get_message())
+  }
   req.handler() { |resp|
     context.assert_equals(200, resp.status_code())
     async1.complete()

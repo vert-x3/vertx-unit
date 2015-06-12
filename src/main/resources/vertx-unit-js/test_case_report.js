@@ -60,7 +60,7 @@ var TestCaseReport = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testCaseReport["endHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(new TestResult(jVal));
+      handler(utils.convReturnVertxGen(jVal, TestResult));
     });
       return that;
     } else utils.invalidArgs();

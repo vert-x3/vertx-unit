@@ -137,6 +137,6 @@ public class TestCompletion {
 
 
   public static TestCompletion newInstance(io.vertx.ext.unit.TestCompletion arg) {
-    return new TestCompletion(arg);
+    return arg != null ? new TestCompletion(arg) : null;
   }
 }

@@ -125,6 +125,6 @@ public class TestResult {
   private Failure cached_5;
 
   public static TestResult newInstance(io.vertx.ext.unit.report.TestResult arg) {
-    return new TestResult(arg);
+    return arg != null ? new TestResult(arg) : null;
   }
 }
