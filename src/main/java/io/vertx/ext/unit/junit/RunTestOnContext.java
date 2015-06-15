@@ -11,6 +11,7 @@ import org.junit.runners.model.Statement;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -45,20 +46,29 @@ public class RunTestOnContext implements TestRule {
    * @param options the vertx options
    */
   public RunTestOnContext(VertxOptions options) {
-    this.createVertx = () -> Vertx.vertx(options);
-    this.closeVertx = (vertx, latch) -> vertx.close(ar -> latch.countDown());
+    this(() -> Vertx.vertx(options));
   }
 
   /**
    * Create a new rule with supplier/consumer for creating/closing a Vert.x instance. The lambda are invoked for each
-   * test.
+   * test. The {@code closeVertx} lambda should invoke the consumer with null when the {@code vertx} instance is closed.
    *
    * @param createVertx the create Vert.x supplier
    * @param closeVertx the close Vert.x consumer
    */
-  public RunTestOnContext(Supplier<Vertx> createVertx, BiConsumer<Vertx, CountDownLatch> closeVertx) {
+  public RunTestOnContext(Supplier<Vertx> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
     this.createVertx = createVertx;
-    this.closeVertx = closeVertx;
+    this.closeVertx = (vertx, latch) -> closeVertx.accept(vertx, v -> latch.countDown());
+  }
+
+  /**
+   * Create a new rule with supplier for creating a Vert.x instance. The lambda are invoked for each
+   * test.
+   *
+   * @param createVertx the create Vert.x supplier
+   */
+  public RunTestOnContext(Supplier<Vertx> createVertx) {
+    this(createVertx, (vertx, latch) -> vertx.close(ar -> latch.accept(null)));
   }
 
   /**

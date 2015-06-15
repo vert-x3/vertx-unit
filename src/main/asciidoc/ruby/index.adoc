@@ -324,7 +324,7 @@ suite.before() { |context|
   async = context.async()
   server = vertx.create_http_server()
   server.request_handler(&requestHandler)
-  server.listen(8080) { |ar,ar_err|
+  server.listen(8080) { |ar_err,ar|
     context.assert_true(ar_err == nil)
     async.complete()
   }
@@ -362,7 +362,7 @@ VertxUnit::TestSuite.create("my_suite").before() { |context|
   server.request_handler() { |req|
     req.response().set_status_code(200).end()
   }
-  server.listen(port, host) { |ar,ar_err|
+  server.listen(port, host) { |ar_err,ar|
     context.assert_true(ar_err == nil)
     context.put("port", port)
     async.complete()
@@ -427,7 +427,7 @@ after the test suite, it should either be in the test suite _after_ callback or 
 completion = suite.run(vertx)
 
 # Simple completion callback
-completion.handler() { |ar,ar_err|
+completion.handler() { |ar_err,ar|
   if (ar_err == nil)
     puts "Test suite passed!"
   else
