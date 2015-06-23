@@ -420,6 +420,9 @@
  * argument, if they don't it is fine too. However the `TestContext` is the only way to retrieve the associated
  * Vertx instance of perform asynchronous tests.
  *
+ * The JUnit integration is also available for the Groovy language with the `io.vertx.groovy.ext.unit.junit.VertxUnitRunner`
+ * runner.
+ *
  * === Running a test on a Vert.x context
  *
  * By default the thread invoking the test methods is the JUnit thread. The {@link io.vertx.ext.unit.junit.RunTestOnContext}
@@ -485,6 +488,8 @@
  *   }
  * }
  * ----
+ *
+ * Parameterized tests can also be done in Groovy with the `io.vertx.groovy.ext.unit.junit.VertxUnitRunnerWithParametersFactory`.
  *
  * == Java language integration
  *

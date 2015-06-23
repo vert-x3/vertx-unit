@@ -60,14 +60,22 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
       List<FrameworkMethod> fMethods = getTestClass().getAnnotatedMethods(annotation);
       for (FrameworkMethod fMethod : fMethods) {
         fMethod.validatePublicVoid(isStatic, errors);
-        Class<?>[] paramTypes = fMethod.getMethod().getParameterTypes();
-        if (!(paramTypes.length == 0 || (paramTypes.length == 1 && paramTypes[0].equals(TestContext.class)))) {
-          errors.add(new Exception("Method " + fMethod.getName() + " should have no parameters or " +
-              "the " + TestContext.class.getName() + " parameter"));
+        try {
+          validateTestMethod(fMethod);
+        } catch (Exception e) {
+          errors.add(e);
         }
       }
     } else {
       super.validatePublicVoidNoArgMethods(annotation, isStatic, errors);
+    }
+  }
+
+  protected void validateTestMethod(FrameworkMethod fMethod) throws Exception {
+    Class<?>[] paramTypes = fMethod.getMethod().getParameterTypes();
+    if (!(paramTypes.length == 0 || (paramTypes.length == 1 && paramTypes[0].equals(TestContext.class)))) {
+      throw new Exception("Method " + fMethod.getName() + " should have no parameters or " +
+          "the " + TestContext.class.getName() + " parameter");
     }
   }
 
@@ -81,18 +89,22 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
     };
   }
 
+  protected void invokeTestMethod(FrameworkMethod fMethod, Object test, TestContext context) throws InvocationTargetException, IllegalAccessException {
+    Method method = fMethod.getMethod();
+    Class<?>[] paramTypes = method.getParameterTypes();
+    if (paramTypes.length == 0) {
+      method.invoke(test);
+    } else {
+      method.invoke(test, context);
+    }
+  }
+
   private void invokeExplosively(Map<String, Object> attributes, FrameworkMethod fMethod, Object test) throws Throwable {
     CompletableFuture<Result> future = new CompletableFuture<>();
     Task<Result> task = (result, context) -> future.complete(result);
     Handler<TestContext> callback = context -> {
-      Method method = fMethod.getMethod();
-      Class<?>[] paramTypes = method.getParameterTypes();
       try {
-        if (paramTypes.length == 0) {
-          method.invoke(test);
-        } else {
-          method.invoke(test, context);
-        }
+        invokeTestMethod(fMethod, test, context);
       } catch (InvocationTargetException e) {
         Helper.uncheckedThrow(e.getCause());
       } catch (IllegalAccessException e) {

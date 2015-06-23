@@ -15,13 +15,13 @@ import java.util.List;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-class VertxUnitRunnerWithParameters extends VertxUnitRunner {
+public class VertxUnitRunnerWithParameters extends VertxUnitRunner {
 
   private final Object[] parameters;
 
   private final String name;
 
-  VertxUnitRunnerWithParameters(TestWithParameters test) throws InitializationError {
+  protected VertxUnitRunnerWithParameters(TestWithParameters test) throws InitializationError {
     super(test.getTestClass().getJavaClass());
     parameters = test.getParameters().toArray(
         new Object[test.getParameters().size()]);
