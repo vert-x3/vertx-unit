@@ -24,22 +24,31 @@ public class VertxUnitRunner extends io.vertx.ext.unit.junit.VertxUnitRunner {
     super(klass, timeout);
   }
 
+  @Override
   protected void validateTestMethod(FrameworkMethod fMethod) throws Exception {
-    Class<?>[] paramTypes = fMethod.getMethod().getParameterTypes();
-    if (!(paramTypes.length == 0 || (paramTypes.length == 1 && paramTypes[0].equals(TestContext.class)))) {
-      throw new Exception("Method " + fMethod.getName() + " should have no parameters or " +
-          "the " + TestContext.class.getName() + " parameter");
-    }
+    doValidateTestMethod(fMethod);
   }
 
   @Override
   protected void invokeTestMethod(FrameworkMethod fMethod, Object test, io.vertx.ext.unit.TestContext context) throws InvocationTargetException, IllegalAccessException {
+    doInvokeTestMethod(fMethod, test, context)
+  }
+
+  static void doValidateTestMethod(FrameworkMethod fMethod) throws Exception {
+    Class<?>[] paramTypes = fMethod.getMethod().getParameterTypes();
+    if (!(paramTypes.length == 0 || (paramTypes.length == 1 && paramTypes[0].equals(io.vertx.groovy.ext.unit.TestContext.class)))) {
+      throw new Exception("Method " + fMethod.getName() + " should have no parameters or " +
+          "the " + io.vertx.groovy.ext.unit.TestContext.class.getName() + " parameter");
+    }
+  }
+
+  static void doInvokeTestMethod(FrameworkMethod fMethod, Object test, io.vertx.ext.unit.TestContext context) throws InvocationTargetException, IllegalAccessException {
     Method method = fMethod.getMethod();
     Class<?>[] paramTypes = method.getParameterTypes();
     if (paramTypes.length == 0) {
       method.invoke(test);
     } else {
-      method.invoke(test, new TestContext(context));
+      method.invoke(test, new io.vertx.groovy.ext.unit.TestContext(context));
     }
   }
 }
