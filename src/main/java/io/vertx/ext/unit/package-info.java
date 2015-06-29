@@ -409,7 +409,7 @@
  * public class JUnitTestSuite {
  *
  *   &#64;Test
- *   public void testSomething(Context context) {
+ *   public void testSomething(TestContext context) {
  *     context.assertFalse(false);
  *   }
  * }
@@ -448,7 +448,7 @@
  *   RunTestOnContext rule = new RunTestOnContext();
  *
  *   &#64;Test
- *   public void testSomething(Context context) {
+ *   public void testSomething(TestContext context) {
  *     // Use the underlying vertx instance
  *     Vertx vertx = rule.vertx();
  *   }
@@ -483,7 +483,7 @@
  *    }
  *
  *   &#64;Test
- *   public void testSomething(Context context) {
+ *   public void testSomething(TestContext context) {
  *     // Execute test with the current value
  *   }
  * }
