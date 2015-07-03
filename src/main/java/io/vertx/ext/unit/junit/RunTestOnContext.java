@@ -1,5 +1,6 @@
 package io.vertx.ext.unit.junit;
 
+import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.logging.Logger;
@@ -82,13 +83,16 @@ public class RunTestOnContext implements TestRule {
 
   @Override
   public Statement apply(Statement base, Description description) {
-    return new VertxUnitStatement(() -> vertx != null ? vertx.getOrCreateContext() : null, base) {
+    return new Statement() {
       @Override
       public void evaluate() throws Throwable {
         vertx = createVertx.get();
         try {
-          super.evaluate();
+          Context context = vertx != null ? vertx.getOrCreateContext() : null;
+          VertxUnitRunner.pushContext(context);
+          base.evaluate();
         } finally {
+          VertxUnitRunner.popContext();
           CountDownLatch latch = new CountDownLatch(1);
           closeVertx.accept(vertx, latch);
           try {
