@@ -1,4 +1,5 @@
 require 'vertx-unit/test_context'
+require 'vertx/vertx'
 require 'vertx-unit/test_completion'
 require 'vertx/util/utils.rb'
 # Generated from io.vertx.ext.unit.TestSuite

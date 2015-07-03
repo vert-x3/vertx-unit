@@ -38,18 +38,13 @@ import java.util.concurrent.CompletableFuture;
 public class VertxUnitRunner extends BlockJUnit4ClassRunner {
 
   private static final LinkedList<Context> contextStack = new LinkedList<>();
+  private static final LinkedList<Long> timeoutStack = new LinkedList<>();
   private final TestClass testClass;
-  private final Long timeout;
   private Map<String, Object> classAttributes = new HashMap<>();
   private Map<String, Object> testAttributes;
 
   public VertxUnitRunner(Class<?> klass) throws InitializationError {
-    this(klass, null);
-  }
-
-  public VertxUnitRunner(Class<?> klass, Long timeout) throws InitializationError {
     super(klass);
-    this.timeout = timeout;
     this.testClass = new TestClass(klass);
   }
 
@@ -111,13 +106,21 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
         Helper.uncheckedThrow(e);
       }
     };
+    long timeout = 2 * 60 * 1000L;
+    if (timeoutStack.size() > 0) {
+      timeout = timeoutStack.peekLast();
+    }
+    Test annotation = fMethod.getAnnotation(Test.class);
+    if (annotation != null && annotation.timeout() > 0) {
+      timeout = annotation.timeout();
+    }
     TestContextImpl context = new TestContextImpl(
         attributes,
         callback,
         err -> {},
         task,
-        timeout != null ? timeout : 2 * 60 * 1000);
-    new ExecutionContext(contextStack.peek()).run(context);
+        timeout);
+    new ExecutionContext(contextStack.peekLast()).run(context);
     Result result;
     try {
       result = future.get();
@@ -154,6 +157,12 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
   protected Statement withAfterClasses(Statement statement) {
     List<FrameworkMethod> afters = getTestClass().getAnnotatedMethods(AfterClass.class);
     return withAfters(classAttributes, afters, null, statement);
+  }
+
+  @Override
+  protected Statement withPotentialTimeout(FrameworkMethod method, Object test, Statement next) {
+    // Need to be a noop since we handle that without a wrapping statement
+    return next;
   }
 
   private Statement withBefores(Map<String, Object> attributes, List<FrameworkMethod> befores, Object target, Statement statement) {
@@ -205,5 +214,13 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
 
   static void popContext() {
     contextStack.pop();
+  }
+
+  static void pushTimeout(long timeout) {
+    timeoutStack.push(timeout);
+  }
+
+  static void popTimeout() {
+    timeoutStack.pop();
   }
 }
