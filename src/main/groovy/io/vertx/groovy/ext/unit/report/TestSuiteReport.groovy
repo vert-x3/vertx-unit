@@ -50,11 +50,11 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuiteReport exceptionHandler(Handler<Throwable> handler) {
-    this.delegate.exceptionHandler(handler);
+    ( /* Work around for https://jira.codehaus.org/browse/GROOVY-6970 */ (io.vertx.ext.unit.report.TestSuiteReport) this.delegate).exceptionHandler(handler);
     return this;
   }
   public TestSuiteReport handler(Handler<TestCaseReport> handler) {
-    this.delegate.handler(new Handler<io.vertx.ext.unit.report.TestCaseReport>() {
+    ( /* Work around for https://jira.codehaus.org/browse/GROOVY-6970 */ (io.vertx.ext.unit.report.TestSuiteReport) this.delegate).handler(new Handler<io.vertx.ext.unit.report.TestCaseReport>() {
       public void handle(io.vertx.ext.unit.report.TestCaseReport event) {
         handler.handle(new io.vertx.groovy.ext.unit.report.TestCaseReport(event));
       }
@@ -62,15 +62,15 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
     return this;
   }
   public TestSuiteReport pause() {
-    this.delegate.pause();
+    ( /* Work around for https://jira.codehaus.org/browse/GROOVY-6970 */ (io.vertx.ext.unit.report.TestSuiteReport) this.delegate).pause();
     return this;
   }
   public TestSuiteReport resume() {
-    this.delegate.resume();
+    ( /* Work around for https://jira.codehaus.org/browse/GROOVY-6970 */ (io.vertx.ext.unit.report.TestSuiteReport) this.delegate).resume();
     return this;
   }
   public TestSuiteReport endHandler(Handler<Void> endHandler) {
-    this.delegate.endHandler(endHandler);
+    ( /* Work around for https://jira.codehaus.org/browse/GROOVY-6970 */ (io.vertx.ext.unit.report.TestSuiteReport) this.delegate).endHandler(endHandler);
     return this;
   }
   private java.lang.String cached_0;

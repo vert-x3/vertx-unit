@@ -693,6 +693,39 @@ per test, the later a single Vert.x for the test methods of the class.
 WARNING: keep in mind that you cannot block the event loop when using this rule. Usage of classes like
 `CountDownLatch` or similar classes must be done with care.
 
+=== Timeout
+
+The Vert.x Unit 2 minutes timeout can be overriden with the `timeout` member of the `@Test` annotation:
+
+.Configure the timeout at the test level
+[source,java]
+----
+@Test(timeout = 1000)
+public void testSomething(TestContext context) {
+  ...
+}
+----
+
+For a more global configuration, the `link:unavailable[Timeout]` rule can be used:
+
+.Configure the timeout at the class level
+[source,java]
+----
+@RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
+public class JUnitTestSuite {
+
+  @Rule
+  public Timeout rule = Timeout.seconds(1);
+
+  @Test
+  public void testSomething(TestContext context) {
+    ...
+  }
+}
+----
+
+NOTE: the `@Test` timeout overrides the the `link:unavailable[Timeout]` rule.
+
 === Parameterized tests
 
 JUnit provides useful `Parameterized` tests, Vert.x Unit tests can be ran with this particular runner thanks to

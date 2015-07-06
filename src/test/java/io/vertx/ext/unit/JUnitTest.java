@@ -3,6 +3,7 @@ package io.vertx.ext.unit;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.junit.RunTestOnContext;
+import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.test.core.Repeat;
 import io.vertx.test.core.RepeatRule;
@@ -125,7 +126,7 @@ public class JUnitTest {
   }
 
   public static class TestSuiteTimingOut {
-    @Test
+    @Test(timeout = 100L)
     public void testTimingOut(TestContext context) {
       context.async();
     }
@@ -133,11 +134,43 @@ public class JUnitTest {
 
   @org.junit.Test
   public void testSuiteTimeout() {
-    Result result = run(TestSuiteTimingOut.class, 100L);
+    testTimeout(TestSuiteTimingOut.class);
+  }
+
+  public static class TestSuiteTimoutRule {
+    @Rule
+    public final Timeout timeout = new Timeout(100, TimeUnit.MILLISECONDS);
+    @Test
+    public void testTimingOut(TestContext context) {
+      context.async();
+    }
+  }
+
+  @org.junit.Test
+  public void testTimeoutRule() {
+    testTimeout(TestSuiteTimoutRule.class);
+  }
+
+  public static class TestSuiteTimoutClassRule {
+    @ClassRule
+    public static final Timeout timeout = new Timeout(100, TimeUnit.MILLISECONDS);
+    @Test
+    public void testTimingOut(TestContext context) {
+      context.async();
+    }
+  }
+
+  @org.junit.Test
+  public void testTimeoutClassRule() {
+    testTimeout(TestSuiteTimoutClassRule.class);
+  }
+
+  private void testTimeout(Class<?> testClass) {
+    Result result = run(testClass);
     assertEquals(1, result.getRunCount());
     assertEquals(1, result.getFailureCount());
     Failure failure = result.getFailures().get(0);
-    assertTrue(failure.getException() instanceof TimeoutException);
+    assertTrue("Was expecting failure " + failure.getException() + " to be instance of " + TimeoutException.class, failure.getException() instanceof TimeoutException);
   }
 
   @org.junit.Test
@@ -397,12 +430,8 @@ public class JUnitTest {
   }
 
   private Result run(Class<?> testClass) {
-    return run(testClass, null);
-  }
-
-  private Result run(Class<?> testClass, Long timeout) {
     try {
-      return new JUnitCore().run(new VertxUnitRunner(testClass, timeout));
+      return new JUnitCore().run(new VertxUnitRunner(testClass));
     } catch (InitializationError initializationError) {
       throw new AssertionError(initializationError);
     }
