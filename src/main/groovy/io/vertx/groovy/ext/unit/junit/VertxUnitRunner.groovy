@@ -20,10 +20,6 @@ public class VertxUnitRunner extends io.vertx.ext.unit.junit.VertxUnitRunner {
     super(klass);
   }
 
-  public VertxUnitRunner(Class<?> klass, Long timeout) throws InitializationError {
-    super(klass, timeout);
-  }
-
   @Override
   protected void validateTestMethod(FrameworkMethod fMethod) throws Exception {
     doValidateTestMethod(fMethod);
