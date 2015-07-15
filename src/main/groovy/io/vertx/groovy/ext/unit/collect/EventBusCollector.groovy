@@ -28,9 +28,9 @@ import io.vertx.ext.unit.report.ReportingOptions
 */
 @CompileStatic
 public class EventBusCollector {
-  final def io.vertx.ext.unit.collect.EventBusCollector delegate;
-  public EventBusCollector(io.vertx.ext.unit.collect.EventBusCollector delegate) {
-    this.delegate = delegate;
+  private final def io.vertx.ext.unit.collect.EventBusCollector delegate;
+  public EventBusCollector(Object delegate) {
+    this.delegate = (io.vertx.ext.unit.collect.EventBusCollector) delegate;
   }
   public Object getDelegate() {
     return delegate;
@@ -43,7 +43,7 @@ public class EventBusCollector {
    * @return the message handler
    */
   public static EventBusCollector create(Vertx vertx, Map<String, Object> options) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.unit.report.ReportingOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.ext.unit.collect.EventBusCollector.class, io.vertx.groovy.ext.unit.collect.EventBusCollector.class);
+    def ret= InternalHelper.safeCreate(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.unit.report.ReportingOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.unit.collect.EventBusCollector.class);
     return ret;
   }
   public static EventBusCollector create(Vertx vertx, Handler<TestSuiteReport> reporter) {
@@ -51,7 +51,7 @@ public class EventBusCollector {
       public void handle(io.vertx.ext.unit.report.TestSuiteReport event) {
         reporter.handle(new io.vertx.groovy.ext.unit.report.TestSuiteReport(event));
       }
-    }), io.vertx.ext.unit.collect.EventBusCollector.class, io.vertx.groovy.ext.unit.collect.EventBusCollector.class);
+    }), io.vertx.groovy.ext.unit.collect.EventBusCollector.class);
     return ret;
   }
   /**
@@ -60,7 +60,7 @@ public class EventBusCollector {
    * @return the subscribed message consumer
    */
   public MessageConsumer register(String address) {
-    def ret= InternalHelper.safeCreate(this.delegate.register(address), io.vertx.core.eventbus.MessageConsumer.class, io.vertx.groovy.core.eventbus.MessageConsumer.class);
+    def ret= InternalHelper.safeCreate(this.delegate.register(address), io.vertx.groovy.core.eventbus.MessageConsumer.class);
     return ret;
   }
 }

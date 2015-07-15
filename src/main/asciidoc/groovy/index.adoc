@@ -657,14 +657,21 @@ from JUnit, allowing you to integrate your tests with JUnit and your build syste
 .Run a Java class as a JUnit test suite
 [source,java]
 ----
-@RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
-public class JUnitTestSuite {
+package examples.junit;
 
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(VertxUnitRunner.class)
+public class JUnitTestSuite {
   @Test
   public void testSomething(TestContext context) {
     context.assertFalse(false);
   }
 }
+
 ----
 
 The `VertxUnitRunner` uses the junit annotations for introspecting the class
@@ -693,8 +700,18 @@ instance as well.
 .Run a Java class as a JUnit test suite
 [source,java]
 ----
-@RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
-public class JUnitTestSuite {
+package examples.junit;
+
+import io.vertx.core.Vertx;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.RunTestOnContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(VertxUnitRunner.class)
+public class RunOnContextJUnitTestSuite {
 
   @Rule
   RunTestOnContext rule = new RunTestOnContext();
@@ -720,10 +737,21 @@ The Vert.x Unit 2 minutes timeout can be overriden with the `timeout` member of 
 .Configure the timeout at the test level
 [source,java]
 ----
-@Test(timeout = 1000)
-public void testSomething(TestContext context) {
-  ...
+package examples.junit;
+
+
+import io.vertx.ext.unit.TestContext;
+import org.junit.Test;
+
+public class JunitTestWithTimeout {
+
+  @Test(timeout = 1000)
+  public void testSomething(TestContext context) {
+    //...
+  }
+
 }
+
 ----
 
 For a more global configuration, the `Timeout` rule can be used:
@@ -731,17 +759,27 @@ For a more global configuration, the `Timeout` rule can be used:
 .Configure the timeout at the class level
 [source,java]
 ----
-@RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
-public class JUnitTestSuite {
+package examples.junit;
+
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(VertxUnitRunner.class)
+public class TimeoutTestSuite {
 
   @Rule
   public Timeout rule = Timeout.seconds(1);
 
   @Test
   public void testSomething(TestContext context) {
-    ...
+    //...
   }
 }
+
 ----
 
 NOTE: the `@Test` timeout overrides the the `Timeout` rule.
@@ -754,24 +792,35 @@ the `VertxUnitRunnerWithParametersFactory`:
 .Running a Vert.x Unit parameterized test
 [source,java]
 ----
+package examples.junit;
+
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunnerWithParametersFactory;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+import java.util.Arrays;
+
 @RunWith(Parameterized.class)
 @Parameterized.UseParametersRunnerFactory(VertxUnitRunnerWithParametersFactory.class)
 public class SimpleParameterizedTest {
 
-      @Parameterized.Parameters
-      public static Iterable<Integer> data() {
-        return Arrays.asList(0,1,2);
-      }
+  @Parameterized.Parameters
+  public static Iterable<Integer> data() {
+    return Arrays.asList(0, 1, 2);
+  }
 
-   public SimpleParameterizedTest(int value) {
-      ...
-   }
+  public SimpleParameterizedTest(int value) {
+    //...
+  }
 
   @Test
   public void testSomething(TestContext context) {
     // Execute test with the current value
   }
 }
+
 ----
 
 Parameterized tests can also be done in Groovy with the `io.vertx.groovy.ext.unit.junit.VertxUnitRunnerWithParametersFactory`.
@@ -796,6 +845,10 @@ via the method name:
 .Test suite written using a Java class
 [source,java]
 ----
+package examples.junit;
+
+import io.vertx.ext.unit.TestContext;
+
 public class MyTestSuite {
 
   public void testSomething(TestContext context) {

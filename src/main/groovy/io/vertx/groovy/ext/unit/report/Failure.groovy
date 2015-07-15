@@ -28,9 +28,9 @@ import io.vertx.lang.groovy.InternalHelper
 */
 @CompileStatic
 public class Failure {
-  final def io.vertx.ext.unit.report.Failure delegate;
-  public Failure(io.vertx.ext.unit.report.Failure delegate) {
-    this.delegate = delegate;
+  private final def io.vertx.ext.unit.report.Failure delegate;
+  public Failure(Object delegate) {
+    this.delegate = (io.vertx.ext.unit.report.Failure) delegate;
   }
   public Object getDelegate() {
     return delegate;

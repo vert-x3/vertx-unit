@@ -23,9 +23,9 @@ import io.vertx.core.Handler
 */
 @CompileStatic
 public class TestCaseReport {
-  final def io.vertx.ext.unit.report.TestCaseReport delegate;
-  public TestCaseReport(io.vertx.ext.unit.report.TestCaseReport delegate) {
-    this.delegate = delegate;
+  private final def io.vertx.ext.unit.report.TestCaseReport delegate;
+  public TestCaseReport(Object delegate) {
+    this.delegate = (io.vertx.ext.unit.report.TestCaseReport) delegate;
   }
   public Object getDelegate() {
     return delegate;

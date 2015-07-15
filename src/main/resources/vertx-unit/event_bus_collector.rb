@@ -1,5 +1,4 @@
 require 'vertx-unit/test_suite_report'
-require 'vertx/vertx'
 require 'vertx/message_consumer'
 require 'vertx/util/utils.rb'
 # Generated from io.vertx.ext.unit.collect.EventBusCollector

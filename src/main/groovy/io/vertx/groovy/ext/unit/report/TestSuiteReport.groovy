@@ -24,9 +24,9 @@ import io.vertx.core.Handler
 */
 @CompileStatic
 public class TestSuiteReport implements ReadStream<TestCaseReport> {
-  final def io.vertx.ext.unit.report.TestSuiteReport delegate;
-  public TestSuiteReport(io.vertx.ext.unit.report.TestSuiteReport delegate) {
-    this.delegate = delegate;
+  private final def io.vertx.ext.unit.report.TestSuiteReport delegate;
+  public TestSuiteReport(Object delegate) {
+    this.delegate = (io.vertx.ext.unit.report.TestSuiteReport) delegate;
   }
   public Object getDelegate() {
     return delegate;

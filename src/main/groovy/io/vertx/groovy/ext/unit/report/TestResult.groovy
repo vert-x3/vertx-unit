@@ -22,9 +22,9 @@ import io.vertx.lang.groovy.InternalHelper
 */
 @CompileStatic
 public class TestResult {
-  final def io.vertx.ext.unit.report.TestResult delegate;
-  public TestResult(io.vertx.ext.unit.report.TestResult delegate) {
-    this.delegate = delegate;
+  private final def io.vertx.ext.unit.report.TestResult delegate;
+  public TestResult(Object delegate) {
+    this.delegate = (io.vertx.ext.unit.report.TestResult) delegate;
   }
   public Object getDelegate() {
     return delegate;
@@ -97,7 +97,7 @@ public class TestResult {
     if (cached_5 != null) {
       return cached_5;
     }
-    def ret= InternalHelper.safeCreate(this.delegate.failure(), io.vertx.ext.unit.report.Failure.class, io.vertx.groovy.ext.unit.report.Failure.class);
+    def ret= InternalHelper.safeCreate(this.delegate.failure(), io.vertx.groovy.ext.unit.report.Failure.class);
     cached_5 = ret;
     return ret;
   }

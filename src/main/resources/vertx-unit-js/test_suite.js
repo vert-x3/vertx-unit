@@ -17,12 +17,12 @@
 /** @module vertx-unit-js/test_suite */
 var utils = require('vertx-js/util/utils');
 var TestContext = require('vertx-unit-js/test_context');
-var Vertx = require('vertx-js/vertx');
 var TestCompletion = require('vertx-unit-js/test_completion');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
 var JTestSuite = io.vertx.ext.unit.TestSuite;
+var TestOptions = io.vertx.ext.unit.TestOptions;
 var TestOptions = io.vertx.ext.unit.TestOptions;
 
 /**

@@ -425,14 +425,7 @@
  * .Run a Java class as a JUnit test suite
  * [source,java]
  * ----
- * &#64;RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
- * public class JUnitTestSuite {
- *
- *   &#64;Test
- *   public void testSomething(TestContext context) {
- *     context.assertFalse(false);
- *   }
- * }
+ * {@link examples.junit.JUnitTestSuite}
  * ----
  *
  * The {@link io.vertx.ext.unit.junit.VertxUnitRunner} uses the junit annotations for introspecting the class
@@ -461,18 +454,7 @@
  * .Run a Java class as a JUnit test suite
  * [source,java]
  * ----
- * &#64;RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
- * public class JUnitTestSuite {
- *
- *   &#64;Rule
- *   RunTestOnContext rule = new RunTestOnContext();
- *
- *   &#64;Test
- *   public void testSomething(TestContext context) {
- *     // Use the underlying vertx instance
- *     Vertx vertx = rule.vertx();
- *   }
- * }
+ * {@link examples.junit.RunOnContextJUnitTestSuite}
  * ----
  *
  * The rule can be annotated by {@literal @Rule} or {@literal @ClassRule}, the former manages a Vert.x instance
@@ -488,10 +470,7 @@
  * .Configure the timeout at the test level
  * [source,java]
  * ----
- * &#64;Test(timeout = 1000)
- * public void testSomething(TestContext context) {
- *   ...
- * }
+ * {@link examples.junit.JunitTestWithTimeout}
  * ----
  *
  * For a more global configuration, the {@link io.vertx.ext.unit.junit.Timeout} rule can be used:
@@ -499,17 +478,7 @@
  * .Configure the timeout at the class level
  * [source,java]
  * ----
- * &#64;RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
- * public class JUnitTestSuite {
- *
- *   &#64;Rule
- *   public Timeout rule = Timeout.seconds(1);
- *
- *   &#64;Test
- *   public void testSomething(TestContext context) {
- *     ...
- *   }
- * }
+ * {@link examples.junit.TimeoutTestSuite}
  * ----
  *
  * NOTE: the `@Test` timeout overrides the the {@link io.vertx.ext.unit.junit.Timeout} rule.
@@ -522,24 +491,7 @@
  * .Running a Vert.x Unit parameterized test
  * [source,java]
  * ----
- * &#64;RunWith(Parameterized.class)
- * &#64;Parameterized.UseParametersRunnerFactory(VertxUnitRunnerWithParametersFactory.class)
- * public class SimpleParameterizedTest {
- *
- *       &#64;Parameterized.Parameters
- *       public static Iterable<Integer> data() {
- *         return Arrays.asList(0,1,2);
- *       }
- *
- *    public SimpleParameterizedTest(int value) {
- *       ...
- *    }
- *
- *   &#64;Test
- *   public void testSomething(TestContext context) {
- *     // Execute test with the current value
- *   }
- * }
+ * {@link examples.junit.SimpleParameterizedTest}
  * ----
  *
  * Parameterized tests can also be done in Groovy with the `io.vertx.groovy.ext.unit.junit.VertxUnitRunnerWithParametersFactory`.
@@ -564,12 +516,7 @@
  * .Test suite written using a Java class
  * [source,java]
  * ----
- * public class MyTestSuite {
- *
- *   public void testSomething(TestContext context) {
- *     context.assertFalse(false);
- *   }
- * }
+ * {@link examples.junit.MyTestSuite}
  * ----
  *
  * This class can be turned into a Vertx test suite easily:
@@ -577,7 +524,7 @@
  * .Create a test suite from a Java object
  * [source,java]
  * ----
- * TestSuite suite = TestSuite.create(new MyTestSuite());
+ * {@link examples.junit.Snippets#testSuite()}
  * ----
  *
  * === Java specific assertions
@@ -620,8 +567,8 @@
  * ----
  *
  * The {@link io.vertx.ext.unit.TestContext#asyncAssertFailure(io.vertx.core.Handler)} method returns an {@literal Handler<AsyncResult<T>>}
- * instance that acts like {@link io.vertx.ext.unit.Async}, invoking the delegating {@literal Handler<Throwalbe>} on failure
- * and failing the test on success.
+ * instance that acts like {@link io.vertx.ext.unit.Async}, invoking the delegating {@literal Handler<Throwable>} on
+ * failure and failing the test on success.
  *
  * [source,java]
  * ----

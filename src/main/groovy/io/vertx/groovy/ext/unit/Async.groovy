@@ -22,9 +22,9 @@ import io.vertx.lang.groovy.InternalHelper
 */
 @CompileStatic
 public class Async {
-  final def io.vertx.ext.unit.Async delegate;
-  public Async(io.vertx.ext.unit.Async delegate) {
-    this.delegate = delegate;
+  private final def io.vertx.ext.unit.Async delegate;
+  public Async(Object delegate) {
+    this.delegate = (io.vertx.ext.unit.Async) delegate;
   }
   public Object getDelegate() {
     return delegate;

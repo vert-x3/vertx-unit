@@ -23,9 +23,9 @@ import io.vertx.lang.groovy.InternalHelper
 */
 @CompileStatic
 public class TestContext {
-  final def io.vertx.ext.unit.TestContext delegate;
-  public TestContext(io.vertx.ext.unit.TestContext delegate) {
-    this.delegate = delegate;
+  private final def io.vertx.ext.unit.TestContext delegate;
+  public TestContext(Object delegate) {
+    this.delegate = (io.vertx.ext.unit.TestContext) delegate;
   }
   public Object getDelegate() {
     return delegate;
@@ -244,7 +244,7 @@ public class TestContext {
    * @return the async instance
    */
   public Async async() {
-    def ret= InternalHelper.safeCreate(this.delegate.async(), io.vertx.ext.unit.Async.class, io.vertx.groovy.ext.unit.Async.class);
+    def ret= InternalHelper.safeCreate(this.delegate.async(), io.vertx.groovy.ext.unit.Async.class);
     return ret;
   }
 }

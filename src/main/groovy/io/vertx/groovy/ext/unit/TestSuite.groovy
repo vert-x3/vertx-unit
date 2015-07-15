@@ -34,9 +34,9 @@ import io.vertx.core.Handler
 */
 @CompileStatic
 public class TestSuite {
-  final def io.vertx.ext.unit.TestSuite delegate;
-  public TestSuite(io.vertx.ext.unit.TestSuite delegate) {
-    this.delegate = delegate;
+  private final def io.vertx.ext.unit.TestSuite delegate;
+  public TestSuite(Object delegate) {
+    this.delegate = (io.vertx.ext.unit.TestSuite) delegate;
   }
   public Object getDelegate() {
     return delegate;
@@ -47,7 +47,7 @@ public class TestSuite {
    * @return the created test suite
    */
   public static TestSuite create(String name) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.unit.TestSuite.create(name), io.vertx.ext.unit.TestSuite.class, io.vertx.groovy.ext.unit.TestSuite.class);
+    def ret= InternalHelper.safeCreate(io.vertx.ext.unit.TestSuite.create(name), io.vertx.groovy.ext.unit.TestSuite.class);
     return ret;
   }
   /**
@@ -126,7 +126,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run() {
-    def ret= InternalHelper.safeCreate(this.delegate.run(), io.vertx.ext.unit.TestCompletion.class, io.vertx.groovy.ext.unit.TestCompletion.class);
+    def ret= InternalHelper.safeCreate(this.delegate.run(), io.vertx.groovy.ext.unit.TestCompletion.class);
     return ret;
   }
   /**
@@ -144,7 +144,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run(Map<String, Object> options) {
-    def ret= InternalHelper.safeCreate(this.delegate.run(options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.ext.unit.TestCompletion.class, io.vertx.groovy.ext.unit.TestCompletion.class);
+    def ret= InternalHelper.safeCreate(this.delegate.run(options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.unit.TestCompletion.class);
     return ret;
   }
   /**
@@ -156,7 +156,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run(Vertx vertx) {
-    def ret= InternalHelper.safeCreate(this.delegate.run((io.vertx.core.Vertx)vertx.getDelegate()), io.vertx.ext.unit.TestCompletion.class, io.vertx.groovy.ext.unit.TestCompletion.class);
+    def ret= InternalHelper.safeCreate(this.delegate.run((io.vertx.core.Vertx)vertx.getDelegate()), io.vertx.groovy.ext.unit.TestCompletion.class);
     return ret;
   }
   /**
@@ -170,7 +170,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run(Vertx vertx, Map<String, Object> options) {
-    def ret= InternalHelper.safeCreate(this.delegate.run((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.ext.unit.TestCompletion.class, io.vertx.groovy.ext.unit.TestCompletion.class);
+    def ret= InternalHelper.safeCreate(this.delegate.run((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.unit.TestCompletion.class);
     return ret;
   }
 }

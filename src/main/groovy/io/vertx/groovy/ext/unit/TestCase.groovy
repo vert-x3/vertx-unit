@@ -23,9 +23,9 @@ import io.vertx.core.Handler
 */
 @CompileStatic
 public class TestCase {
-  final def io.vertx.ext.unit.TestCase delegate;
-  public TestCase(io.vertx.ext.unit.TestCase delegate) {
-    this.delegate = delegate;
+  private final def io.vertx.ext.unit.TestCase delegate;
+  public TestCase(Object delegate) {
+    this.delegate = (io.vertx.ext.unit.TestCase) delegate;
   }
   public Object getDelegate() {
     return delegate;
@@ -41,7 +41,7 @@ public class TestCase {
       public void handle(io.vertx.ext.unit.TestContext event) {
         testCase.handle(new io.vertx.groovy.ext.unit.TestContext(event));
       }
-    }), io.vertx.ext.unit.TestCase.class, io.vertx.groovy.ext.unit.TestCase.class);
+    }), io.vertx.groovy.ext.unit.TestCase.class);
     return ret;
   }
 }

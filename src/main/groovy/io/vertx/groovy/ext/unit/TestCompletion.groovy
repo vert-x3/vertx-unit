@@ -25,9 +25,9 @@ import io.vertx.groovy.core.Future
 */
 @CompileStatic
 public class TestCompletion {
-  final def io.vertx.ext.unit.TestCompletion delegate;
-  public TestCompletion(io.vertx.ext.unit.TestCompletion delegate) {
-    this.delegate = delegate;
+  private final def io.vertx.ext.unit.TestCompletion delegate;
+  public TestCompletion(Object delegate) {
+    this.delegate = (io.vertx.ext.unit.TestCompletion) delegate;
   }
   public Object getDelegate() {
     return delegate;
