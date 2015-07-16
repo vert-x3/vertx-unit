@@ -222,6 +222,14 @@
  * {@link examples.Examples#async_03}
  * ----
  *
+ * It is possible to wait until the completion of a specific {@link io.vertx.ext.unit.Async}:
+ *
+ * .Wait for completion
+ * [source, $lang]
+ * ----
+ * {@link examples.Examples#async_04(io.vertx.ext.unit.TestContext, io.vertx.core.Vertx, io.vertx.core.Handler)}
+ *----
+ *
  * == Sharing objects
  *
  * The {@link io.vertx.ext.unit.TestContext} has `get`/`put`/`remove` operations for sharing state between callbacks.

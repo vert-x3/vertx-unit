@@ -10,11 +10,7 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.docgen.Source;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestCompletion;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.TestOptions;
-import io.vertx.ext.unit.TestSuite;
+import io.vertx.ext.unit.*;
 import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.ext.unit.report.ReportOptions;
 import io.vertx.ext.unit.report.ReportingOptions;
@@ -194,6 +190,22 @@ public class Examples {
     });
   }
 
+  public static void async_04(TestContext context, Vertx vertx, Handler<HttpServerRequest> requestHandler) {
+    Async async = context.async();
+    HttpServer server = vertx.createHttpServer();
+    server.requestHandler(requestHandler);
+    server.listen(8080, ar -> {
+      context.assertTrue(ar.succeeded());
+      async.complete();
+    });
+
+    // Wait until completion
+    async.awaitBlocking();
+
+    // Do something else
+  }
+
+
   @Source(translate = false)
   public static void asyncAssertSuccess_01(Vertx vertx, TestContext context) {
     Async async = context.async();
@@ -239,7 +251,7 @@ public class Examples {
     Async async = context.async();
     vertx.deployVerticle("my.verticle", ar1 -> {
       if (ar1.succeeded()) {
-        vertx.deployVerticle("my.otherverticle" ,ar2 -> {
+        vertx.deployVerticle("my.otherverticle", ar2 -> {
           if (ar2.succeeded()) {
             async.complete();
           } else {
@@ -253,8 +265,8 @@ public class Examples {
 
     // Can be replaced by
 
-    vertx.deployVerticle("my.verticle", context.asyncAssertSuccess( id ->
-        vertx.deployVerticle("my_otherverticle", context.asyncAssertSuccess())
+    vertx.deployVerticle("my.verticle", context.asyncAssertSuccess(id ->
+            vertx.deployVerticle("my_otherverticle", context.asyncAssertSuccess())
     ));
   }
 

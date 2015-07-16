@@ -5,15 +5,17 @@ import io.vertx.core.Handler;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 /**
-* @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
-*/
+ * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
+ */
 public class TestContextImpl implements TestContext, Task<Result> {
 
   private static final int STATUS_RUNNING = 0, STATUS_ASYNC = 1, STATUS_COMPLETED = 2;
@@ -30,6 +32,39 @@ public class TestContextImpl implements TestContext, Task<Result> {
       internalComplete();
     }
 
+    public void awaitBlocking() {
+      synchronized (this) {
+        if (completeCalled.get()) {
+          // Already completed
+          return;
+        }
+
+        // As we access the outer instance, we need to synchronized using the lock it uses (outer monitor).
+        synchronized (TestContextImpl.this) {
+          if (TestContextImpl.this.failed != null) {
+            throw new RuntimeException("Cannot await for completion - the async has failed");
+          }
+        }
+
+        try {
+          wait();
+        } catch (InterruptedException e) {
+          // Ignore it.
+        }
+      }
+
+      // If during the 'blocking' phase an exception has been thrown, report it and fails.
+      synchronized (TestContextImpl.this) {
+        if (TestContextImpl.this.failed != null) {
+          throw new RuntimeException("Cannot await for completion - the async has failed");
+        }
+      }
+    }
+
+    private synchronized void release() {
+      notifyAll();
+    }
+
     void internalComplete() {
       boolean complete;
       synchronized (TestContextImpl.this) {
@@ -38,6 +73,7 @@ public class TestContextImpl implements TestContext, Task<Result> {
       if (complete) {
         tryEnd();
       }
+      release();
     }
   }
 
@@ -158,6 +194,7 @@ public class TestContextImpl implements TestContext, Task<Result> {
     synchronized (this) {
       switch (status) {
         case STATUS_COMPLETED:
+          releaseAndClearAsyncs();
           if (failed == null && unhandledFailureHandler != null) {
             unhandledFailureHandler.handle(t);
           }
@@ -165,18 +202,31 @@ public class TestContextImpl implements TestContext, Task<Result> {
         case STATUS_RUNNING:
           if (failed == null) {
             failed = t;
-            asyncs.clear();
+            releaseAndClearAsyncs();
           }
           break;
         case STATUS_ASYNC:
           if (failed == null) {
-            asyncs.clear();
+            releaseAndClearAsyncs();
             failed = t;
             tryEnd();
           }
           break;
       }
     }
+  }
+
+  private void releaseAndClearAsyncs() {
+    List<AsyncImpl> copy;
+    synchronized (this) {
+      // Stack contention to avoid CME.
+      copy = new ArrayList<>(asyncs);
+      asyncs.clear();
+    }
+    for (AsyncImpl a : copy) {
+      a.release();
+    }
+
   }
 
   @Override
@@ -291,7 +341,7 @@ public class TestContextImpl implements TestContext, Task<Result> {
       throw reportAssertionError(formatMessage(message, "Expected " + actual + " to belong to [" +
           (expected - delta) + "," + (expected + delta) + "]"));
     }
-      return this;
+    return this;
   }
 
   @Override

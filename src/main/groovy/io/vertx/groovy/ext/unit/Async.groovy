@@ -36,4 +36,12 @@ public class Async {
   public void complete() {
     this.delegate.complete();
   }
+  /**
+   * Waits until the completion of the current {@link io.vertx.groovy.ext.unit.Async}. This method does not blocks if the asynchronous code
+   * has already completed or failed (it throws a runtime exception). If while waiting the test is marked as failed
+   * or reached a timeout, it is unblocks and fails with a runtime exception.
+   */
+  public void awaitBlocking() {
+    this.delegate.awaitBlocking();
+  }
 }
