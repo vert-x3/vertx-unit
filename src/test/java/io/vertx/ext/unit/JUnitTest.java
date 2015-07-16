@@ -629,6 +629,7 @@ public class JUnitTest {
     static final List<String> test1 = Collections.synchronizedList(new ArrayList<>());
     static final List<String> test2 = Collections.synchronizedList(new ArrayList<>());
     static final List<String> test3 = Collections.synchronizedList(new ArrayList<>());
+    static final List<String> test4 = Collections.synchronizedList(new ArrayList<>());
 
     @Test
     public void testAwaitWhenAlreadyCompleted(TestContext context) {
@@ -696,19 +697,38 @@ public class JUnitTest {
       test3.add("after");
     }
 
+    @Test
+    public void testInterruption(TestContext context) {
+      Async async = context.async();
+      test4.add("before");
+      final Thread thread = Thread.currentThread();
+      new Thread((() -> {
+        try {
+          Thread.sleep(50);
+          test4.add("interrupt");
+          thread.interrupt();
+          Thread.sleep(50);
+        } catch (InterruptedException ignore) {
+        } finally {
+          async.complete();
+        }
+      })).start();
 
+      async.awaitBlocking();
+      test4.add("after");
+    }
   }
 
   @Test
   public void testAwaitAsync() throws Exception {
     Result result = run(AwaitAsyncTestSuite.class);
-    assertEquals(4, result.getRunCount());
-    result.getFailures().get(0).getException().printStackTrace();
-    assertEquals(2, result.getFailureCount());
+    assertEquals(5, result.getRunCount());
+    assertEquals(3, result.getFailureCount());
     assertEquals(Arrays.asList("before", "complete", "after"), AwaitAsyncTestSuite.test0);
     assertEquals(Arrays.asList("before", "complete", "after"), AwaitAsyncTestSuite.test1);
     assertEquals(Arrays.asList("before", "complete"), AwaitAsyncTestSuite.test2);
     assertEquals(Arrays.asList("before", "complete"), AwaitAsyncTestSuite.test3);
+    assertEquals(Arrays.asList("before", "interrupt"), AwaitAsyncTestSuite.test4);
   }
 
   public static class RepeatRuleTestSuite {

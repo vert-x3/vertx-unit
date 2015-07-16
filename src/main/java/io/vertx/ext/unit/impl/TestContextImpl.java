@@ -42,21 +42,22 @@ public class TestContextImpl implements TestContext, Task<Result> {
         // As we access the outer instance, we need to synchronized using the lock it uses (outer monitor).
         synchronized (TestContextImpl.this) {
           if (TestContextImpl.this.failed != null) {
-            throw new RuntimeException("Cannot await for completion - the async has failed");
+            throw new IllegalStateException("Cannot await for completion - the async has failed");
           }
         }
 
         try {
           wait();
         } catch (InterruptedException e) {
-          // Ignore it.
+          Thread.currentThread().interrupt();
+          Helper.uncheckedThrow(e);
         }
       }
 
       // If during the 'blocking' phase an exception has been thrown, report it and fails.
       synchronized (TestContextImpl.this) {
         if (TestContextImpl.this.failed != null) {
-          throw new RuntimeException("Cannot await for completion - the async has failed");
+          throw new IllegalStateException("Cannot await for completion - the async has failed");
         }
       }
     }
