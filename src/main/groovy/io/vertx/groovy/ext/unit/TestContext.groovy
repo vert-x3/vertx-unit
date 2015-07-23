@@ -234,6 +234,13 @@ public class TestContext {
     this.delegate.fail(message);
   }
   /**
+   * Throw a failure with the specified failure <code>cause</code>.
+   * @param cause the failure cause
+   */
+  public void fail(Throwable cause) {
+    this.delegate.fail(cause);
+  }
+  /**
    * Create and returns a new async object, the returned async controls the completion of the test. Calling the
    * {@link io.vertx.groovy.ext.unit.Async#complete} completes the async operation.<p/>
    *

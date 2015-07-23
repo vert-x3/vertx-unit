@@ -260,6 +260,14 @@ public class TestContext {
   }
 
   /**
+   * Throw a failure with the specified failure <code>cause</code>.
+   * @param cause the failure cause
+   */
+  public void fail(Throwable cause) { 
+    this.delegate.fail(cause);
+  }
+
+  /**
    * Create and returns a new async object, the returned async controls the completion of the test. Calling the
    * {@link io.vertx.ext.unit.Async} completes the async operation.<p/>
    *

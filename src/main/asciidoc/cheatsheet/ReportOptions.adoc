@@ -10,13 +10,13 @@
 |===
 ^|Name | Type ^| Description
 
-|[[to]]`to`
-|`String`
-|+++
-Set the current reporter name.+++
-
 |[[format]]`format`
 |`String`
 |+++
 Set the current reporter format.+++
+
+|[[to]]`to`
+|`String`
+|+++
+Set the current reporter name.+++
 |===

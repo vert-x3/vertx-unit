@@ -155,16 +155,22 @@ module VertxUnit
       end
       raise ArgumentError, "Invalid arguments when calling assert_not_equals(first,second,message)"
     end
-    #  Throw a failure with the specified failure <code>message</code>.
-    # @param [String] message the failure message
+    #  Throw a failure with the specified failure <code>cause</code>.
+    # @overload fail()
+    # @overload fail(message)
+    #   @param [String] message the failure message
+    # @overload fail(cause)
+    #   @param [Exception] cause the failure cause
     # @return [void]
-    def fail(message=nil)
-      if !block_given? && message == nil
+    def fail(param_1=nil)
+      if !block_given? && param_1 == nil
         return @j_del.java_method(:fail, []).call()
-      elsif message.class == String && !block_given?
-        return @j_del.java_method(:fail, [Java::java.lang.String.java_class]).call(message)
+      elsif param_1.class == String && !block_given?
+        return @j_del.java_method(:fail, [Java::java.lang.String.java_class]).call(param_1)
+      elsif param_1.is_a?(Exception) && !block_given?
+        return @j_del.java_method(:fail, [Java::JavaLang::Throwable.java_class]).call(::Vertx::Util::Utils.to_throwable(param_1))
       end
-      raise ArgumentError, "Invalid arguments when calling fail(message)"
+      raise ArgumentError, "Invalid arguments when calling fail(param_1)"
     end
     #  Create and returns a new async object, the returned async controls the completion of the test. Calling the
     #  {::VertxUnit::Async#complete} completes the async operation.<p/>

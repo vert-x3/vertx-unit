@@ -23,6 +23,11 @@
 |===
 ^|Name | Type ^| Description
 
+|[[reporters]]`reporters`
+|`Array of link:ReportOptions.html[ReportOptions]`
+|+++
+Replace the current list of reporters with a new one.+++
+
 |[[timeout]]`timeout`
 |`Number`
 |+++
@@ -32,9 +37,4 @@ Set the test timeout.+++
 |`Boolean`
 |+++
 Configure the execution to use an event loop when there is no one existing.+++
-
-|[[reporters]]`reporters`
-|`Array of link:ReportOptions.html[ReportOptions]`
-|+++
-Replace the current list of reporters with a new one.+++
 |===

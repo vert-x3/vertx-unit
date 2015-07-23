@@ -50,7 +50,7 @@ public class VerticleTest extends VertxTestBase {
     vertx.deployVerticle("js:verticle/failing", ar -> {
       assertTrue(ar.failed());
       ar.cause().printStackTrace();
-      assertEquals("the_failure", ar.cause().getMessage());
+      assertEquals("Error: the_failure", ar.cause().getMessage());
       testComplete();
     });
     await();

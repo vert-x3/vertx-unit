@@ -217,7 +217,6 @@ public interface TestContext {
    *
    * @param cause the failure cause
    */
-  @GenIgnore
   void fail(Throwable cause);
 
   /**

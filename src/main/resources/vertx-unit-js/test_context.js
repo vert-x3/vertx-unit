@@ -224,10 +224,10 @@ var TestContext = function(j_val) {
   };
 
   /**
-   Throw a failure with the specified failure <code>message</code>.
+   Throw a failure with the specified failure <code>cause</code>.
 
    @public
-   @param message {string} the failure message 
+   @param cause {todo} the failure cause 
    */
   this.fail = function() {
     var __args = arguments;
@@ -235,6 +235,8 @@ var TestContext = function(j_val) {
       j_testContext["fail()"]();
     }  else if (__args.length === 1 && typeof __args[0] === 'string') {
       j_testContext["fail(java.lang.String)"](__args[0]);
+    }  else if (__args.length === 1 && typeof __args[0] === 'object') {
+      j_testContext["fail(java.lang.Throwable)"](utils.convParamThrowable(__args[0]));
     } else utils.invalidArgs();
   };
 
