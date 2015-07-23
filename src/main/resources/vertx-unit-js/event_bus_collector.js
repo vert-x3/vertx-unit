@@ -17,6 +17,7 @@
 /** @module vertx-unit-js/event_bus_collector */
 var utils = require('vertx-js/util/utils');
 var TestSuiteReport = require('vertx-unit-js/test_suite_report');
+var Vertx = require('vertx-js/vertx');
 var MessageConsumer = require('vertx-js/message_consumer');
 
 var io = Packages.io;

@@ -184,6 +184,10 @@
  * {@link examples.Examples#asserting_08}
  * ----
  *
+ * The failure can either be a _string_ as seen previously or an _error_. The _error_ object depends
+ * on the target language, for Java or Groovy it can be any class extending _Throwable- , for
+ * JavaScript it is an _error_, for Ruby it is an _Exception_.
+ *
  * == Asynchronous testing
  *
  * The previous examples supposed that test cases were terminated after their respective callbacks, this is the

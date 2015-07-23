@@ -49,7 +49,6 @@ public class VerticleTest extends VertxTestBase {
   public void testJavaScriptFailure() {
     vertx.deployVerticle("js:verticle/failing", ar -> {
       assertTrue(ar.failed());
-      ar.cause().printStackTrace();
       assertEquals("Error: the_failure", ar.cause().getMessage());
       testComplete();
     });
@@ -74,4 +73,15 @@ public class VerticleTest extends VertxTestBase {
     });
     await();
   }
+
+  @org.junit.Test
+  public void testRubyFailure() {
+    vertx.deployVerticle("verticle/failing.rb", ar -> {
+      assertTrue(ar.failed());
+      assertEquals("(Exception) the_failure", ar.cause().getMessage());
+      testComplete();
+    });
+    await();
+  }
+
 }

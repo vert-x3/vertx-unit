@@ -278,6 +278,10 @@ suite.test("my_test_case", function (context) {
 
 ----
 
+The failure can either be a _string_ as seen previously or an _error_. The _error_ object depends
+on the target language, for Java or Groovy it can be any class extending _Throwable- , for
+JavaScript it is an _error_, for Ruby it is an _Exception_.
+
 == Asynchronous testing
 
 The previous examples supposed that test cases were terminated after their respective callbacks, this is the
@@ -965,8 +969,8 @@ vertx.deployVerticle("my.verticle", context.asyncAssertFailure());
 ----
 
 The `link:jsdoc/test_context-TestContext.html#asyncAssertFailure[asyncAssertFailure]` method returns an `Handler<AsyncResult<T>>`
-instance that acts like `link:jsdoc/async-Async.html[Async]`, invoking the delegating `Handler<Throwalbe>` on failure
-and failing the test on success.
+instance that acts like `link:jsdoc/async-Async.html[Async]`, invoking the delegating `Handler<Throwable>` on
+failure and failing the test on success.
 
 [source,java]
 ----
