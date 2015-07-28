@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@DataObject
+@DataObject(generateConverter = true)
 public class ReportingOptions {
 
   private List<ReportOptions> reporters = new ArrayList<>();
@@ -45,13 +45,7 @@ public class ReportingOptions {
    * @param json the json to create from
    */
   public ReportingOptions(JsonObject json) {
-    JsonArray reportersJson = json.getJsonArray("reporters");
-    if (reportersJson != null) {
-      for (int i = 0;i < reportersJson.size();i++) {
-        JsonObject reportJson = reportersJson.getJsonObject(i);
-        reporters.add(new ReportOptions(reportJson));
-      }
-    }
+    ReportingOptionsConverter.fromJson(json, this);
   }
 
   /**
@@ -89,12 +83,8 @@ public class ReportingOptions {
    * @return the json modelling the current configuration
    */
   public JsonObject toJson() {
-    JsonObject config = new JsonObject();
-    if (reporters.size() > 0) {
-      JsonArray reportersJson = new JsonArray();
-      reporters.stream().map(ReportOptions::toJson).forEach(reportersJson::add);
-      config.put("reporters", reportersJson);
-    }
-    return config;
+    JsonObject json = new JsonObject();
+    ReportingOptionsConverter.toJson(this, json);
+    return json;
   }
 }

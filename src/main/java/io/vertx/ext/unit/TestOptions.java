@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@DataObject
+@DataObject(generateConverter = true)
 public class TestOptions extends ReportingOptions {
 
   /**
@@ -66,8 +66,7 @@ public class TestOptions extends ReportingOptions {
    */
   public TestOptions(JsonObject json) {
     super(json);
-    setTimeout(json.getLong("timeout", DEFAULT_TIMEOUT));
-    setUseEventLoop(json.getBoolean("useEventLoop", DEFAULT_USE_EVENT_LOOP));
+    TestOptionsConverter.fromJson(json, this);
   }
 
   /**
@@ -122,11 +121,8 @@ public class TestOptions extends ReportingOptions {
    * @return the json modelling the current configuration
    */
   public JsonObject toJson() {
-    JsonObject config = super.toJson();
-    config.put("timeout", timeout);
-    if (useEventLoop != null) {
-      config.put("useEventLoop", useEventLoop);
-    }
-    return config;
+    JsonObject json = super.toJson();
+    TestOptionsConverter.toJson(this, json);
+    return json;
   }
 }

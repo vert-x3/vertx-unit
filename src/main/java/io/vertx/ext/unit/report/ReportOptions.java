@@ -9,7 +9,7 @@ import io.vertx.core.json.JsonObject;
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@DataObject
+@DataObject(generateConverter = true)
 public class ReportOptions {
 
   /**
@@ -34,8 +34,7 @@ public class ReportOptions {
   }
 
   public ReportOptions(JsonObject json) {
-    to = json.getString("to", DEFAULT_TO);
-    format = json.getString("format", DEFAULT_FORMAT);
+    ReportOptionsConverter.fromJson(json, this);
   }
 
   /**
@@ -77,6 +76,8 @@ a   */
   }
 
   public JsonObject toJson() {
-    return new JsonObject().put("to", to).put("format", format);
+    JsonObject json = new JsonObject();
+    ReportOptionsConverter.toJson(this, json);
+    return json;
   }
 }
