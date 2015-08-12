@@ -1,12 +1,11 @@
 package io.vertx.groovy.ext.unit.junit
 
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
+import io.vertx.core.Handler;
 import io.vertx.ext.unit.TestContext;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.parameterized.TestWithParameters;
-
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -24,7 +23,7 @@ public class VertxUnitRunnerWithParameters extends io.vertx.ext.unit.junit.Vertx
   }
 
   @Override
-  protected void invokeTestMethod(FrameworkMethod fMethod, Object test, TestContext context) throws InvocationTargetException, IllegalAccessException {
-    VertxUnitRunner.doInvokeTestMethod(fMethod, test, context)
+  protected Handler<TestContext> invokingHandler(FrameworkMethod fMethod, Object test) {
+    return VertxUnitRunner.groovyInvokingHandler(fMethod, test);
   }
 }

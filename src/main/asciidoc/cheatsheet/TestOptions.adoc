@@ -29,7 +29,7 @@
 Replace the current list of reporters with a new one.+++
 
 |[[timeout]]`timeout`
-|`Number`
+|`Number (long)`
 |+++
 Set the test timeout.+++
 

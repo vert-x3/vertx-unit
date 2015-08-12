@@ -4,6 +4,7 @@ import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.junit.RunTestOnContext;
 import io.vertx.ext.unit.junit.Timeout;
+import io.vertx.ext.unit.junit.VertxUnitRule;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.test.core.Repeat;
 import io.vertx.test.core.RepeatRule;
@@ -773,5 +774,40 @@ public class JUnitTest {
     assertSame(StaticUseRunOnContextRule.method.get("testMethod1"), StaticUseRunOnContextRule.method.get("testMethod2"));
     assertSame(StaticUseRunOnContextRule.beforeClass, StaticUseRunOnContextRule.method.get("testMethod1"));
     assertSame(StaticUseRunOnContextRule.afterClass, StaticUseRunOnContextRule.method.get("testMethod1"));
+  }
+
+  public static class VertxUnitRuleTestSuite {
+    static final AtomicReference<TestContext> current = new AtomicReference<>();
+    static final AtomicInteger count = new AtomicInteger();
+    @Rule
+    public final VertxUnitRule rule = new VertxUnitRule();
+    public TestContext context;
+    @Test
+    public void testMethod1() {
+      count.incrementAndGet();
+      current.set(context);
+    }
+    @Test
+    public void testMethod2() {
+      count.incrementAndGet();
+      Async async = context.async();
+      new Thread(() -> {
+        try {
+          Thread.sleep(250);
+        } catch (InterruptedException ignore) {
+        } finally {
+          async.complete();
+        }
+      }).start();
+    }
+  }
+
+  @org.junit.Test
+  public void testVertxUnitRuleTestSuite() {
+    Result result = new JUnitCore().run(VertxUnitRuleTestSuite.class);
+    assertEquals(2, VertxUnitRuleTestSuite.count.get());
+    assertEquals(2, result.getRunCount());
+    assertEquals(0, result.getFailureCount());
+    assertNotNull(VertxUnitRuleTestSuite.current.get());
   }
 }

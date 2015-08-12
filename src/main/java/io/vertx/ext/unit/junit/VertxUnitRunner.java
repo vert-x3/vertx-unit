@@ -4,10 +4,6 @@ import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.impl.Helper;
-import io.vertx.ext.unit.impl.Result;
-import io.vertx.ext.unit.impl.Task;
-import io.vertx.ext.unit.impl.TestContextImpl;
-import io.vertx.ext.unit.impl.ExecutionContext;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -28,7 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 /**
  * A JUnit runner for writing asynchronous tests.
@@ -75,64 +71,48 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
   }
 
   @Override
-  protected Statement methodInvoker(FrameworkMethod method, Object test) {
-    return new Statement() {
+  protected Statement methodInvoker(FrameworkMethod fMethod, Object test) {
+    return methodInvoker(() -> testAttributes, fMethod, test);
+  }
+
+  private Statement methodInvoker(Supplier<Map<String, Object>> attributes, FrameworkMethod fMethod, Object test) {
+    Handler<TestContext> testContextHandler = invokingHandler(fMethod, test);
+    return new AsyncStatement(testContextHandler, fMethod) {
       @Override
-      public void evaluate() throws Throwable {
-        invokeExplosively(testAttributes, method, test);
+      protected Context getContext() {
+        return contextStack.peekLast();
+      }
+      @Override
+      protected Map<String, Object> getAttributes() {
+        return attributes.get();
+      }
+      @Override
+      protected long getDefaultTimeout() {
+        if (timeoutStack.size() > 0) {
+          return timeoutStack.peekLast();
+        } else {
+          return super.getDefaultTimeout();
+        }
       }
     };
   }
 
-  protected void invokeTestMethod(FrameworkMethod fMethod, Object test, TestContext context) throws InvocationTargetException, IllegalAccessException {
-    Method method = fMethod.getMethod();
-    Class<?>[] paramTypes = method.getParameterTypes();
-    if (paramTypes.length == 0) {
-      method.invoke(test);
-    } else {
-      method.invoke(test, context);
-    }
-  }
-
-  private void invokeExplosively(Map<String, Object> attributes, FrameworkMethod fMethod, Object test) throws Throwable {
-    CompletableFuture<Result> future = new CompletableFuture<>();
-    Task<Result> task = (result, context) -> future.complete(result);
-    Handler<TestContext> callback = context -> {
+  protected Handler<TestContext> invokingHandler(FrameworkMethod fMethod, Object test) {
+    return context ->  {
+      Method method = fMethod.getMethod();
+      Class<?>[] paramTypes = method.getParameterTypes();
       try {
-        invokeTestMethod(fMethod, test, context);
-      } catch (InvocationTargetException e) {
-        Helper.uncheckedThrow(e.getCause());
+        if (paramTypes.length == 0) {
+          method.invoke(test);
+        } else {
+          method.invoke(test, context);
+        }
       } catch (IllegalAccessException e) {
         Helper.uncheckedThrow(e);
+      } catch (InvocationTargetException e) {
+        Helper.uncheckedThrow(e.getCause());
       }
     };
-    long timeout = 2 * 60 * 1000L;
-    if (timeoutStack.size() > 0) {
-      timeout = timeoutStack.peekLast();
-    }
-    Test annotation = fMethod.getAnnotation(Test.class);
-    if (annotation != null && annotation.timeout() > 0) {
-      timeout = annotation.timeout();
-    }
-    TestContextImpl context = new TestContextImpl(
-        attributes,
-        callback,
-        err -> {},
-        task,
-        timeout);
-    new ExecutionContext(contextStack.peekLast()).run(context);
-    Result result;
-    try {
-      result = future.get();
-    } catch (InterruptedException e) {
-      // Should we do something else ?
-      Thread.currentThread().interrupt();
-      throw e;
-    }
-    Throwable failure = result.getFailure();
-    if (failure != null) {
-      throw failure;
-    }
   }
 
   @Override
@@ -173,7 +153,7 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
         @Override
         public void evaluate() throws Throwable {
           for (FrameworkMethod before : befores) {
-            invokeExplosively(attributes, before, target);
+            methodInvoker(() -> attributes, before, target).evaluate();
           }
           statement.evaluate();
         }
@@ -196,7 +176,7 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
           } finally {
             for (FrameworkMethod after : afters) {
               try {
-                invokeExplosively(attributes, after, target);
+                methodInvoker(() -> attributes, after, target).evaluate();
               } catch (Throwable e) {
                 errors.add(e);
               }
