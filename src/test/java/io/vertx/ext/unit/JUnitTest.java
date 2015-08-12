@@ -125,6 +125,29 @@ public class JUnitTest {
     assertSame(TestSuiteRuntimeException.cause, failure.getException());
   }
 
+  public static class TestSuiteJUnitFailure {
+    static Throwable cause;
+    @Test
+    public void testRuntimeException() {
+      try {
+        assertFalse(true);
+      } catch (Throwable t) {
+        cause = t;
+        throw t;
+      }
+    }
+  }
+
+  @org.junit.Test
+  public void testSuiteJUnitFailure() {
+    Result result = run(TestSuiteJUnitFailure.class);
+    assertEquals(1, result.getRunCount());
+    assertEquals(1, result.getFailureCount());
+    Failure failure = result.getFailures().get(0);
+    assertNull(failure.getMessage());
+    assertSame(TestSuiteJUnitFailure.cause, failure.getException());
+  }
+
   public static class TestSuiteTimingOut {
     @Test(timeout = 100L)
     public void testTimingOut(TestContext context) {
