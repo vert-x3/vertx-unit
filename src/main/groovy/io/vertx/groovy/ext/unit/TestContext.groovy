@@ -17,6 +17,7 @@
 package io.vertx.groovy.ext.unit;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
+import io.vertx.core.json.JsonObject
 /**
  * The test context is used for performing test assertions and manage the completion of the test. This context
  * is provided by <i>vertx-unit</i> as argument of the test case.

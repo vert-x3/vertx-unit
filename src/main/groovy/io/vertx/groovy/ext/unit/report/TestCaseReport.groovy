@@ -17,6 +17,7 @@
 package io.vertx.groovy.ext.unit.report;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
+import io.vertx.core.json.JsonObject
 import io.vertx.core.Handler
 /**
  * Report the execution of a test case.
@@ -55,5 +56,5 @@ public class TestCaseReport {
     });
     return this;
   }
-  private java.lang.String cached_0;
+  private String cached_0;
 }

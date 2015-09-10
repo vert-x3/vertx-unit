@@ -17,6 +17,7 @@
 package io.vertx.groovy.ext.unit;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
+import io.vertx.core.json.JsonObject
 /**
  * An asynchronous exit point for a test.
 */

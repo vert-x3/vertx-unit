@@ -17,6 +17,7 @@
 package io.vertx.groovy.ext.unit.report;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
+import io.vertx.core.json.JsonObject
 /**
  * The result of a test.
 */
@@ -101,7 +102,7 @@ public class TestResult {
     cached_5 = ret;
     return ret;
   }
-  private java.lang.String cached_0;
+  private String cached_0;
   private long cached_1;
   private long cached_2;
   private boolean cached_3;

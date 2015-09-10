@@ -17,6 +17,7 @@
 package io.vertx.groovy.ext.unit.report;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
+import io.vertx.core.json.JsonObject
 /**
  * A failure provides the details of a failure that happened during the execution of a test case.<p/>
  *
@@ -72,6 +73,6 @@ public class Failure {
     return ret;
   }
   private boolean cached_0;
-  private java.lang.String cached_1;
-  private java.lang.String cached_2;
+  private String cached_1;
+  private String cached_2;
 }

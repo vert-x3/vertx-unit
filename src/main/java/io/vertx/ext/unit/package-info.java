@@ -581,9 +581,9 @@
  *
  * The async is completed when the `Handler` exits, unless new asyncs were created during the invocation.
  */
-@GenModule(name = "vertx-unit")
+@ModuleGen(name = "vertx-unit", groupPackage = "io.vertx")
 @Document(fileName = "index.adoc")
 package io.vertx.ext.unit;
 
-import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.docgen.Document;

@@ -17,6 +17,7 @@
 package io.vertx.groovy.ext.unit.report;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
+import io.vertx.core.json.JsonObject
 import io.vertx.groovy.core.streams.ReadStream
 import io.vertx.core.Handler
 /**
@@ -73,5 +74,5 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
     ( /* Work around for https://jira.codehaus.org/browse/GROOVY-6970 */ (io.vertx.ext.unit.report.TestSuiteReport) this.delegate).endHandler(endHandler);
     return this;
   }
-  private java.lang.String cached_0;
+  private String cached_0;
 }

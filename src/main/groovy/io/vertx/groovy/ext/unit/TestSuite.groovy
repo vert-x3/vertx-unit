@@ -17,6 +17,7 @@
 package io.vertx.groovy.ext.unit;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
+import io.vertx.core.json.JsonObject
 import io.vertx.ext.unit.TestOptions
 import io.vertx.groovy.core.Vertx
 import io.vertx.core.Handler
