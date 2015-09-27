@@ -37,11 +37,11 @@ public abstract class TestSuiteTestBase {
   }
 
   void run(TestSuite suite, TestReporter reporter) {
-    run.accept(getRunner.apply((TestSuiteImpl) suite).setReporter(reporter));
+    run.accept(getRunner.apply((TestSuiteImpl) suite).handler(reporter));
   }
 
   void run(TestSuite suite, TestReporter reporter, long timeout) {
-    run.accept(getRunner.apply((TestSuiteImpl) suite).setReporter(reporter).setTimeout(timeout));
+    run.accept(getRunner.apply((TestSuiteImpl) suite).handler(reporter).setTimeout(timeout));
   }
 
   protected boolean checkTest(TestContext test) {

@@ -5,9 +5,6 @@ import io.vertx.ext.unit.TestCompletion;
 import io.vertx.ext.unit.report.TestSuiteReport;
 import io.vertx.ext.unit.report.Reporter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -16,20 +13,15 @@ import java.util.concurrent.atomic.AtomicReference;
 public class TestCompletionImpl extends CompletionImpl<Void> implements TestCompletion, Handler<TestSuiteReport> {
 
   private final AtomicReference<TestSuiteReport> report = new AtomicReference<>();
-  private final List<Reporter> reporters = Collections.synchronizedList(new ArrayList<>());
+  private final Reporter[] reporters;
   private final AtomicReference<Throwable> failure = new AtomicReference<>();
 
   public TestCompletionImpl(Reporter... reporters) {
-    Collections.addAll(this.reporters, reporters);
-  }
-
-  public void addReporter(Reporter reporter) {
-    reporters.add(reporter);
+    this.reporters = reporters;
   }
 
   @Override
   public void handle(TestSuiteReport report) {
-    Reporter[] reporters = this.reporters.toArray(new Reporter[this.reporters.size()]);
     Object[] reports = new Object[reporters.length];
     for (int i = 0;i < reporters.length;i++) {
       reports[i] = reporters[i].reportBeginTestSuite(report.name());
