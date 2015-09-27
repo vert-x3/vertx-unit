@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 /**
@@ -22,48 +23,34 @@ public class TestContextImpl implements TestContext, Task<Result> {
 
   class AsyncImpl implements Async {
 
-    private final AtomicBoolean completeCalled = new AtomicBoolean();
+    private final CompletableFuture<Void> completable = new CompletableFuture<>();
 
     @Override
     public void complete() {
-      if (!completeCalled.compareAndSet(false, true)) {
+      if (completable.complete(null)) {
+        internalComplete();
+      } else if (!completable.isCompletedExceptionally()) {
         throw new IllegalStateException("The Async complete method cannot be called more than one time, check your test.");
       }
-      internalComplete();
     }
 
     public void awaitBlocking() {
-      synchronized (this) {
-        if (completeCalled.get()) {
-          // Already completed
-          return;
-        }
-
-        // As we access the outer instance, we need to synchronized using the lock it uses (outer monitor).
-        synchronized (TestContextImpl.this) {
-          if (TestContextImpl.this.failed != null) {
-            throw new IllegalStateException("Cannot await for completion - the async has failed");
-          }
-        }
-
-        try {
-          wait();
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-          Helper.uncheckedThrow(e);
-        }
-      }
-
-      // If during the 'blocking' phase an exception has been thrown, report it and fails.
-      synchronized (TestContextImpl.this) {
-        if (TestContextImpl.this.failed != null) {
-          throw new IllegalStateException("Cannot await for completion - the async has failed");
-        }
+      try {
+        completable.get();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        Helper.uncheckedThrow(e);
+      } catch (ExecutionException e) {
+        throw new IllegalStateException("Cannot await for completion - the async has failed");
       }
     }
 
-    private synchronized void release() {
-      notifyAll();
+    private void release() {
+      if (TestContextImpl.this.failed != null) {
+        completable.completeExceptionally(TestContextImpl.this.failed);
+      } else {
+        completable.complete(null);
+      }
     }
 
     void internalComplete() {
@@ -208,8 +195,8 @@ public class TestContextImpl implements TestContext, Task<Result> {
           break;
         case STATUS_ASYNC:
           if (failed == null) {
-            releaseAndClearAsyncs();
             failed = t;
+            releaseAndClearAsyncs();
             tryEnd();
           }
           break;
