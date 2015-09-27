@@ -5,6 +5,8 @@ import io.vertx.core.Vertx;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.report.TestSuiteReport;
 
+import java.util.List;
+
 /**
  * The test suite runner.
  *
@@ -17,14 +19,14 @@ public class TestSuiteRunner {
   private final Handler<TestContext> after;
   private final Handler<TestContext> beforeEach;
   private final Handler<TestContext> afterEach;
-  private final TestCaseImpl[] tests;
+  private final List<TestCaseImpl> tests;
   private Vertx vertx;
   private Handler<TestSuiteReport> handler;
   private long timeout;
   private Boolean useEventLoop;
 
   public TestSuiteRunner(String name, Handler<TestContext> before, Handler<TestContext> after, Handler<TestContext> beforeEach,
-                         Handler<TestContext> afterEach, TestCaseImpl[] tests) {
+                         Handler<TestContext> afterEach, List<TestCaseImpl> tests) {
     this.name = name;
     this.timeout = 0;
     this.before = before;
@@ -32,6 +34,10 @@ public class TestSuiteRunner {
     this.beforeEach = beforeEach;
     this.afterEach = afterEach;
     this.tests = tests;
+  }
+
+  public List<TestCaseImpl> getTests() {
+    return tests;
   }
 
   public Boolean isUseEventLoop() {
@@ -79,13 +85,17 @@ public class TestSuiteRunner {
     return this;
   }
 
+  public Handler<TestSuiteReport> getReporter() {
+    return handler;
+  }
+
   /**
    * Set a reporter for handling the events emitted by the test suite.
    *
    * @param reporter the reporter
    * @return a reference to this, so the API can be used fluently
    */
-  public TestSuiteRunner handler(Handler<TestSuiteReport> reporter) {
+  public TestSuiteRunner setReporter(Handler<TestSuiteReport> reporter) {
     handler = reporter;
     return this;
   }
@@ -94,7 +104,8 @@ public class TestSuiteRunner {
    * Run the testsuite with the current {@code timeout}, {@code vertx} and {@code reporter}.
    */
   public void run() {
-    TestSuiteReportImpl runner = new TestSuiteReportImpl(name, timeout, before, after, beforeEach, afterEach, tests);
+    TestSuiteReportImpl runner = new TestSuiteReportImpl(name, timeout, before, after, beforeEach,
+        afterEach, tests.toArray(new TestCaseImpl[tests.size()]));
     handler.handle(runner);
     if (vertx != null) {
       runner.run(vertx, useEventLoop);

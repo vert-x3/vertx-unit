@@ -24,7 +24,7 @@ public class TestSuiteObjectTest {
     MySuite1 obj = new MySuite1();
     TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(obj);
     TestReporter reporter = new TestReporter();
-    suite.runner().handler(reporter).run();
+    suite.runner().setReporter(reporter).run();
     reporter.await();
     assertEquals(1, obj.count.get());
     assertEquals(MySuite1.class.getName(), reporter.name.get());
@@ -45,7 +45,7 @@ public class TestSuiteObjectTest {
     MySuite2 obj = new MySuite2();
     TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(obj);
     TestReporter reporter = new TestReporter();
-    suite.runner().handler(reporter).run();
+    suite.runner().setReporter(reporter).run();
     reporter.await();
     assertEquals(MySuite2.class.getName(), reporter.name.get());
     assertEquals(0, reporter.exceptions.size());
@@ -72,7 +72,7 @@ public class TestSuiteObjectTest {
     for (Throwable error :  errors) {
       TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(new MySuite3(error));
       TestReporter reporter = new TestReporter();
-      suite.runner().handler(reporter).run();
+      suite.runner().setReporter(reporter).run();
       reporter.await();
       assertEquals(MySuite3.class.getName(), reporter.name.get());
       assertEquals(0, reporter.exceptions.size());
@@ -98,7 +98,7 @@ public class TestSuiteObjectTest {
     MySuite4 obj = new MySuite4();
     TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(obj);
     TestReporter reporter = new TestReporter();
-    suite.runner().handler(reporter).run();
+    suite.runner().setReporter(reporter).run();
     reporter.await();
     assertEquals(2, obj.count.get());
   }
@@ -118,7 +118,7 @@ public class TestSuiteObjectTest {
     MySuite5 obj = new MySuite5();
     TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(obj);
     TestReporter reporter = new TestReporter();
-    suite.runner().handler(reporter).run();
+    suite.runner().setReporter(reporter).run();
     reporter.await();
     assertEquals(2, obj.count.get());
   }
@@ -138,7 +138,7 @@ public class TestSuiteObjectTest {
     MySuite6 obj = new MySuite6();
     TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(obj);
     TestReporter reporter = new TestReporter();
-    suite.runner().handler(reporter).run();
+    suite.runner().setReporter(reporter).run();
     reporter.await();
     assertEquals(2, obj.count.get());
   }
@@ -158,7 +158,7 @@ public class TestSuiteObjectTest {
     MySuite7 obj = new MySuite7();
     TestSuiteImpl suite = (TestSuiteImpl) TestSuite.create(obj);
     TestReporter reporter = new TestReporter();
-    suite.runner().handler(reporter).run();
+    suite.runner().setReporter(reporter).run();
     reporter.await();
     assertEquals(2, obj.count.get());
   }
