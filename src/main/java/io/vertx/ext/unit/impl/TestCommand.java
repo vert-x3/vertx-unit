@@ -24,7 +24,8 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 @Name("test")
-@Summary("" +
+@Summary("Runs a Vert.x Unit test called <test-verticle> in its own instance of vert.x.")
+@Description("" +
     "Execute Vert.x Unit tests in its own instance of Vert.x. " +
     "The Verticle must run a Vert.x Unit test suite, for instance:\n" +
     "\n" +

@@ -10,7 +10,9 @@ public class TestCommandFactory extends DefaultCommandFactory<TestCommand> {
 
   @Override
   public CLI define() {
-    return super.define();
+    CLI cli = super.define();
+    cli.getArgument(0).setArgName("test-verticle");
+    return cli;
   }
 
   public TestCommandFactory() {
