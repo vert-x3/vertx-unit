@@ -45,6 +45,21 @@ var Async = function(j_val) {
     } else utils.invalidArgs();
   };
 
+  /**
+   Waits until the completion of the current {@link Async}. This method does not blocks if the asynchronous code
+   has already completed or failed (it throws a runtime exception). If while waiting the test is marked as failed
+   or reached a timeout, it is unblocks and fails with a runtime exception.
+
+   @public
+
+   */
+  this.awaitBlocking = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      j_async["awaitBlocking()"]();
+    } else utils.invalidArgs();
+  };
+
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.

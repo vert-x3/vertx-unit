@@ -356,6 +356,26 @@ suite.before() { |context|
 
 ----
 
+It is possible to wait until the completion of a specific `link:yardoc/VertxUnit/Async.html[Async]`:
+
+.Wait for completion
+[source, ruby]
+----
+async = context.async()
+server = vertx.create_http_server()
+server.request_handler(&requestHandler)
+server.listen(8080) { |ar_err,ar|
+  context.assert_true(ar_err == nil)
+  async.complete()
+}
+
+# Wait until completion
+async.await_blocking()
+
+# Do something else
+
+----
+
 == Sharing objects
 
 The `link:yardoc/VertxUnit/TestContext.html[TestContext]` has `get`/`put`/`remove` operations for sharing state between callbacks.
@@ -929,7 +949,7 @@ can be handy to _chain_ asynchronous behaviors:
 Async async = context.async();
 vertx.deployVerticle("my.verticle", ar1 -> {
   if (ar1.succeeded()) {
-    vertx.deployVerticle("my.otherverticle" ,ar2 -> {
+    vertx.deployVerticle("my.otherverticle", ar2 -> {
       if (ar2.succeeded()) {
         async.complete();
       } else {
@@ -943,8 +963,8 @@ vertx.deployVerticle("my.verticle", ar1 -> {
 
 // Can be replaced by
 
-vertx.deployVerticle("my.verticle", context.asyncAssertSuccess( id ->
-    vertx.deployVerticle("my_otherverticle", context.asyncAssertSuccess())
+vertx.deployVerticle("my.verticle", context.asyncAssertSuccess(id ->
+        vertx.deployVerticle("my_otherverticle", context.asyncAssertSuccess())
 ));
 ----
 

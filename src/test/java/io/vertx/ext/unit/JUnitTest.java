@@ -646,6 +646,114 @@ public class JUnitTest {
     assertEquals(Arrays.asList("before", "test", "complete", "after"), AsyncMethodRuleTestSuite.events);
   }
 
+  public static class AwaitAsyncTestSuite {
+
+    static final List<String> test0 = Collections.synchronizedList(new ArrayList<>());
+    static final List<String> test1 = Collections.synchronizedList(new ArrayList<>());
+    static final List<String> test2 = Collections.synchronizedList(new ArrayList<>());
+    static final List<String> test3 = Collections.synchronizedList(new ArrayList<>());
+    static final List<String> test4 = Collections.synchronizedList(new ArrayList<>());
+
+    @Test
+    public void testAwaitWhenAlreadyCompleted(TestContext context) {
+      test0.add("before");
+      Async async = context.async();
+      test0.add("complete");
+      async.complete();
+      async.awaitBlocking();
+      test0.add("after");
+    }
+
+    @Test
+    public void testAwaitWithSuccess(TestContext context) {
+      Async async = context.async();
+      test1.add("before");
+      new Thread((() -> {
+        try {
+          Thread.sleep(250);
+        } catch (InterruptedException ignore) {
+        } finally {
+          test1.add("complete");
+          async.complete();
+        }
+      })).start();
+
+      async.awaitBlocking();
+      test1.add("after");
+    }
+
+    @Test
+    public void testAwaitWithFailure(TestContext context) {
+      Async async = context.async();
+      test2.add("before");
+      new Thread((() -> {
+        try {
+          Thread.sleep(250);
+          context.fail("expected");
+        } catch (InterruptedException ignore) {
+        } finally {
+          test2.add("complete");
+
+        }
+      })).start();
+
+      async.awaitBlocking();
+      test2.add("after");
+    }
+
+    @Test(timeout = 100)
+    public void testAwaitWithTimeout(TestContext context) {
+      Async async = context.async();
+      test3.add("before");
+      new Thread((() -> {
+        try {
+          Thread.sleep(250);
+          context.fail("expected");
+        } catch (InterruptedException ignore) {
+        } finally {
+          test3.add("complete");
+
+        }
+      })).start();
+
+      async.awaitBlocking();
+      test3.add("after");
+    }
+
+    @Test
+    public void testInterruption(TestContext context) {
+      Async async = context.async();
+      test4.add("before");
+      final Thread thread = Thread.currentThread();
+      new Thread((() -> {
+        try {
+          Thread.sleep(50);
+          test4.add("interrupt");
+          thread.interrupt();
+          Thread.sleep(50);
+        } catch (InterruptedException ignore) {
+        } finally {
+          async.complete();
+        }
+      })).start();
+
+      async.awaitBlocking();
+      test4.add("after");
+    }
+  }
+
+  @Test
+  public void testAwaitAsync() throws Exception {
+    Result result = run(AwaitAsyncTestSuite.class);
+    assertEquals(5, result.getRunCount());
+    assertEquals(3, result.getFailureCount());
+    assertEquals(Arrays.asList("before", "complete", "after"), AwaitAsyncTestSuite.test0);
+    assertEquals(Arrays.asList("before", "complete", "after"), AwaitAsyncTestSuite.test1);
+    assertEquals(Arrays.asList("before", "complete"), AwaitAsyncTestSuite.test2);
+    assertEquals(Arrays.asList("before", "complete"), AwaitAsyncTestSuite.test3);
+    assertEquals(Arrays.asList("before", "interrupt"), AwaitAsyncTestSuite.test4);
+  }
+
   public static class RepeatRuleTestSuite {
 
     static final List<String> events = Collections.synchronizedList(new ArrayList<>());
@@ -774,4 +882,5 @@ public class JUnitTest {
     assertSame(StaticUseRunOnContextRule.beforeClass, StaticUseRunOnContextRule.method.get("testMethod1"));
     assertSame(StaticUseRunOnContextRule.afterClass, StaticUseRunOnContextRule.method.get("testMethod1"));
   }
+
 }
