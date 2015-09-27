@@ -61,7 +61,7 @@ public interface EventBusCollector {
    */
   static EventBusCollector create(Vertx vertx, ReportingOptions options) {
     Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
-    ReporterHandler reporter = new ReporterHandler(null, reporters);
+    ReporterHandler reporter = new ReporterHandler(reporters);
     return new EventBusCollectorImpl(vertx, reporter);
   }
 

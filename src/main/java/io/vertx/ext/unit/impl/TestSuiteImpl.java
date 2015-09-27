@@ -123,7 +123,7 @@ public class TestSuiteImpl implements TestSuite {
   @Override
   public TestCompletion run(Vertx vertx, TestOptions options) {
     Reporter[] reporters = options  .getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
-    ReporterHandler handler = new ReporterHandler(null, reporters);
+    ReporterHandler handler = new ReporterHandler(reporters);
     runner().
         setVertx(vertx).
         setTimeout(options.getTimeout()).

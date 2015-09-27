@@ -551,7 +551,7 @@ of the previous task. These tasks should leverage Vert.x event loop when possibl
 current execution context (i.e the test suite is executed in a `main` or embedded in a `Verticle`) and
 wether or not a `Vertx` instance is configured.
 
-The `link:../cheatsheet/TestOptions.html#useEventLoop[useEventLoop]` configures the usage of the event
+The `link:../dataobjects.html#TestOptions#setUseEventLoop(java.lang.Boolean)[useEventLoop]` configures the usage of the event
 loop:
 
 .Event loop usage

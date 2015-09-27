@@ -27,12 +27,6 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
   private volatile boolean completed;
 
   public ReporterHandler(Reporter... reporters) {
-    this(null, reporters);
-  }
-
-  public ReporterHandler(Future completion,
-                         Reporter... reporters) {
-    this.completion = completion;
     this.reporters = reporters;
   }
 
