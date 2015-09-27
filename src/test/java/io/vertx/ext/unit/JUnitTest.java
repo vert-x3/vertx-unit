@@ -648,6 +648,7 @@ public class JUnitTest {
 
   public static class AwaitAsyncTestSuite {
 
+    static final CountDownLatch done = new CountDownLatch(9);
     static final List<String> test0 = Collections.synchronizedList(new ArrayList<>());
     static final List<String> test1 = Collections.synchronizedList(new ArrayList<>());
     static final List<String> test2 = Collections.synchronizedList(new ArrayList<>());
@@ -656,89 +657,113 @@ public class JUnitTest {
 
     @Test
     public void testAwaitWhenAlreadyCompleted(TestContext context) {
-      test0.add("before");
-      Async async = context.async();
-      test0.add("complete");
-      async.complete();
-      async.awaitBlocking();
-      test0.add("after");
+      try {
+        test0.add("before");
+        Async async = context.async();
+        test0.add("complete");
+        async.complete();
+        async.awaitBlocking();
+        test0.add("after");
+      } finally {
+        done.countDown();
+      }
     }
 
     @Test
     public void testAwaitWithSuccess(TestContext context) {
-      Async async = context.async();
-      test1.add("before");
-      new Thread((() -> {
-        try {
-          Thread.sleep(250);
-        } catch (InterruptedException ignore) {
-        } finally {
-          test1.add("complete");
-          async.complete();
-        }
-      })).start();
-
-      async.awaitBlocking();
-      test1.add("after");
+      try {
+        Async async = context.async();
+        test1.add("before");
+        new Thread((() -> {
+          try {
+            Thread.sleep(250);
+          } catch (InterruptedException ignore) {
+          } finally {
+            test1.add("complete");
+            async.complete();
+            done.countDown();
+          }
+        })).start();
+        async.awaitBlocking();
+        test1.add("after");
+      } finally {
+        done.countDown();
+      }
     }
 
     @Test
     public void testAwaitWithFailure(TestContext context) {
-      Async async = context.async();
-      test2.add("before");
-      new Thread((() -> {
-        try {
-          Thread.sleep(250);
-          context.fail("expected");
-        } catch (InterruptedException ignore) {
-        } finally {
-          test2.add("complete");
-
-        }
-      })).start();
-
-      async.awaitBlocking();
-      test2.add("after");
+      try {
+        Async async = context.async();
+        test2.add("before");
+        new Thread((() -> {
+          try {
+            Thread.sleep(250);
+            context.fail("expected");
+          } catch (InterruptedException ignore) {
+          } finally {
+            test2.add("complete");
+            done.countDown();
+          }
+        })).start();
+        async.awaitBlocking();
+        test2.add("after");
+      } finally {
+        done.countDown();
+      }
     }
 
     @Test(timeout = 100)
     public void testAwaitWithTimeout(TestContext context) {
-      Async async = context.async();
-      test3.add("before");
-      new Thread((() -> {
-        try {
-          Thread.sleep(250);
-          context.fail("expected");
-        } catch (InterruptedException ignore) {
-        } finally {
-          test3.add("complete");
-
-        }
-      })).start();
-
-      async.awaitBlocking();
-      test3.add("after");
+      try {
+        Async async = context.async();
+        test3.add("before");
+        new Thread((() -> {
+          try {
+            Thread.sleep(250);
+            context.fail("expected");
+          } catch (InterruptedException ignore) {
+          } finally {
+            test3.add("complete");
+            done.countDown();
+          }
+        })).start();
+        async.awaitBlocking();
+        test3.add("after");
+      } finally {
+        done.countDown();
+      }
     }
 
     @Test
     public void testInterruption(TestContext context) {
-      Async async = context.async();
-      test4.add("before");
-      final Thread thread = Thread.currentThread();
-      new Thread((() -> {
+      try {
+        Async async = context.async();
+        test4.add("before");
+        final Thread thread = Thread.currentThread();
+        new Thread((() -> {
+          try {
+            Thread.sleep(50);
+            test4.add("interrupt");
+            thread.interrupt();
+            Thread.sleep(50);
+          } catch (InterruptedException ignore) {
+          } finally {
+            async.complete();
+            done.countDown();
+          }
+        })).start();
         try {
-          Thread.sleep(50);
-          test4.add("interrupt");
-          thread.interrupt();
-          Thread.sleep(50);
-        } catch (InterruptedException ignore) {
-        } finally {
-          async.complete();
+          async.awaitBlocking();
+          test4.add("after");
+        } catch (Exception e) {
+          if (e instanceof InterruptedException) {
+            test4.add("interrupted");
+          }
         }
-      })).start();
-
-      async.awaitBlocking();
-      test4.add("after");
+      } finally {
+        done.countDown();
+      }
     }
   }
 
@@ -747,11 +772,14 @@ public class JUnitTest {
     Result result = run(AwaitAsyncTestSuite.class);
     assertEquals(5, result.getRunCount());
     assertEquals(3, result.getFailureCount());
+    // Current thread should be interrupted + we reset the interrupted status so we can use the countdown
+    assertTrue(Thread.interrupted());
+    assertTrue(AwaitAsyncTestSuite.done.await(10, TimeUnit.SECONDS));
     assertEquals(Arrays.asList("before", "complete", "after"), AwaitAsyncTestSuite.test0);
     assertEquals(Arrays.asList("before", "complete", "after"), AwaitAsyncTestSuite.test1);
     assertEquals(Arrays.asList("before", "complete"), AwaitAsyncTestSuite.test2);
     assertEquals(Arrays.asList("before", "complete"), AwaitAsyncTestSuite.test3);
-    assertEquals(Arrays.asList("before", "interrupt"), AwaitAsyncTestSuite.test4);
+    assertEquals(Arrays.asList("before", "interrupt", "interrupted"), AwaitAsyncTestSuite.test4);
   }
 
   public static class RepeatRuleTestSuite {
