@@ -339,7 +339,7 @@ server.listen(8080, ar -> {
 });
 
 // Wait until completion
-async.awaitBlocking();
+async.await();
 ----
 
 == Sharing objects
@@ -425,7 +425,7 @@ section for more details.
 
 No assumptions can be made about when the test suite will be completed, and if some code needs to be executed
 after the test suite, it should either be in the test suite _after_ callback or as callback of the
-`link:../../apidocs/io/vertx/ext/unit/TestCompletion.html[TestCompletion]`:
+`link:../../apidocs/io/vertx/ext/unit/Completion.html[Completion]`:
 
 .Test suite execution callback
 [source,java]
@@ -443,7 +443,7 @@ completion.handler(ar -> {
 });
 ----
 
-The `link:../../apidocs/io/vertx/ext/unit/TestCompletion.html[TestCompletion]` object provides also a `link:../../apidocs/io/vertx/ext/unit/TestCompletion.html#resolve-io.vertx.core.Future-[resolve]` method that
+The `link:../../apidocs/io/vertx/ext/unit/Completion.html[Completion]` object provides also a `link:../../apidocs/io/vertx/ext/unit/Completion.html#resolve-io.vertx.core.Future-[resolve]` method that
 takes a `Future` object, this `Future` will be notified of the test suite execution:
 
 .Resolving the start Future with the test suite
@@ -464,7 +464,7 @@ be used when the thread running the test suite is not the same than the current 
 .Blocking until the test suite completes
 [source,java]
 ----
-TestCompletion completion = suite.run();
+Completion completion = suite.run();
 
 // Wait until the test suite completes
 completion.await();
@@ -472,13 +472,13 @@ completion.await();
 
 The `await` throws an exception when the thread is interrupted or a timeout is fired.
 
-The `link:../../apidocs/io/vertx/ext/unit/TestCompletion.html#awaitSuccess--[awaitSuccess]` is a variation that throws an exception when
+The `link:../../apidocs/io/vertx/ext/unit/Completion.html#awaitSuccess--[awaitSuccess]` is a variation that throws an exception when
 the test suite fails.
 
 .Blocking until the test suite succeeds
 [source,java]
 ----
-TestCompletion completion = suite.run();
+Completion completion = suite.run();
 
 // Wait until the test suite succeeds otherwise throw an exception
 completion.awaitSuccess();

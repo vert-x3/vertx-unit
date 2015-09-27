@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
@@ -21,9 +19,7 @@ public class TestContextImpl implements TestContext, Task<Result> {
 
   private static final int STATUS_RUNNING = 0, STATUS_ASYNC = 1, STATUS_COMPLETED = 2;
 
-  class AsyncImpl implements Async {
-
-    private final CompletableFuture<Void> completable = new CompletableFuture<>();
+  class AsyncImpl extends CompletionImpl<Void> implements Async {
 
     @Override
     public void complete() {
@@ -31,17 +27,6 @@ public class TestContextImpl implements TestContext, Task<Result> {
         internalComplete();
       } else if (!completable.isCompletedExceptionally()) {
         throw new IllegalStateException("The Async complete method cannot be called more than one time, check your test.");
-      }
-    }
-
-    public void awaitBlocking() {
-      try {
-        completable.get();
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        Helper.uncheckedThrow(e);
-      } catch (ExecutionException e) {
-        throw new IllegalStateException("Cannot await for completion - the async has failed");
       }
     }
 

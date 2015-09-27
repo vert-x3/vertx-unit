@@ -109,7 +109,7 @@ public interface TestSuite {
    * When the test suite is executed in a Vertx context (i.e `Vertx.currentContext()` returns a context) this
    * context's event loop is used for running the test suite. Otherwise it is executed in the current thread.<p/>
    *
-   * The returned {@link io.vertx.ext.unit.TestCompletion} object can be used to get a completion callback.
+   * The returned {@link Completion} object can be used to get a completion callback.
    *
    * @return the related test completion
    */
@@ -125,7 +125,7 @@ public interface TestSuite {
    * Otherwise, the test suite will be executed in the current thread when {@link io.vertx.ext.unit.TestOptions#setUseEventLoop(Boolean)} is
    * set to {@code false} or {@code null}. If the value is {@code true}, this methods throws an {@code IllegalStateException}.<p/>
    *
-   * The returned {@link io.vertx.ext.unit.TestCompletion} object can be used to get a completion callback.
+   * The returned {@link Completion} object can be used to get a completion callback.
    *
    * @param options the test options
    * @return the related test completion
@@ -136,7 +136,7 @@ public interface TestSuite {
    * Run the testsuite with the default options and the specified {@code vertx} instance.<p/>
    *
    * The test suite will be executed on the event loop provided by the {@code vertx} argument. The returned
-   * {@link io.vertx.ext.unit.TestCompletion} object can be used to get a completion callback.<p/>
+   * {@link Completion} object can be used to get a completion callback.<p/>
    *
    * @param vertx the vertx instance
    * @return the related test completion
@@ -148,7 +148,7 @@ public interface TestSuite {
    *
    * The test suite will be executed on the event loop provided by the {@code vertx} argument when
    * {@link io.vertx.ext.unit.TestOptions#setUseEventLoop(Boolean)} is not set to {@code false}. The returned
-   * {@link io.vertx.ext.unit.TestCompletion} object can be used to get a completion callback.
+   * {@link Completion} object can be used to get a completion callback.
    *
    * @param vertx the vertx instance
    * @param options the test options

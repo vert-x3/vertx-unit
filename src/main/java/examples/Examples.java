@@ -200,7 +200,7 @@ public class Examples {
     });
 
     // Wait until completion
-    async.awaitBlocking();
+    async.await();
 
     // Do something else
   }
@@ -379,14 +379,14 @@ public class Examples {
   }
 
   public static void completion_03(TestSuite suite) {
-    TestCompletion completion = suite.run();
+    Completion completion = suite.run();
 
     // Wait until the test suite completes
     completion.await();
   }
 
   public static void completion_04(TestSuite suite) {
-    TestCompletion completion = suite.run();
+    Completion completion = suite.run();
 
     // Wait until the test suite succeeds otherwise throw an exception
     completion.awaitSuccess();

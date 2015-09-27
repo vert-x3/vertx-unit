@@ -26,10 +26,10 @@ public class CompletionTest {
     testSucceeded(completion -> completion.awaitSuccess(2000));
   }
 
-  private void testSucceeded(Consumer<TestCompletion> consumer) {
+  private void testSucceeded(Consumer<Completion> consumer) {
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
     });
-    TestCompletion completion = suite.run(Vertx.vertx());
+    Completion completion = suite.run(Vertx.vertx());
     consumer.accept(completion);
     assertTrue(completion.isCompleted());
     assertTrue(completion.isSucceeded());
@@ -42,11 +42,11 @@ public class CompletionTest {
     testAwaitFailed(completion -> completion.await(2000));
   }
 
-  private void testAwaitFailed(Consumer<TestCompletion> consumer) {
+  private void testAwaitFailed(Consumer<Completion> consumer) {
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
       context.fail();
     });
-    TestCompletion completion = suite.run(Vertx.vertx());
+    Completion completion = suite.run(Vertx.vertx());
     consumer.accept(completion);
     assertTrue(completion.isCompleted());
     assertFalse(completion.isSucceeded());
@@ -59,7 +59,7 @@ public class CompletionTest {
     testAwaitSuccessFailed(completion -> completion.awaitSuccess(2000));
   }
 
-  private void testAwaitSuccessFailed(Consumer<TestCompletion> consumer) throws Exception {
+  private void testAwaitSuccessFailed(Consumer<Completion> consumer) throws Exception {
     AtomicReference<AssertionError> expected = new AtomicReference<>();
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
       try {
@@ -69,7 +69,7 @@ public class CompletionTest {
         throw ae;
       }
     });
-    TestCompletion completion = suite.run(Vertx.vertx());
+    Completion completion = suite.run(Vertx.vertx());
     try {
       consumer.accept(completion);
       fail();
@@ -91,11 +91,11 @@ public class CompletionTest {
     testTimeout(completion -> completion.awaitSuccess(10));
   }
 
-  private void testTimeout(Consumer<TestCompletion> consumer) {
+  private void testTimeout(Consumer<Completion> consumer) {
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
       context.async();
     });
-    TestCompletion completion = suite.run(Vertx.vertx());
+    Completion completion = suite.run(Vertx.vertx());
     try {
       consumer.accept(completion);
       fail();
@@ -119,12 +119,12 @@ public class CompletionTest {
     testAwaitSuccess(completion -> completion.awaitSuccess(2000), Thread.State.TIMED_WAITING);
   }
 
-  private void testAwaitSuccess(Consumer<TestCompletion> consumer, Thread.State expectedState) {
+  private void testAwaitSuccess(Consumer<Completion> consumer, Thread.State expectedState) {
     TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
       context.async();
     });
     Thread thread = Thread.currentThread();
-    TestCompletion completion = suite.run(Vertx.vertx());
+    Completion completion = suite.run(Vertx.vertx());
     new Thread(() -> {
       while (thread.getState() != expectedState) {
         try {

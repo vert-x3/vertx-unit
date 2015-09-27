@@ -138,7 +138,7 @@ public class TestSuite {
    * When the test suite is executed in a Vertx context (i.e `Vertx.currentContext()` returns a context) this
    * context's event loop is used for running the test suite. Otherwise it is executed in the current thread.<p/>
    *
-   * The returned {@link io.vertx.rxjava.ext.unit.TestCompletion} object can be used to get a completion callback.
+   * The returned {@link io.vertx.rxjava.ext.unit.Completion} object can be used to get a completion callback.
    * @return the related test completion
    */
   public TestCompletion run() { 
@@ -156,7 +156,7 @@ public class TestSuite {
    * Otherwise, the test suite will be executed in the current thread when {@link io.vertx.ext.unit.TestOptions} is
    * set to <code>false</code> or <code>null</code>. If the value is <code>true</code>, this methods throws an <code>IllegalStateException</code>.<p/>
    *
-   * The returned {@link io.vertx.rxjava.ext.unit.TestCompletion} object can be used to get a completion callback.
+   * The returned {@link io.vertx.rxjava.ext.unit.Completion} object can be used to get a completion callback.
    * @param options the test options
    * @return the related test completion
    */
@@ -169,7 +169,7 @@ public class TestSuite {
    * Run the testsuite with the default options and the specified <code>vertx</code> instance.<p/>
    *
    * The test suite will be executed on the event loop provided by the <code>vertx</code> argument. The returned
-   * {@link io.vertx.rxjava.ext.unit.TestCompletion} object can be used to get a completion callback.<p/>
+   * {@link io.vertx.rxjava.ext.unit.Completion} object can be used to get a completion callback.<p/>
    * @param vertx the vertx instance
    * @return the related test completion
    */
@@ -183,7 +183,7 @@ public class TestSuite {
    *
    * The test suite will be executed on the event loop provided by the <code>vertx</code> argument when
    * {@link io.vertx.ext.unit.TestOptions} is not set to <code>false</code>. The returned
-   * {@link io.vertx.rxjava.ext.unit.TestCompletion} object can be used to get a completion callback.
+   * {@link io.vertx.rxjava.ext.unit.Completion} object can be used to get a completion callback.
    * @param vertx the vertx instance
    * @param options the test options
    * @return the related test completion

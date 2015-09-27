@@ -125,7 +125,7 @@ var TestSuite = function(j_val) {
   
    The test suite will be executed on the event loop provided by the <code>vertx</code> argument when
    <a href="../../dataobjects.html#TestOptions">TestOptions</a> is not set to <code>false</code>. The returned
-   {@link TestCompletion} object can be used to get a completion callback.
+   {@link Completion} object can be used to get a completion callback.
 
    @public
    @param vertx {Vertx} the vertx instance 

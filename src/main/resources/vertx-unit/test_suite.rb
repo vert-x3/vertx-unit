@@ -89,7 +89,7 @@ module VertxUnit
     # 
     #  The test suite will be executed on the event loop provided by the <code>vertx</code> argument when
     #  {Hash#set_use_event_loop} is not set to <code>false</code>. The returned
-    #  {::VertxUnit::TestCompletion} object can be used to get a completion callback.
+    #  {::VertxUnit::Completion} object can be used to get a completion callback.
     # @overload run()
     # @overload run(options)
     #   @param [Hash] options the test options

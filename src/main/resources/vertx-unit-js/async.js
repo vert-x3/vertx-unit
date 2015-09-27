@@ -16,6 +16,7 @@
 
 /** @module vertx-unit-js/async */
 var utils = require('vertx-js/util/utils');
+var Completion = require('vertx-unit-js/completion');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
@@ -30,6 +31,7 @@ var Async = function(j_val) {
 
   var j_async = j_val;
   var that = this;
+  Completion.call(this, j_val);
 
   /**
    Signals the asynchronous operation is done, this method should be called only once, if the method is called
@@ -42,21 +44,6 @@ var Async = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       j_async["complete()"]();
-    } else utils.invalidArgs();
-  };
-
-  /**
-   Waits until the completion of the current {@link Async}. This method does not blocks if the asynchronous code
-   has already completed or failed (it throws a runtime exception). If while waiting the test is marked as failed
-   or reached a timeout, it is unblocks and fails with a runtime exception.
-
-   @public
-
-   */
-  this.awaitBlocking = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      j_async["awaitBlocking()"]();
     } else utils.invalidArgs();
   };
 

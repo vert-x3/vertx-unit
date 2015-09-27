@@ -277,7 +277,7 @@
  *
  * No assumptions can be made about when the test suite will be completed, and if some code needs to be executed
  * after the test suite, it should either be in the test suite _after_ callback or as callback of the
- * {@link io.vertx.ext.unit.TestCompletion}:
+ * {@link io.vertx.ext.unit.Completion}:
  *
  * .Test suite execution callback
  * [source,$lang]
@@ -285,7 +285,7 @@
  * {@link examples.Examples#completion_01}
  * ----
  *
- * The {@link io.vertx.ext.unit.TestCompletion} object provides also a {@link io.vertx.ext.unit.TestCompletion#resolve} method that
+ * The {@link io.vertx.ext.unit.Completion} object provides also a {@link io.vertx.ext.unit.Completion#resolve} method that
  * takes a `Future` object, this `Future` will be notified of the test suite execution:
  *
  * .Resolving the start Future with the test suite
@@ -308,7 +308,7 @@
  *
  * The `await` throws an exception when the thread is interrupted or a timeout is fired.
  *
- * The {@link io.vertx.ext.unit.TestCompletion#awaitSuccess()} is a variation that throws an exception when
+ * The {@link io.vertx.ext.unit.Completion#awaitSuccess()} is a variation that throws an exception when
  * the test suite fails.
  *
  * .Blocking until the test suite succeeds

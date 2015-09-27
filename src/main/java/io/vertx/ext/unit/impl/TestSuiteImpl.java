@@ -123,14 +123,14 @@ public class TestSuiteImpl implements TestSuite {
   @Override
   public TestCompletion run(Vertx vertx, TestOptions options) {
     Reporter[] reporters = options  .getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
-    ReporterHandler handler = new ReporterHandler(reporters);
+    TestCompletionImpl completion = new TestCompletionImpl(reporters);
     runner().
         setVertx(vertx).
         setTimeout(options.getTimeout()).
         setUseEventLoop(options.isUseEventLoop()).
-        handler(handler).
+        handler(completion).
         run();
-    return handler;
+    return completion;
   }
 
   public TestSuiteRunner runner() {

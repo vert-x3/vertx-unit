@@ -662,7 +662,7 @@ public class JUnitTest {
         Async async = context.async();
         test0.add("complete");
         async.complete();
-        async.awaitBlocking();
+        async.awaitSuccess();
         test0.add("after");
       } finally {
         done.countDown();
@@ -684,7 +684,7 @@ public class JUnitTest {
             done.countDown();
           }
         })).start();
-        async.awaitBlocking();
+        async.awaitSuccess();
         test1.add("after");
       } finally {
         done.countDown();
@@ -706,7 +706,7 @@ public class JUnitTest {
             done.countDown();
           }
         })).start();
-        async.awaitBlocking();
+        async.awaitSuccess();
         test2.add("after");
       } finally {
         done.countDown();
@@ -728,7 +728,7 @@ public class JUnitTest {
             done.countDown();
           }
         })).start();
-        async.awaitBlocking();
+        async.awaitSuccess();
         test3.add("after");
       } finally {
         done.countDown();
@@ -754,7 +754,7 @@ public class JUnitTest {
           }
         })).start();
         try {
-          async.awaitBlocking();
+          async.awaitSuccess();
           test4.add("after");
         } catch (Exception e) {
           if (e instanceof InterruptedException) {

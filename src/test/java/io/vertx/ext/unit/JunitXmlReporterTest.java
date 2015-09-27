@@ -2,7 +2,7 @@ package io.vertx.ext.unit;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.ext.unit.impl.ReporterHandler;
+import io.vertx.ext.unit.impl.TestCompletionImpl;
 import io.vertx.ext.unit.impl.TestSuiteImpl;
 import io.vertx.ext.unit.report.impl.JunitXmlFormatter;
 import io.vertx.ext.unit.report.impl.ReportStream;
@@ -92,7 +92,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
         test(testCaseName4, context -> { throw new RuntimeException(); });
 
     JunitXmlFormatter reporter = new JunitXmlFormatter(this::reportTo);
-    suite.runner().handler(new ReporterHandler(reporter)).run();
+    suite.runner().handler(new TestCompletionImpl(reporter)).run();
     latch.await(10, TimeUnit.SECONDS);
     Element testsuiteElt = doc.getDocumentElement();
     assertEquals("testsuite", testsuiteElt.getTagName());
@@ -149,7 +149,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
           context.fail("the_after_failure");
         });
     JunitXmlFormatter reporter = new JunitXmlFormatter(this::reportTo);
-    suite.runner().handler(new ReporterHandler(reporter)).run();
+    suite.runner().handler(new TestCompletionImpl(reporter)).run();
     latch.await(10, TimeUnit.SECONDS);
     Element testsuiteElt = doc.getDocumentElement();
     assertEquals("testsuite", testsuiteElt.getTagName());
@@ -187,7 +187,7 @@ public class JunitXmlReporterTest extends AsyncTestBase {
         });
 
     JunitXmlFormatter reporter = new JunitXmlFormatter(this::reportTo);
-    suite.runner().handler(new ReporterHandler(reporter)).run();
+    suite.runner().handler(new TestCompletionImpl(reporter)).run();
     latch.await(10, TimeUnit.SECONDS);
     Element testsuiteElt = doc.getDocumentElement();
     assertEquals("testsuite", testsuiteElt.getTagName());

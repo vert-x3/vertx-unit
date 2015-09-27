@@ -8,7 +8,7 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.collect.impl.EventBusCollectorImpl;
-import io.vertx.ext.unit.impl.ReporterHandler;
+import io.vertx.ext.unit.impl.TestCompletionImpl;
 import io.vertx.ext.unit.report.Reporter;
 import io.vertx.ext.unit.report.ReportingOptions;
 import io.vertx.ext.unit.report.TestSuiteReport;
@@ -61,7 +61,7 @@ public interface EventBusCollector {
    */
   static EventBusCollector create(Vertx vertx, ReportingOptions options) {
     Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
-    ReporterHandler reporter = new ReporterHandler(reporters);
+    TestCompletionImpl reporter = new TestCompletionImpl(reporters);
     return new EventBusCollectorImpl(vertx, reporter);
   }
 
