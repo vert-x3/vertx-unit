@@ -7,9 +7,8 @@ import io.vertx.ext.unit.TestCompletion;
 import io.vertx.ext.unit.report.TestSuiteReport;
 import io.vertx.ext.unit.report.Reporter;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -19,12 +18,9 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion {
 
-  private final CountDownLatch latch = new CountDownLatch(1);
   private final Reporter[] reporters;
-
-  private volatile Future<?> completion;
+  private CompletableFuture<Void> completable = new CompletableFuture<>();
   private final AtomicReference<Throwable> failure = new AtomicReference<>();
-  private volatile boolean completed;
 
   public ReporterHandler(Reporter... reporters) {
     this.reporters = reporters;
@@ -32,29 +28,28 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
 
   @Override
   public void resolve(Future future) {
-    completion = future;
-    if (completed) {
-      if (failure.get() == null) {
-        future.complete();
+    completable.whenComplete((done, err) -> {
+      if (err != null) {
+        future.fail(err);
       } else {
-        future.fail(failure.get());
+        future.complete();
       }
-    }
+    });
   }
 
   @Override
   public boolean isCompleted() {
-    return completed;
+    return completable.isDone();
   }
 
   @Override
   public boolean isSucceeded() {
-    return completed && failure.get() == null;
+    return isCompleted() && !isFailed();
   }
 
   @Override
   public boolean isFailed() {
-    return completed && failure.get() != null;
+    return completable.isCompletedExceptionally();
   }
 
   @Override
@@ -95,14 +90,10 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
       for (int i = 0;i < reporters.length;i++) {
         reporters[i].reportEndTestSuite(reports[i]);
       }
-      completed = true;
-      latch.countDown();
-      if (completion != null) {
-        if (failure.get() == null) {
-          completion.complete();
-        } else {
-          completion.fail(failure.get());
-        }
+      if (failure.get() != null) {
+        completable.completeExceptionally(failure.get());
+      } else {
+        completable.complete(null);
       }
     });
   }
@@ -110,7 +101,8 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
   @Override
   public void await() {
     try {
-      latch.await();
+      completable.get();
+    } catch (ExecutionException ignore) {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       Helper.uncheckedThrow(e);
@@ -120,53 +112,39 @@ public class ReporterHandler implements Handler<TestSuiteReport>, TestCompletion
   @Override
   public void await(long timeoutMillis) {
     try {
-      boolean ok = latch.await(timeoutMillis, TimeUnit.MILLISECONDS);
-      if (!ok) {
-        Helper.uncheckedThrow(new TimeoutException("Timed out"));
-      }
+      completable.get(timeoutMillis, TimeUnit.MILLISECONDS);
+    } catch (ExecutionException ignore) {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       Helper.uncheckedThrow(e);
+    } catch (TimeoutException e) {
+      Helper.uncheckedThrow(new TimeoutException("Timed out"));
     }
   }
 
   @Override
   public void awaitSuccess() {
-    BlockingQueue<AsyncResult<?>> queue = new ArrayBlockingQueue<>(1);
-    Future<?> future = Future.future();
-    future.setHandler(queue::add);
-    AsyncResult<?> result = null;
-    resolve(future);
     try {
-      result = queue.take();
+      completable.get();
+    } catch (ExecutionException result) {
+      Helper.uncheckedThrow(result.getCause());
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       Helper.uncheckedThrow(e);
-    }
-    if (result == null) {
-      Helper.uncheckedThrow(new TimeoutException("Timed out"));
-    } else if (result.failed()) {
-      Helper.uncheckedThrow(result.cause());
     }
   }
 
   @Override
   public void awaitSuccess(long timeoutMillis) {
-    BlockingQueue<AsyncResult<?>> queue = new ArrayBlockingQueue<>(1);
-    Future<?> future = Future.future();
-    future.setHandler(queue::add);
-    AsyncResult<?> result = null;
-    resolve(future);
     try {
-      result = queue.poll(timeoutMillis, TimeUnit.MILLISECONDS);
+      completable.get(timeoutMillis, TimeUnit.MILLISECONDS);
+    } catch (ExecutionException result) {
+      Helper.uncheckedThrow(result.getCause());
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       Helper.uncheckedThrow(e);
-    }
-    if (result == null) {
+    } catch (TimeoutException e) {
       Helper.uncheckedThrow(new TimeoutException("Timed out"));
-    } else if (result.failed()) {
-      Helper.uncheckedThrow(result.cause());
     }
   }
 }
