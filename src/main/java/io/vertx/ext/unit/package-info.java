@@ -262,7 +262,7 @@
  * {@link examples.Examples#running_01}
  * ----
  *
- * The test suite can also be ran with a specified {@link io.vertx.core.Vertx} instance:
+ * The test suite can also be run with a specified {@link io.vertx.core.Vertx} instance:
  *
  * .Provides a Vertx instance to run the test suite
  * [source,$lang]
@@ -272,6 +272,35 @@
  *
  * When running with a `Vertx` instance, the test suite is executed using the Vertx event loop, see the <<eventloop>>
  * section for more details.
+ *
+ * A test suite can be run with the Vert.x Command Line Interface with the `vertx test` command:
+ *
+ * .Running a test suite with the Vert.x CLI
+ * [source]
+ * ----
+ * > vertx test the_test_suite.js
+ * Begin test suite the_test_suite
+ * Succeeded in deploying verticle
+ * Begin test my_test_case
+ * Passed my_test_case
+ * End test suite my_suite , run: 1, Failures: 0, Errors: 0
+ * ----
+ *
+ * Such test suite just need to be executed via the {@link io.vertx.ext.unit.TestSuite#run()} command, the
+ * `vertx test` command takes care of configuring reporting, timeout, etc..., pretty much like in this
+ * example:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#test_01}
+ * ----
+ *
+ * The `vertx test` command extends the `vertx run` command. The exit behavior of the JVM is changed
+ * the JVM exits when the test suite is executed and a return value is provided indicating the tests
+ * success (0) or failure (1).
+ *
+ * NOTE: several test suites can executed in the same verticle, Vert.x Unit waits until completion of
+ * all suite executed.
  *
  * === Test suite completion
  *

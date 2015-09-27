@@ -20,6 +20,16 @@ import java.util.List;
  */
 public class TestSuiteImpl implements TestSuite {
 
+  private static volatile Handler<TestSuiteRunner> defaultRunner;
+
+  /**
+   * Internal hook for launcher test command
+   * @param runner the runner
+   */
+  static void setDefaultRunner(Handler<TestSuiteRunner> runner) {
+    defaultRunner = runner;
+  }
+
   private final String name;
   private volatile Handler<TestContext> before;
   private volatile Handler<TestContext> beforeEach;
@@ -122,18 +132,22 @@ public class TestSuiteImpl implements TestSuite {
 
   @Override
   public TestCompletion run(Vertx vertx, TestOptions options) {
-    Reporter[] reporters = options  .getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
+    Reporter[] reporters = options.getReporters().stream().map(reportOptions -> Reporter.reporter(vertx, reportOptions)).toArray(Reporter[]::new);
     TestCompletionImpl completion = new TestCompletionImpl(reporters);
-    runner().
+    TestSuiteRunner runner = runner().
         setVertx(vertx).
         setTimeout(options.getTimeout()).
         setUseEventLoop(options.isUseEventLoop()).
-        handler(completion).
-        run();
+        setReporter(completion);
+    if (defaultRunner != null) {
+      defaultRunner.handle(runner);
+    } else {
+      runner.run();
+    }
     return completion;
   }
 
   public TestSuiteRunner runner() {
-    return new TestSuiteRunner(name, before, after, beforeEach, afterEach, testCases.toArray(new TestCaseImpl[testCases.size()]));
+    return new TestSuiteRunner(name, before, after, beforeEach, afterEach, new ArrayList<>(testCases));
   }
 }
