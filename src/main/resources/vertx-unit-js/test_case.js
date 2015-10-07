@@ -52,7 +52,7 @@ TestCase.create = function(name, testCase) {
     return utils.convReturnVertxGen(JTestCase["create(java.lang.String,io.vertx.core.Handler)"](name, function(jVal) {
     testCase(utils.convReturnVertxGen(jVal, TestContext));
   }), TestCase);
-  } else utils.invalidArgs();
+  } else throw new TypeError('function invoked with invalid arguments');
 };
 
 // We export the Constructor function

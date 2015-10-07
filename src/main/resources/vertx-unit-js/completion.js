@@ -42,7 +42,7 @@ var Completion = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
       j_completion["resolve(io.vertx.core.Future)"](future._jdel);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -56,7 +56,7 @@ var Completion = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return j_completion["isCompleted()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -70,7 +70,7 @@ var Completion = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return j_completion["isSucceeded()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -84,7 +84,7 @@ var Completion = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return j_completion["isFailed()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -103,7 +103,7 @@ var Completion = function(j_val) {
         completionHandler(null, ar.cause());
       }
     });
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -120,7 +120,7 @@ var Completion = function(j_val) {
       j_completion["await()"]();
     }  else if (__args.length === 1 && typeof __args[0] ==='number') {
       j_completion["await(long)"](__args[0]);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -137,7 +137,7 @@ var Completion = function(j_val) {
       j_completion["awaitSuccess()"]();
     }  else if (__args.length === 1 && typeof __args[0] ==='number') {
       j_completion["awaitSuccess(long)"](__args[0]);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate

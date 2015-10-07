@@ -48,7 +48,7 @@ var TestSuiteReport = function(j_val) {
         that.cachedname = j_testSuiteReport["name()"]();
       }
       return that.cachedname;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -66,7 +66,7 @@ var TestSuiteReport = function(j_val) {
       handler(utils.convReturnThrowable(jVal));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -82,7 +82,7 @@ var TestSuiteReport = function(j_val) {
       handler(utils.convReturnVertxGen(jVal, TestCaseReport));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -96,7 +96,7 @@ var TestSuiteReport = function(j_val) {
     if (__args.length === 0) {
       j_testSuiteReport["pause()"]();
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -110,7 +110,7 @@ var TestSuiteReport = function(j_val) {
     if (__args.length === 0) {
       j_testSuiteReport["resume()"]();
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -124,7 +124,7 @@ var TestSuiteReport = function(j_val) {
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testSuiteReport["endHandler(io.vertx.core.Handler)"](endHandler);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate

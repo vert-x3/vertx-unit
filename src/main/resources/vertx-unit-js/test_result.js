@@ -46,7 +46,7 @@ var TestResult = function(j_val) {
         that.cachedname = j_testResult["name()"]();
       }
       return that.cachedname;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -63,7 +63,7 @@ var TestResult = function(j_val) {
         that.cachedbeginTime = j_testResult["beginTime()"]();
       }
       return that.cachedbeginTime;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -80,7 +80,7 @@ var TestResult = function(j_val) {
         that.cacheddurationTime = j_testResult["durationTime()"]();
       }
       return that.cacheddurationTime;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -97,7 +97,7 @@ var TestResult = function(j_val) {
         that.cachedsucceeded = j_testResult["succeeded()"]();
       }
       return that.cachedsucceeded;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -114,7 +114,7 @@ var TestResult = function(j_val) {
         that.cachedfailed = j_testResult["failed()"]();
       }
       return that.cachedfailed;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -131,7 +131,7 @@ var TestResult = function(j_val) {
         that.cachedfailure = utils.convReturnVertxGen(j_testResult["failure()"](), Failure);
       }
       return that.cachedfailure;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate

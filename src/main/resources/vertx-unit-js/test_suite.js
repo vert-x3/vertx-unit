@@ -48,7 +48,7 @@ var TestSuite = function(j_val) {
       callback(utils.convReturnVertxGen(jVal, TestContext));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -65,7 +65,7 @@ var TestSuite = function(j_val) {
       callback(utils.convReturnVertxGen(jVal, TestContext));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -82,7 +82,7 @@ var TestSuite = function(j_val) {
       callback(utils.convReturnVertxGen(jVal, TestContext));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -99,7 +99,7 @@ var TestSuite = function(j_val) {
       callback(utils.convReturnVertxGen(jVal, TestContext));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -117,7 +117,7 @@ var TestSuite = function(j_val) {
       testCase(utils.convReturnVertxGen(jVal, TestContext));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -142,7 +142,7 @@ var TestSuite = function(j_val) {
       return utils.convReturnVertxGen(j_testSuite["run(io.vertx.core.Vertx)"](__args[0]._jdel), TestCompletion);
     }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
       return utils.convReturnVertxGen(j_testSuite["run(io.vertx.core.Vertx,io.vertx.ext.unit.TestOptions)"](__args[0]._jdel, __args[1] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[1]))) : null), TestCompletion);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate
@@ -162,7 +162,7 @@ TestSuite.create = function(name) {
   var __args = arguments;
   if (__args.length === 1 && typeof __args[0] === 'string') {
     return utils.convReturnVertxGen(JTestSuite["create(java.lang.String)"](name), TestSuite);
-  } else utils.invalidArgs();
+  } else throw new TypeError('function invoked with invalid arguments');
 };
 
 // We export the Constructor function

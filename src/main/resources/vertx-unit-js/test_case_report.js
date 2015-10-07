@@ -46,7 +46,7 @@ var TestCaseReport = function(j_val) {
         that.cachedname = j_testCaseReport["name()"]();
       }
       return that.cachedname;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -63,7 +63,7 @@ var TestCaseReport = function(j_val) {
       handler(utils.convReturnVertxGen(jVal, TestResult));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate

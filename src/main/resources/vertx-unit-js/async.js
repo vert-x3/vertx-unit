@@ -44,7 +44,7 @@ var Async = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       j_async["complete()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate

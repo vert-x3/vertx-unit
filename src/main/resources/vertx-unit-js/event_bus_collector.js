@@ -47,7 +47,7 @@ var EventBusCollector = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
       return utils.convReturnVertxGen(j_eventBusCollector["register(java.lang.String)"](address), MessageConsumer);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate
@@ -71,7 +71,7 @@ EventBusCollector.create = function() {
     return utils.convReturnVertxGen(JEventBusCollector["create(io.vertx.core.Vertx,io.vertx.core.Handler)"](__args[0]._jdel, function(jVal) {
     __args[1](utils.convReturnVertxGen(jVal, TestSuiteReport));
   }), EventBusCollector);
-  } else utils.invalidArgs();
+  } else throw new TypeError('function invoked with invalid arguments');
 };
 
 // We export the Constructor function

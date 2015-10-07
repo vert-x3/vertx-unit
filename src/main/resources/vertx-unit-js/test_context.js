@@ -44,7 +44,7 @@ var TestContext = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
       return utils.convReturnTypeUnknown(j_testContext["get(java.lang.String)"](key));
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -61,7 +61,7 @@ var TestContext = function(j_val) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'string' && true) {
       return utils.convReturnTypeUnknown(j_testContext["put(java.lang.String,java.lang.Object)"](key, utils.convParamTypeUnknown(value)));
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -75,7 +75,7 @@ var TestContext = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
       return utils.convReturnTypeUnknown(j_testContext["remove(java.lang.String)"](key));
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -95,7 +95,7 @@ var TestContext = function(j_val) {
     }  else if (__args.length === 2 && true && typeof __args[1] === 'string') {
       j_testContext["assertNull(java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), __args[1]);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -115,7 +115,7 @@ var TestContext = function(j_val) {
     }  else if (__args.length === 2 && true && typeof __args[1] === 'string') {
       j_testContext["assertNotNull(java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), __args[1]);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -135,7 +135,7 @@ var TestContext = function(j_val) {
     }  else if (__args.length === 2 && typeof __args[0] ==='boolean' && typeof __args[1] === 'string') {
       j_testContext["assertTrue(boolean,java.lang.String)"](__args[0], __args[1]);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -155,7 +155,7 @@ var TestContext = function(j_val) {
     }  else if (__args.length === 2 && typeof __args[0] ==='boolean' && typeof __args[1] === 'string') {
       j_testContext["assertFalse(boolean,java.lang.String)"](__args[0], __args[1]);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -176,7 +176,7 @@ var TestContext = function(j_val) {
     }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
       j_testContext["assertEquals(java.lang.Object,java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -199,7 +199,7 @@ var TestContext = function(j_val) {
     }  else if (__args.length === 4 && typeof __args[0] ==='number' && typeof __args[1] ==='number' && typeof __args[2] ==='number' && typeof __args[3] === 'string') {
       j_testContext["assertInRange(double,double,double,java.lang.String)"](__args[0], __args[1], __args[2], __args[3]);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -220,7 +220,7 @@ var TestContext = function(j_val) {
     }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
       j_testContext["assertNotEquals(java.lang.Object,java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -237,7 +237,7 @@ var TestContext = function(j_val) {
       j_testContext["fail(java.lang.String)"](__args[0]);
     }  else if (__args.length === 1 && typeof __args[0] === 'object') {
       j_testContext["fail(java.lang.Throwable)"](utils.convParamThrowable(__args[0]));
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -257,7 +257,7 @@ var TestContext = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnVertxGen(j_testContext["async()"](), Async);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate

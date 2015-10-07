@@ -52,7 +52,7 @@ var Failure = function(j_val) {
         that.cachedisError = j_failure["isError()"]();
       }
       return that.cachedisError;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -69,7 +69,7 @@ var Failure = function(j_val) {
         that.cachedmessage = j_failure["message()"]();
       }
       return that.cachedmessage;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -86,7 +86,7 @@ var Failure = function(j_val) {
         that.cachedstackTrace = j_failure["stackTrace()"]();
       }
       return that.cachedstackTrace;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate
