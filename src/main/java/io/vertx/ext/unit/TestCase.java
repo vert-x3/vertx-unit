@@ -24,7 +24,7 @@ public interface TestCase {
    * @return the created test case
    */
   static TestCase create(String name, Handler<TestContext> testCase) {
-    return new TestCaseImpl(name, testCase);
+    return new TestCaseImpl(name, 1, testCase);
   }
 
   /**

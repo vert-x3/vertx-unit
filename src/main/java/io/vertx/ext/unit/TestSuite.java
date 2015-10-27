@@ -104,6 +104,17 @@ public interface TestSuite {
   TestSuite test(String name, Handler<TestContext> testCase);
 
   /**
+   * Add a new test case to the suite.
+   *
+   * @param name the test case name
+   * @param repeat the number of times the test should be repeated
+   * @param testCase the test case
+   * @return a reference to this, so the API can be used fluently
+   */
+  @Fluent
+  TestSuite test(String name, int repeat, Handler<TestContext> testCase);
+
+  /**
    * Run the testsuite with the default options.<p/>
    *
    * When the test suite is executed in a Vertx context (i.e `Vertx.currentContext()` returns a context) this

@@ -580,6 +580,63 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
+  public void testRepeatAllPass() throws Exception {
+    AtomicInteger count = new AtomicInteger();
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", 3, ctx -> {
+      count.incrementAndGet();
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertEquals(1, reporter.results.size());
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertEquals(3, count.get());
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertFalse(reporter.results.get(0).failed());
+  }
+
+  @Test
+  public void testRepeatOneFailure() throws Exception {
+    AtomicInteger count = new AtomicInteger();
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", 3, ctx -> {
+      if (count.incrementAndGet() == 3) {
+        ctx.fail();
+      }
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertEquals(1, reporter.results.size());
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertEquals(3, count.get());
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertTrue(reporter.results.get(0).failed());
+  }
+
+  @Test
+  public void testRepeatBeforeAfterEach() throws Exception {
+    List<String> events = Collections.synchronizedList(new ArrayList<String>());
+    TestSuite suite = TestSuite.create("my_suite").beforeEach(ctx -> {
+      events.add("before");
+    }).test("my_test", 3, ctx -> {
+      events.add("test");
+    }).afterEach(ctx -> {
+      events.add("after");
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertEquals(1, reporter.results.size());
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertEquals(Arrays.asList("before", "test", "after", "before", "test", "after", "before", "test", "after"), events);
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertFalse(reporter.results.get(0).failed());
+  }
+
+  @Test
   public void testTimeout() throws Exception {
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(2);
     TestSuite suite = TestSuite.create("my_suite").

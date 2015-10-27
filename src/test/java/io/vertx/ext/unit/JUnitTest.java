@@ -2,11 +2,11 @@ package io.vertx.ext.unit;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.ext.unit.junit.Repeat;
+import io.vertx.ext.unit.junit.RepeatRule;
 import io.vertx.ext.unit.junit.RunTestOnContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.test.core.Repeat;
-import io.vertx.test.core.RepeatRule;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -791,7 +791,7 @@ public class JUnitTest {
     private int count = 0;
 
     @Test
-    @Repeat(times = 3)
+    @Repeat(3)
     public void testMethod(TestContext context) {
       events.add("test" + count);
       Async async = context.async();

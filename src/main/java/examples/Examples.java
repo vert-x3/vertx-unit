@@ -305,6 +305,12 @@ public class Examples {
     }));
   }
 
+  public static void repeating(Vertx vertx) {
+    TestSuite.create("my_suite").test("my_test", 1000, context -> {
+      // This will be executed 1000 times
+    });
+  }
+
   public static void sharing_01(Vertx vertx, Helper helper) {
     TestSuite.create("my_suite").before(context -> {
 

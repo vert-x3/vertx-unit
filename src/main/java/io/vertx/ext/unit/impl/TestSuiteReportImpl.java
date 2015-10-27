@@ -73,14 +73,14 @@ class TestSuiteReportImpl implements TestSuiteReport {
 
   private Task<?> buildTestCasesTasks(Map<String, Object> attributes, TestCaseImpl[] tests, int index, Task<Result> endTask) {
     if (tests.length > index) {
-      Task<?> nextTask = buildTestCasesTasks(attributes, tests, index + 1, endTask);
       TestCaseImpl test = tests[index];
-      TestCaseReportImpl runner = new TestCaseReportImpl(test.name, timeout, new HashMap<>(attributes), beforeEach, test.handler, afterEach, exceptionHandler);
+      Task<?> nextTask = buildTestCasesTasks(attributes, tests, index + 1, endTask);
       return (v, context) -> {
+        TestCaseReportImpl testReport = new TestCaseReportImpl(test.name, timeout, test.repeat, new HashMap<>(attributes), beforeEach, test.handler, afterEach, exceptionHandler);
         if (handler != null) {
-          handler.handle(runner);
+          handler.handle(testReport);
         }
-        Task<?> task = runner.buildTask(nextTask);
+        Task<?> task = testReport.buildTask(nextTask);
         task.execute(null, context);
       };
     } else {

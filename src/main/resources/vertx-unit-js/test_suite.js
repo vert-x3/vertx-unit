@@ -107,14 +107,20 @@ var TestSuite = function(j_val) {
 
    @public
    @param name {string} the test case name 
+   @param repeat {number} the number of times the test should be repeated 
    @param testCase {function} the test case 
    @return {TestSuite} a reference to this, so the API can be used fluently
    */
-  this.test = function(name, testCase) {
+  this.test = function() {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-      j_testSuite["test(java.lang.String,io.vertx.core.Handler)"](name, function(jVal) {
-      testCase(utils.convReturnVertxGen(jVal, TestContext));
+      j_testSuite["test(java.lang.String,io.vertx.core.Handler)"](__args[0], function(jVal) {
+      __args[1](utils.convReturnVertxGen(jVal, TestContext));
+    });
+      return that;
+    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] ==='number' && typeof __args[2] === 'function') {
+      j_testSuite["test(java.lang.String,int,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
+      __args[2](utils.convReturnVertxGen(jVal, TestContext));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -136,11 +142,11 @@ var TestSuite = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnVertxGen(j_testSuite["run()"](), TestCompletion);
-    }  else if (__args.length === 1 && typeof __args[0] === 'object') {
+    }  else if (__args.length === 1 && (typeof __args[0] === 'object' && __args[0] != null)) {
       return utils.convReturnVertxGen(j_testSuite["run(io.vertx.ext.unit.TestOptions)"](__args[0] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[0]))) : null), TestCompletion);
     }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
       return utils.convReturnVertxGen(j_testSuite["run(io.vertx.core.Vertx)"](__args[0]._jdel), TestCompletion);
-    }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
+    }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
       return utils.convReturnVertxGen(j_testSuite["run(io.vertx.core.Vertx,io.vertx.ext.unit.TestOptions)"](__args[0]._jdel, __args[1] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[1]))) : null), TestCompletion);
     } else throw new TypeError('function invoked with invalid arguments');
   };

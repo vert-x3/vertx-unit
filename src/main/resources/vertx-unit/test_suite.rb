@@ -76,14 +76,18 @@ module VertxUnit
     end
     #  Add a new test case to the suite.
     # @param [String] name the test case name
+    # @param [Fixnum] repeat the number of times the test should be repeated
     # @yield the test case
     # @return [self]
-    def test(name=nil)
-      if name.class == String && block_given?
+    def test(name=nil,repeat=nil)
+      if name.class == String && block_given? && repeat == nil
         @j_del.java_method(:test, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(name,(Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxUnit::TestContext)) }))
         return self
+      elsif name.class == String && repeat.class == Fixnum && block_given?
+        @j_del.java_method(:test, [Java::java.lang.String.java_class,Java::int.java_class,Java::IoVertxCore::Handler.java_class]).call(name,repeat,(Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxUnit::TestContext)) }))
+        return self
       end
-      raise ArgumentError, "Invalid arguments when calling test(name)"
+      raise ArgumentError, "Invalid arguments when calling test(name,repeat)"
     end
     #  Run the testsuite with the specified <code>options</code> and the specified <code>vertx</code> instance.<p/>
     # 

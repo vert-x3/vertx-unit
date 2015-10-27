@@ -234,6 +234,19 @@
  * {@link examples.Examples#async_04(io.vertx.ext.unit.TestContext, io.vertx.core.Vertx, io.vertx.core.Handler)}
  *----
  *
+ * == Repeating test
+ *
+ * When a test fails randomly or not often, for instance a race condition, it is convenient to run the same
+ * test multiple times to increase the failure likelihood of the test.
+ *
+ * .Repeating a test
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#repeating(io.vertx.core.Vertx)}
+ * ----
+ *
+ * When declared, _beforeEach_ and _afterEach_ callbacks will be executed as many times as the test is executed.
+ *
  * == Sharing objects
  *
  * The {@link io.vertx.ext.unit.TestContext} has `get`/`put`/`remove` operations for sharing state between callbacks.
@@ -536,6 +549,22 @@
  * ----
  *
  * Parameterized tests can also be done in Groovy with the `io.vertx.groovy.ext.unit.junit.VertxUnitRunnerWithParametersFactory`.
+ *
+ * === Repeating a test
+ *
+ * When a test fails randomly or not often, for instance a race condition, it is convenient to run the same
+ * test multiple times to increase the likelihood failure of the test.
+ *
+ * With JUnit a test has to be annotated with {@link io.vertx.ext.unit.junit.Repeat} to be repeated. The test must
+ * also define the {@link io.vertx.ext.unit.junit.RepeatRule} among its rules.
+ *
+ * .Repeating a test with JUnit
+ * [source,$lang]
+ * ----
+ * {@link examples.junit.RepeatingTest}
+ * ----
+ *
+ * When declared, _before_ and _after_ life cycle will be executed as many times as the test is executed.
  *
  * == Java language integration
  *

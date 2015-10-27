@@ -18,15 +18,26 @@ import java.util.concurrent.atomic.AtomicReference;
 public class TestCaseImpl implements TestCase {
 
   final String name;
+  final int repeat;
   final Handler<TestContext> handler;
 
-  public TestCaseImpl(String name, Handler<TestContext> handler) {
+  public TestCaseImpl(String name, int repeat, Handler<TestContext> handler) {
+    if (name == null) {
+      throw new IllegalArgumentException("Test name cannot be null");
+    }
+    if (repeat < 1) {
+      throw new IllegalArgumentException("Repeat count must be >= 1");
+    }
+    if (handler == null) {
+      throw new IllegalArgumentException("Test cannot be null");
+    }
     this.name = name;
+    this.repeat = repeat;
     this.handler = handler;
   }
 
   private TestCaseReport runner() {
-    return new TestCaseReportImpl(name, 0, new HashMap<>(), null, handler, null, null);
+    return new TestCaseReportImpl(name, 0, 1, new HashMap<>(), null, handler, null, null);
   }
 
   public String name() {

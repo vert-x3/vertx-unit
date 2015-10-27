@@ -15,6 +15,7 @@ public class TestCaseReportImpl implements TestCaseReport {
 
   private final String name;
   private final long timeout;
+  private final int repeat;
   private final Map<String, Object> attributes;
   private final Handler<TestContext> before;
   private final Handler<TestContext> test;
@@ -24,6 +25,7 @@ public class TestCaseReportImpl implements TestCaseReport {
 
   public TestCaseReportImpl(String name,
                             long timeout,
+                            int repeat,
                             Map<String, Object> attributes,
                             Handler<TestContext> before,
                             Handler<TestContext> test,
@@ -32,6 +34,7 @@ public class TestCaseReportImpl implements TestCaseReport {
 
     this.attributes = attributes;
     this.timeout = timeout;
+    this.repeat = repeat;
     this.name = name;
     this.before = before;
     this.test = test;
@@ -41,23 +44,30 @@ public class TestCaseReportImpl implements TestCaseReport {
 
   Task<?> buildTask(Task<?> nextTask) {
     // Build task assemblies for the test case
-    Task<Result> completeHandler = (result, context) -> {
+    Task<Result> task = (result, context) -> {
       if (completionHandler != null) {
         completionHandler.handle(new TestResultImpl(name, result.beginTime, result.duration(), result.failure));
       }
       nextTask.execute(null, context);
     };
+    for (int count = 0;count < repeat;count++) {
+      task = runTask(task);
+    }
+    return task;
+  }
+
+  private Task<Result> runTask(Task<Result> next) {
     Task<Result> afterHandler;
     if (after != null) {
-      afterHandler = new TestContextImpl(attributes, after, unhandledFailureHandler, completeHandler, timeout);
+      afterHandler = new TestContextImpl(attributes, after, unhandledFailureHandler, next, timeout);
     } else {
-      afterHandler = completeHandler;
+      afterHandler = next;
     }
     Task<Result> testHandler = new TestContextImpl(attributes, test, unhandledFailureHandler, afterHandler, timeout);
     if (before != null) {
       Function<Result, Task<Result>> tmp = result -> {
         if (result.failure != null) {
-          return completeHandler;
+          return next;
         } else {
           return testHandler;
         }

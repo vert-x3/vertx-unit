@@ -19,7 +19,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 <dependency>
   <groupId>io.vertx</groupId>
   <artifactId>vertx-unit</artifactId>
-  <version>3.1.0</version>
+  <version>3.2.0-SNAPSHOT</version>
 </dependency>
 ----
 
@@ -27,7 +27,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 
 [source,groovy,subs="+attributes"]
 ----
-compile io.vertx:vertx-unit:3.1.0
+compile io.vertx:vertx-unit:3.2.0-SNAPSHOT
 ----
 
 Vert.x unit can be used in different ways and run anywhere your code runs, it is just a matter of reporting
@@ -375,6 +375,23 @@ async.await();
 // Do something else
 
 ----
+
+== Repeating test
+
+When a test fails randomly or not often, for instance a race condition, it is convenient to run the same
+test multiple times to increase the failure likelihood of the test.
+
+.Repeating a test
+[source,js]
+----
+var TestSuite = require("vertx-unit-js/test_suite");
+TestSuite.create("my_suite").test("my_test", 1000, function (context) {
+  // This will be executed 1000 times
+});
+
+----
+
+When declared, _beforeEach_ and _afterEach_ callbacks will be executed as many times as the test is executed.
 
 == Sharing objects
 
@@ -884,6 +901,43 @@ public class SimpleParameterizedTest {
 ----
 
 Parameterized tests can also be done in Groovy with the `io.vertx.groovy.ext.unit.junit.VertxUnitRunnerWithParametersFactory`.
+
+=== Repeating a test
+
+When a test fails randomly or not often, for instance a race condition, it is convenient to run the same
+test multiple times to increase the likelihood failure of the test.
+
+With JUnit a test has to be annotated with `@Repeat` to be repeated. The test must
+also define the `RepeatRule` among its rules.
+
+.Repeating a test with JUnit
+[source,js]
+----
+package examples.junit;
+
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Repeat;
+import io.vertx.ext.unit.junit.RepeatRule;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(VertxUnitRunner.class)
+public class RepeatingTest {
+
+  @Rule
+  RepeatRule rule = new RepeatRule();
+
+  @Repeat(1000)
+  @Test
+  public void testSomething(TestContext context) {
+    // This will be executed 1000 times
+  }
+}
+----
+
+When declared, _before_ and _after_ life cycle will be executed as many times as the test is executed.
 
 == Java language integration
 

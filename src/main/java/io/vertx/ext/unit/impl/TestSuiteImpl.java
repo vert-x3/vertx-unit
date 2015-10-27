@@ -111,7 +111,12 @@ public class TestSuiteImpl implements TestSuite {
 
   @Override
   public TestSuite test(String name, Handler<TestContext> testCase) {
-    testCases.add(new TestCaseImpl(name, testCase));
+    return test(name, 1, testCase);
+  }
+
+  @Override
+  public TestSuite test(String name, int repeat, Handler<TestContext> testCase) {
+    testCases.add(new TestCaseImpl(name, repeat, testCase));
     return this;
   }
 

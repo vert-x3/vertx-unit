@@ -133,6 +133,22 @@ public class TestSuite {
   }
 
   /**
+   * Add a new test case to the suite.
+   * @param name the test case name
+   * @param repeat the number of times the test should be repeated
+   * @param testCase the test case
+   * @return a reference to this, so the API can be used fluently
+   */
+  public TestSuite test(String name, int repeat, Handler<TestContext> testCase) { 
+    this.delegate.test(name, repeat, new Handler<io.vertx.ext.unit.TestContext>() {
+      public void handle(io.vertx.ext.unit.TestContext event) {
+        testCase.handle(new TestContext(event));
+      }
+    });
+    return this;
+  }
+
+  /**
    * Run the testsuite with the default options.<p/>
    *
    * When the test suite is executed in a Vertx context (i.e `Vertx.currentContext()` returns a context) this
