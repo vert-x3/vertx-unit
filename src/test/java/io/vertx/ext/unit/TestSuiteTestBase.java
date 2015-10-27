@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -654,6 +656,35 @@ public abstract class TestSuiteTestBase {
       assertTrue(reporter.results.get(i).failure().cause() instanceof TimeoutException);
       async.complete();
     }
+  }
+
+  @Test
+  public void testTimeoutThreadGarbaged() throws Exception {
+    Set<String> threadNames = Thread.getAllStackTraces().
+        keySet().
+        stream().
+        filter(t -> t.getName().startsWith("vert.x-unit-timeout-thread-")).
+        map(Thread::getName).
+        collect(Collectors.toSet());
+    AtomicReference<Thread> timeoutThread = new AtomicReference<>();
+    TestSuite suite = TestSuite.create("my_suite").
+        test("my_test0", context -> {
+          while (timeoutThread.get() == null) {
+            for (Thread thread : Thread.getAllStackTraces().keySet()) {
+              if (thread.getName().startsWith("vert.x-unit-timeout-thread-")) {
+                if (!threadNames.contains(thread.getName())) {
+                  timeoutThread.set(thread);
+                }
+              }
+            }
+          }
+        });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter, 20000);
+    reporter.await();
+    assertNotNull(timeoutThread.get());
+    timeoutThread.get().join(2000);
+    assertEquals(timeoutThread.get().getState(), Thread.State.TERMINATED);
   }
 
   @Test

@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 /**
@@ -17,6 +18,7 @@ import java.util.function.Function;
  */
 public class TestContextImpl implements TestContext, Task<Result> {
 
+  private static final AtomicInteger threadCount = new AtomicInteger(0);
   private static final int STATUS_RUNNING = 0, STATUS_ASYNC = 1, STATUS_COMPLETED = 2;
 
   class AsyncImpl extends CompletionImpl<Void> implements Async {
@@ -55,6 +57,7 @@ public class TestContextImpl implements TestContext, Task<Result> {
   private final Handler<Throwable> unhandledFailureHandler;
   private final Function<Result, Task<Result>> next;
   private final long timeout;
+  private volatile Thread timeoutThread;
   private int status;
   private Throwable failed;
   private long beginTime;
@@ -100,6 +103,9 @@ public class TestContextImpl implements TestContext, Task<Result> {
       ctx = context;
     }
     if (end) {
+      if (timeoutThread != null && timeoutThread.getState() == Thread.State.TIMED_WAITING) {
+        timeoutThread.interrupt();
+      }
       long endTime = System.currentTimeMillis();
       Result result = new Result(attributes, beginTime, endTime, failed);
       ctx.run(next.apply(result), result);
@@ -149,7 +155,9 @@ public class TestContextImpl implements TestContext, Task<Result> {
           Thread.currentThread().interrupt();
         }
       };
-      new Thread(cancel).start();
+      timeoutThread = new Thread(cancel);
+      timeoutThread.setName("vert.x-unit-timeout-thread-" + threadCount.incrementAndGet());
+      timeoutThread.start();
     }
     try {
       callback.handle(this);
