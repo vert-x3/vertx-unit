@@ -2,7 +2,7 @@ require 'vertx-unit/completion'
 require 'vertx/util/utils.rb'
 # Generated from io.vertx.ext.unit.Async
 module VertxUnit
-  #  An asynchronous exit point for a test.
+  #  An asynchronous exit point for a test.<p/>
   class Async < ::VertxUnit::Completion
     # @private
     # @param j_del [::VertxUnit::Async] the java delegate

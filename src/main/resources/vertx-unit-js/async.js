@@ -23,7 +23,7 @@ var JsonObject = io.vertx.core.json.JsonObject;
 var JAsync = io.vertx.ext.unit.Async;
 
 /**
- An asynchronous exit point for a test.
+ An asynchronous exit point for a test.<p/>
 
  @class
 */

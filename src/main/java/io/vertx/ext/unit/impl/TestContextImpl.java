@@ -23,12 +23,22 @@ public class TestContextImpl implements TestContext, Task<Result> {
 
   class AsyncImpl extends CompletionImpl<Void> implements Async {
 
+    private final int count;
+    private final AtomicInteger current;
+
+    public AsyncImpl(int count) {
+      this.count = count;
+      this.current = new AtomicInteger(count);
+    }
+
     @Override
     public void complete() {
-      if (completable.complete(null)) {
+      int value = current.decrementAndGet();
+      if (value == 0) {
+        completable.complete(null);
         internalComplete();
-      } else if (!completable.isCompletedExceptionally()) {
-        throw new IllegalStateException("The Async complete method cannot be called more than one time, check your test.");
+      } else if (value < 0) {
+        throw new IllegalStateException("The Async complete method has been called more than " + count + " times, check your test.");
       }
     }
 
@@ -212,9 +222,17 @@ public class TestContextImpl implements TestContext, Task<Result> {
 
   @Override
   public AsyncImpl async() {
+    return async(1);
+  }
+
+  @Override
+  public AsyncImpl async(int count) {
+    if (count < 1) {
+      throw new IllegalArgumentException("Async completion count must be > 0");
+    }
     synchronized (this) {
       if (status != STATUS_COMPLETED) {
-        AsyncImpl async = new AsyncImpl();
+        AsyncImpl async = new AsyncImpl(count);
         if (failed == null) {
           asyncs.add(async);
         }

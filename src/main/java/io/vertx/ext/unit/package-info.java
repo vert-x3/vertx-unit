@@ -226,13 +226,25 @@
  * {@link examples.Examples#async_03}
  * ----
  *
- * It is possible to wait until the completion of a specific {@link io.vertx.ext.unit.Async}:
+ * It is possible to wait until the completion of a specific {@link io.vertx.ext.unit.Async}, similar
+ * to Java's count-down latch:
  *
  * .Wait for completion
  * [source, $lang]
  * ----
  * {@link examples.Examples#async_04(io.vertx.ext.unit.TestContext, io.vertx.core.Vertx, io.vertx.core.Handler)}
- *----
+ * ----
+ *
+ * WARNING: this should not be executed from the event loop!
+ *
+ * The async can also be created with an initial count value, the async is completed when the count-down reaches
+ * zero:
+ *
+ * .Wait until the complete count-down reaches zero
+ * [source, $lang]
+ * ----
+ * {@link examples.Examples#async_05(io.vertx.ext.unit.TestContext, io.vertx.core.Vertx, io.vertx.core.Handler)}
+ * ----
  *
  * == Repeating test
  *

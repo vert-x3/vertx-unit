@@ -19,7 +19,7 @@ import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
 import io.vertx.core.json.JsonObject
 /**
- * An asynchronous exit point for a test.
+ * An asynchronous exit point for a test.<p/>
 */
 @CompileStatic
 public class Async extends Completion<Void> {

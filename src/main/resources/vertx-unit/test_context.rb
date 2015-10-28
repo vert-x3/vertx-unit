@@ -172,19 +172,22 @@ module VertxUnit
       end
       raise ArgumentError, "Invalid arguments when calling fail(param_1)"
     end
-    #  Create and returns a new async object, the returned async controls the completion of the test. Calling the
-    #  {::VertxUnit::Async#complete} completes the async operation.<p/>
+    #  Create and returns a new async object, the returned async controls the completion of the test. This async operation
+    #  completes when the {::VertxUnit::Async#complete} is called <code>count</code> times.<p/>
     # 
     #  The test case will complete when all the async objects have their {::VertxUnit::Async#complete}
     #  method called at least once.<p/>
     # 
-    #  This method shall be used for creating asynchronous exit points for the executed test.
+    #  This method shall be used for creating asynchronous exit points for the executed test.<p/>
+    # @param [Fixnum] count 
     # @return [::VertxUnit::Async] the async instance
-    def async
-      if !block_given?
+    def async(count=nil)
+      if !block_given? && count == nil
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:async, []).call(),::VertxUnit::Async)
+      elsif count.class == Fixnum && !block_given?
+        return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:async, [Java::int.java_class]).call(count),::VertxUnit::Async)
       end
-      raise ArgumentError, "Invalid arguments when calling async()"
+      raise ArgumentError, "Invalid arguments when calling async(count)"
     end
   end
 end

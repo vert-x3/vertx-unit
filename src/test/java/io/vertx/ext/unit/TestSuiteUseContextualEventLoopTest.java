@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -24,8 +25,17 @@ public class TestSuiteUseContextualEventLoopTest extends TestSuiteTestBase {
       vertx.runOnContext(v -> runner.setUseEventLoop(true).run());
     };
     completeAsync = async -> {
+      CountDownLatch latch = new CountDownLatch(1);
       assertNull(Vertx.currentContext());
-      vertx.runOnContext(v -> async.complete());
+      vertx.runOnContext(v -> {
+        async.complete();
+        latch.countDown();
+      });
+      try {
+        latch.await(10, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
     };
   }
 

@@ -255,4 +255,19 @@ public class TestContext {
     def ret= InternalHelper.safeCreate(this.delegate.async(), io.vertx.groovy.ext.unit.Async.class);
     return ret;
   }
+  /**
+   * Create and returns a new async object, the returned async controls the completion of the test. This async operation
+   * completes when the {@link io.vertx.groovy.ext.unit.Async#complete} is called <code>count</code> times.<p/>
+   *
+   * The test case will complete when all the async objects have their {@link io.vertx.groovy.ext.unit.Async#complete}
+   * method called at least once.<p/>
+   *
+   * This method shall be used for creating asynchronous exit points for the executed test.<p/>
+   * @param count 
+   * @return the async instance
+   */
+  public Async async(int count) {
+    def ret= InternalHelper.safeCreate(this.delegate.async(count), io.vertx.groovy.ext.unit.Async.class);
+    return ret;
+  }
 }

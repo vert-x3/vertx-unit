@@ -3,7 +3,7 @@ package io.vertx.ext.unit;
 import io.vertx.codegen.annotations.VertxGen;
 
 /**
- * An asynchronous exit point for a test.
+ * An asynchronous exit point for a test.<p/>
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */

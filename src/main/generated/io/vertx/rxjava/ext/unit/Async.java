@@ -21,7 +21,7 @@ import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 
 /**
- * An asynchronous exit point for a test.
+ * An asynchronous exit point for a test.<p/>
  *
  * <p/>
  * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.Async original} non RX-ified interface using Vert.x codegen.

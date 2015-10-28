@@ -233,6 +233,19 @@ public interface TestContext {
   Async async();
 
   /**
+   * Create and returns a new async object, the returned async controls the completion of the test. This async operation
+   * completes when the {@link Async#complete()} is called {@code count} times.<p/>
+   *
+   * The test case will complete when all the async objects have their {@link io.vertx.ext.unit.Async#complete()}
+   * method called at least once.<p/>
+   *
+   * This method shall be used for creating asynchronous exit points for the executed test.<p/>
+   *
+   * @return the async instance
+   */
+  Async async(int count);
+
+  /**
    * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
    *
    * When the returned handler is called back with a succeeded result it completes the async operation.<p/>

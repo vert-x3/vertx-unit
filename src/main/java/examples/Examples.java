@@ -200,11 +200,29 @@ public class Examples {
     });
 
     // Wait until completion
-    async.await();
+    async.awaitSuccess();
 
     // Do something else
   }
 
+  public static void async_05(TestContext context, Vertx vertx, Handler<HttpServerRequest> requestHandler) {
+    Async async = context.async(2);
+    HttpServer server = vertx.createHttpServer();
+    server.requestHandler(requestHandler);
+    server.listen(8080, ar -> {
+      context.assertTrue(ar.succeeded());
+      async.complete();
+    });
+
+    vertx.setTimer(1000, id -> {
+      async.complete();
+    });
+
+    // Wait until completion of the timer and the http request
+    async.awaitSuccess();
+
+    // Do something else
+  }
 
   @Source(translate = false)
   public static void asyncAssertSuccess_01(Vertx vertx, TestContext context) {

@@ -325,7 +325,8 @@ suite.before(context -> {
 });
 ----
 
-It is possible to wait until the completion of a specific `link:../../apidocs/io/vertx/ext/unit/Async.html[Async]`:
+It is possible to wait until the completion of a specific `link:../../apidocs/io/vertx/ext/unit/Async.html[Async]`, similar
+to Java's count-down latch:
 
 .Wait for completion
 [source, java]
@@ -339,7 +340,31 @@ server.listen(8080, ar -> {
 });
 
 // Wait until completion
-async.await();
+async.awaitSuccess();
+----
+
+WARNING: this should not be executed from the event loop!
+
+The async can also be created with an initial count value, the async is completed when the count-down reaches
+zero:
+
+.Wait until the complete count-down reaches zero
+[source, java]
+----
+Async async = context.async(2);
+HttpServer server = vertx.createHttpServer();
+server.requestHandler(requestHandler);
+server.listen(8080, ar -> {
+  context.assertTrue(ar.succeeded());
+  async.complete();
+});
+
+vertx.setTimer(1000, id -> {
+  async.complete();
+});
+
+// Wait until completion of the timer and the http request
+async.awaitSuccess();
 ----
 
 == Repeating test

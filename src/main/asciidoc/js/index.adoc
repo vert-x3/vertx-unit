@@ -356,7 +356,8 @@ suite.before(function (context) {
 
 ----
 
-It is possible to wait until the completion of a specific `link:jsdoc/async-Async.html[Async]`:
+It is possible to wait until the completion of a specific `link:jsdoc/async-Async.html[Async]`, similar
+to Java's count-down latch:
 
 .Wait for completion
 [source, js]
@@ -370,7 +371,34 @@ server.listen(8080, function (ar, ar_err) {
 });
 
 // Wait until completion
-async.await();
+async.awaitSuccess();
+
+// Do something else
+
+----
+
+WARNING: this should not be executed from the event loop!
+
+The async can also be created with an initial count value, the async is completed when the count-down reaches
+zero:
+
+.Wait until the complete count-down reaches zero
+[source, js]
+----
+var async = context.async(2);
+var server = vertx.createHttpServer();
+server.requestHandler(requestHandler);
+server.listen(8080, function (ar, ar_err) {
+  context.assertTrue(ar_err == null);
+  async.complete();
+});
+
+vertx.setTimer(1000, function (id) {
+  async.complete();
+});
+
+// Wait until completion of the timer and the http request
+async.awaitSuccess();
 
 // Do something else
 
