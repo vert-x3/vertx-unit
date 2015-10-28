@@ -247,6 +247,8 @@
  *
  * When declared, _beforeEach_ and _afterEach_ callbacks will be executed as many times as the test is executed.
  *
+ * NOTE: test repetition are executed sequentially
+ *
  * == Sharing objects
  *
  * The {@link io.vertx.ext.unit.TestContext} has `get`/`put`/`remove` operations for sharing state between callbacks.
@@ -565,6 +567,8 @@
  * ----
  *
  * When declared, _before_ and _after_ life cycle will be executed as many times as the test is executed.
+ *
+ * NOTE: test repetition are executed sequentially
  *
  * == Java language integration
  *

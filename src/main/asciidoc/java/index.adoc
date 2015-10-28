@@ -357,6 +357,8 @@ TestSuite.create("my_suite").test("my_test", 1000, context -> {
 
 When declared, _beforeEach_ and _afterEach_ callbacks will be executed as many times as the test is executed.
 
+NOTE: test repetition are executed sequentially
+
 == Sharing objects
 
 The `link:../../apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` has `get`/`put`/`remove` operations for sharing state between callbacks.
@@ -876,6 +878,8 @@ public class RepeatingTest {
 ----
 
 When declared, _before_ and _after_ life cycle will be executed as many times as the test is executed.
+
+NOTE: test repetition are executed sequentially
 
 == Java language integration
 
