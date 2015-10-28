@@ -683,7 +683,7 @@ public abstract class TestSuiteTestBase {
     run(suite, reporter, 20000);
     reporter.await();
     assertNotNull(timeoutThread.get());
-    timeoutThread.get().join(2000);
+    timeoutThread.get().join(20000);
     assertEquals(timeoutThread.get().getState(), Thread.State.TERMINATED);
   }
 
