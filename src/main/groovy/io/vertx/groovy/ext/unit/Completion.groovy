@@ -38,14 +38,14 @@ public class Completion<T> {
    * @param future the future to resolve
    */
   public void resolve(Future<T> future) {
-    ((io.vertx.ext.unit.Completion) this.delegate).resolve((io.vertx.core.Future<T>)future.getDelegate());
+    this.delegate.resolve((io.vertx.core.Future<T>)future.getDelegate());
   }
   /**
    * @return true if this completion is completed
    * @return 
    */
   public boolean isCompleted() {
-    def ret = ((io.vertx.ext.unit.Completion) this.delegate).isCompleted();
+    def ret = this.delegate.isCompleted();
     return ret;
   }
   /**
@@ -53,7 +53,7 @@ public class Completion<T> {
    * @return 
    */
   public boolean isSucceeded() {
-    def ret = ((io.vertx.ext.unit.Completion) this.delegate).isSucceeded();
+    def ret = this.delegate.isSucceeded();
     return ret;
   }
   /**
@@ -61,7 +61,7 @@ public class Completion<T> {
    * @return 
    */
   public boolean isFailed() {
-    def ret = ((io.vertx.ext.unit.Completion) this.delegate).isFailed();
+    def ret = this.delegate.isFailed();
     return ret;
   }
   /**
@@ -69,7 +69,7 @@ public class Completion<T> {
    * @param completionHandler the completion handler
    */
   public void handler(Handler<AsyncResult<T>> completionHandler) {
-    ((io.vertx.ext.unit.Completion) this.delegate).handler(new Handler<AsyncResult<Object>>() {
+    this.delegate.handler(new Handler<AsyncResult<Object>>() {
       public void handle(AsyncResult<Object> event) {
         AsyncResult<Object> f
         if (event.succeeded()) {
@@ -87,7 +87,7 @@ public class Completion<T> {
    * If the current thread is interrupted, an exception will be thrown.
    */
   public void await() {
-    ((io.vertx.ext.unit.Completion) this.delegate).await();
+    this.delegate.await();
   }
   /**
    * Cause the current thread to wait until this completion completes with a configurable timeout.<p/>
@@ -96,7 +96,7 @@ public class Completion<T> {
    * @param timeoutMillis the timeout in milliseconds
    */
   public void await(long timeoutMillis) {
-    ((io.vertx.ext.unit.Completion) this.delegate).await(timeoutMillis);
+    this.delegate.await(timeoutMillis);
   }
   /**
    * Cause the current thread to wait until this completion completes and succeeds.<p/>
@@ -104,7 +104,7 @@ public class Completion<T> {
    * If the current thread is interrupted or the suite fails, an exception will be thrown.
    */
   public void awaitSuccess() {
-    ((io.vertx.ext.unit.Completion) this.delegate).awaitSuccess();
+    this.delegate.awaitSuccess();
   }
   /**
    * Cause the current thread to wait until this completion completes and succeeds with a configurable timeout.<p/>
@@ -113,6 +113,6 @@ public class Completion<T> {
    * @param timeoutMillis the timeout in milliseconds
    */
   public void awaitSuccess(long timeoutMillis) {
-    ((io.vertx.ext.unit.Completion) this.delegate).awaitSuccess(timeoutMillis);
+    this.delegate.awaitSuccess(timeoutMillis);
   }
 }

@@ -28,12 +28,10 @@ public class ReportingOptionsConverter {
 
   public static void fromJson(JsonObject json, ReportingOptions obj) {
     if (json.getValue("reporters") instanceof JsonArray) {
-      java.util.List<io.vertx.ext.unit.report.ReportOptions> list = new java.util.ArrayList<>();
-      json.getJsonArray("reporters").forEach( item -> {
+      json.getJsonArray("reporters").forEach(item -> {
         if (item instanceof JsonObject)
-          list.add(new io.vertx.ext.unit.report.ReportOptions((JsonObject)item));
+          obj.addReporter(new io.vertx.ext.unit.report.ReportOptions((JsonObject)item));
       });
-      obj.setReporters(list);
     }
   }
 

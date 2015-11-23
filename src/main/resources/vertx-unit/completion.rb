@@ -1,6 +1,6 @@
 require 'vertx/future'
 require 'vertx/util/utils.rb'
-# Generated from io.vertx.ext.unit.Completion<T>
+# Generated from io.vertx.ext.unit.Completion
 module VertxUnit
   #  A completion object that emits completion notifications either <i>succeeded</i> or <i>failed</i>.
   class Completion

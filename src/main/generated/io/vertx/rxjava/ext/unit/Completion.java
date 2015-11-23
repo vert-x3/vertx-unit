@@ -27,7 +27,7 @@ import io.vertx.rxjava.core.Future;
  * A completion object that emits completion notifications either <i>succeeded</i> or <i>failed</i>.
  *
  * <p/>
- * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.Completion<T> original} non RX-ified interface using Vert.x codegen.
+ * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.Completion original} non RX-ified interface using Vert.x codegen.
  */
 
 public class Completion<T> {
@@ -134,7 +134,7 @@ public class Completion<T> {
   }
 
 
-  public static <T> Completion<T> newInstance(io.vertx.ext.unit.Completion arg) {
+  public static <T> Completion newInstance(io.vertx.ext.unit.Completion arg) {
     return arg != null ? new Completion<T> (arg) : null;
   }
 }

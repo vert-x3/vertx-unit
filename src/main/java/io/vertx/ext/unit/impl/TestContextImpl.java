@@ -67,7 +67,6 @@ public class TestContextImpl implements TestContext, Task<Result> {
   private final Handler<Throwable> unhandledFailureHandler;
   private final Function<Result, Task<Result>> next;
   private final long timeout;
-  private volatile Thread timeoutThread;
   private int status;
   private Throwable failed;
   private long beginTime;
@@ -111,11 +110,11 @@ public class TestContextImpl implements TestContext, Task<Result> {
         end = true;
       }
       ctx = context;
+      if (end) {
+        this.notify();
+      }
     }
     if (end) {
-      if (timeoutThread != null && timeoutThread.getState() == Thread.State.TIMED_WAITING) {
-        timeoutThread.interrupt();
-      }
       long endTime = System.currentTimeMillis();
       Result result = new Result(attributes, beginTime, endTime, failed);
       ctx.run(next.apply(result), result);
@@ -159,13 +158,21 @@ public class TestContextImpl implements TestContext, Task<Result> {
     if (timeout > 0) {
       Runnable cancel = () -> {
         try {
-          Thread.sleep(timeout);
+          synchronized (this) {
+            if (status == STATUS_COMPLETED) {
+              return;
+            }
+            wait(timeout);
+            if (status == STATUS_COMPLETED) {
+              return;
+            }
+          }
           failed(new TimeoutException());
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
         }
       };
-      timeoutThread = new Thread(cancel);
+      Thread timeoutThread = new Thread(cancel);
       timeoutThread.setName("vert.x-unit-timeout-thread-" + threadCount.incrementAndGet());
       timeoutThread.start();
     }
