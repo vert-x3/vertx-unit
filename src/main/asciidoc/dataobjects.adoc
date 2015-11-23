@@ -27,15 +27,15 @@
 ^|Name | Type ^| Description
 |[[reporters]]`reporters`|`Array of link:dataobjects.html#ReportOptions[ReportOptions]`|
 +++
-@return the current reporters options
+Replace the current list of reporters with a new one.
 +++
 |[[timeout]]`timeout`|`Number (long)`|
 +++
-@return the current timeout in milliseconds.
+Set the test timeout.
 +++
 |[[useEventLoop]]`useEventLoop`|`Boolean`|
 +++
-@return true if the execution should use an event loop when there is no one existing
+Configure the execution to use an event loop when there is no one existing.
 +++
 |===
 
@@ -53,11 +53,11 @@
 ^|Name | Type ^| Description
 |[[format]]`format`|`String`|
 +++
-@return the current reporter format
+Set the current reporter format.
 +++
 |[[to]]`to`|`String`|
 +++
-@return the current reporter name
+Set the current reporter name.
 +++
 |===
 
@@ -79,7 +79,7 @@
 ^|Name | Type ^| Description
 |[[reporters]]`reporters`|`Array of link:dataobjects.html#ReportOptions[ReportOptions]`|
 +++
-@return the current reporters options
+Replace the current list of reporters with a new one.
 +++
 |===
 
