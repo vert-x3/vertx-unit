@@ -175,7 +175,7 @@ the _beforeEach_ callback reported a failure.
 
 == Asserting
 
-Vertx Unit provides the `link:yardoc/VertxUnit/TestContext.html[TestContext]` object for doing assertions in test cases. The _context_
+Vertx Unit provides the `link:../../yardoc/VertxUnit/TestContext.html[TestContext]` object for doing assertions in test cases. The _context_
 object provides the usual methods when dealing with assertions.
 
 === assertEquals
@@ -240,7 +240,7 @@ suite.test("my_test_case") { |context|
 
 === assertInRange
 
-The `link:yardoc/VertxUnit/TestContext.html#assert_in_range-instance_method[assertInRange]` targets real numbers.
+The `link:../../yardoc/VertxUnit/TestContext.html#assert_in_range-instance_method[assertInRange]` targets real numbers.
 
 ----
 suite.test("my_test_case") { |context|
@@ -304,8 +304,8 @@ suite.test("my_test_case") { |context|
 <1> The callback exits but the test case is not terminated
 <2> The event callback from the bus terminates the test
 
-Creating an `link:yardoc/VertxUnit/Async.html[Async]` object with the `link:yardoc/VertxUnit/TestContext.html#async-instance_method[async]` method marks the
-executed test case as non terminated. The test case terminates when the `link:yardoc/VertxUnit/Async.html#complete-instance_method[complete]`
+Creating an `link:../../yardoc/VertxUnit/Async.html[Async]` object with the `link:../../yardoc/VertxUnit/TestContext.html#async-instance_method[async]` method marks the
+executed test case as non terminated. The test case terminates when the `link:../../yardoc/VertxUnit/Async.html#complete-instance_method[complete]`
 method is invoked.
 
 NOTE: When the `complete` callback is not invoked, the test case fails after a certain timeout.
@@ -356,7 +356,7 @@ suite.before() { |context|
 
 ----
 
-It is possible to wait until the completion of a specific `link:yardoc/VertxUnit/Async.html[Async]`, similar
+It is possible to wait until the completion of a specific `link:../../yardoc/VertxUnit/Async.html[Async]`, similar
 to Java's count-down latch:
 
 .Wait for completion
@@ -425,7 +425,7 @@ NOTE: test repetition are executed sequentially
 
 == Sharing objects
 
-The `link:yardoc/VertxUnit/TestContext.html[TestContext]` has `get`/`put`/`remove` operations for sharing state between callbacks.
+The `link:../../yardoc/VertxUnit/TestContext.html[TestContext]` has `get`/`put`/`remove` operations for sharing state between callbacks.
 
 Any object added during the _before_ callback is available in any other callbacks. Each test case will operate on
 a copy of the shared state, so updates will only be visible for a test case.
@@ -484,7 +484,7 @@ Other objects should be shared using the features of that language.
 [[reporting]]
 == Running
 
-When a test suite is created, it won't be executed until the `link:yardoc/VertxUnit/TestSuite.html#run-instance_method[run]` method
+When a test suite is created, it won't be executed until the `link:../../yardoc/VertxUnit/TestSuite.html#run-instance_method[run]` method
 is called.
 
 .Running a test suite
@@ -494,7 +494,7 @@ suite.run()
 
 ----
 
-The test suite can also be run with a specified `link:../../vertx-core/ruby/yardoc/Vertx/Vertx.html[Vertx]` instance:
+The test suite can also be run with a specified `link:../../yardoc/Vertx/Vertx.html[Vertx]` instance:
 
 .Provides a Vertx instance to run the test suite
 [source,ruby]
@@ -519,7 +519,7 @@ Passed my_test_case
 End test suite my_suite , run: 1, Failures: 0, Errors: 0
 ----
 
-Such test suite just need to be executed via the `link:yardoc/VertxUnit/TestSuite.html#run-instance_method[run]` command, the
+Such test suite just need to be executed via the `link:../../yardoc/VertxUnit/TestSuite.html#run-instance_method[run]` command, the
 `vertx test` command takes care of configuring reporting, timeout, etc..., pretty much like in this
 example:
 
@@ -546,7 +546,7 @@ all suite executed.
 
 No assumptions can be made about when the test suite will be completed, and if some code needs to be executed
 after the test suite, it should either be in the test suite _after_ callback or as callback of the
-`link:yardoc/VertxUnit/Completion.html[Completion]`:
+`link:../../yardoc/VertxUnit/Completion.html[Completion]`:
 
 .Test suite execution callback
 [source,ruby]
@@ -565,7 +565,7 @@ completion.handler() { |ar_err,ar|
 
 ----
 
-The `link:yardoc/VertxUnit/Completion.html[Completion]` object provides also a `link:yardoc/VertxUnit/Completion.html#resolve-instance_method[resolve]` method that
+The `link:../../yardoc/VertxUnit/Completion.html[Completion]` object provides also a `link:../../yardoc/VertxUnit/Completion.html#resolve-instance_method[resolve]` method that
 takes a `Future` object, this `Future` will be notified of the test suite execution:
 
 .Resolving the start Future with the test suite
@@ -596,7 +596,7 @@ completion.await()
 
 The `await` throws an exception when the thread is interrupted or a timeout is fired.
 
-The `link:yardoc/VertxUnit/Completion.html#await_success-instance_method[awaitSuccess]` is a variation that throws an exception when
+The `link:../../yardoc/VertxUnit/Completion.html#await_success-instance_method[awaitSuccess]` is a variation that throws an exception when
 the test suite fails.
 
 .Blocking until the test suite succeeds
@@ -737,7 +737,7 @@ example::
 
 It allow to decouple the execution of the test suite from the reporting.
 
-The messages sent over the event bus can be collected by the `link:yardoc/VertxUnit/EventBusCollector.html[EventBusCollector]`
+The messages sent over the event bus can be collected by the `link:../../yardoc/VertxUnit/EventBusCollector.html[EventBusCollector]`
 and achieve custom reporting:
 
 [source,ruby]
@@ -782,7 +782,7 @@ public class JUnitTestSuite {
 ----
 
 The `link:unavailable[VertxUnitRunner]` uses the junit annotations for introspecting the class
-and create a test suite after the class. The methods should declare a `link:yardoc/VertxUnit/TestContext.html[TestContext]`
+and create a test suite after the class. The methods should declare a `link:../../yardoc/VertxUnit/TestContext.html[TestContext]`
 argument, if they don't it is fine too. However the `TestContext` is the only way to retrieve the associated
 Vertx instance of perform asynchronous tests.
 
@@ -799,9 +799,9 @@ on the same thread, e.g incrementing a counter in a Vert.x handler and asserting
 One way to solve this is to use proper synchronization, another is to execute test methods on a Vert.x context
 that will be propagated to the created handlers.
 
-For this purpose the `link:unavailable[RunTestOnContext]` rule needs a `link:../../vertx-core/ruby/yardoc/Vertx/Vertx.html[Vertx]`
+For this purpose the `link:unavailable[RunTestOnContext]` rule needs a `link:../../yardoc/Vertx/Vertx.html[Vertx]`
 instance. Such instance can be provided, otherwise the rule will manage an instance under the hood. Such
-instance can be retrieved when the test is running, making this rule a way to manage a `link:../../vertx-core/ruby/yardoc/Vertx/Vertx.html[Vertx]`
+instance can be retrieved when the test is running, making this rule a way to manage a `link:../../yardoc/Vertx/Vertx.html[Vertx]`
 instance as well.
 
 .Run a Java class as a JUnit test suite
@@ -979,7 +979,7 @@ The Java language provides classes and it is possible to create test suites dire
 following mapping rules:
 
 The `testSuiteObject` argument methods are inspected and the public, non static methods
-with `link:yardoc/VertxUnit/TestContext.html[TestContext]` parameter are retained and mapped to a Vertx Unit test suite
+with `link:../../yardoc/VertxUnit/TestContext.html[TestContext]` parameter are retained and mapped to a Vertx Unit test suite
 via the method name:
 
 * `before` : before callback
@@ -1013,10 +1013,10 @@ TestSuite suite = TestSuite.create(new MyTestSuite());
 
 === Java specific assertions
 
-In Java, the `link:yardoc/VertxUnit/TestContext.html[TestContext]` provides useful extra methods that provides powerful constructs:
+In Java, the `link:../../yardoc/VertxUnit/TestContext.html[TestContext]` provides useful extra methods that provides powerful constructs:
 
-The `link:yardoc/VertxUnit/TestContext.html#async_assert_success-instance_method[asyncAssertSuccess]` method returns an `Handler<AsyncResult<T>>`
-instance that acts like `link:yardoc/VertxUnit/Async.html[Async]`, resolving the `Async` on success and failing the test
+The `link:../../yardoc/VertxUnit/TestContext.html#async_assert_success-instance_method[asyncAssertSuccess]` method returns an `Handler<AsyncResult<T>>`
+instance that acts like `link:../../yardoc/VertxUnit/Async.html[Async]`, resolving the `Async` on success and failing the test
 on failure with the failure cause.
 
 [source,java]
@@ -1035,8 +1035,8 @@ vertx.deployVerticle("my.verticle", ar -> {
 vertx.deployVerticle("my.verticle", context.asyncAssertSuccess());
 ----
 
-The `link:yardoc/VertxUnit/TestContext.html#async_assert_success-instance_method[asyncAssertSuccess]` method returns an `Handler<AsyncResult<T>>`
-instance that acts like `link:yardoc/VertxUnit/Async.html[Async]`, invoking the delegating `Handler<T>` on success
+The `link:../../yardoc/VertxUnit/TestContext.html#async_assert_success-instance_method[asyncAssertSuccess]` method returns an `Handler<AsyncResult<T>>`
+instance that acts like `link:../../yardoc/VertxUnit/Async.html[Async]`, invoking the delegating `Handler<T>` on success
 and failing the test on failure with the failure cause.
 
 [source,java]
@@ -1090,8 +1090,8 @@ vertx.deployVerticle("my.verticle", context.asyncAssertSuccess(id ->
 ));
 ----
 
-The `link:yardoc/VertxUnit/TestContext.html#async_assert_failure-instance_method[asyncAssertFailure]` method returns an `Handler<AsyncResult<T>>`
-instance that acts like `link:yardoc/VertxUnit/Async.html[Async]`, resolving the `Async` on failure and failing the test
+The `link:../../yardoc/VertxUnit/TestContext.html#async_assert_failure-instance_method[asyncAssertFailure]` method returns an `Handler<AsyncResult<T>>`
+instance that acts like `link:../../yardoc/VertxUnit/Async.html[Async]`, resolving the `Async` on failure and failing the test
 on success.
 
 [source,java]
@@ -1110,8 +1110,8 @@ vertx.deployVerticle("my.verticle", ar -> {
 vertx.deployVerticle("my.verticle", context.asyncAssertFailure());
 ----
 
-The `link:yardoc/VertxUnit/TestContext.html#async_assert_failure-instance_method[asyncAssertFailure]` method returns an `Handler<AsyncResult<T>>`
-instance that acts like `link:yardoc/VertxUnit/Async.html[Async]`, invoking the delegating `Handler<Throwable>` on
+The `link:../../yardoc/VertxUnit/TestContext.html#async_assert_failure-instance_method[asyncAssertFailure]` method returns an `Handler<AsyncResult<T>>`
+instance that acts like `link:../../yardoc/VertxUnit/Async.html[Async]`, invoking the delegating `Handler<Throwable>` on
 failure and failing the test on success.
 
 [source,java]
