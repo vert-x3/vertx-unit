@@ -788,19 +788,43 @@ public class JUnitTest {
 
     @Rule
     public RepeatRule instanceRule = new RepeatRule();
-    private int count = 0;
+    private static int beforeClassCount = 0;
+    private int beforeCount = 0;
+    private int testCount = 0;
+    private int afterCount = 0;
+    private static int afterClassCount = 0;
+
+    @BeforeClass
+    public static void beforeClass() {
+      events.add("beforeClass" + beforeClassCount++);
+    }
+
+    @Before
+    public void before() {
+      events.add("before" + beforeCount++);
+    }
+
+    @After
+    public void after() {
+      events.add("after" + afterCount++);
+    }
+
+    @AfterClass
+    public static void afterClass() {
+      events.add("afterClass" + afterClassCount++);
+    }
 
     @Test
     @Repeat(3)
     public void testMethod(TestContext context) {
-      events.add("test" + count);
+      events.add("test" + testCount);
       Async async = context.async();
       new Thread((() -> {
         try {
           Thread.sleep(250);
         } catch (InterruptedException ignore) {
         } finally {
-          events.add("complete" + count++);
+          events.add("complete" + testCount++);
           async.complete();
         }
       })).start();
@@ -812,7 +836,12 @@ public class JUnitTest {
     Result result = run(RepeatRuleTestSuite.class);
     assertEquals(1, result.getRunCount());
     assertEquals(0, result.getFailureCount());
-    assertEquals(Arrays.asList("test0", "complete0", "test1", "complete1", "test2", "complete2"), RepeatRuleTestSuite.events);
+    assertEquals(Arrays.asList(
+        "beforeClass0",
+        "before0", "test0", "complete0", "after0",
+        "before1", "test1", "complete1", "after1",
+        "before2", "test2", "complete2", "after2",
+        "afterClass0"), RepeatRuleTestSuite.events);
   }
 
   public static class UseRunOnContextRule {
