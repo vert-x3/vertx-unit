@@ -20,7 +20,7 @@ public class TestSuiteNoEventLoopTest extends TestSuiteTestBase {
       assertNull(Vertx.currentContext());
       runner.setUseEventLoop(false).run();
     };
-    completeAsync = Async::complete;
+    operateOnAsync = (async,action) -> action.accept(async);
   }
 
   @Override

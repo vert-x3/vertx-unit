@@ -379,8 +379,8 @@ async.awaitSuccess()
 
 WARNING: this should not be executed from the event loop!
 
-The async can also be created with an initial count value, the async is completed when the count-down reaches
-zero:
+Async can also be created with an initial count value, it completes when the count-down reaches
+zero using `link:../../groovydoc/io/vertx/groovy/ext/unit/Async.html#countDown()[countDown]`:
 
 .Wait until the complete count-down reaches zero
 [source, groovy]
@@ -390,7 +390,7 @@ def server = vertx.createHttpServer()
 server.requestHandler(requestHandler)
 server.listen(8080, { ar ->
   context.assertTrue(ar.succeeded())
-  async.complete()
+  async.countDown()
 })
 
 vertx.setTimer(1000, { id ->
@@ -403,6 +403,8 @@ async.awaitSuccess()
 // Do something else
 
 ----
+
+Calling `complete()` on an async completes the async as usual, it actually sets the value to `0`.
 
 == Repeating test
 

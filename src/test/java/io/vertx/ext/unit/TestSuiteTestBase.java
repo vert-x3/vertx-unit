@@ -20,6 +20,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,7 +34,9 @@ public abstract class TestSuiteTestBase {
 
   protected Function<TestSuiteImpl, TestSuiteRunner> getRunner;
   protected Consumer<TestSuiteRunner> run;
-  protected Consumer<Async> completeAsync; // Block until async#complete is called (
+  protected BiConsumer<Async, Consumer<Async>> operateOnAsync;
+  protected Consumer<Async> completeAsync = async -> operateOnAsync.accept(async, Async::complete); // Block until async#complete is called (
+  protected Consumer<Async> countDownAsync = async -> operateOnAsync.accept(async, Async::countDown); // Block until async#complete is called (
 
   public TestSuiteTestBase() {
   }
@@ -100,7 +103,7 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
-  public void runTestWithAsyncCountdownCompletion() throws Exception {
+  public void runTestWithAsyncCountingdown() throws Exception {
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
     AtomicInteger count = new AtomicInteger();
     TestSuite suite = TestSuite.create("my_suite").
@@ -115,12 +118,48 @@ public abstract class TestSuiteTestBase {
     assertFalse(reporter.completed());
     Future<Void> fut = Future.future();
     async.resolve(fut);
-    completeAsync.accept(async);
+    countDownAsync.accept(async);
     assertFalse(fut.isComplete());
-    completeAsync.accept(async);
+    countDownAsync.accept(async);
     assertFalse(fut.isComplete());
+    countDownAsync.accept(async);
+    assertTrue(fut.isComplete());
+    reporter.await();
+    assertTrue(reporter.completed());
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    TestResult result = reporter.results.get(0);
+    assertEquals("my_test", result.name());
+    assertTrue(result.succeeded());
+    assertFalse(result.failed());
+    assertNull(result.failure());
+  }
+
+  @Test
+  public void runTestWithAsyncCountingdownAndCompletion() throws Exception {
+    BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
+    AtomicInteger count = new AtomicInteger();
+    TestSuite suite = TestSuite.create("my_suite").
+        test("my_test", context -> {
+          count.compareAndSet(0, 1);
+          queue.add(context.async(3));
+        });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    Async async = queue.poll(2, TimeUnit.SECONDS);
+    assertEquals(1, count.get());
+    assertFalse(reporter.completed());
+    Future<Void> fut = Future.future();
+    async.resolve(fut);
+    assertEquals(3, async.count());
+    countDownAsync.accept(async);
+    assertFalse(fut.isComplete());
+    assertEquals(2, async.count());
     completeAsync.accept(async);
     assertTrue(fut.isComplete());
+    assertEquals(0, async.count());
+    countDownAsync.accept(async);
+    assertEquals(0, async.count());
     reporter.await();
     assertTrue(reporter.completed());
     assertEquals(0, reporter.exceptions.size());

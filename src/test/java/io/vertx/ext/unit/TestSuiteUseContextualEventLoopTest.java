@@ -25,11 +25,11 @@ public class TestSuiteUseContextualEventLoopTest extends TestSuiteTestBase {
       assertNull(Vertx.currentContext());
       vertx.runOnContext(v -> runner.setUseEventLoop(true).run());
     };
-    completeAsync = async -> {
+    operateOnAsync = (async, action) -> {
       CountDownLatch latch = new CountDownLatch(1);
       assertNull(Vertx.currentContext());
       vertx.runOnContext(v -> {
-        async.complete();
+        action.accept(async);
         latch.countDown();
       });
       try {

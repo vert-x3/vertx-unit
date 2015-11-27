@@ -15,8 +15,24 @@ module VertxUnit
     def j_del
       @j_del
     end
-    #  Signals the asynchronous operation is done, this method should be called only once, if the method is called
-    #  another time it will throw an <code>IllegalStateException</code> to signal the error.
+    #  @return the current count
+    # @return [Fixnum]
+    def count
+      if !block_given?
+        return @j_del.java_method(:count, []).call()
+      end
+      raise ArgumentError, "Invalid arguments when calling count()"
+    end
+    #  Count down the async.
+    # @return [void]
+    def count_down
+      if !block_given?
+        return @j_del.java_method(:countDown, []).call()
+      end
+      raise ArgumentError, "Invalid arguments when calling count_down()"
+    end
+    #  Signals the asynchronous operation is done, this method must be called with a count greater than <code>0</code>,
+    #  otherwise it throw an <code>IllegalStateException</code> to signal the error.
     # @return [void]
     def complete
       if !block_given?

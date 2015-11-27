@@ -24,9 +24,9 @@ public class TestSuiteUseVertxEventLoopTest extends TestSuiteTestBase {
       assertNull(Vertx.currentContext());
       runner.run();
     };
-    completeAsync = async -> {
+    operateOnAsync = (async, action) -> {
       assertNull(Vertx.currentContext());
-      async.complete();
+      action.accept(async);
     };
   }
 

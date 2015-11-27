@@ -16,7 +16,7 @@ public class TestSuiteNoEventLoopAsyncTest extends TestSuiteTestBase {
         runner.setUseEventLoop(false).run();
       }
     }.start();
-    completeAsync = Async::complete;
+    operateOnAsync = (async,action) -> action.accept(async);
   }
 
   @Override

@@ -237,14 +237,16 @@
  *
  * WARNING: this should not be executed from the event loop!
  *
- * The async can also be created with an initial count value, the async is completed when the count-down reaches
- * zero:
+ * Async can also be created with an initial count value, it completes when the count-down reaches
+ * zero using {@link io.vertx.ext.unit.Async#countDown()}:
  *
  * .Wait until the complete count-down reaches zero
  * [source, $lang]
  * ----
  * {@link examples.Examples#async_05(io.vertx.ext.unit.TestContext, io.vertx.core.Vertx, io.vertx.core.Handler)}
  * ----
+ *
+ * Calling `complete()` on an async completes the async as usual, it actually sets the value to `0`.
  *
  * == Repeating test
  *

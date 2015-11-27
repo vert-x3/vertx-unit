@@ -32,8 +32,22 @@ public class Async extends Completion<Void> {
     return delegate;
   }
   /**
-   * Signals the asynchronous operation is done, this method should be called only once, if the method is called
-   * another time it will throw an <code>IllegalStateException</code> to signal the error.
+   * @return the current count
+   * @return 
+   */
+  public int count() {
+    def ret = this.delegate.count();
+    return ret;
+  }
+  /**
+   * Count down the async.
+   */
+  public void countDown() {
+    this.delegate.countDown();
+  }
+  /**
+   * Signals the asynchronous operation is done, this method must be called with a count greater than <code>0</code>,
+   * otherwise it throw an <code>IllegalStateException</code> to signal the error.
    */
   public void complete() {
     this.delegate.complete();

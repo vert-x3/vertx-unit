@@ -34,8 +34,35 @@ var Async = function(j_val) {
   Completion.call(this, j_val);
 
   /**
-   Signals the asynchronous operation is done, this method should be called only once, if the method is called
-   another time it will throw an <code>IllegalStateException</code> to signal the error.
+   @return the current count
+
+   @public
+
+   @return {number}
+   */
+  this.count = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      return j_async["count()"]();
+    } else throw new TypeError('function invoked with invalid arguments');
+  };
+
+  /**
+   Count down the async.
+
+   @public
+
+   */
+  this.countDown = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      j_async["countDown()"]();
+    } else throw new TypeError('function invoked with invalid arguments');
+  };
+
+  /**
+   Signals the asynchronous operation is done, this method must be called with a count greater than <code>0</code>,
+   otherwise it throw an <code>IllegalStateException</code> to signal the error.
 
    @public
 

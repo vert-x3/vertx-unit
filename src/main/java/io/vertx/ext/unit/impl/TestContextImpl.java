@@ -23,22 +23,36 @@ public class TestContextImpl implements TestContext, Task<Result> {
 
   class AsyncImpl extends CompletionImpl<Void> implements Async {
 
-    private final int count;
+    private final int initialCount;
     private final AtomicInteger current;
 
-    public AsyncImpl(int count) {
-      this.count = count;
-      this.current = new AtomicInteger(count);
+    public AsyncImpl(int initialCount) {
+      this.initialCount = initialCount;
+      this.current = new AtomicInteger(initialCount);
+    }
+
+    @Override
+    public int count() {
+      return current.get();
+    }
+
+    @Override
+    public void countDown() {
+      int value = current.updateAndGet(v -> v > 0 ? v - 1 : 0);
+      if (value == 0) {
+        completable.complete(null);
+        internalComplete();
+      }
     }
 
     @Override
     public void complete() {
-      int value = current.decrementAndGet();
-      if (value == 0) {
+      int value = current.getAndSet(0);
+      if (value > 0) {
         completable.complete(null);
         internalComplete();
       } else if (value < 0) {
-        throw new IllegalStateException("The Async complete method has been called more than " + count + " times, check your test.");
+        throw new IllegalStateException("The Async complete method has been called more than " + initialCount + " times, check your test.");
       }
     }
 

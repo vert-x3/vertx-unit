@@ -211,7 +211,7 @@ public class Examples {
     server.requestHandler(requestHandler);
     server.listen(8080, ar -> {
       context.assertTrue(ar.succeeded());
-      async.complete();
+      async.countDown();
     });
 
     vertx.setTimer(1000, id -> {

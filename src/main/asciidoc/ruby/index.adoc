@@ -379,8 +379,8 @@ async.await_success()
 
 WARNING: this should not be executed from the event loop!
 
-The async can also be created with an initial count value, the async is completed when the count-down reaches
-zero:
+Async can also be created with an initial count value, it completes when the count-down reaches
+zero using `link:../../yardoc/VertxUnit/Async.html#count_down-instance_method[countDown]`:
 
 .Wait until the complete count-down reaches zero
 [source, ruby]
@@ -390,7 +390,7 @@ server = vertx.create_http_server()
 server.request_handler(&requestHandler)
 server.listen(8080) { |ar_err,ar|
   context.assert_true(ar_err == nil)
-  async.complete()
+  async.count_down()
 }
 
 vertx.set_timer(1000) { |id|
@@ -403,6 +403,8 @@ async.await_success()
 # Do something else
 
 ----
+
+Calling `complete()` on an async completes the async as usual, it actually sets the value to `0`.
 
 == Repeating test
 
