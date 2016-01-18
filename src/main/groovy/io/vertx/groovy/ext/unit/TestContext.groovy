@@ -18,6 +18,8 @@ package io.vertx.groovy.ext.unit;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
 import io.vertx.core.json.JsonObject
+import io.vertx.core.AsyncResult
+import io.vertx.core.Handler
 /**
  * The test context is used for performing test assertions and manage the completion of the test. This context
  * is provided by <i>vertx-unit</i> as argument of the test case.
@@ -268,6 +270,64 @@ public class TestContext {
    */
   public Async async(int count) {
     def ret= InternalHelper.safeCreate(this.delegate.async(count), io.vertx.groovy.ext.unit.Async.class);
+    return ret;
+  }
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it completes the async operation.<p/>
+   *
+   * When the returned handler is called back with a failed result it fails the test with the cause of the failure.<p/>
+   * @return the async result handler
+   */
+  public <T> Handler<AsyncResult<T>> asyncAssertSuccess() {
+    def ret = this.delegate.asyncAssertSuccess();
+    return ret;
+  }
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it invokes the <code>resultHandler</code> argument
+   * with the async result. The test completes after the result handler is invoked and does not fails.<p/>
+   *
+   * When the returned handler is called back with a failed result it fails the test with the cause of the failure.<p/>
+   *
+   * Note that the result handler can create other async objects during its invocation that would postpone
+   * the completion of the test case until those objects are resolved.
+   * @param resultHandler the result handler
+   * @return the async result handler
+   */
+  public <T> Handler<AsyncResult<T>> asyncAssertSuccess(Handler<T> resultHandler) {
+    def ret = this.delegate.asyncAssertSuccess(new Handler<Object>() {
+      public void handle(Object event) {
+        resultHandler.handle(InternalHelper.wrapObject(event))
+      }
+    });
+    return ret;
+  }
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a failed result it completes the async operation.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it fails the test.<p/>
+   * @return the async result handler
+   */
+  public <T> Handler<AsyncResult<T>> asyncAssertFailure() {
+    def ret = this.delegate.asyncAssertFailure();
+    return ret;
+  }
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a failed result it completes the async operation.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it fails the test.<p/>
+   * @param causeHandler the cause handler
+   * @return the async result handler
+   */
+  public <T> Handler<AsyncResult<T>> asyncAssertFailure(Handler<Throwable> causeHandler) {
+    def ret = this.delegate.asyncAssertFailure(causeHandler);
     return ret;
   }
 }

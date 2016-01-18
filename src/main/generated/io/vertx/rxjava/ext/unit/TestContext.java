@@ -19,6 +19,8 @@ package io.vertx.rxjava.ext.unit;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 
 /**
  * The test context is used for performing test assertions and manage the completion of the test. This context
@@ -295,6 +297,64 @@ public class TestContext {
    */
   public Async async(int count) { 
     Async ret= Async.newInstance(this.delegate.async(count));
+    return ret;
+  }
+
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it completes the async operation.<p/>
+   *
+   * When the returned handler is called back with a failed result it fails the test with the cause of the failure.<p/>
+   * @return the async result handler
+   */
+  public <T> Handler<AsyncResult<T>> asyncAssertSuccess() { 
+    Handler<AsyncResult<T>> ret = this.delegate.asyncAssertSuccess();
+    return ret;
+  }
+
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it invokes the <code>resultHandler</code> argument
+   * with the async result. The test completes after the result handler is invoked and does not fails.<p/>
+   *
+   * When the returned handler is called back with a failed result it fails the test with the cause of the failure.<p/>
+   *
+   * Note that the result handler can create other async objects during its invocation that would postpone
+   * the completion of the test case until those objects are resolved.
+   * @param resultHandler the result handler
+   * @return the async result handler
+   */
+  public <T> Handler<AsyncResult<T>> asyncAssertSuccess(Handler<T> resultHandler) { 
+    Handler<AsyncResult<T>> ret = this.delegate.asyncAssertSuccess(resultHandler);
+    return ret;
+  }
+
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a failed result it completes the async operation.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it fails the test.<p/>
+   * @return the async result handler
+   */
+  public <T> Handler<AsyncResult<T>> asyncAssertFailure() { 
+    Handler<AsyncResult<T>> ret = this.delegate.asyncAssertFailure();
+    return ret;
+  }
+
+  /**
+   * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+   *
+   * When the returned handler is called back with a failed result it completes the async operation.<p/>
+   *
+   * When the returned handler is called back with a succeeded result it fails the test.<p/>
+   * @param causeHandler the cause handler
+   * @return the async result handler
+   */
+  public <T> Handler<AsyncResult<T>> asyncAssertFailure(Handler<Throwable> causeHandler) { 
+    Handler<AsyncResult<T>> ret = this.delegate.asyncAssertFailure(causeHandler);
     return ret;
   }
 

@@ -189,5 +189,39 @@ module VertxUnit
       end
       raise ArgumentError, "Invalid arguments when calling async(count)"
     end
+    #  Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+    # 
+    #  When the returned handler is called back with a succeeded result it invokes the <code>resultHandler</code> argument
+    #  with the async result. The test completes after the result handler is invoked and does not fails.<p/>
+    # 
+    #  When the returned handler is called back with a failed result it fails the test with the cause of the failure.<p/>
+    # 
+    #  Note that the result handler can create other async objects during its invocation that would postpone
+    #  the completion of the test case until those objects are resolved.
+    # @yield the result handler
+    # @return [Proc] the async result handler
+    def async_assert_success
+      if !block_given?
+        return nil
+      elsif block_given?
+        return nil
+      end
+      raise ArgumentError, "Invalid arguments when calling async_assert_success()"
+    end
+    #  Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+    # 
+    #  When the returned handler is called back with a failed result it completes the async operation.<p/>
+    # 
+    #  When the returned handler is called back with a succeeded result it fails the test.<p/>
+    # @yield the cause handler
+    # @return [Proc] the async result handler
+    def async_assert_failure
+      if !block_given?
+        return nil
+      elsif block_given?
+        return nil
+      end
+      raise ArgumentError, "Invalid arguments when calling async_assert_failure()"
+    end
   end
 end

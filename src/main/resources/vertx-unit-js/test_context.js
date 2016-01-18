@@ -262,6 +262,54 @@ var TestContext = function(j_val) {
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
+  /**
+   Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+  
+   When the returned handler is called back with a succeeded result it invokes the <code>resultHandler</code> argument
+   with the async result. The test completes after the result handler is invoked and does not fails.<p/>
+  
+   When the returned handler is called back with a failed result it fails the test with the cause of the failure.<p/>
+  
+   Note that the result handler can create other async objects during its invocation that would postpone
+   the completion of the test case until those objects are resolved.
+
+   @public
+   @param resultHandler {function} the result handler 
+   @return {function} the async result handler
+   */
+  this.asyncAssertSuccess = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      return utils.convReturnTypeUnknown(j_testContext["asyncAssertSuccess()"]());
+    }  else if (__args.length === 1 && typeof __args[0] === 'function') {
+      return utils.convReturnTypeUnknown(j_testContext["asyncAssertSuccess(io.vertx.core.Handler)"](function(jVal) {
+      __args[0](utils.convReturnTypeUnknown(jVal));
+    }));
+    } else throw new TypeError('function invoked with invalid arguments');
+  };
+
+  /**
+   Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
+  
+   When the returned handler is called back with a failed result it completes the async operation.<p/>
+  
+   When the returned handler is called back with a succeeded result it fails the test.<p/>
+
+   @public
+   @param causeHandler {function} the cause handler 
+   @return {function} the async result handler
+   */
+  this.asyncAssertFailure = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      return utils.convReturnTypeUnknown(j_testContext["asyncAssertFailure()"]());
+    }  else if (__args.length === 1 && typeof __args[0] === 'function') {
+      return utils.convReturnTypeUnknown(j_testContext["asyncAssertFailure(io.vertx.core.Handler)"](function(jVal) {
+      __args[0](utils.convReturnThrowable(jVal));
+    }));
+    } else throw new TypeError('function invoked with invalid arguments');
+  };
+
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.

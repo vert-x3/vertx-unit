@@ -254,7 +254,6 @@ public interface TestContext {
    *
    * @return the async result handler
    */
-  @GenIgnore
   <T> Handler<AsyncResult<T>> asyncAssertSuccess();
 
   /**
@@ -271,7 +270,6 @@ public interface TestContext {
    * @param resultHandler the result handler
    * @return the async result handler
    */
-  @GenIgnore
   <T> Handler<AsyncResult<T>> asyncAssertSuccess(Handler<T> resultHandler);
 
   /**
@@ -283,7 +281,6 @@ public interface TestContext {
    *
    * @return the async result handler
    */
-  @GenIgnore
   <T> Handler<AsyncResult<T>> asyncAssertFailure();
 
   /**
@@ -296,6 +293,5 @@ public interface TestContext {
    * @param causeHandler the cause handler
    * @return the async result handler
    */
-  @GenIgnore
   <T> Handler<AsyncResult<T>> asyncAssertFailure(Handler<Throwable> causeHandler);
 }
