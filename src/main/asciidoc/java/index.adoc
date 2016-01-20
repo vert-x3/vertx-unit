@@ -789,7 +789,7 @@ import org.junit.Test;
 
 public class JunitTestWithTimeout {
 
-  @Test(timeout = 1000)
+  @Test(timeout = 1000l)
   public void testSomething(TestContext context) {
     //...
   }
