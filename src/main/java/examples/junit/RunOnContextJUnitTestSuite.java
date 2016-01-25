@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 public class RunOnContextJUnitTestSuite {
 
   @Rule
-  RunTestOnContext rule = new RunTestOnContext();
+  public RunTestOnContext rule = new RunTestOnContext();
 
   @Test
   public void testSomething(TestContext context) {
