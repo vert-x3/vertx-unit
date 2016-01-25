@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 public class RepeatingTest {
 
   @Rule
-  RepeatRule rule = new RepeatRule();
+  public RepeatRule rule = new RepeatRule();
 
   @Repeat(1000)
   @Test
