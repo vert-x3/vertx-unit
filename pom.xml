@@ -136,7 +136,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+          <failIfNoTests>false</failIfNoTests>
           <systemPropertyVariables>
             <vertx.test.timeout>60</vertx.test.timeout>
             <io.netty.leakDetectionLevel>PARANOID</io.netty.leakDetectionLevel>
@@ -149,4 +149,29 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>coverage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <failIfNoTests>false</failIfNoTests>
+              <systemPropertyVariables>
+                <vertx.test.timeout>60</vertx.test.timeout>
+                <io.netty.leakDetectionLevel>PARANOID</io.netty.leakDetectionLevel>
+              </systemPropertyVariables>
+              <argLine>-server -Xms128m -Xmx1024m -XX:NewRatio=2 @{surefireArgLine}</argLine>
+              <excludes>
+                <exclude>**/ScratchPad.java</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
