@@ -309,7 +309,14 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertSuccess() { 
-    Handler<AsyncResult<T>> ret = this.delegate.asyncAssertSuccess();
+    io.vertx.core.Handler<io.vertx.core.AsyncResult<T>> handlerDelegate = this.delegate.asyncAssertSuccess();
+    Handler<AsyncResult<T>> ret = ar -> {
+      if (ar.succeeded()) {
+        handlerDelegate.handle(InternalHelper.result(ar.result()));
+      } else {
+        handlerDelegate.handle(InternalHelper.failure(ar.cause()));
+      }
+    };
     return ret;
   }
 
@@ -327,7 +334,14 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertSuccess(Handler<T> resultHandler) { 
-    Handler<AsyncResult<T>> ret = this.delegate.asyncAssertSuccess(resultHandler);
+    io.vertx.core.Handler<io.vertx.core.AsyncResult<T>> handlerDelegate = this.delegate.asyncAssertSuccess(resultHandler);
+    Handler<AsyncResult<T>> ret = ar -> {
+      if (ar.succeeded()) {
+        handlerDelegate.handle(InternalHelper.result(ar.result()));
+      } else {
+        handlerDelegate.handle(InternalHelper.failure(ar.cause()));
+      }
+    };
     return ret;
   }
 
@@ -340,7 +354,14 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertFailure() { 
-    Handler<AsyncResult<T>> ret = this.delegate.asyncAssertFailure();
+    io.vertx.core.Handler<io.vertx.core.AsyncResult<T>> handlerDelegate = this.delegate.asyncAssertFailure();
+    Handler<AsyncResult<T>> ret = ar -> {
+      if (ar.succeeded()) {
+        handlerDelegate.handle(InternalHelper.result(ar.result()));
+      } else {
+        handlerDelegate.handle(InternalHelper.failure(ar.cause()));
+      }
+    };
     return ret;
   }
 
@@ -354,7 +375,14 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertFailure(Handler<Throwable> causeHandler) { 
-    Handler<AsyncResult<T>> ret = this.delegate.asyncAssertFailure(causeHandler);
+    io.vertx.core.Handler<io.vertx.core.AsyncResult<T>> handlerDelegate = this.delegate.asyncAssertFailure(causeHandler);
+    Handler<AsyncResult<T>> ret = ar -> {
+      if (ar.succeeded()) {
+        handlerDelegate.handle(InternalHelper.result(ar.result()));
+      } else {
+        handlerDelegate.handle(InternalHelper.failure(ar.cause()));
+      }
+    };
     return ret;
   }
 

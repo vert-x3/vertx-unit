@@ -202,9 +202,9 @@ module VertxUnit
     # @return [Proc] the async result handler
     def async_assert_success
       if !block_given?
-        return nil
+        return ::Vertx::Util::Utils.to_async_result_handler_proc(@j_del.java_method(:asyncAssertSuccess, []).call()) { |val| ::Vertx::Util::Utils.to_object(val) }
       elsif block_given?
-        return nil
+        return ::Vertx::Util::Utils.to_async_result_handler_proc(@j_del.java_method(:asyncAssertSuccess, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.from_object(event)) }))) { |val| ::Vertx::Util::Utils.to_object(val) }
       end
       raise ArgumentError, "Invalid arguments when calling async_assert_success()"
     end
@@ -217,9 +217,9 @@ module VertxUnit
     # @return [Proc] the async result handler
     def async_assert_failure
       if !block_given?
-        return nil
+        return ::Vertx::Util::Utils.to_async_result_handler_proc(@j_del.java_method(:asyncAssertFailure, []).call()) { |val| ::Vertx::Util::Utils.to_object(val) }
       elsif block_given?
-        return nil
+        return ::Vertx::Util::Utils.to_async_result_handler_proc(@j_del.java_method(:asyncAssertFailure, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.from_throwable(event)) }))) { |val| ::Vertx::Util::Utils.to_object(val) }
       end
       raise ArgumentError, "Invalid arguments when calling async_assert_failure()"
     end

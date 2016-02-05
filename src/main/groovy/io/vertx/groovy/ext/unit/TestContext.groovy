@@ -281,7 +281,16 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertSuccess() {
-    def ret = this.delegate.asyncAssertSuccess();
+    def handlerDelegate = this.delegate.asyncAssertSuccess();
+    Handler<AsyncResult<Object>> ret = new Handler<AsyncResult<Object>>() {
+      public void handle(AsyncResult<Object> event) {
+        if (event.succeeded()) {
+          handlerDelegate.handle(InternalHelper.result(InternalHelper.unwrapObject(event.result())));
+        } else {
+          handlerDelegate.handle(InternalHelper.<java.lang.Object>failure(event.cause()));
+        }
+      }
+    };
     return ret;
   }
   /**
@@ -298,11 +307,20 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertSuccess(Handler<T> resultHandler) {
-    def ret = this.delegate.asyncAssertSuccess(new Handler<Object>() {
+    def handlerDelegate = this.delegate.asyncAssertSuccess(new Handler<Object>() {
       public void handle(Object event) {
         resultHandler.handle(InternalHelper.wrapObject(event))
       }
     });
+    Handler<AsyncResult<Object>> ret = new Handler<AsyncResult<Object>>() {
+      public void handle(AsyncResult<Object> event) {
+        if (event.succeeded()) {
+          handlerDelegate.handle(InternalHelper.result(InternalHelper.unwrapObject(event.result())));
+        } else {
+          handlerDelegate.handle(InternalHelper.<java.lang.Object>failure(event.cause()));
+        }
+      }
+    };
     return ret;
   }
   /**
@@ -314,7 +332,16 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertFailure() {
-    def ret = this.delegate.asyncAssertFailure();
+    def handlerDelegate = this.delegate.asyncAssertFailure();
+    Handler<AsyncResult<Object>> ret = new Handler<AsyncResult<Object>>() {
+      public void handle(AsyncResult<Object> event) {
+        if (event.succeeded()) {
+          handlerDelegate.handle(InternalHelper.result(InternalHelper.unwrapObject(event.result())));
+        } else {
+          handlerDelegate.handle(InternalHelper.<java.lang.Object>failure(event.cause()));
+        }
+      }
+    };
     return ret;
   }
   /**
@@ -327,7 +354,16 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertFailure(Handler<Throwable> causeHandler) {
-    def ret = this.delegate.asyncAssertFailure(causeHandler);
+    def handlerDelegate = this.delegate.asyncAssertFailure(causeHandler);
+    Handler<AsyncResult<Object>> ret = new Handler<AsyncResult<Object>>() {
+      public void handle(AsyncResult<Object> event) {
+        if (event.succeeded()) {
+          handlerDelegate.handle(InternalHelper.result(InternalHelper.unwrapObject(event.result())));
+        } else {
+          handlerDelegate.handle(InternalHelper.<java.lang.Object>failure(event.cause()));
+        }
+      }
+    };
     return ret;
   }
 }

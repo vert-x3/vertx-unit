@@ -19,7 +19,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 <dependency>
   <groupId>io.vertx</groupId>
   <artifactId>vertx-unit</artifactId>
-  <version>3.3.0-SNAPSHOT</version>
+  <version>3.2.1</version>
 </dependency>
 ----
 
@@ -27,7 +27,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 
 [source,groovy,subs="+attributes"]
 ----
-compile io.vertx:vertx-unit:3.3.0-SNAPSHOT
+compile io.vertx:vertx-unit:3.2.1
 ----
 
 Vert.x unit can be used in different ways and run anywhere your code runs, it is just a matter of reporting
@@ -947,7 +947,7 @@ import org.junit.runner.RunWith;
 public class RunOnContextJUnitTestSuite {
 
   @Rule
-  RunTestOnContext rule = new RunTestOnContext();
+  public RunTestOnContext rule = new RunTestOnContext();
 
   @Test
   public void testSomething(TestContext context) {
@@ -955,6 +955,7 @@ public class RunOnContextJUnitTestSuite {
     Vertx vertx = rule.vertx();
   }
 }
+
 ----
 
 The rule can be annotated by `@Rule` or `@ClassRule`, the former manages a Vert.x instance
@@ -978,7 +979,7 @@ import org.junit.Test;
 
 public class JunitTestWithTimeout {
 
-  @Test(timeout = 1000)
+  @Test(timeout = 1000l)
   public void testSomething(TestContext context) {
     //...
   }
@@ -1083,7 +1084,7 @@ import org.junit.runner.RunWith;
 public class RepeatingTest {
 
   @Rule
-  RepeatRule rule = new RepeatRule();
+  public RepeatRule rule = new RepeatRule();
 
   @Repeat(1000)
   @Test
@@ -1091,6 +1092,7 @@ public class RepeatingTest {
     // This will be executed 1000 times
   }
 }
+
 ----
 
 When declared, _before_ and _after_ life cycle will be executed as many times as the test is executed.

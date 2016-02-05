@@ -280,11 +280,11 @@ var TestContext = function(j_val) {
   this.asyncAssertSuccess = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return utils.convReturnTypeUnknown(j_testContext["asyncAssertSuccess()"]());
+      return utils.convReturnHandlerAsyncResult(j_testContext["asyncAssertSuccess()"](), function(result) { return utils.convParamTypeUnknown(result); });
     }  else if (__args.length === 1 && typeof __args[0] === 'function') {
-      return utils.convReturnTypeUnknown(j_testContext["asyncAssertSuccess(io.vertx.core.Handler)"](function(jVal) {
-      __args[0](utils.convReturnTypeUnknown(jVal));
-    }));
+      return utils.convReturnHandlerAsyncResult(j_testContext["asyncAssertSuccess(io.vertx.core.Handler)"](function(jVal) {
+      resultHandler(utils.convReturnTypeUnknown(jVal));
+    }), function(result) { return utils.convParamTypeUnknown(result); });
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -302,11 +302,11 @@ var TestContext = function(j_val) {
   this.asyncAssertFailure = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return utils.convReturnTypeUnknown(j_testContext["asyncAssertFailure()"]());
+      return utils.convReturnHandlerAsyncResult(j_testContext["asyncAssertFailure()"](), function(result) { return utils.convParamTypeUnknown(result); });
     }  else if (__args.length === 1 && typeof __args[0] === 'function') {
-      return utils.convReturnTypeUnknown(j_testContext["asyncAssertFailure(io.vertx.core.Handler)"](function(jVal) {
-      __args[0](utils.convReturnThrowable(jVal));
-    }));
+      return utils.convReturnHandlerAsyncResult(j_testContext["asyncAssertFailure(io.vertx.core.Handler)"](function(jVal) {
+      causeHandler(utils.convReturnThrowable(jVal));
+    }), function(result) { return utils.convParamTypeUnknown(result); });
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
