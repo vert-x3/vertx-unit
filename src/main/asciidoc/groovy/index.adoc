@@ -663,7 +663,7 @@ suite.run()
 
 The `vertx test` command extends the `vertx run` command. The exit behavior of the JVM is changed
 the JVM exits when the test suite is executed and a return value is provided indicating the tests
-success (0) or failure (1).
+success (0) or failure (n) where `n` is >=1 and represents the total number of failed tests.
 
 NOTE: several test suites can executed in the same verticle, Vert.x Unit waits until completion of
 all suite executed.

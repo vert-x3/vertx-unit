@@ -4,7 +4,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.cli.annotations.DefaultValue;
 import io.vertx.core.cli.annotations.Description;
 import io.vertx.core.cli.annotations.Name;
 import io.vertx.core.cli.annotations.Option;
@@ -128,10 +127,14 @@ public class TestCommand extends RunCommand {
 
     // Now wait each completion
     TestCompletionImpl completion;
+    int remainingCompletions = completions.size();
     while ((completion = completions.poll()) != null) {
       completion.await();
+      if(completion.isSucceeded()) {
+        remainingCompletions--;
+      }
     }
-    System.exit(0);
+    System.exit(remainingCompletions);
   }
 
   @Override
