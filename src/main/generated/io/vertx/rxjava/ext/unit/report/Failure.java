@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.unit.report;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 
 /**
@@ -53,7 +52,7 @@ public class Failure {
     if (cached_0 != null) {
       return cached_0;
     }
-    boolean ret = this.delegate.isError();
+    boolean ret = delegate.isError();
     cached_0 = ret;
     return ret;
   }
@@ -66,7 +65,7 @@ public class Failure {
     if (cached_1 != null) {
       return cached_1;
     }
-    String ret = this.delegate.message();
+    String ret = delegate.message();
     cached_1 = ret;
     return ret;
   }
@@ -79,14 +78,14 @@ public class Failure {
     if (cached_2 != null) {
       return cached_2;
     }
-    String ret = this.delegate.stackTrace();
+    String ret = delegate.stackTrace();
     cached_2 = ret;
     return ret;
   }
 
   private java.lang.Boolean cached_0;
-  private java.lang.String cached_1;
-  private java.lang.String cached_2;
+  private String cached_1;
+  private String cached_2;
 
   public static Failure newInstance(io.vertx.ext.unit.report.Failure arg) {
     return arg != null ? new Failure(arg) : null;

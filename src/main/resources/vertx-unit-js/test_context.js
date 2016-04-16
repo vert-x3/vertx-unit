@@ -59,7 +59,7 @@ var TestContext = function(j_val) {
    */
   this.put = function(key, value) {
     var __args = arguments;
-    if (__args.length === 2 && typeof __args[0] === 'string' && true) {
+    if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] !== 'function') {
       return utils.convReturnTypeUnknown(j_testContext["put(java.lang.String,java.lang.Object)"](key, utils.convParamTypeUnknown(value)));
     } else throw new TypeError('function invoked with invalid arguments');
   };
@@ -89,10 +89,10 @@ var TestContext = function(j_val) {
    */
   this.assertNull = function() {
     var __args = arguments;
-    if (__args.length === 1 && true) {
+    if (__args.length === 1 && typeof __args[0] !== 'function') {
       j_testContext["assertNull(java.lang.Object)"](utils.convParamTypeUnknown(__args[0]));
       return that;
-    }  else if (__args.length === 2 && true && typeof __args[1] === 'string') {
+    }  else if (__args.length === 2 && typeof __args[0] !== 'function' && typeof __args[1] === 'string') {
       j_testContext["assertNull(java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), __args[1]);
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -109,10 +109,10 @@ var TestContext = function(j_val) {
    */
   this.assertNotNull = function() {
     var __args = arguments;
-    if (__args.length === 1 && true) {
+    if (__args.length === 1 && typeof __args[0] !== 'function') {
       j_testContext["assertNotNull(java.lang.Object)"](utils.convParamTypeUnknown(__args[0]));
       return that;
-    }  else if (__args.length === 2 && true && typeof __args[1] === 'string') {
+    }  else if (__args.length === 2 && typeof __args[0] !== 'function' && typeof __args[1] === 'string') {
       j_testContext["assertNotNull(java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), __args[1]);
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -170,10 +170,10 @@ var TestContext = function(j_val) {
    */
   this.assertEquals = function() {
     var __args = arguments;
-    if (__args.length === 2 && true && true) {
+    if (__args.length === 2 && typeof __args[0] !== 'function' && typeof __args[1] !== 'function') {
       j_testContext["assertEquals(java.lang.Object,java.lang.Object)"](utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
       return that;
-    }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
+    }  else if (__args.length === 3 && typeof __args[0] !== 'function' && typeof __args[1] !== 'function' && typeof __args[2] === 'string') {
       j_testContext["assertEquals(java.lang.Object,java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -214,10 +214,10 @@ var TestContext = function(j_val) {
    */
   this.assertNotEquals = function() {
     var __args = arguments;
-    if (__args.length === 2 && true && true) {
+    if (__args.length === 2 && typeof __args[0] !== 'function' && typeof __args[1] !== 'function') {
       j_testContext["assertNotEquals(java.lang.Object,java.lang.Object)"](utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]));
       return that;
-    }  else if (__args.length === 3 && true && true && typeof __args[2] === 'string') {
+    }  else if (__args.length === 3 && typeof __args[0] !== 'function' && typeof __args[1] !== 'function' && typeof __args[2] === 'string') {
       j_testContext["assertNotEquals(java.lang.Object,java.lang.Object,java.lang.String)"](utils.convParamTypeUnknown(__args[0]), utils.convParamTypeUnknown(__args[1]), __args[2]);
       return that;
     } else throw new TypeError('function invoked with invalid arguments');

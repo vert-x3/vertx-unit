@@ -1,7 +1,9 @@
 package io.vertx.ext.unit;
 
+import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpClient;
 import io.vertx.ext.unit.junit.Repeat;
 import io.vertx.ext.unit.junit.RepeatRule;
 import io.vertx.ext.unit.junit.RunTestOnContext;
@@ -940,4 +942,102 @@ public class JUnitTest {
     assertSame(StaticUseRunOnContextRule.afterClass, StaticUseRunOnContextRule.method.get("testMethod1"));
   }
 
+  public static class FailOnContext {
+
+    static final AtomicInteger count = new AtomicInteger();
+
+    @Test
+    public void testMethod1(TestContext context) {
+      Async async = context.async();
+      Vertx vertx = Vertx.vertx().exceptionHandler(VertxUnitRunner.failureHandler());
+      vertx.runOnContext(v -> {
+        count.incrementAndGet();
+        fail();
+      });
+    }
+  }
+
+  @org.junit.Test
+  public void testFailOnContextFailsTheTest() {
+    Result result = run(FailOnContext.class);
+    assertEquals(1, FailOnContext.count.get());
+    assertEquals(1, result.getRunCount());
+    assertEquals(1, result.getFailureCount());
+  }
+
+  public static class VerticleFailStart extends AbstractVerticle {
+
+    static final AtomicInteger startCount = new AtomicInteger();
+
+    @Override
+    public void start() throws Exception {
+      startCount.incrementAndGet();
+      throw new Exception("failed");
+    }
+  }
+
+  public static class DeployFailingVerticle {
+
+    @Before
+    public void before(TestContext context) {
+      Async async = context.async();
+      Vertx vertx = Vertx.vertx().exceptionHandler(VertxUnitRunner.failureHandler());
+      vertx.deployVerticle(VerticleFailStart.class.getName(), ar -> {
+        assertTrue(ar.succeeded());
+        async.complete();
+      });
+    }
+
+    @Test
+    public void testMethod() {
+    }
+  }
+
+  @Test
+  public void testAssertFailedVerticleDeploy() {
+    Result result = run(DeployFailingVerticle.class);
+    assertEquals(1, VerticleFailStart.startCount.get());
+    assertEquals(1, result.getRunCount());
+    assertEquals(1, result.getFailureCount());
+  }
+
+  public static class HttpRequestFailure {
+
+    Vertx vertx;
+    static AtomicInteger requestCount = new AtomicInteger();
+
+    @Before
+    public void before() {
+      vertx = Vertx.vertx().exceptionHandler(VertxUnitRunner.failureHandler());
+    }
+
+    @After
+    public void after() {
+      vertx.close();
+    }
+
+    @Test
+    public void testMethod(TestContext context) {
+      Async async = context.async();
+      vertx.createHttpServer().
+          requestHandler(req -> {
+            requestCount.incrementAndGet();
+            throw new RuntimeException();
+          }).
+          listen(8080, "localhost", ar -> {
+            assertTrue(ar.succeeded());
+            HttpClient client = vertx.createHttpClient();
+            client.getNow(8080, "localhost", "/somepath", resp -> {
+            });
+          });
+    }
+  }
+
+  @Test
+  public void testFailInHttpRequestHandler() {
+    Result result = run(HttpRequestFailure.class);
+    assertEquals(1, HttpRequestFailure.requestCount.get());
+    assertEquals(1, result.getRunCount());
+    assertEquals(1, result.getFailureCount());
+  }
 }

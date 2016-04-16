@@ -39,7 +39,7 @@ public class TestCaseReport {
     if (cached_0 != null) {
       return cached_0;
     }
-    def ret = this.delegate.name();
+    def ret = delegate.name();
     cached_0 = ret;
     return ret;
   }
@@ -49,11 +49,11 @@ public class TestCaseReport {
    * @return a reference to this, so the API can be used fluently
    */
   public TestCaseReport endHandler(Handler<TestResult> handler) {
-    this.delegate.endHandler(new Handler<io.vertx.ext.unit.report.TestResult>() {
+    delegate.endHandler(handler != null ? new Handler<io.vertx.ext.unit.report.TestResult>(){
       public void handle(io.vertx.ext.unit.report.TestResult event) {
-        handler.handle(new io.vertx.groovy.ext.unit.report.TestResult(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.unit.report.TestResult.class));
       }
-    });
+    } : null);
     return this;
   }
   private String cached_0;

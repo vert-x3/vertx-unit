@@ -33,15 +33,21 @@ import java.util.concurrent.CompletableFuture;
 /**
  * A JUnit runner for writing asynchronous tests.
  *
+ * Note : a runner is needed because when a rule statement is evaluated, it will run the before/test/after
+ *       method and then test method is executed even if there are pending Async objects in the before
+ *       method. The runner gives this necessary fine grained control.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class VertxUnitRunner extends BlockJUnit4ClassRunner {
 
+  private static final ThreadLocal<VertxUnitRunner> currentRunner = new ThreadLocal<>();
   private static final LinkedList<Context> contextStack = new LinkedList<>();
   private static final LinkedList<Long> timeoutStack = new LinkedList<>();
   private final TestClass testClass;
   private Map<String, Object> classAttributes = new HashMap<>();
   private Map<String, Object> testAttributes;
+  private TestContextImpl testContext;
 
   public VertxUnitRunner(Class<?> klass) throws InitializationError {
     super(klass);
@@ -114,13 +120,14 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
     if (annotation != null && annotation.timeout() > 0) {
       timeout = annotation.timeout();
     }
-    TestContextImpl context = new TestContextImpl(
+    testContext = new TestContextImpl(
         attributes,
         callback,
         err -> {},
         task,
         timeout);
-    new ExecutionContext(contextStack.peekLast()).run(context);
+    currentRunner.set(this);
+    new ExecutionContext(contextStack.peekLast()).run(testContext);
     Result result;
     try {
       result = future.get();
@@ -128,12 +135,30 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
       // Should we do something else ?
       Thread.currentThread().interrupt();
       throw e;
+    } finally {
+      testContext = null;
+      currentRunner.set(null);
     }
     Throwable failure = result.getFailure();
     if (failure != null) {
       throw failure;
     }
   }
+
+  public static Handler<Throwable> failureHandler() {
+    VertxUnitRunner runner = currentRunner.get();
+    if (runner != null) {
+      return err -> {
+        TestContextImpl testContext = runner.testContext;
+        if (testContext != null) {
+          testContext.failed(err);
+        }
+      };
+    } else {
+      return null;
+    }
+  }
+
 
   @Override
   protected Statement withBefores(FrameworkMethod method, Object target, Statement statement) {

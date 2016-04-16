@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.unit.report;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.core.streams.ReadStream;
 import io.vertx.core.Handler;
@@ -60,7 +59,7 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
     if (cached_0 != null) {
       return cached_0;
     }
-    String ret = this.delegate.name();
+    String ret = delegate.name();
     cached_0 = ret;
     return ret;
   }
@@ -72,35 +71,39 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuiteReport exceptionHandler(Handler<Throwable> handler) { 
-    ( /* Work around for https://jira.codehaus.org/browse/GROOVY-6970 */ (io.vertx.ext.unit.report.TestSuiteReport) delegate).exceptionHandler(handler);
+    ((io.vertx.ext.unit.report.TestSuiteReport) delegate).exceptionHandler(handler);
     return this;
   }
 
   public TestSuiteReport handler(Handler<TestCaseReport> handler) { 
-    ( /* Work around for https://jira.codehaus.org/browse/GROOVY-6970 */ (io.vertx.ext.unit.report.TestSuiteReport) delegate).handler(new Handler<io.vertx.ext.unit.report.TestCaseReport>() {
+    ((io.vertx.ext.unit.report.TestSuiteReport) delegate).handler(new Handler<io.vertx.ext.unit.report.TestCaseReport>() {
       public void handle(io.vertx.ext.unit.report.TestCaseReport event) {
-        handler.handle(new TestCaseReport(event));
+        handler.handle(TestCaseReport.newInstance(event));
       }
     });
     return this;
   }
 
   public TestSuiteReport pause() { 
-    ( /* Work around for https://jira.codehaus.org/browse/GROOVY-6970 */ (io.vertx.ext.unit.report.TestSuiteReport) delegate).pause();
+    ((io.vertx.ext.unit.report.TestSuiteReport) delegate).pause();
     return this;
   }
 
   public TestSuiteReport resume() { 
-    ( /* Work around for https://jira.codehaus.org/browse/GROOVY-6970 */ (io.vertx.ext.unit.report.TestSuiteReport) delegate).resume();
+    ((io.vertx.ext.unit.report.TestSuiteReport) delegate).resume();
     return this;
   }
 
   public TestSuiteReport endHandler(Handler<Void> endHandler) { 
-    ( /* Work around for https://jira.codehaus.org/browse/GROOVY-6970 */ (io.vertx.ext.unit.report.TestSuiteReport) delegate).endHandler(endHandler);
+    ((io.vertx.ext.unit.report.TestSuiteReport) delegate).endHandler(new Handler<java.lang.Void>() {
+      public void handle(java.lang.Void event) {
+        endHandler.handle(event);
+      }
+    });
     return this;
   }
 
-  private java.lang.String cached_0;
+  private String cached_0;
 
   public static TestSuiteReport newInstance(io.vertx.ext.unit.report.TestSuiteReport arg) {
     return arg != null ? new TestSuiteReport(arg) : null;

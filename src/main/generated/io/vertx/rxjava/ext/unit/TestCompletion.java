@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.unit;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 
 /**

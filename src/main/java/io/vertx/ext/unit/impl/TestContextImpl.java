@@ -202,7 +202,7 @@ public class TestContextImpl implements TestContext, Task<Result> {
     }
   }
 
-  void failed(Throwable t) {
+  public void failed(Throwable t) {
     synchronized (this) {
       switch (status) {
         case STATUS_COMPLETED:

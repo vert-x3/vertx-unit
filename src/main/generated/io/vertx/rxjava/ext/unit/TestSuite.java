@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.unit;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.ext.unit.TestOptions;
 import io.vertx.rxjava.core.Vertx;
@@ -57,7 +56,7 @@ public class TestSuite {
    * @return the created test suite
    */
   public static TestSuite create(String name) { 
-    TestSuite ret= TestSuite.newInstance(io.vertx.ext.unit.TestSuite.create(name));
+    TestSuite ret = TestSuite.newInstance(io.vertx.ext.unit.TestSuite.create(name));
     return ret;
   }
 
@@ -67,9 +66,9 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite before(Handler<TestContext> callback) { 
-    this.delegate.before(new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.before(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new TestContext(event));
+        callback.handle(TestContext.newInstance(event));
       }
     });
     return this;
@@ -81,9 +80,9 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite beforeEach(Handler<TestContext> callback) { 
-    this.delegate.beforeEach(new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.beforeEach(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new TestContext(event));
+        callback.handle(TestContext.newInstance(event));
       }
     });
     return this;
@@ -95,9 +94,9 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite after(Handler<TestContext> callback) { 
-    this.delegate.after(new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.after(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new TestContext(event));
+        callback.handle(TestContext.newInstance(event));
       }
     });
     return this;
@@ -109,9 +108,9 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite afterEach(Handler<TestContext> callback) { 
-    this.delegate.afterEach(new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.afterEach(new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new TestContext(event));
+        callback.handle(TestContext.newInstance(event));
       }
     });
     return this;
@@ -124,9 +123,9 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite test(String name, Handler<TestContext> testCase) { 
-    this.delegate.test(name, new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.test(name, new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        testCase.handle(new TestContext(event));
+        testCase.handle(TestContext.newInstance(event));
       }
     });
     return this;
@@ -140,9 +139,9 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite test(String name, int repeat, Handler<TestContext> testCase) { 
-    this.delegate.test(name, repeat, new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.test(name, repeat, new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        testCase.handle(new TestContext(event));
+        testCase.handle(TestContext.newInstance(event));
       }
     });
     return this;
@@ -158,7 +157,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run() { 
-    TestCompletion ret= TestCompletion.newInstance(this.delegate.run());
+    TestCompletion ret = TestCompletion.newInstance(delegate.run());
     return ret;
   }
 
@@ -177,7 +176,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run(TestOptions options) { 
-    TestCompletion ret= TestCompletion.newInstance(this.delegate.run(options));
+    TestCompletion ret = TestCompletion.newInstance(delegate.run(options));
     return ret;
   }
 
@@ -190,7 +189,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run(Vertx vertx) { 
-    TestCompletion ret= TestCompletion.newInstance(this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate()));
+    TestCompletion ret = TestCompletion.newInstance(delegate.run((io.vertx.core.Vertx)vertx.getDelegate()));
     return ret;
   }
 
@@ -205,7 +204,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run(Vertx vertx, TestOptions options) { 
-    TestCompletion ret= TestCompletion.newInstance(this.delegate.run((io.vertx.core.Vertx) vertx.getDelegate(), options));
+    TestCompletion ret = TestCompletion.newInstance(delegate.run((io.vertx.core.Vertx)vertx.getDelegate(), options));
     return ret;
   }
 

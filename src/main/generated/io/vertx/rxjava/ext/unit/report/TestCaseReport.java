@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.unit.report;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.core.Handler;
 
@@ -48,7 +47,7 @@ public class TestCaseReport {
     if (cached_0 != null) {
       return cached_0;
     }
-    String ret = this.delegate.name();
+    String ret = delegate.name();
     cached_0 = ret;
     return ret;
   }
@@ -59,15 +58,15 @@ public class TestCaseReport {
    * @return a reference to this, so the API can be used fluently
    */
   public TestCaseReport endHandler(Handler<TestResult> handler) { 
-    this.delegate.endHandler(new Handler<io.vertx.ext.unit.report.TestResult>() {
+    delegate.endHandler(new Handler<io.vertx.ext.unit.report.TestResult>() {
       public void handle(io.vertx.ext.unit.report.TestResult event) {
-        handler.handle(new TestResult(event));
+        handler.handle(TestResult.newInstance(event));
       }
     });
     return this;
   }
 
-  private java.lang.String cached_0;
+  private String cached_0;
 
   public static TestCaseReport newInstance(io.vertx.ext.unit.report.TestCaseReport arg) {
     return arg != null ? new TestCaseReport(arg) : null;

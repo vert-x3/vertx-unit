@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.unit;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.core.Handler;
 
@@ -47,9 +46,9 @@ public class TestCase {
    * @return the created test case
    */
   public static TestCase create(String name, Handler<TestContext> testCase) { 
-    TestCase ret= TestCase.newInstance(io.vertx.ext.unit.TestCase.create(name, new Handler<io.vertx.ext.unit.TestContext>() {
+    TestCase ret = TestCase.newInstance(io.vertx.ext.unit.TestCase.create(name, new Handler<io.vertx.ext.unit.TestContext>() {
       public void handle(io.vertx.ext.unit.TestContext event) {
-        testCase.handle(new TestContext(event));
+        testCase.handle(TestContext.newInstance(event));
       }
     }));
     return ret;

@@ -38,7 +38,7 @@ public class TestResult {
     if (cached_0 != null) {
       return cached_0;
     }
-    def ret = this.delegate.name();
+    def ret = delegate.name();
     cached_0 = ret;
     return ret;
   }
@@ -50,7 +50,7 @@ public class TestResult {
     if (cached_1 != null) {
       return cached_1;
     }
-    def ret = this.delegate.beginTime();
+    def ret = delegate.beginTime();
     cached_1 = ret;
     return ret;
   }
@@ -62,7 +62,7 @@ public class TestResult {
     if (cached_2 != null) {
       return cached_2;
     }
-    def ret = this.delegate.durationTime();
+    def ret = delegate.durationTime();
     cached_2 = ret;
     return ret;
   }
@@ -74,7 +74,7 @@ public class TestResult {
     if (cached_3 != null) {
       return cached_3;
     }
-    def ret = this.delegate.succeeded();
+    def ret = delegate.succeeded();
     cached_3 = ret;
     return ret;
   }
@@ -86,7 +86,7 @@ public class TestResult {
     if (cached_4 != null) {
       return cached_4;
     }
-    def ret = this.delegate.failed();
+    def ret = delegate.failed();
     cached_4 = ret;
     return ret;
   }
@@ -98,7 +98,7 @@ public class TestResult {
     if (cached_5 != null) {
       return cached_5;
     }
-    def ret= InternalHelper.safeCreate(this.delegate.failure(), io.vertx.groovy.ext.unit.report.Failure.class);
+    def ret = InternalHelper.safeCreate(delegate.failure(), io.vertx.groovy.ext.unit.report.Failure.class);
     cached_5 = ret;
     return ret;
   }

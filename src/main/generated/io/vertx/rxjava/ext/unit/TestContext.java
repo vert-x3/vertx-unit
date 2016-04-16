@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.unit;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -48,7 +47,7 @@ public class TestContext {
    * @return the data
    */
   public <T> T get(String key) { 
-    T ret = (T) this.delegate.get(key);
+    T ret = (T) delegate.get(key);
     return ret;
   }
 
@@ -61,7 +60,7 @@ public class TestContext {
    * @return the previous object when it exists
    */
   public <T> T put(String key, Object value) { 
-    T ret = (T) this.delegate.put(key, value);
+    T ret = (T) delegate.put(key, value);
     return ret;
   }
 
@@ -71,7 +70,7 @@ public class TestContext {
    * @return the removed object when it exists
    */
   public <T> T remove(String key) { 
-    T ret = (T) this.delegate.remove(key);
+    T ret = (T) delegate.remove(key);
     return ret;
   }
 
@@ -82,7 +81,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNull(Object expected) { 
-    this.delegate.assertNull(expected);
+    delegate.assertNull(expected);
     return this;
   }
 
@@ -94,7 +93,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNull(Object expected, String message) { 
-    this.delegate.assertNull(expected, message);
+    delegate.assertNull(expected, message);
     return this;
   }
 
@@ -105,7 +104,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNotNull(Object expected) { 
-    this.delegate.assertNotNull(expected);
+    delegate.assertNotNull(expected);
     return this;
   }
 
@@ -117,7 +116,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNotNull(Object expected, String message) { 
-    this.delegate.assertNotNull(expected, message);
+    delegate.assertNotNull(expected, message);
     return this;
   }
 
@@ -128,7 +127,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertTrue(boolean condition) { 
-    this.delegate.assertTrue(condition);
+    delegate.assertTrue(condition);
     return this;
   }
 
@@ -140,7 +139,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertTrue(boolean condition, String message) { 
-    this.delegate.assertTrue(condition, message);
+    delegate.assertTrue(condition, message);
     return this;
   }
 
@@ -151,7 +150,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertFalse(boolean condition) { 
-    this.delegate.assertFalse(condition);
+    delegate.assertFalse(condition);
     return this;
   }
 
@@ -163,7 +162,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertFalse(boolean condition, String message) { 
-    this.delegate.assertFalse(condition, message);
+    delegate.assertFalse(condition, message);
     return this;
   }
 
@@ -175,7 +174,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertEquals(Object expected, Object actual) { 
-    this.delegate.assertEquals(expected, actual);
+    delegate.assertEquals(expected, actual);
     return this;
   }
 
@@ -188,7 +187,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertEquals(Object expected, Object actual, String message) { 
-    this.delegate.assertEquals(expected, actual, message);
+    delegate.assertEquals(expected, actual, message);
     return this;
   }
 
@@ -202,7 +201,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertInRange(double expected, double actual, double delta) { 
-    this.delegate.assertInRange(expected, actual, delta);
+    delegate.assertInRange(expected, actual, delta);
     return this;
   }
 
@@ -217,7 +216,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertInRange(double expected, double actual, double delta, String message) { 
-    this.delegate.assertInRange(expected, actual, delta, message);
+    delegate.assertInRange(expected, actual, delta, message);
     return this;
   }
 
@@ -229,7 +228,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNotEquals(Object first, Object second) { 
-    this.delegate.assertNotEquals(first, second);
+    delegate.assertNotEquals(first, second);
     return this;
   }
 
@@ -242,7 +241,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNotEquals(Object first, Object second, String message) { 
-    this.delegate.assertNotEquals(first, second, message);
+    delegate.assertNotEquals(first, second, message);
     return this;
   }
 
@@ -250,7 +249,7 @@ public class TestContext {
    * Throw a failure.
    */
   public void fail() { 
-    this.delegate.fail();
+    delegate.fail();
   }
 
   /**
@@ -258,7 +257,7 @@ public class TestContext {
    * @param message the failure message
    */
   public void fail(String message) { 
-    this.delegate.fail(message);
+    delegate.fail(message);
   }
 
   /**
@@ -266,21 +265,21 @@ public class TestContext {
    * @param cause the failure cause
    */
   public void fail(Throwable cause) { 
-    this.delegate.fail(cause);
+    delegate.fail(cause);
   }
 
   /**
    * Create and returns a new async object, the returned async controls the completion of the test. Calling the
-   * {@link io.vertx.ext.unit.Async} completes the async operation.<p/>
+   * {@link io.vertx.rxjava.ext.unit.Async#complete} completes the async operation.<p/>
    *
-   * The test case will complete when all the async objects have their {@link io.vertx.ext.unit.Async}
+   * The test case will complete when all the async objects have their {@link io.vertx.rxjava.ext.unit.Async#complete}
    * method called at least once.<p/>
    *
    * This method shall be used for creating asynchronous exit points for the executed test.
    * @return the async instance
    */
   public Async async() { 
-    Async ret= Async.newInstance(this.delegate.async());
+    Async ret = Async.newInstance(delegate.async());
     return ret;
   }
 
@@ -296,7 +295,7 @@ public class TestContext {
    * @return the async instance
    */
   public Async async(int count) { 
-    Async ret= Async.newInstance(this.delegate.async(count));
+    Async ret = Async.newInstance(delegate.async(count));
     return ret;
   }
 
@@ -309,12 +308,13 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertSuccess() { 
-    io.vertx.core.Handler<io.vertx.core.AsyncResult<T>> handlerDelegate = this.delegate.asyncAssertSuccess();
-    Handler<AsyncResult<T>> ret = ar -> {
-      if (ar.succeeded()) {
-        handlerDelegate.handle(InternalHelper.result(ar.result()));
-      } else {
-        handlerDelegate.handle(InternalHelper.failure(ar.cause()));
+    Handler<AsyncResult<T>> ret = new Handler<AsyncResult<T>>() {
+      public void handle(AsyncResult<T> ar) {
+        if (ar.succeeded()) {
+          delegate.asyncAssertSuccess().handle(io.vertx.core.Future.succeededFuture(ar.result()));
+        } else {
+          delegate.asyncAssertSuccess().handle(io.vertx.core.Future.failedFuture(ar.cause()));
+        }
       }
     };
     return ret;
@@ -334,12 +334,13 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertSuccess(Handler<T> resultHandler) { 
-    io.vertx.core.Handler<io.vertx.core.AsyncResult<T>> handlerDelegate = this.delegate.asyncAssertSuccess(resultHandler);
-    Handler<AsyncResult<T>> ret = ar -> {
-      if (ar.succeeded()) {
-        handlerDelegate.handle(InternalHelper.result(ar.result()));
-      } else {
-        handlerDelegate.handle(InternalHelper.failure(ar.cause()));
+    Handler<AsyncResult<T>> ret = new Handler<AsyncResult<T>>() {
+      public void handle(AsyncResult<T> ar) {
+        if (ar.succeeded()) {
+          delegate.asyncAssertSuccess(resultHandler).handle(io.vertx.core.Future.succeededFuture(ar.result()));
+        } else {
+          delegate.asyncAssertSuccess(resultHandler).handle(io.vertx.core.Future.failedFuture(ar.cause()));
+        }
       }
     };
     return ret;
@@ -354,12 +355,13 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertFailure() { 
-    io.vertx.core.Handler<io.vertx.core.AsyncResult<T>> handlerDelegate = this.delegate.asyncAssertFailure();
-    Handler<AsyncResult<T>> ret = ar -> {
-      if (ar.succeeded()) {
-        handlerDelegate.handle(InternalHelper.result(ar.result()));
-      } else {
-        handlerDelegate.handle(InternalHelper.failure(ar.cause()));
+    Handler<AsyncResult<T>> ret = new Handler<AsyncResult<T>>() {
+      public void handle(AsyncResult<T> ar) {
+        if (ar.succeeded()) {
+          delegate.asyncAssertFailure().handle(io.vertx.core.Future.succeededFuture(ar.result()));
+        } else {
+          delegate.asyncAssertFailure().handle(io.vertx.core.Future.failedFuture(ar.cause()));
+        }
       }
     };
     return ret;
@@ -375,12 +377,13 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertFailure(Handler<Throwable> causeHandler) { 
-    io.vertx.core.Handler<io.vertx.core.AsyncResult<T>> handlerDelegate = this.delegate.asyncAssertFailure(causeHandler);
-    Handler<AsyncResult<T>> ret = ar -> {
-      if (ar.succeeded()) {
-        handlerDelegate.handle(InternalHelper.result(ar.result()));
-      } else {
-        handlerDelegate.handle(InternalHelper.failure(ar.cause()));
+    Handler<AsyncResult<T>> ret = new Handler<AsyncResult<T>>() {
+      public void handle(AsyncResult<T> ar) {
+        if (ar.succeeded()) {
+          delegate.asyncAssertFailure(causeHandler).handle(io.vertx.core.Future.succeededFuture(ar.result()));
+        } else {
+          delegate.asyncAssertFailure(causeHandler).handle(io.vertx.core.Future.failedFuture(ar.cause()));
+        }
       }
     };
     return ret;

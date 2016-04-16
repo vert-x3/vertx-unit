@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.unit;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -47,7 +46,7 @@ public class Completion<T> {
    * @param future the future to resolve
    */
   public void resolve(Future<T> future) { 
-    this.delegate.resolve((io.vertx.core.Future<T>) future.getDelegate());
+    delegate.resolve((io.vertx.core.Future<T>)future.getDelegate());
   }
 
   /**
@@ -55,7 +54,7 @@ public class Completion<T> {
    * @return 
    */
   public boolean isCompleted() { 
-    boolean ret = this.delegate.isCompleted();
+    boolean ret = delegate.isCompleted();
     return ret;
   }
 
@@ -64,7 +63,7 @@ public class Completion<T> {
    * @return 
    */
   public boolean isSucceeded() { 
-    boolean ret = this.delegate.isSucceeded();
+    boolean ret = delegate.isSucceeded();
     return ret;
   }
 
@@ -73,7 +72,7 @@ public class Completion<T> {
    * @return 
    */
   public boolean isFailed() { 
-    boolean ret = this.delegate.isFailed();
+    boolean ret = delegate.isFailed();
     return ret;
   }
 
@@ -82,7 +81,15 @@ public class Completion<T> {
    * @param completionHandler the completion handler
    */
   public void handler(Handler<AsyncResult<T>> completionHandler) { 
-    this.delegate.handler(completionHandler);
+    delegate.handler(new Handler<AsyncResult<T>>() {
+      public void handle(AsyncResult<T> ar) {
+        if (ar.succeeded()) {
+          completionHandler.handle(io.vertx.core.Future.succeededFuture((T) ar.result()));
+        } else {
+          completionHandler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
+        }
+      }
+    });
   }
 
   /**
@@ -101,7 +108,7 @@ public class Completion<T> {
    * If the current thread is interrupted, an exception will be thrown.
    */
   public void await() { 
-    this.delegate.await();
+    delegate.await();
   }
 
   /**
@@ -111,7 +118,7 @@ public class Completion<T> {
    * @param timeoutMillis the timeout in milliseconds
    */
   public void await(long timeoutMillis) { 
-    this.delegate.await(timeoutMillis);
+    delegate.await(timeoutMillis);
   }
 
   /**
@@ -120,7 +127,7 @@ public class Completion<T> {
    * If the current thread is interrupted or the suite fails, an exception will be thrown.
    */
   public void awaitSuccess() { 
-    this.delegate.awaitSuccess();
+    delegate.awaitSuccess();
   }
 
   /**
@@ -130,7 +137,7 @@ public class Completion<T> {
    * @param timeoutMillis the timeout in milliseconds
    */
   public void awaitSuccess(long timeoutMillis) { 
-    this.delegate.awaitSuccess(timeoutMillis);
+    delegate.awaitSuccess(timeoutMillis);
   }
 
 
