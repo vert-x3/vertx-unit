@@ -4,6 +4,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.unit.junit.Repeat;
 import io.vertx.ext.unit.junit.RepeatRule;
 import io.vertx.ext.unit.junit.RunTestOnContext;
@@ -949,7 +950,7 @@ public class JUnitTest {
     @Test
     public void testMethod1(TestContext context) {
       Async async = context.async();
-      Vertx vertx = Vertx.vertx().exceptionHandler(VertxUnitRunner.failureHandler());
+      Vertx vertx = Vertx.vertx().exceptionHandler(context.exceptionHandler());
       vertx.runOnContext(v -> {
         count.incrementAndGet();
         fail();
@@ -981,7 +982,7 @@ public class JUnitTest {
     @Before
     public void before(TestContext context) {
       Async async = context.async();
-      Vertx vertx = Vertx.vertx().exceptionHandler(VertxUnitRunner.failureHandler());
+      Vertx vertx = Vertx.vertx().exceptionHandler(context.exceptionHandler());
       vertx.deployVerticle(VerticleFailStart.class.getName(), ar -> {
         assertTrue(ar.succeeded());
         async.complete();
@@ -1007,34 +1008,33 @@ public class JUnitTest {
     static AtomicInteger requestCount = new AtomicInteger();
 
     @Before
-    public void before() {
-      vertx = Vertx.vertx().exceptionHandler(VertxUnitRunner.failureHandler());
+    public void before(TestContext context) {
+      vertx = Vertx.vertx().exceptionHandler(context.exceptionHandler());
+      vertx.createHttpServer(new HttpServerOptions().setReuseAddress(true)).
+          requestHandler(req -> {
+            requestCount.incrementAndGet();
+            fail("Don't freak out");
+          }).listen(8080, "localhost", context.asyncAssertSuccess(s -> {
+      }));
     }
 
     @After
-    public void after() {
-      vertx.close();
+    public void after(TestContext context) {
+      vertx.close(context.asyncAssertSuccess());
     }
 
     @Test
     public void testMethod(TestContext context) {
+      requestCount.set(0);
       Async async = context.async();
-      vertx.createHttpServer().
-          requestHandler(req -> {
-            requestCount.incrementAndGet();
-            throw new RuntimeException();
-          }).
-          listen(8080, "localhost", ar -> {
-            assertTrue(ar.succeeded());
-            HttpClient client = vertx.createHttpClient();
-            client.getNow(8080, "localhost", "/somepath", resp -> {
-            });
-          });
+      vertx.createHttpClient().getNow(8080, "localhost", "/", resp -> {
+        async.complete();
+      });
     }
   }
 
   @Test
-  public void testFailInHttpRequestHandler() {
+  public void testFailInHttpRequestHandlerSetupInBefore() {
     Result result = run(HttpRequestFailure.class);
     assertEquals(1, HttpRequestFailure.requestCount.get());
     assertEquals(1, result.getRunCount());

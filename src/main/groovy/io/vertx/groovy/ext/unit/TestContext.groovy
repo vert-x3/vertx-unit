@@ -363,4 +363,12 @@ public class TestContext {
     };
     return ret;
   }
+  /**
+   * @return an exception handler that will fail this context
+   * @return 
+   */
+  public Handler<Throwable> exceptionHandler() {
+    def ret = delegate.exceptionHandler();
+    return ret;
+  }
 }

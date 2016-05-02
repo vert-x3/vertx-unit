@@ -84,4 +84,13 @@ public class VerticleTest extends VertxTestBase {
     await();
   }
 
+  @Test
+  public void testGroovyExceptionHandler() {
+    vertx.deployVerticle("verticle/exceptionHandler.groovy", ar -> {
+      assertTrue(ar.failed());
+      assertEquals("the_failure", ar.cause().getMessage());
+      testComplete();
+    });
+    await();
+  }
 }

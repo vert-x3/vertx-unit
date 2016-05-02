@@ -389,6 +389,19 @@ public class TestContext {
     return ret;
   }
 
+  /**
+   * @return an exception handler that will fail this context
+   * @return 
+   */
+  public Handler<Throwable> exceptionHandler() { 
+    Handler<Throwable> ret = new Handler<Throwable>() {
+      public void handle(Throwable event) {
+          delegate.exceptionHandler().handle(event);
+      }
+    };
+    return ret;
+  }
+
 
   public static TestContext newInstance(io.vertx.ext.unit.TestContext arg) {
     return arg != null ? new TestContext(arg) : null;

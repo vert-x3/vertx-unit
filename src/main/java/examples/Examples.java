@@ -448,4 +448,41 @@ public class Examples {
 
     collector.register("the-address");
   }
+
+  public static void vertxInteg1(Vertx vertx, TestSuite suite) throws Exception {
+    suite.test("my_test_case", ctx -> {
+
+      // The failure will be reported by Vert.x Unit
+      throw new RuntimeException("it failed!");
+    });
+  }
+
+  public static void vertxInteg2(Vertx vertx, TestSuite suite) throws Exception {
+    suite.test("test-server", testContext -> {
+      HttpServer server = vertx.createHttpServer().requestHandler(req -> {
+        if (req.path().equals("/somepath")) {
+          throw new AssertionError("Wrong path!");
+        }
+        req.response().end();
+      });
+    });
+  }
+
+  public static void vertxInteg3(Vertx vertx, TestSuite suite) throws Exception {
+
+    suite.before(testContext -> {
+
+      // Report uncaught exceptions as Vert.x Unit failures
+      vertx.exceptionHandler(testContext.exceptionHandler());
+    });
+
+    suite.test("test-server", testContext -> {
+      HttpServer server = vertx.createHttpServer().requestHandler(req -> {
+        if (req.path().equals("/somepath")) {
+          throw new AssertionError("Wrong path!");
+        }
+        req.response().end();
+      });
+    });
+  }
 }
