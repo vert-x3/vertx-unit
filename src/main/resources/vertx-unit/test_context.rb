@@ -223,5 +223,13 @@ module VertxUnit
       end
       raise ArgumentError, "Invalid arguments when calling async_assert_failure()"
     end
+    #  @return an exception handler that will fail this context
+    # @return [Proc]
+    def exception_handler
+      if !block_given?
+        return ::Vertx::Util::Utils.to_handler_proc(@j_del.java_method(:exceptionHandler, []).call()) { |val| ::Vertx::Util::Utils.to_throwable(val) }
+      end
+      raise ArgumentError, "Invalid arguments when calling exception_handler()"
+    end
   end
 end

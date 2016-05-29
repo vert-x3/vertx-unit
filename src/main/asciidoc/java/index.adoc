@@ -19,7 +19,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 <dependency>
   <groupId>io.vertx</groupId>
   <artifactId>vertx-unit</artifactId>
-  <version>3.2.1</version>
+  <version>3.3.0-SNAPSHOT</version>
 </dependency>
 ----
 
@@ -27,7 +27,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 
 [source,groovy,subs="+attributes"]
 ----
-compile io.vertx:vertx-unit:3.2.1
+compile io.vertx:vertx-unit:3.3.0-SNAPSHOT
 ----
 
 Vert.x unit can be used in different ways and run anywhere your code runs, it is just a matter of reporting
@@ -618,7 +618,7 @@ suite.run();
 
 The `vertx test` command extends the `vertx run` command. The exit behavior of the JVM is changed
 the JVM exits when the test suite is executed and a return value is provided indicating the tests
-success (0) or failure (n) where `n` is >=1 and represents the total number of failed tests.
+success (0) or failure (1).
 
 NOTE: several test suites can executed in the same verticle, Vert.x Unit waits until completion of
 all suite executed.
@@ -816,6 +816,58 @@ EventBusCollector collector = EventBusCollector.create(
 
 collector.register("the-address");
 ----
+
+== Vertx integration
+
+By default, assertions and failures must be done on the `link:../../apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` and throwing an
+assertion error works only when called by Vert.x Unit:
+
+[source,java]
+----
+suite.test("my_test_case", ctx -> {
+
+  // The failure will be reported by Vert.x Unit
+  throw new RuntimeException("it failed!");
+});
+----
+
+In a regular Vert.x callback, the failure will be ignored:
+
+[source,java]
+----
+suite.test("test-server", testContext -> {
+  HttpServer server = vertx.createHttpServer().requestHandler(req -> {
+    if (req.path().equals("/somepath")) {
+      throw new AssertionError("Wrong path!");
+    }
+    req.response().end();
+  });
+});
+----
+
+Since Vert.x 3.3, a global exception handler can be set to report the event loop uncaught exceptions:
+
+[source,java]
+----
+suite.before(testContext -> {
+
+  // Report uncaught exceptions as Vert.x Unit failures
+  vertx.exceptionHandler(testContext.exceptionHandler());
+});
+
+suite.test("test-server", testContext -> {
+  HttpServer server = vertx.createHttpServer().requestHandler(req -> {
+    if (req.path().equals("/somepath")) {
+      throw new AssertionError("Wrong path!");
+    }
+    req.response().end();
+  });
+});
+----
+
+The exception handler is set during the _before_ phase, the `link:../../apidocs/io/vertx/ext/unit/TestContext.html[TestContext]` is shared
+between each _before_, _test_ and _after_ phase. So the exception handler obtained during the _before_ phase
+is correct.
 
 == Junit integration
 

@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.unit;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 
 /**
@@ -45,7 +44,7 @@ public class Async extends Completion<Void> {
    * @return 
    */
   public int count() { 
-    int ret = this.delegate.count();
+    int ret = delegate.count();
     return ret;
   }
 
@@ -53,7 +52,7 @@ public class Async extends Completion<Void> {
    * Count down the async.
    */
   public void countDown() { 
-    this.delegate.countDown();
+    delegate.countDown();
   }
 
   /**
@@ -61,7 +60,7 @@ public class Async extends Completion<Void> {
    * otherwise it throw an <code>IllegalStateException</code> to signal the error.
    */
   public void complete() { 
-    this.delegate.complete();
+    delegate.complete();
   }
 
 

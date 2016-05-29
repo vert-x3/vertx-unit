@@ -48,7 +48,7 @@ public class TestSuite {
    * @return the created test suite
    */
   public static TestSuite create(String name) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.unit.TestSuite.create(name), io.vertx.groovy.ext.unit.TestSuite.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.unit.TestSuite.create(name), io.vertx.groovy.ext.unit.TestSuite.class);
     return ret;
   }
   /**
@@ -57,11 +57,11 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite before(Handler<TestContext> callback) {
-    this.delegate.before(new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.before(callback != null ? new Handler<io.vertx.ext.unit.TestContext>(){
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new io.vertx.groovy.ext.unit.TestContext(event));
+        callback.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.unit.TestContext.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -70,11 +70,11 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite beforeEach(Handler<TestContext> callback) {
-    this.delegate.beforeEach(new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.beforeEach(callback != null ? new Handler<io.vertx.ext.unit.TestContext>(){
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new io.vertx.groovy.ext.unit.TestContext(event));
+        callback.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.unit.TestContext.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -83,11 +83,11 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite after(Handler<TestContext> callback) {
-    this.delegate.after(new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.after(callback != null ? new Handler<io.vertx.ext.unit.TestContext>(){
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new io.vertx.groovy.ext.unit.TestContext(event));
+        callback.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.unit.TestContext.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -96,11 +96,11 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite afterEach(Handler<TestContext> callback) {
-    this.delegate.afterEach(new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.afterEach(callback != null ? new Handler<io.vertx.ext.unit.TestContext>(){
       public void handle(io.vertx.ext.unit.TestContext event) {
-        callback.handle(new io.vertx.groovy.ext.unit.TestContext(event));
+        callback.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.unit.TestContext.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -110,11 +110,11 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite test(String name, Handler<TestContext> testCase) {
-    this.delegate.test(name, new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.test(name, testCase != null ? new Handler<io.vertx.ext.unit.TestContext>(){
       public void handle(io.vertx.ext.unit.TestContext event) {
-        testCase.handle(new io.vertx.groovy.ext.unit.TestContext(event));
+        testCase.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.unit.TestContext.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -125,11 +125,11 @@ public class TestSuite {
    * @return a reference to this, so the API can be used fluently
    */
   public TestSuite test(String name, int repeat, Handler<TestContext> testCase) {
-    this.delegate.test(name, repeat, new Handler<io.vertx.ext.unit.TestContext>() {
+    delegate.test(name, repeat, testCase != null ? new Handler<io.vertx.ext.unit.TestContext>(){
       public void handle(io.vertx.ext.unit.TestContext event) {
-        testCase.handle(new io.vertx.groovy.ext.unit.TestContext(event));
+        testCase.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.unit.TestContext.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -142,7 +142,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run() {
-    def ret= InternalHelper.safeCreate(this.delegate.run(), io.vertx.groovy.ext.unit.TestCompletion.class);
+    def ret = InternalHelper.safeCreate(delegate.run(), io.vertx.groovy.ext.unit.TestCompletion.class);
     return ret;
   }
   /**
@@ -160,7 +160,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run(Map<String, Object> options) {
-    def ret= InternalHelper.safeCreate(this.delegate.run(options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.unit.TestCompletion.class);
+    def ret = InternalHelper.safeCreate(delegate.run(options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.unit.TestCompletion.class);
     return ret;
   }
   /**
@@ -172,7 +172,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run(Vertx vertx) {
-    def ret= InternalHelper.safeCreate(this.delegate.run((io.vertx.core.Vertx)vertx.getDelegate()), io.vertx.groovy.ext.unit.TestCompletion.class);
+    def ret = InternalHelper.safeCreate(delegate.run(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null), io.vertx.groovy.ext.unit.TestCompletion.class);
     return ret;
   }
   /**
@@ -186,7 +186,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run(Vertx vertx, Map<String, Object> options) {
-    def ret= InternalHelper.safeCreate(this.delegate.run((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.unit.TestCompletion.class);
+    def ret = InternalHelper.safeCreate(delegate.run(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.unit.TestCompletion.class);
     return ret;
   }
 }

@@ -44,7 +44,7 @@ public class Failure {
     if (cached_0 != null) {
       return cached_0;
     }
-    def ret = this.delegate.isError();
+    def ret = delegate.isError();
     cached_0 = ret;
     return ret;
   }
@@ -56,7 +56,7 @@ public class Failure {
     if (cached_1 != null) {
       return cached_1;
     }
-    def ret = this.delegate.message();
+    def ret = delegate.message();
     cached_1 = ret;
     return ret;
   }
@@ -68,7 +68,7 @@ public class Failure {
     if (cached_2 != null) {
       return cached_2;
     }
-    def ret = this.delegate.stackTrace();
+    def ret = delegate.stackTrace();
     cached_2 = ret;
     return ret;
   }

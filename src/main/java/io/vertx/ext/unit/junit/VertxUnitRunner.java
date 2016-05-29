@@ -4,10 +4,7 @@ import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.impl.Helper;
-import io.vertx.ext.unit.impl.Result;
-import io.vertx.ext.unit.impl.Task;
 import io.vertx.ext.unit.impl.TestContextImpl;
-import io.vertx.ext.unit.impl.ExecutionContext;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -33,15 +30,19 @@ import java.util.concurrent.CompletableFuture;
 /**
  * A JUnit runner for writing asynchronous tests.
  *
+ * Note : a runner is needed because when a rule statement is evaluated, it will run the before/test/after
+ *       method and then test method is executed even if there are pending Async objects in the before
+ *       method. The runner gives this necessary fine grained control.
+ *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 public class VertxUnitRunner extends BlockJUnit4ClassRunner {
 
+  private static final ThreadLocal<VertxUnitRunner> currentRunner = new ThreadLocal<>();
   private static final LinkedList<Context> contextStack = new LinkedList<>();
   private static final LinkedList<Long> timeoutStack = new LinkedList<>();
   private final TestClass testClass;
   private Map<String, Object> classAttributes = new HashMap<>();
-  private Map<String, Object> testAttributes;
 
   public VertxUnitRunner(Class<?> klass) throws InitializationError {
     super(klass);
@@ -76,10 +77,11 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
 
   @Override
   protected Statement methodInvoker(FrameworkMethod method, Object test) {
+    TestContextImpl ctx = testContext;
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        invokeExplosively(testAttributes, method, test);
+        invokeExplosively(ctx, method, test);
       }
     };
   }
@@ -94,9 +96,19 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
     }
   }
 
-  private void invokeExplosively(Map<String, Object> attributes, FrameworkMethod fMethod, Object test) throws Throwable {
-    CompletableFuture<Result> future = new CompletableFuture<>();
-    Task<Result> task = (result, context) -> future.complete(result);
+  private long getTimeout(FrameworkMethod fMethod) {
+    long timeout = 2 * 60 * 1000L;
+    if (timeoutStack.size() > 0) {
+      timeout = timeoutStack.peekLast();
+    }
+    Test annotation = fMethod.getAnnotation(Test.class);
+    if (annotation != null && annotation.timeout() > 0) {
+      timeout = annotation.timeout();
+    }
+    return timeout;
+  }
+
+  private void invokeExplosively(TestContextImpl testContext, FrameworkMethod fMethod, Object test) throws Throwable {
     Handler<TestContext> callback = context -> {
       try {
         invokeTestMethod(fMethod, test, context);
@@ -106,57 +118,63 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
         Helper.uncheckedThrow(e);
       }
     };
-    long timeout = 2 * 60 * 1000L;
-    if (timeoutStack.size() > 0) {
-      timeout = timeoutStack.peekLast();
+    long timeout = getTimeout(fMethod);
+    currentRunner.set(this);
+    Context ctx = contextStack.peekLast();
+    CompletableFuture<Throwable> future = new CompletableFuture<>();
+    if (ctx != null) {
+      ctx.runOnContext(v -> {
+        testContext.run(null, timeout, callback, future::complete);
+      });
+    } else {
+      testContext.run(null, timeout, callback, future::complete);
     }
-    Test annotation = fMethod.getAnnotation(Test.class);
-    if (annotation != null && annotation.timeout() > 0) {
-      timeout = annotation.timeout();
-    }
-    TestContextImpl context = new TestContextImpl(
-        attributes,
-        callback,
-        err -> {},
-        task,
-        timeout);
-    new ExecutionContext(contextStack.peekLast()).run(context);
-    Result result;
+    Throwable failure;
     try {
-      result = future.get();
+      failure = future.get();
     } catch (InterruptedException e) {
       // Should we do something else ?
       Thread.currentThread().interrupt();
       throw e;
+    } finally {
+      currentRunner.set(null);
     }
-    Throwable failure = result.getFailure();
     if (failure != null) {
       throw failure;
     }
   }
 
+  private TestContextImpl testContext;
+
+  @Override
+  protected Statement methodBlock(FrameworkMethod method) {
+    testContext = new TestContextImpl(new HashMap<>(classAttributes), null);
+    Statement statement = super.methodBlock(method);
+    testContext = null;
+    return statement;
+  }
+
   @Override
   protected Statement withBefores(FrameworkMethod method, Object target, Statement statement) {
-    testAttributes = new HashMap<>(classAttributes);
-    return withBefores(testAttributes, getTestClass().getAnnotatedMethods(Before.class), target, statement);
+    return withBefores(testContext, getTestClass().getAnnotatedMethods(Before.class), target, statement);
   }
 
   @Override
   protected Statement withAfters(FrameworkMethod method, Object target, Statement statement) {
     List<FrameworkMethod> afters = getTestClass().getAnnotatedMethods(After.class);
-    return withAfters(testAttributes, afters, target, statement);
+    return withAfters(testContext, afters, target, statement);
   }
 
   @Override
   protected Statement withBeforeClasses(Statement statement) {
     List<FrameworkMethod> befores = testClass.getAnnotatedMethods(BeforeClass.class);
-    return withBefores(classAttributes, befores, null, statement);
+    return withBefores(new TestContextImpl(classAttributes, null), befores, null, statement);
   }
 
   @Override
   protected Statement withAfterClasses(Statement statement) {
     List<FrameworkMethod> afters = getTestClass().getAnnotatedMethods(AfterClass.class);
-    return withAfters(classAttributes, afters, null, statement);
+    return withAfters(new TestContextImpl(classAttributes, null), afters, null, statement);
   }
 
   @Override
@@ -165,7 +183,7 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
     return next;
   }
 
-  private Statement withBefores(Map<String, Object> attributes, List<FrameworkMethod> befores, Object target, Statement statement) {
+  private Statement withBefores(TestContextImpl testContext, List<FrameworkMethod> befores, Object target, Statement statement) {
     if (befores.isEmpty()) {
       return statement;
     } else {
@@ -173,7 +191,7 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
         @Override
         public void evaluate() throws Throwable {
           for (FrameworkMethod before : befores) {
-            invokeExplosively(attributes, before, target);
+            invokeExplosively(testContext, before, target);
           }
           statement.evaluate();
         }
@@ -181,7 +199,7 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
     }
   }
 
-  private Statement withAfters(Map<String, Object> attributes, List<FrameworkMethod> afters, Object target, Statement statement) {
+  private Statement withAfters(TestContextImpl testContext, List<FrameworkMethod> afters, Object target, Statement statement) {
     if (afters.isEmpty()) {
       return statement;
     } else {
@@ -196,7 +214,7 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
           } finally {
             for (FrameworkMethod after : afters) {
               try {
-                invokeExplosively(attributes, after, target);
+                invokeExplosively(testContext, after, target);
               } catch (Throwable e) {
                 errors.add(e);
               }

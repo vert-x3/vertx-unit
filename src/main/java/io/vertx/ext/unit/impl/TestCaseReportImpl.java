@@ -57,13 +57,14 @@ public class TestCaseReportImpl implements TestCaseReport {
   }
 
   private Task<Result> runTask(Task<Result> next) {
+    TestContextImpl testContext = new TestContextImpl(attributes, unhandledFailureHandler);
     Task<Result> afterHandler;
     if (after != null) {
-      afterHandler = new TestContextImpl(attributes, after, unhandledFailureHandler, next, timeout);
+      afterHandler = new TestContextTask(testContext, after, next, timeout);
     } else {
       afterHandler = next;
     }
-    Task<Result> testHandler = new TestContextImpl(attributes, test, unhandledFailureHandler, afterHandler, timeout);
+    Task<Result> testHandler = new TestContextTask(testContext, test, afterHandler, timeout);
     if (before != null) {
       Function<Result, Task<Result>> tmp = result -> {
         if (result.failure != null) {
@@ -72,7 +73,7 @@ public class TestCaseReportImpl implements TestCaseReport {
           return testHandler;
         }
       };
-      return new TestContextImpl(attributes, before, unhandledFailureHandler, tmp, timeout);
+      return new TestContextTask(testContext, before, tmp, timeout);
     } else {
       return testHandler;
     }

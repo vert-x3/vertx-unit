@@ -537,6 +537,34 @@
  * {@link examples.Examples#reporter_02}
  * ----
  *
+ * == Vertx integration
+ *
+ * By default, assertions and failures must be done on the {@link io.vertx.ext.unit.TestContext} and throwing an
+ * assertion error works only when called by Vert.x Unit:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#vertxInteg1}
+ * ----
+ *
+ * In a regular Vert.x callback, the failure will be ignored:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#vertxInteg2}
+ * ----
+ *
+ * Since Vert.x 3.3, a global exception handler can be set to report the event loop uncaught exceptions:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#vertxInteg3}
+ * ----
+ *
+ * The exception handler is set during the _before_ phase, the {@link io.vertx.ext.unit.TestContext} is shared
+ * between each _before_, _test_ and _after_ phase. So the exception handler obtained during the _before_ phase
+ * is correct.
+ *
  * == Junit integration
  *
  * Although Vertx Unit is polyglot and not based on JUnit, it is possible to run a Vertx Unit test suite or a test case

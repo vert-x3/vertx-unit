@@ -294,4 +294,9 @@ public interface TestContext {
    * @return the async result handler
    */
   <T> Handler<AsyncResult<T>> asyncAssertFailure(Handler<Throwable> causeHandler);
+
+  /**
+   * @return an exception handler that will fail this context
+   */
+  Handler<Throwable> exceptionHandler();
 }

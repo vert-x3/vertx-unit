@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.unit.collect;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.ext.unit.report.TestSuiteReport;
 import io.vertx.rxjava.core.Vertx;
@@ -53,14 +52,14 @@ public class EventBusCollector {
    * @return the message handler
    */
   public static EventBusCollector create(Vertx vertx, ReportingOptions options) { 
-    EventBusCollector ret= EventBusCollector.newInstance(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx) vertx.getDelegate(), options));
+    EventBusCollector ret = EventBusCollector.newInstance(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx)vertx.getDelegate(), options));
     return ret;
   }
 
   public static EventBusCollector create(Vertx vertx, Handler<TestSuiteReport> reporter) { 
-    EventBusCollector ret= EventBusCollector.newInstance(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx) vertx.getDelegate(), new Handler<io.vertx.ext.unit.report.TestSuiteReport>() {
+    EventBusCollector ret = EventBusCollector.newInstance(io.vertx.ext.unit.collect.EventBusCollector.create((io.vertx.core.Vertx)vertx.getDelegate(), new Handler<io.vertx.ext.unit.report.TestSuiteReport>() {
       public void handle(io.vertx.ext.unit.report.TestSuiteReport event) {
-        reporter.handle(new TestSuiteReport(event));
+        reporter.handle(TestSuiteReport.newInstance(event));
       }
     }));
     return ret;
@@ -72,7 +71,7 @@ public class EventBusCollector {
    * @return the subscribed message consumer
    */
   public MessageConsumer register(String address) { 
-    MessageConsumer ret= MessageConsumer.newInstance(this.delegate.register(address));
+    MessageConsumer ret = MessageConsumer.newInstance(delegate.register(address));
     return ret;
   }
 

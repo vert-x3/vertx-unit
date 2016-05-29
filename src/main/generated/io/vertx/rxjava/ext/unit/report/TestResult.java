@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.unit.report;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 
 /**
@@ -47,7 +46,7 @@ public class TestResult {
     if (cached_0 != null) {
       return cached_0;
     }
-    String ret = this.delegate.name();
+    String ret = delegate.name();
     cached_0 = ret;
     return ret;
   }
@@ -60,7 +59,7 @@ public class TestResult {
     if (cached_1 != null) {
       return cached_1;
     }
-    long ret = this.delegate.beginTime();
+    long ret = delegate.beginTime();
     cached_1 = ret;
     return ret;
   }
@@ -73,7 +72,7 @@ public class TestResult {
     if (cached_2 != null) {
       return cached_2;
     }
-    long ret = this.delegate.durationTime();
+    long ret = delegate.durationTime();
     cached_2 = ret;
     return ret;
   }
@@ -86,7 +85,7 @@ public class TestResult {
     if (cached_3 != null) {
       return cached_3;
     }
-    boolean ret = this.delegate.succeeded();
+    boolean ret = delegate.succeeded();
     cached_3 = ret;
     return ret;
   }
@@ -99,7 +98,7 @@ public class TestResult {
     if (cached_4 != null) {
       return cached_4;
     }
-    boolean ret = this.delegate.failed();
+    boolean ret = delegate.failed();
     cached_4 = ret;
     return ret;
   }
@@ -112,12 +111,12 @@ public class TestResult {
     if (cached_5 != null) {
       return cached_5;
     }
-    Failure ret= Failure.newInstance(this.delegate.failure());
+    Failure ret = Failure.newInstance(delegate.failure());
     cached_5 = ret;
     return ret;
   }
 
-  private java.lang.String cached_0;
+  private String cached_0;
   private java.lang.Long cached_1;
   private java.lang.Long cached_2;
   private java.lang.Boolean cached_3;

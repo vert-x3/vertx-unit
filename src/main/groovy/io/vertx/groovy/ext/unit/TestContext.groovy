@@ -39,8 +39,7 @@ public class TestContext {
    * @return the data
    */
   public <T> T get(String key) {
-    // This cast is cleary flawed
-    def ret = (T) InternalHelper.wrapObject(this.delegate.get(key));
+    def ret = (T) InternalHelper.wrapObject(delegate.get(key));
     return ret;
   }
   /**
@@ -52,8 +51,7 @@ public class TestContext {
    * @return the previous object when it exists
    */
   public <T> T put(String key, Object value) {
-    // This cast is cleary flawed
-    def ret = (T) InternalHelper.wrapObject(this.delegate.put(key, InternalHelper.unwrapObject(value)));
+    def ret = (T) InternalHelper.wrapObject(delegate.put(key, value != null ? InternalHelper.unwrapObject(value) : null));
     return ret;
   }
   /**
@@ -62,8 +60,7 @@ public class TestContext {
    * @return the removed object when it exists
    */
   public <T> T remove(String key) {
-    // This cast is cleary flawed
-    def ret = (T) InternalHelper.wrapObject(this.delegate.remove(key));
+    def ret = (T) InternalHelper.wrapObject(delegate.remove(key));
     return ret;
   }
   /**
@@ -73,7 +70,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNull(Object expected) {
-    this.delegate.assertNull(InternalHelper.unwrapObject(expected));
+    delegate.assertNull(expected != null ? InternalHelper.unwrapObject(expected) : null);
     return this;
   }
   /**
@@ -84,7 +81,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNull(Object expected, String message) {
-    this.delegate.assertNull(InternalHelper.unwrapObject(expected), message);
+    delegate.assertNull(expected != null ? InternalHelper.unwrapObject(expected) : null, message);
     return this;
   }
   /**
@@ -94,7 +91,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNotNull(Object expected) {
-    this.delegate.assertNotNull(InternalHelper.unwrapObject(expected));
+    delegate.assertNotNull(expected != null ? InternalHelper.unwrapObject(expected) : null);
     return this;
   }
   /**
@@ -105,7 +102,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNotNull(Object expected, String message) {
-    this.delegate.assertNotNull(InternalHelper.unwrapObject(expected), message);
+    delegate.assertNotNull(expected != null ? InternalHelper.unwrapObject(expected) : null, message);
     return this;
   }
   /**
@@ -115,7 +112,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertTrue(boolean condition) {
-    this.delegate.assertTrue(condition);
+    delegate.assertTrue(condition);
     return this;
   }
   /**
@@ -126,7 +123,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertTrue(boolean condition, String message) {
-    this.delegate.assertTrue(condition, message);
+    delegate.assertTrue(condition, message);
     return this;
   }
   /**
@@ -136,7 +133,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertFalse(boolean condition) {
-    this.delegate.assertFalse(condition);
+    delegate.assertFalse(condition);
     return this;
   }
   /**
@@ -147,7 +144,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertFalse(boolean condition, String message) {
-    this.delegate.assertFalse(condition, message);
+    delegate.assertFalse(condition, message);
     return this;
   }
   /**
@@ -158,7 +155,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertEquals(Object expected, Object actual) {
-    this.delegate.assertEquals(InternalHelper.unwrapObject(expected), InternalHelper.unwrapObject(actual));
+    delegate.assertEquals(expected != null ? InternalHelper.unwrapObject(expected) : null, actual != null ? InternalHelper.unwrapObject(actual) : null);
     return this;
   }
   /**
@@ -170,7 +167,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertEquals(Object expected, Object actual, String message) {
-    this.delegate.assertEquals(InternalHelper.unwrapObject(expected), InternalHelper.unwrapObject(actual), message);
+    delegate.assertEquals(expected != null ? InternalHelper.unwrapObject(expected) : null, actual != null ? InternalHelper.unwrapObject(actual) : null, message);
     return this;
   }
   /**
@@ -183,7 +180,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertInRange(double expected, double actual, double delta) {
-    this.delegate.assertInRange(expected, actual, delta);
+    delegate.assertInRange(expected, actual, delta);
     return this;
   }
   /**
@@ -197,7 +194,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertInRange(double expected, double actual, double delta, String message) {
-    this.delegate.assertInRange(expected, actual, delta, message);
+    delegate.assertInRange(expected, actual, delta, message);
     return this;
   }
   /**
@@ -208,7 +205,7 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNotEquals(Object first, Object second) {
-    this.delegate.assertNotEquals(InternalHelper.unwrapObject(first), InternalHelper.unwrapObject(second));
+    delegate.assertNotEquals(first != null ? InternalHelper.unwrapObject(first) : null, second != null ? InternalHelper.unwrapObject(second) : null);
     return this;
   }
   /**
@@ -220,28 +217,28 @@ public class TestContext {
    * @return a reference to this, so the API can be used fluently
    */
   public TestContext assertNotEquals(Object first, Object second, String message) {
-    this.delegate.assertNotEquals(InternalHelper.unwrapObject(first), InternalHelper.unwrapObject(second), message);
+    delegate.assertNotEquals(first != null ? InternalHelper.unwrapObject(first) : null, second != null ? InternalHelper.unwrapObject(second) : null, message);
     return this;
   }
   /**
    * Throw a failure.
    */
   public void fail() {
-    this.delegate.fail();
+    delegate.fail();
   }
   /**
    * Throw a failure with the specified failure <code>message</code>.
    * @param message the failure message
    */
   public void fail(String message) {
-    this.delegate.fail(message);
+    delegate.fail(message);
   }
   /**
    * Throw a failure with the specified failure <code>cause</code>.
    * @param cause the failure cause
    */
   public void fail(Throwable cause) {
-    this.delegate.fail(cause);
+    delegate.fail(cause);
   }
   /**
    * Create and returns a new async object, the returned async controls the completion of the test. Calling the
@@ -254,7 +251,7 @@ public class TestContext {
    * @return the async instance
    */
   public Async async() {
-    def ret= InternalHelper.safeCreate(this.delegate.async(), io.vertx.groovy.ext.unit.Async.class);
+    def ret = InternalHelper.safeCreate(delegate.async(), io.vertx.groovy.ext.unit.Async.class);
     return ret;
   }
   /**
@@ -269,7 +266,7 @@ public class TestContext {
    * @return the async instance
    */
   public Async async(int count) {
-    def ret= InternalHelper.safeCreate(this.delegate.async(count), io.vertx.groovy.ext.unit.Async.class);
+    def ret = InternalHelper.safeCreate(delegate.async(count), io.vertx.groovy.ext.unit.Async.class);
     return ret;
   }
   /**
@@ -281,13 +278,12 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertSuccess() {
-    def handlerDelegate = this.delegate.asyncAssertSuccess();
-    Handler<AsyncResult<Object>> ret = new Handler<AsyncResult<Object>>() {
-      public void handle(AsyncResult<Object> event) {
-        if (event.succeeded()) {
-          handlerDelegate.handle(InternalHelper.result(InternalHelper.unwrapObject(event.result())));
-        } else {
-          handlerDelegate.handle(InternalHelper.<java.lang.Object>failure(event.cause()));
+    def ret = new Handler<AsyncResult<Object>>() {
+      public void handle(AsyncResult<Object> ar_) {
+        if (ar_.succeeded()) {
+          delegate.asyncAssertSuccess().handle(io.vertx.core.Future.succeededFuture(InternalHelper.unwrapObject(ar_.result())));
+        } else  {
+          delegate.asyncAssertSuccess().handle(io.vertx.core.Future.failedFuture(ar_.cause()));
         }
       }
     };
@@ -307,17 +303,20 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertSuccess(Handler<T> resultHandler) {
-    def handlerDelegate = this.delegate.asyncAssertSuccess(new Handler<Object>() {
-      public void handle(Object event) {
-        resultHandler.handle(InternalHelper.wrapObject(event))
+    def ret = new Handler<AsyncResult<Object>>() {
+      public void handle(AsyncResult<Object> ar_) {
+        if (ar_.succeeded()) {
+          delegate.asyncAssertSuccess(resultHandler != null ? new Handler<java.lang.Object>(){
+      public void handle(java.lang.Object event) {
+        resultHandler.handle((Object) InternalHelper.wrapObject(event));
       }
-    });
-    Handler<AsyncResult<Object>> ret = new Handler<AsyncResult<Object>>() {
-      public void handle(AsyncResult<Object> event) {
-        if (event.succeeded()) {
-          handlerDelegate.handle(InternalHelper.result(InternalHelper.unwrapObject(event.result())));
-        } else {
-          handlerDelegate.handle(InternalHelper.<java.lang.Object>failure(event.cause()));
+    } : null).handle(io.vertx.core.Future.succeededFuture(InternalHelper.unwrapObject(ar_.result())));
+        } else  {
+          delegate.asyncAssertSuccess(resultHandler != null ? new Handler<java.lang.Object>(){
+      public void handle(java.lang.Object event) {
+        resultHandler.handle((Object) InternalHelper.wrapObject(event));
+      }
+    } : null).handle(io.vertx.core.Future.failedFuture(ar_.cause()));
         }
       }
     };
@@ -332,13 +331,12 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertFailure() {
-    def handlerDelegate = this.delegate.asyncAssertFailure();
-    Handler<AsyncResult<Object>> ret = new Handler<AsyncResult<Object>>() {
-      public void handle(AsyncResult<Object> event) {
-        if (event.succeeded()) {
-          handlerDelegate.handle(InternalHelper.result(InternalHelper.unwrapObject(event.result())));
-        } else {
-          handlerDelegate.handle(InternalHelper.<java.lang.Object>failure(event.cause()));
+    def ret = new Handler<AsyncResult<Object>>() {
+      public void handle(AsyncResult<Object> ar_) {
+        if (ar_.succeeded()) {
+          delegate.asyncAssertFailure().handle(io.vertx.core.Future.succeededFuture(InternalHelper.unwrapObject(ar_.result())));
+        } else  {
+          delegate.asyncAssertFailure().handle(io.vertx.core.Future.failedFuture(ar_.cause()));
         }
       }
     };
@@ -354,16 +352,23 @@ public class TestContext {
    * @return the async result handler
    */
   public <T> Handler<AsyncResult<T>> asyncAssertFailure(Handler<Throwable> causeHandler) {
-    def handlerDelegate = this.delegate.asyncAssertFailure(causeHandler);
-    Handler<AsyncResult<Object>> ret = new Handler<AsyncResult<Object>>() {
-      public void handle(AsyncResult<Object> event) {
-        if (event.succeeded()) {
-          handlerDelegate.handle(InternalHelper.result(InternalHelper.unwrapObject(event.result())));
-        } else {
-          handlerDelegate.handle(InternalHelper.<java.lang.Object>failure(event.cause()));
+    def ret = new Handler<AsyncResult<Object>>() {
+      public void handle(AsyncResult<Object> ar_) {
+        if (ar_.succeeded()) {
+          delegate.asyncAssertFailure(causeHandler).handle(io.vertx.core.Future.succeededFuture(InternalHelper.unwrapObject(ar_.result())));
+        } else  {
+          delegate.asyncAssertFailure(causeHandler).handle(io.vertx.core.Future.failedFuture(ar_.cause()));
         }
       }
     };
+    return ret;
+  }
+  /**
+   * @return an exception handler that will fail this context
+   * @return 
+   */
+  public Handler<Throwable> exceptionHandler() {
+    def ret = delegate.exceptionHandler();
     return ret;
   }
 }

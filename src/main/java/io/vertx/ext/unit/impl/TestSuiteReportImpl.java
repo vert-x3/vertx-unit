@@ -85,7 +85,7 @@ class TestSuiteReportImpl implements TestSuiteReport {
       };
     } else {
       if (after != null) {
-        return new TestContextImpl(new HashMap<>(attributes), after, exceptionHandler, endTask, 0);
+        return new TestContextTask(new TestContextImpl(new HashMap<>(attributes), exceptionHandler), after, endTask, 0);
       } else {
         return endTask;
       }
@@ -102,9 +102,10 @@ class TestSuiteReportImpl implements TestSuiteReport {
       }
     };
     if (before != null) {
-      return new TestContextImpl(new HashMap<>(), before, exceptionHandler, result -> {
+      HashMap<String, Object> attributes = new HashMap<>();
+      return new TestContextTask(new TestContextImpl(attributes, exceptionHandler), before, result -> {
         if (result.failure == null) {
-          Task<?> runTask = buildTestCasesTasks(result.attributes, tests, 0, endTask);
+          Task<?> runTask = buildTestCasesTasks(attributes, tests, 0, endTask);
           return (result_, context) -> runTask.execute(null, context);
         } else {
           return endTask;

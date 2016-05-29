@@ -36,20 +36,20 @@ public class Async extends Completion<Void> {
    * @return 
    */
   public int count() {
-    def ret = this.delegate.count();
+    def ret = delegate.count();
     return ret;
   }
   /**
    * Count down the async.
    */
   public void countDown() {
-    this.delegate.countDown();
+    delegate.countDown();
   }
   /**
    * Signals the asynchronous operation is done, this method must be called with a count greater than <code>0</code>,
    * otherwise it throw an <code>IllegalStateException</code> to signal the error.
    */
   public void complete() {
-    this.delegate.complete();
+    delegate.complete();
   }
 }

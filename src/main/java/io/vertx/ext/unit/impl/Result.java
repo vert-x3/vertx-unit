@@ -7,13 +7,11 @@ import java.util.Map;
  */
 public class Result {
 
-  final Map<String, Object> attributes;
   final long beginTime;
   final long endTime;
   final Throwable failure;
 
-  Result(Map<String, Object> attributes, long beginTime, long endTime, Throwable failure) {
-    this.attributes = attributes;
+  Result(long beginTime, long endTime, Throwable failure) {
     this.beginTime = beginTime;
     this.endTime = endTime;
     this.failure = failure;
