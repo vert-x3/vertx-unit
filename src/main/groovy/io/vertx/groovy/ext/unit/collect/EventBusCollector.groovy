@@ -44,7 +44,7 @@ public class EventBusCollector {
    * @return the message handler
    */
   public static EventBusCollector create(Vertx vertx, Map<String, Object> options) {
-    def ret = InternalHelper.safeCreate(io.vertx.ext.unit.collect.EventBusCollector.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.unit.report.ReportingOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.unit.collect.EventBusCollector.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.unit.collect.EventBusCollector.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.unit.report.ReportingOptions(io.vertx.lang.groovy.InternalHelper.toJsonObject(options)) : null), io.vertx.groovy.ext.unit.collect.EventBusCollector.class);
     return ret;
   }
   public static EventBusCollector create(Vertx vertx, Handler<TestSuiteReport> reporter) {

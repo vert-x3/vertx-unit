@@ -160,7 +160,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run(Map<String, Object> options) {
-    def ret = InternalHelper.safeCreate(delegate.run(options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.unit.TestCompletion.class);
+    def ret = InternalHelper.safeCreate(delegate.run(options != null ? new io.vertx.ext.unit.TestOptions(io.vertx.lang.groovy.InternalHelper.toJsonObject(options)) : null), io.vertx.groovy.ext.unit.TestCompletion.class);
     return ret;
   }
   /**
@@ -186,7 +186,7 @@ public class TestSuite {
    * @return the related test completion
    */
   public TestCompletion run(Vertx vertx, Map<String, Object> options) {
-    def ret = InternalHelper.safeCreate(delegate.run(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.unit.TestOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.unit.TestCompletion.class);
+    def ret = InternalHelper.safeCreate(delegate.run(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.unit.TestOptions(io.vertx.lang.groovy.InternalHelper.toJsonObject(options)) : null), io.vertx.groovy.ext.unit.TestCompletion.class);
     return ret;
   }
 }

@@ -81,15 +81,7 @@ public class Completion<T> {
    * @param completionHandler the completion handler
    */
   public void handler(Handler<AsyncResult<T>> completionHandler) { 
-    delegate.handler(new Handler<AsyncResult<T>>() {
-      public void handle(AsyncResult<T> ar) {
-        if (ar.succeeded()) {
-          completionHandler.handle(io.vertx.core.Future.succeededFuture((T) ar.result()));
-        } else {
-          completionHandler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
-        }
-      }
-    });
+    delegate.handler(completionHandler);
   }
 
   /**
