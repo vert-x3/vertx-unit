@@ -14,17 +14,21 @@ public class RepeatRule implements TestRule {
     private final int times;
     private final Statement statement;
     private final Description description;
+    private final boolean silent;
 
-    private RepeatStatement(int times, Statement statement, Description description) {
+    private RepeatStatement(int times, Statement statement, Description description, boolean silent) {
       this.times = times;
       this.statement = statement;
       this.description = description;
+      this.silent = silent;
     }
 
     @Override
     public void evaluate() throws Throwable {
       for( int i = 0; i < times; i++ ) {
-        System.out.println("*** Iteration " + (i + 1) + "/" + times + " of test " + description.getDisplayName());
+          if(!silent) {
+            System.out.println("*** Iteration " + (i + 1) + "/" + times + " of test " + description.getDisplayName());
+          }
         statement.evaluate();
       }
     }
@@ -35,8 +39,9 @@ public class RepeatRule implements TestRule {
     Statement result = statement;
     Repeat repeat = description.getAnnotation(Repeat.class);
     if( repeat != null ) {
-      int times = repeat.value();
-      result = new RepeatStatement(times, statement, description);
+      final int times = repeat.value();
+      final boolean silent = repeat.silent();
+      result = new RepeatStatement(times, statement, description, silent);
     }
     return result;
   }
