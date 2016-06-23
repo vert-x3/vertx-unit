@@ -95,11 +95,7 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
   }
 
   public TestSuiteReport endHandler(Handler<Void> endHandler) { 
-    ((io.vertx.ext.unit.report.TestSuiteReport) delegate).endHandler(new Handler<java.lang.Void>() {
-      public void handle(java.lang.Void event) {
-        endHandler.handle(event);
-      }
-    });
+    ((io.vertx.ext.unit.report.TestSuiteReport) delegate).endHandler(endHandler);
     return this;
   }
 
