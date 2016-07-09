@@ -15,6 +15,11 @@ import java.lang.annotation.Target;
 public @interface Repeat {
 
   int value();
+  
+  /**
+   * @return true if Vertx Unit repeat test in silent mode
+   */
+  boolean silent() default false;
 
 }
 
