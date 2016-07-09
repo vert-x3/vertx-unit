@@ -37,10 +37,11 @@ public class RepeatRule implements TestRule {
   @Override
   public Statement apply( Statement statement, Description description ) {
     Statement result = statement;
-    Repeat repeat = description.getAnnotation(Repeat.class);
-    if( repeat != null ) {
-      final int times = repeat.value();
-      final boolean silent = repeat.silent();
+    final Repeat global = description.getTestClass().getAnnotation(Repeat.class);
+    final Repeat local = description.getAnnotation(Repeat.class);
+    if( local != null || global != null ) {
+      final int times = local != null ? local.value() : global.value();
+      final boolean silent = local != null ? local.silent() : global.silent();
       result = new RepeatStatement(times, statement, description, silent);
     }
     return result;

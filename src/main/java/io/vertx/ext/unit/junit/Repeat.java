@@ -1,8 +1,6 @@
 package io.vertx.ext.unit.junit;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Annotates a test method to repeat this test several times. This can be useful when a test fails randomly and
@@ -11,7 +9,7 @@ import java.lang.annotation.Target;
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({java.lang.annotation.ElementType.METHOD})
+@Target({ElementType.METHOD, ElementType.TYPE})
 public @interface Repeat {
 
   int value();
