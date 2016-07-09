@@ -535,6 +535,9 @@ The async is completed when the `Handler` exits, unless new asyncs were created 
 When a test fails randomly or not often, for instance a race condition, it is convenient to run the same
 test multiple times to increase the failure likelihood of the test.
 
+If Repeat annotation is applied on the test class, every test methods inherit of it. It is possible to
+override the global repeat setting for a specific test method by redeclaring Repeat annotation to the method.
+
 .Repeating a test
 [source,js]
 ----
@@ -1137,6 +1140,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
+@Repeat(10)
 public class RepeatingTest {
 
   @Rule
@@ -1144,8 +1148,12 @@ public class RepeatingTest {
 
   @Repeat(1000)
   @Test
-  public void testSomething(TestContext context) {
+  public void testSomethingWithSpecificRepeat(final TestContext context) {
     // This will be executed 1000 times
+  }
+  
+  public void testSomethingWithDefaultConfig(final TestContext context) {
+      // This will be executed 10 times
   }
 }
 
