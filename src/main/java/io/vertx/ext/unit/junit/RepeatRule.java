@@ -42,7 +42,9 @@ public class RepeatRule implements TestRule {
     if( local != null || global != null ) {
       final int times = local != null ? local.value() : global.value();
       final boolean silent = local != null ? local.silent() : global.silent();
-      result = new RepeatStatement(times, statement, description, silent);
+      if(times > 1) {
+        result = new RepeatStatement(times, statement, description, silent);
+      }
     }
     return result;
   }
