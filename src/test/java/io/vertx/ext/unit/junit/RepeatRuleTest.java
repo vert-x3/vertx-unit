@@ -1,7 +1,6 @@
 package io.vertx.ext.unit.junit;
 
 import io.vertx.ext.unit.junit.RepeatRule.RepeatStatement;
-import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -9,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runners.model.Statement;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -17,7 +17,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 public final class RepeatRuleTest {
 
   private RepeatRule rule;
-  private ByteArrayOutputStream buffer;
+  @Mock
+  private PrintStream output;
   @Mock
   private Statement statement;
   @Mock
@@ -25,8 +26,7 @@ public final class RepeatRuleTest {
 
   @Before
   public void setUp() {
-    buffer = new ByteArrayOutputStream();
-    rule = new RepeatRule(new PrintStream(buffer));
+    rule = new RepeatRule(output);
   }
 
   @Test
@@ -39,7 +39,7 @@ public final class RepeatRuleTest {
     final Statement result = rule.apply(statement, description);
     assertSame(statement, result);
     result.evaluate();
-    assertTrue(buffer.size() == 0);
+    verify(output, never()).println(Matchers.anyString());
   }
 
   @Test
@@ -55,7 +55,7 @@ public final class RepeatRuleTest {
     assertEquals(10, ((RepeatStatement) result).getTimes());
     assertTrue(((RepeatStatement) result).isSilent());
     result.evaluate();
-    assertTrue(buffer.size() == 0);
+    verify(output, never()).println(Matchers.anyString());
   }
 
   @Test
@@ -73,7 +73,7 @@ public final class RepeatRuleTest {
     assertEquals(5, ((RepeatStatement) result).getTimes());
     assertFalse(((RepeatStatement) result).isSilent());
     result.evaluate();
-    assertTrue(buffer.size() > 0);
+    verify(output, times(5)).println(Matchers.anyString());
   }
   
   @Test
@@ -92,7 +92,7 @@ public final class RepeatRuleTest {
     assertEquals(5, ((RepeatStatement) result).getTimes());
     assertFalse(((RepeatStatement) result).isSilent());
     result.evaluate();
-    assertTrue(buffer.size() > 0);
+    verify(output, times(5)).println(Matchers.anyString());
   }
   
   @Test
@@ -109,7 +109,7 @@ public final class RepeatRuleTest {
     final Statement result = rule.apply(statement, description);
     assertSame(statement, result);
     result.evaluate();
-    assertTrue(buffer.size() == 0);
+    verify(output, never()).println(Matchers.anyString());
   }
 
 }
