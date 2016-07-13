@@ -278,6 +278,31 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
+  public void runTestWithAsyncCompletedTwice() throws Exception {
+    AtomicBoolean failed = new AtomicBoolean();
+    TestSuite suite = TestSuite.create("my_suite").
+        test("my_test", context -> {
+          Async async = context.async();
+          async.complete();
+          try {
+            async.complete();
+          } catch (IllegalStateException e) {
+            failed.set(true);
+          }
+        });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertTrue(failed.get());
+    assertTrue(reporter.completed());
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    TestResult result = reporter.results.get(0);
+    assertEquals("my_test", result.name());
+    assertTrue(result.succeeded());
+  }
+
+  @Test
   public void runTestWithAssertionError() {
     failTest(context -> context.fail("message_failure"));
   }
