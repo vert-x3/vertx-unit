@@ -160,7 +160,7 @@ public class TestContextImpl implements TestContext {
         if (value > 0) {
           completable.complete(null);
           internalComplete();
-        } else if (value < 0) {
+        } else {
           throw new IllegalStateException("The Async complete method has been called more than " + initialCount + " times, check your test.");
         }
       }
