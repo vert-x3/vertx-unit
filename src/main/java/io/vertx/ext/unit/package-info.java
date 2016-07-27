@@ -349,7 +349,7 @@
  * {@link examples.Examples#running_02}
  * ----
  *
- * When running with a `Vertx` instance, the test suite is executed using the Vertx event loop, see the <<eventloop>>
+ * When running with a `Vertx` instance, the test suite is executed using the Vertx event loop, see the <<event_loop>>
  * section for more details.
  *
  * A test suite can be run with the Vert.x Command Line Interface with the `vertx test` command:
@@ -537,6 +537,7 @@
  * {@link examples.Examples#reporter_02}
  * ----
  *
+ * [[vertx_integration]]
  * == Vertx integration
  *
  * By default, assertions and failures must be done on the {@link io.vertx.ext.unit.TestContext} and throwing an
@@ -661,6 +662,16 @@
  * When declared, _before_ and _after_ life cycle will be executed as many times as the test is executed.
  *
  * NOTE: test repetition are executed sequentially
+ *
+ * === Using with other assertion libraries
+ *
+ * Vert.x Unit usability has been greatly improved in Vert.x 3.3. You can now write tests using 
+ * http://hamcrest.org/[Hamcrest], http://joel-costigliola.github.io/assertj/[AssertJ],
+ * https://github.com/rest-assured/rest-assured/[Rest Assured], or any assertion library you want. This is made 
+ * possible by the global exception handler described in <<vertx_integration>>.
+ *
+ * You can find Java examples of using Vert.x Unit with Hamcrest and AssertJ in the 
+ * https://github.com/vert-x3/vertx-examples/tree/master/unit-examples[vertx-examples] project.
  *
  * == Java language integration
  *

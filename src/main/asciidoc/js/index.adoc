@@ -629,7 +629,7 @@ suite.run(vertx);
 
 ----
 
-When running with a `Vertx` instance, the test suite is executed using the Vertx event loop, see the <<eventloop>>
+When running with a `Vertx` instance, the test suite is executed using the Vertx event loop, see the <<event_loop>>
 section for more details.
 
 A test suite can be run with the Vert.x Command Line Interface with the `vertx test` command:
@@ -882,6 +882,7 @@ collector.register("the-address");
 
 ----
 
+[[vertx_integration]]
 == Vertx integration
 
 By default, assertions and failures must be done on the `link:../../jsdoc/module-vertx-unit-js_test_context-TestContext.html[TestContext]` and throwing an
@@ -946,13 +947,6 @@ from JUnit, allowing you to integrate your tests with JUnit and your build syste
 .Run a Java class as a JUnit test suite
 [source,java]
 ----
-package examples.junit;
-
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 @RunWith(VertxUnitRunner.class)
 public class JUnitTestSuite {
   @Test
@@ -960,7 +954,6 @@ public class JUnitTestSuite {
     context.assertFalse(false);
   }
 }
-
 ----
 
 The `VertxUnitRunner` uses the junit annotations for introspecting the class
@@ -989,16 +982,6 @@ instance as well.
 .Run a Java class as a JUnit test suite
 [source,java]
 ----
-package examples.junit;
-
-import io.vertx.core.Vertx;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.RunTestOnContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 @RunWith(VertxUnitRunner.class)
 public class RunOnContextJUnitTestSuite {
 
@@ -1011,7 +994,6 @@ public class RunOnContextJUnitTestSuite {
     Vertx vertx = rule.vertx();
   }
 }
-
 ----
 
 The rule can be annotated by `@Rule` or `@ClassRule`, the former manages a Vert.x instance
@@ -1027,12 +1009,6 @@ The Vert.x Unit 2 minutes timeout can be overriden with the `timeout` member of 
 .Configure the timeout at the test level
 [source,java]
 ----
-package examples.junit;
-
-
-import io.vertx.ext.unit.TestContext;
-import org.junit.Test;
-
 public class JunitTestWithTimeout {
 
   @Test(timeout = 1000l)
@@ -1041,7 +1017,6 @@ public class JunitTestWithTimeout {
   }
 
 }
-
 ----
 
 For a more global configuration, the `Timeout` rule can be used:
@@ -1049,15 +1024,6 @@ For a more global configuration, the `Timeout` rule can be used:
 .Configure the timeout at the class level
 [source,java]
 ----
-package examples.junit;
-
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.Timeout;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 @RunWith(VertxUnitRunner.class)
 public class TimeoutTestSuite {
 
@@ -1069,7 +1035,6 @@ public class TimeoutTestSuite {
     //...
   }
 }
-
 ----
 
 NOTE: the `@Test` timeout overrides the the `Timeout` rule.
@@ -1082,16 +1047,6 @@ the `VertxUnitRunnerWithParametersFactory`:
 .Running a Vert.x Unit parameterized test
 [source,java]
 ----
-package examples.junit;
-
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunnerWithParametersFactory;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-import java.util.Arrays;
-
 @RunWith(Parameterized.class)
 @Parameterized.UseParametersRunnerFactory(VertxUnitRunnerWithParametersFactory.class)
 public class SimpleParameterizedTest {
@@ -1110,7 +1065,6 @@ public class SimpleParameterizedTest {
     // Execute test with the current value
   }
 }
-
 ----
 
 Parameterized tests can also be done in Groovy with the `io.vertx.groovy.ext.unit.junit.VertxUnitRunnerWithParametersFactory`.
@@ -1126,16 +1080,6 @@ also define the `RepeatRule` among its rules.
 .Repeating a test with JUnit
 [source,js]
 ----
-package examples.junit;
-
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.Repeat;
-import io.vertx.ext.unit.junit.RepeatRule;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 @RunWith(VertxUnitRunner.class)
 public class RepeatingTest {
 
@@ -1148,12 +1092,21 @@ public class RepeatingTest {
     // This will be executed 1000 times
   }
 }
-
 ----
 
 When declared, _before_ and _after_ life cycle will be executed as many times as the test is executed.
 
 NOTE: test repetition are executed sequentially
+
+=== Using with other assertion libraries
+
+Vert.x Unit usability has been greatly improved in Vert.x 3.3. You can now write tests using 
+http://hamcrest.org/[Hamcrest], http://joel-costigliola.github.io/assertj/[AssertJ],
+https://github.com/rest-assured/rest-assured/[Rest Assured], or any assertion library you want. This is made 
+possible by the global exception handler described in <<vertx_integration>>.
+
+You can find Java examples of using Vert.x Unit with Hamcrest and AssertJ in the 
+https://github.com/vert-x3/vertx-examples/tree/master/unit-examples[vertx-examples] project.
 
 == Java language integration
 
@@ -1175,10 +1128,6 @@ via the method name:
 .Test suite written using a Java class
 [source,java]
 ----
-package examples.junit;
-
-import io.vertx.ext.unit.TestContext;
-
 public class MyTestSuite {
 
   public void testSomething(TestContext context) {
