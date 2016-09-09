@@ -330,7 +330,6 @@
  * WARNING: sharing any object is only supported in Java, other languages can share only basic or json types.
  * Other objects should be shared using the features of that language.
  *
- * [[reporting]]
  * == Running
  *
  * When a test suite is created, it won't be executed until the {@link io.vertx.ext.unit.TestSuite#run} method
@@ -472,6 +471,7 @@
  * The default `useEventLoop` value is `null`, that means that it will uses an event loop when possible and fallback
  * to no event loop when no one is available.
  *
+ * [[reporting]]
  * == Reporting
  *
  * Reporting is an important piece of a test suite, Vertx Unit can be configured to run with different kind
