@@ -18,6 +18,9 @@ package io.vertx.rxjava.ext.unit;
 
 import java.util.Map;
 import rx.Observable;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.rxjava.core.Future;
 
 /**
  * An asynchronous exit point for a test.<p/>
@@ -40,8 +43,33 @@ public class Async extends Completion<Void> {
   }
 
   /**
-   * @return the current count
+   * Completes the future upon completion, otherwise fails it.
+   * @param future the future to resolve
+   */
+  public void resolve(Future<Void> future) { 
+    delegate.resolve((io.vertx.core.Future<java.lang.Void>)future.getDelegate());
+  }
+
+  /**
+   * Completion handler to receive a completion signal when this completions completes.
+   * @param completionHandler the completion handler
+   */
+  public void handler(Handler<AsyncResult<Void>> completionHandler) { 
+    delegate.handler(completionHandler);
+  }
+
+  /**
+   * Completion handler to receive a completion signal when this completions completes.
    * @return 
+   */
+  public Observable<Void> handlerObservable() { 
+    io.vertx.rx.java.ObservableFuture<Void> completionHandler = io.vertx.rx.java.RxHelper.observableFuture();
+    handler(completionHandler.toHandler());
+    return completionHandler;
+  }
+
+  /**
+   * @return the current count
    */
   public int count() { 
     int ret = delegate.count();

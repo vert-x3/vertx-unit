@@ -19,8 +19,7 @@ module VertxUnit
     def j_del
       @j_del
     end
-    #  @return true if the failure is an error failure otherwise it is an assertion failure
-    # @return [true,false]
+    # @return [true,false] true if the failure is an error failure otherwise it is an assertion failure
     def error?
       if !block_given?
         if @cached_is_error != nil
@@ -30,8 +29,7 @@ module VertxUnit
       end
       raise ArgumentError, "Invalid arguments when calling error?()"
     end
-    #  @return the error message
-    # @return [String]
+    # @return [String] the error message
     def message
       if !block_given?
         if @cached_message != nil
@@ -41,8 +39,7 @@ module VertxUnit
       end
       raise ArgumentError, "Invalid arguments when calling message()"
     end
-    #  @return the stack trace
-    # @return [String]
+    # @return [String] the stack trace
     def stack_trace
       if !block_given?
         if @cached_stack_trace != nil

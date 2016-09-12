@@ -19,7 +19,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 <dependency>
   <groupId>io.vertx</groupId>
   <artifactId>vertx-unit</artifactId>
-  <version>3.4.0-SNAPSHOT</version>
+  <version>3.3.3</version>
 </dependency>
 ----
 
@@ -27,7 +27,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 
 [source,groovy,subs="+attributes"]
 ----
-compile io.vertx:vertx-unit:3.4.0-SNAPSHOT
+compile io.vertx:vertx-unit:3.3.3
 ----
 
 Vert.x unit can be used in different ways and run anywhere your code runs, it is just a matter of reporting

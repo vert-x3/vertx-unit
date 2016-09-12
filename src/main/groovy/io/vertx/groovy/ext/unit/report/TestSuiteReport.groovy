@@ -34,7 +34,6 @@ public class TestSuiteReport implements ReadStream<TestCaseReport> {
   }
   /**
    * @return the test suite name
-   * @return 
    */
   public String name() {
     if (cached_0 != null) {

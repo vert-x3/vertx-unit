@@ -51,7 +51,6 @@ public class Completion<T> {
 
   /**
    * @return true if this completion is completed
-   * @return 
    */
   public boolean isCompleted() { 
     boolean ret = delegate.isCompleted();
@@ -60,7 +59,6 @@ public class Completion<T> {
 
   /**
    * @return true if the this completion is completed succeeded
-   * @return 
    */
   public boolean isSucceeded() { 
     boolean ret = delegate.isSucceeded();
@@ -69,7 +67,6 @@ public class Completion<T> {
 
   /**
    * @return true if the this completion is completed and failed
-   * @return 
    */
   public boolean isFailed() { 
     boolean ret = delegate.isFailed();

@@ -33,11 +33,10 @@ var TestCaseReport = function(j_val) {
   var that = this;
 
   /**
-   @return the test case name
 
    @public
 
-   @return {string}
+   @return {string} the test case name
    */
   this.name = function() {
     var __args = arguments;

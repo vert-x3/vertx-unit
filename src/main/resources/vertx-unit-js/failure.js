@@ -39,11 +39,10 @@ var Failure = function(j_val) {
   var that = this;
 
   /**
-   @return true if the failure is an error failure otherwise it is an assertion failure
 
    @public
 
-   @return {boolean}
+   @return {boolean} true if the failure is an error failure otherwise it is an assertion failure
    */
   this.isError = function() {
     var __args = arguments;
@@ -56,11 +55,10 @@ var Failure = function(j_val) {
   };
 
   /**
-   @return the error message
 
    @public
 
-   @return {string}
+   @return {string} the error message
    */
   this.message = function() {
     var __args = arguments;
@@ -73,11 +71,10 @@ var Failure = function(j_val) {
   };
 
   /**
-   @return the stack trace
 
    @public
 
-   @return {string}
+   @return {string} the stack trace
    */
   this.stackTrace = function() {
     var __args = arguments;

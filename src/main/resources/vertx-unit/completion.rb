@@ -23,24 +23,21 @@ module VertxUnit
       end
       raise ArgumentError, "Invalid arguments when calling resolve(future)"
     end
-    #  @return true if this completion is completed
-    # @return [true,false]
+    # @return [true,false] true if this completion is completed
     def completed?
       if !block_given?
         return @j_del.java_method(:isCompleted, []).call()
       end
       raise ArgumentError, "Invalid arguments when calling completed?()"
     end
-    #  @return true if the this completion is completed succeeded
-    # @return [true,false]
+    # @return [true,false] true if the this completion is completed succeeded
     def succeeded?
       if !block_given?
         return @j_del.java_method(:isSucceeded, []).call()
       end
       raise ArgumentError, "Invalid arguments when calling succeeded?()"
     end
-    #  @return true if the this completion is completed and failed
-    # @return [true,false]
+    # @return [true,false] true if the this completion is completed and failed
     def failed?
       if !block_given?
         return @j_del.java_method(:isFailed, []).call()

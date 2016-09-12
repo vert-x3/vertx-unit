@@ -42,7 +42,6 @@ public class Completion<T> {
   }
   /**
    * @return true if this completion is completed
-   * @return 
    */
   public boolean isCompleted() {
     def ret = delegate.isCompleted();
@@ -50,7 +49,6 @@ public class Completion<T> {
   }
   /**
    * @return true if the this completion is completed succeeded
-   * @return 
    */
   public boolean isSucceeded() {
     def ret = delegate.isSucceeded();
@@ -58,7 +56,6 @@ public class Completion<T> {
   }
   /**
    * @return true if the this completion is completed and failed
-   * @return 
    */
   public boolean isFailed() {
     def ret = delegate.isFailed();

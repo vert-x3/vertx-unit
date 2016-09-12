@@ -35,11 +35,10 @@ var TestSuiteReport = function(j_val) {
   ReadStream.call(this, j_val);
 
   /**
-   @return the test suite name
 
    @public
 
-   @return {string}
+   @return {string} the test suite name
    */
   this.name = function() {
     var __args = arguments;

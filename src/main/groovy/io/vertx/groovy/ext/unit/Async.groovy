@@ -18,6 +18,9 @@ package io.vertx.groovy.ext.unit;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
 import io.vertx.core.json.JsonObject
+import io.vertx.core.AsyncResult
+import io.vertx.core.Handler
+import io.vertx.groovy.core.Future
 /**
  * An asynchronous exit point for a test.<p/>
 */
@@ -32,8 +35,21 @@ public class Async extends Completion<Void> {
     return delegate;
   }
   /**
+   * Completes the future upon completion, otherwise fails it.
+   * @param future the future to resolve
+   */
+  public void resolve(Future<Void> future) {
+    ((io.vertx.ext.unit.Completion) delegate).resolve(future != null ? (io.vertx.core.Future<java.lang.Void>)future.getDelegate() : null);
+  }
+  /**
+   * Completion handler to receive a completion signal when this completions completes.
+   * @param completionHandler the completion handler
+   */
+  public void handler(Handler<AsyncResult<Void>> completionHandler) {
+    ((io.vertx.ext.unit.Completion) delegate).handler(completionHandler);
+  }
+  /**
    * @return the current count
-   * @return 
    */
   public int count() {
     def ret = delegate.count();

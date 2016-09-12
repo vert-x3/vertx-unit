@@ -46,11 +46,10 @@ var Completion = function(j_val) {
   };
 
   /**
-   @return true if this completion is completed
 
    @public
 
-   @return {boolean}
+   @return {boolean} true if this completion is completed
    */
   this.isCompleted = function() {
     var __args = arguments;
@@ -60,11 +59,10 @@ var Completion = function(j_val) {
   };
 
   /**
-   @return true if the this completion is completed succeeded
 
    @public
 
-   @return {boolean}
+   @return {boolean} true if the this completion is completed succeeded
    */
   this.isSucceeded = function() {
     var __args = arguments;
@@ -74,11 +72,10 @@ var Completion = function(j_val) {
   };
 
   /**
-   @return true if the this completion is completed and failed
 
    @public
 
-   @return {boolean}
+   @return {boolean} true if the this completion is completed and failed
    */
   this.isFailed = function() {
     var __args = arguments;

@@ -16,8 +16,7 @@ module VertxUnit
     def j_del
       @j_del
     end
-    #  @return the test suite name
-    # @return [String]
+    # @return [String] the test suite name
     def name
       if !block_given?
         if @cached_name != nil

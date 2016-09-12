@@ -14,8 +14,7 @@ module VertxUnit
     def j_del
       @j_del
     end
-    #  @return the test case name
-    # @return [String]
+    # @return [String] the test case name
     def name
       if !block_given?
         if @cached_name != nil

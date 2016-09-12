@@ -391,7 +391,6 @@ public class TestContext {
 
   /**
    * @return an exception handler that will fail this context
-   * @return 
    */
   public Handler<Throwable> exceptionHandler() { 
     Handler<Throwable> ret = new Handler<Throwable>() {

@@ -46,7 +46,6 @@ public class Failure {
 
   /**
    * @return true if the failure is an error failure otherwise it is an assertion failure
-   * @return 
    */
   public boolean isError() { 
     if (cached_0 != null) {
@@ -59,7 +58,6 @@ public class Failure {
 
   /**
    * @return the error message
-   * @return 
    */
   public String message() { 
     if (cached_1 != null) {
@@ -72,7 +70,6 @@ public class Failure {
 
   /**
    * @return the stack trace
-   * @return 
    */
   public String stackTrace() { 
     if (cached_2 != null) {

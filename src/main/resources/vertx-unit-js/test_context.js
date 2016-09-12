@@ -311,11 +311,10 @@ var TestContext = function(j_val) {
   };
 
   /**
-   @return an exception handler that will fail this context
 
    @public
 
-   @return {function}
+   @return {function} an exception handler that will fail this context
    */
   this.exceptionHandler = function() {
     var __args = arguments;

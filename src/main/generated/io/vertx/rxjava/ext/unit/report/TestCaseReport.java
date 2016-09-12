@@ -41,7 +41,6 @@ public class TestCaseReport {
 
   /**
    * @return the test case name
-   * @return 
    */
   public String name() { 
     if (cached_0 != null) {

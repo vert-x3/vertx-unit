@@ -103,9 +103,9 @@ public class TestResult {
     return ret;
   }
   private String cached_0;
-  private long cached_1;
-  private long cached_2;
-  private boolean cached_3;
-  private boolean cached_4;
+  private Long cached_1;
+  private Long cached_2;
+  private Boolean cached_3;
+  private Boolean cached_4;
   private Failure cached_5;
 }
