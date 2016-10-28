@@ -1,5 +1,6 @@
-package io.vertx.groovy.ext.unit
+package io.vertx.test.unit
 
+import io.vertx.groovy.ext.unit.TestContext
 import io.vertx.groovy.ext.unit.junit.VertxUnitRunner
 import org.junit.Test
 import org.junit.runner.RunWith
