@@ -21,6 +21,7 @@
  *   <groupId>${maven.groupId}</groupId>
  *   <artifactId>${maven.artifactId}</artifactId>
  *   <version>${maven.version}</version>
+ *   <scope>test</scope>
  * </dependency>
  * ----
  *
@@ -28,7 +29,7 @@
  *
  * [source,groovy,subs="+attributes"]
  * ----
- * compile ${maven.groupId}:${maven.artifactId}:${maven.version}
+ * testCompile ${maven.groupId}:${maven.artifactId}:${maven.version}
  * ----
  *
  * Vert.x unit can be used in different ways and run anywhere your code runs, it is just a matter of reporting
@@ -665,12 +666,12 @@
  *
  * === Using with other assertion libraries
  *
- * Vert.x Unit usability has been greatly improved in Vert.x 3.3. You can now write tests using 
+ * Vert.x Unit usability has been greatly improved in Vert.x 3.3. You can now write tests using
  * http://hamcrest.org/[Hamcrest], http://joel-costigliola.github.io/assertj/[AssertJ],
- * https://github.com/rest-assured/rest-assured/[Rest Assured], or any assertion library you want. This is made 
+ * https://github.com/rest-assured/rest-assured/[Rest Assured], or any assertion library you want. This is made
  * possible by the global exception handler described in <<vertx_integration>>.
  *
- * You can find Java examples of using Vert.x Unit with Hamcrest and AssertJ in the 
+ * You can find Java examples of using Vert.x Unit with Hamcrest and AssertJ in the
  * https://github.com/vert-x3/vertx-examples/tree/master/unit-examples[vertx-examples] project.
  *
  * == Java language integration

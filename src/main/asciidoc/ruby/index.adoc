@@ -20,6 +20,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
   <groupId>io.vertx</groupId>
   <artifactId>vertx-unit</artifactId>
   <version>3.4.0-SNAPSHOT</version>
+  <scope>test</scope>
 </dependency>
 ----
 
@@ -27,7 +28,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 
 [source,groovy,subs="+attributes"]
 ----
-compile io.vertx:vertx-unit:3.4.0-SNAPSHOT
+testCompile io.vertx:vertx-unit:3.4.0-SNAPSHOT
 ----
 
 Vert.x unit can be used in different ways and run anywhere your code runs, it is just a matter of reporting
@@ -1100,12 +1101,12 @@ NOTE: test repetition are executed sequentially
 
 === Using with other assertion libraries
 
-Vert.x Unit usability has been greatly improved in Vert.x 3.3. You can now write tests using 
+Vert.x Unit usability has been greatly improved in Vert.x 3.3. You can now write tests using
 http://hamcrest.org/[Hamcrest], http://joel-costigliola.github.io/assertj/[AssertJ],
-https://github.com/rest-assured/rest-assured/[Rest Assured], or any assertion library you want. This is made 
+https://github.com/rest-assured/rest-assured/[Rest Assured], or any assertion library you want. This is made
 possible by the global exception handler described in <<vertx_integration>>.
 
-You can find Java examples of using Vert.x Unit with Hamcrest and AssertJ in the 
+You can find Java examples of using Vert.x Unit with Hamcrest and AssertJ in the
 https://github.com/vert-x3/vertx-examples/tree/master/unit-examples[vertx-examples] project.
 
 == Java language integration
