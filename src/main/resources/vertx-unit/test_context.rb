@@ -15,6 +15,22 @@ module VertxUnit
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == TestContext
+    end
+    def @@j_api_type.wrap(obj)
+      TestContext.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtUnit::TestContext.java_class
+    end
     #  Get some data from the context.
     # @param [String] key the key of the data
     # @return [Object] the data
@@ -22,7 +38,7 @@ module VertxUnit
       if key.class == String && !block_given?
         return ::Vertx::Util::Utils.from_object(@j_del.java_method(:get, [Java::java.lang.String.java_class]).call(key))
       end
-      raise ArgumentError, "Invalid arguments when calling get(key)"
+      raise ArgumentError, "Invalid arguments when calling get(#{key})"
     end
     #  Put some data in the context.
     #  <p>
@@ -31,10 +47,10 @@ module VertxUnit
     # @param [Object] value the data
     # @return [Object] the previous object when it exists
     def put(key=nil,value=nil)
-      if key.class == String && (value.class == String  || value.class == Hash || value.class == Array || value.class == NilClass || value.class == TrueClass || value.class == FalseClass || value.class == Fixnum || value.class == Float) && !block_given?
+      if key.class == String && ::Vertx::Util::unknown_type.accept?(value) && !block_given?
         return ::Vertx::Util::Utils.from_object(@j_del.java_method(:put, [Java::java.lang.String.java_class,Java::java.lang.Object.java_class]).call(key,::Vertx::Util::Utils.to_object(value)))
       end
-      raise ArgumentError, "Invalid arguments when calling put(key,value)"
+      raise ArgumentError, "Invalid arguments when calling put(#{key},#{value})"
     end
     #  Remove some data from the context.
     # @param [String] key the key to remove
@@ -43,7 +59,7 @@ module VertxUnit
       if key.class == String && !block_given?
         return ::Vertx::Util::Utils.from_object(@j_del.java_method(:remove, [Java::java.lang.String.java_class]).call(key))
       end
-      raise ArgumentError, "Invalid arguments when calling remove(key)"
+      raise ArgumentError, "Invalid arguments when calling remove(#{key})"
     end
     #  Assert the <code>expected</code> argument is <code>null</code>. If the argument is not, an assertion error is thrown
     #  otherwise the execution continue.
@@ -51,14 +67,14 @@ module VertxUnit
     # @param [String] message the failure message
     # @return [self]
     def assert_null(expected=nil,message=nil)
-      if (expected.class == String  || expected.class == Hash || expected.class == Array || expected.class == NilClass || expected.class == TrueClass || expected.class == FalseClass || expected.class == Fixnum || expected.class == Float) && !block_given? && message == nil
+      if ::Vertx::Util::unknown_type.accept?(expected) && !block_given? && message == nil
         @j_del.java_method(:assertNull, [Java::java.lang.Object.java_class]).call(::Vertx::Util::Utils.to_object(expected))
         return self
-      elsif (expected.class == String  || expected.class == Hash || expected.class == Array || expected.class == NilClass || expected.class == TrueClass || expected.class == FalseClass || expected.class == Fixnum || expected.class == Float) && message.class == String && !block_given?
+      elsif ::Vertx::Util::unknown_type.accept?(expected) && message.class == String && !block_given?
         @j_del.java_method(:assertNull, [Java::java.lang.Object.java_class,Java::java.lang.String.java_class]).call(::Vertx::Util::Utils.to_object(expected),message)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling assert_null(expected,message)"
+      raise ArgumentError, "Invalid arguments when calling assert_null(#{expected},#{message})"
     end
     #  Assert the <code>expected</code> argument is not <code>null</code>. If the argument is <code>null</code>, an assertion error is thrown
     #  otherwise the execution continue.
@@ -66,14 +82,14 @@ module VertxUnit
     # @param [String] message the failure message
     # @return [self]
     def assert_not_null(expected=nil,message=nil)
-      if (expected.class == String  || expected.class == Hash || expected.class == Array || expected.class == NilClass || expected.class == TrueClass || expected.class == FalseClass || expected.class == Fixnum || expected.class == Float) && !block_given? && message == nil
+      if ::Vertx::Util::unknown_type.accept?(expected) && !block_given? && message == nil
         @j_del.java_method(:assertNotNull, [Java::java.lang.Object.java_class]).call(::Vertx::Util::Utils.to_object(expected))
         return self
-      elsif (expected.class == String  || expected.class == Hash || expected.class == Array || expected.class == NilClass || expected.class == TrueClass || expected.class == FalseClass || expected.class == Fixnum || expected.class == Float) && message.class == String && !block_given?
+      elsif ::Vertx::Util::unknown_type.accept?(expected) && message.class == String && !block_given?
         @j_del.java_method(:assertNotNull, [Java::java.lang.Object.java_class,Java::java.lang.String.java_class]).call(::Vertx::Util::Utils.to_object(expected),message)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling assert_not_null(expected,message)"
+      raise ArgumentError, "Invalid arguments when calling assert_not_null(#{expected},#{message})"
     end
     #  Assert the specified <code>condition</code> is <code>true</code>. If the condition is <code>false</code>, an assertion error is thrown
     #  otherwise the execution continue.
@@ -88,7 +104,7 @@ module VertxUnit
         @j_del.java_method(:assertTrue, [Java::boolean.java_class,Java::java.lang.String.java_class]).call(condition,message)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling assert_true(condition,message)"
+      raise ArgumentError, "Invalid arguments when calling assert_true(#{condition},#{message})"
     end
     #  Assert the specified <code>condition</code> is <code>false</code>. If the condition is <code>true</code>, an assertion error is thrown
     #  otherwise the execution continue.
@@ -103,7 +119,7 @@ module VertxUnit
         @j_del.java_method(:assertFalse, [Java::boolean.java_class,Java::java.lang.String.java_class]).call(condition,message)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling assert_false(condition,message)"
+      raise ArgumentError, "Invalid arguments when calling assert_false(#{condition},#{message})"
     end
     #  Assert the <code>expected</code> argument is equals to the <code>actual</code> argument. If the arguments are not equals
     #  an assertion error is thrown otherwise the execution continue.
@@ -112,14 +128,14 @@ module VertxUnit
     # @param [String] message the failure message
     # @return [self]
     def assert_equals(expected=nil,actual=nil,message=nil)
-      if (expected.class == String  || expected.class == Hash || expected.class == Array || expected.class == NilClass || expected.class == TrueClass || expected.class == FalseClass || expected.class == Fixnum || expected.class == Float) && (actual.class == String  || actual.class == Hash || actual.class == Array || actual.class == NilClass || actual.class == TrueClass || actual.class == FalseClass || actual.class == Fixnum || actual.class == Float) && !block_given? && message == nil
+      if ::Vertx::Util::unknown_type.accept?(expected) && ::Vertx::Util::unknown_type.accept?(actual) && !block_given? && message == nil
         @j_del.java_method(:assertEquals, [Java::java.lang.Object.java_class,Java::java.lang.Object.java_class]).call(::Vertx::Util::Utils.to_object(expected),::Vertx::Util::Utils.to_object(actual))
         return self
-      elsif (expected.class == String  || expected.class == Hash || expected.class == Array || expected.class == NilClass || expected.class == TrueClass || expected.class == FalseClass || expected.class == Fixnum || expected.class == Float) && (actual.class == String  || actual.class == Hash || actual.class == Array || actual.class == NilClass || actual.class == TrueClass || actual.class == FalseClass || actual.class == Fixnum || actual.class == Float) && message.class == String && !block_given?
+      elsif ::Vertx::Util::unknown_type.accept?(expected) && ::Vertx::Util::unknown_type.accept?(actual) && message.class == String && !block_given?
         @j_del.java_method(:assertEquals, [Java::java.lang.Object.java_class,Java::java.lang.Object.java_class,Java::java.lang.String.java_class]).call(::Vertx::Util::Utils.to_object(expected),::Vertx::Util::Utils.to_object(actual),message)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling assert_equals(expected,actual,message)"
+      raise ArgumentError, "Invalid arguments when calling assert_equals(#{expected},#{actual},#{message})"
     end
     #  Asserts that the <code>expected</code> double argument is equals to the <code>actual</code> double argument
     #  within a positive delta. If the arguments do not satisfy this, an assertion error is thrown otherwise
@@ -137,7 +153,7 @@ module VertxUnit
         @j_del.java_method(:assertInRange, [Java::double.java_class,Java::double.java_class,Java::double.java_class,Java::java.lang.String.java_class]).call(::Vertx::Util::Utils.to_double(expected),::Vertx::Util::Utils.to_double(actual),::Vertx::Util::Utils.to_double(delta),message)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling assert_in_range(expected,actual,delta,message)"
+      raise ArgumentError, "Invalid arguments when calling assert_in_range(#{expected},#{actual},#{delta},#{message})"
     end
     #  Assert the <code>first</code> argument is not equals to the <code>second</code> argument. If the arguments are equals
     #  an assertion error is thrown otherwise the execution continue.
@@ -146,14 +162,14 @@ module VertxUnit
     # @param [String] message the failure message
     # @return [self]
     def assert_not_equals(first=nil,second=nil,message=nil)
-      if (first.class == String  || first.class == Hash || first.class == Array || first.class == NilClass || first.class == TrueClass || first.class == FalseClass || first.class == Fixnum || first.class == Float) && (second.class == String  || second.class == Hash || second.class == Array || second.class == NilClass || second.class == TrueClass || second.class == FalseClass || second.class == Fixnum || second.class == Float) && !block_given? && message == nil
+      if ::Vertx::Util::unknown_type.accept?(first) && ::Vertx::Util::unknown_type.accept?(second) && !block_given? && message == nil
         @j_del.java_method(:assertNotEquals, [Java::java.lang.Object.java_class,Java::java.lang.Object.java_class]).call(::Vertx::Util::Utils.to_object(first),::Vertx::Util::Utils.to_object(second))
         return self
-      elsif (first.class == String  || first.class == Hash || first.class == Array || first.class == NilClass || first.class == TrueClass || first.class == FalseClass || first.class == Fixnum || first.class == Float) && (second.class == String  || second.class == Hash || second.class == Array || second.class == NilClass || second.class == TrueClass || second.class == FalseClass || second.class == Fixnum || second.class == Float) && message.class == String && !block_given?
+      elsif ::Vertx::Util::unknown_type.accept?(first) && ::Vertx::Util::unknown_type.accept?(second) && message.class == String && !block_given?
         @j_del.java_method(:assertNotEquals, [Java::java.lang.Object.java_class,Java::java.lang.Object.java_class,Java::java.lang.String.java_class]).call(::Vertx::Util::Utils.to_object(first),::Vertx::Util::Utils.to_object(second),message)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling assert_not_equals(first,second,message)"
+      raise ArgumentError, "Invalid arguments when calling assert_not_equals(#{first},#{second},#{message})"
     end
     #  Throw a failure with the specified failure <code>cause</code>.
     # @overload fail()
@@ -170,7 +186,7 @@ module VertxUnit
       elsif param_1.is_a?(Exception) && !block_given?
         return @j_del.java_method(:fail, [Java::JavaLang::Throwable.java_class]).call(::Vertx::Util::Utils.to_throwable(param_1))
       end
-      raise ArgumentError, "Invalid arguments when calling fail(param_1)"
+      raise ArgumentError, "Invalid arguments when calling fail(#{param_1})"
     end
     #  Create and returns a new async object, the returned async controls the completion of the test. This async operation
     #  completes when the {::VertxUnit::Async#complete} is called <code>count</code> times.<p/>
@@ -187,7 +203,7 @@ module VertxUnit
       elsif count.class == Fixnum && !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:async, [Java::int.java_class]).call(count),::VertxUnit::Async)
       end
-      raise ArgumentError, "Invalid arguments when calling async(count)"
+      raise ArgumentError, "Invalid arguments when calling async(#{count})"
     end
     #  Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
     # 

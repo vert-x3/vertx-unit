@@ -14,6 +14,22 @@ module VertxUnit
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == TestResult
+    end
+    def @@j_api_type.wrap(obj)
+      TestResult.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtUnitReport::TestResult.java_class
+    end
     #  The test description, may be null if none was provided.
     # @return [String]
     def name

@@ -16,6 +16,22 @@ module VertxUnit
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == TestSuiteReport
+    end
+    def @@j_api_type.wrap(obj)
+      TestSuiteReport.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtUnitReport::TestSuiteReport.java_class
+    end
     # @return [String] the test suite name
     def name
       if !block_given?

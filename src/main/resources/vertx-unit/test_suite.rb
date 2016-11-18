@@ -25,6 +25,22 @@ module VertxUnit
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == TestSuite
+    end
+    def @@j_api_type.wrap(obj)
+      TestSuite.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtUnit::TestSuite.java_class
+    end
     #  Create and return a new test suite.
     # @param [String] name the test suite name
     # @return [::VertxUnit::TestSuite] the created test suite
@@ -32,7 +48,7 @@ module VertxUnit
       if name.class == String && !block_given?
         return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtUnit::TestSuite.java_method(:create, [Java::java.lang.String.java_class]).call(name),::VertxUnit::TestSuite)
       end
-      raise ArgumentError, "Invalid arguments when calling create(name)"
+      raise ArgumentError, "Invalid arguments when calling create(#{name})"
     end
     #  Set a callback executed before the tests.
     # @yield the callback
@@ -87,7 +103,7 @@ module VertxUnit
         @j_del.java_method(:test, [Java::java.lang.String.java_class,Java::int.java_class,Java::IoVertxCore::Handler.java_class]).call(name,repeat,(Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxUnit::TestContext)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling test(name,repeat)"
+      raise ArgumentError, "Invalid arguments when calling test(#{name},#{repeat})"
     end
     #  Run the testsuite with the specified <code>options</code> and the specified <code>vertx</code> instance.<p/>
     # 
@@ -113,7 +129,7 @@ module VertxUnit
       elsif param_1.class.method_defined?(:j_del) && param_2.class == Hash && !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:run, [Java::IoVertxCore::Vertx.java_class,Java::IoVertxExtUnit::TestOptions.java_class]).call(param_1.j_del,Java::IoVertxExtUnit::TestOptions.new(::Vertx::Util::Utils.to_json_object(param_2))),::VertxUnit::TestCompletion)
       end
-      raise ArgumentError, "Invalid arguments when calling run(param_1,param_2)"
+      raise ArgumentError, "Invalid arguments when calling run(#{param_1},#{param_2})"
     end
   end
 end

@@ -27,10 +27,11 @@ var JCompletion = io.vertx.ext.unit.Completion;
 
  @class
 */
-var Completion = function(j_val) {
+var Completion = function(j_val, j_arg_0) {
 
   var j_completion = j_val;
   var that = this;
+  var j_T = typeof j_arg_0 !== 'undefined' ? j_arg_0 : utils.unknown_jtype;
 
   /**
    Completes the future upon completion, otherwise fails it.
@@ -95,7 +96,7 @@ var Completion = function(j_val) {
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_completion["handler(io.vertx.core.Handler)"](function(ar) {
       if (ar.succeeded()) {
-        completionHandler(utils.convReturnTypeUnknown(ar.result()), null);
+        completionHandler(j_T.wrap(ar.result()), null);
       } else {
         completionHandler(null, ar.cause());
       }
@@ -143,5 +144,23 @@ var Completion = function(j_val) {
   this._jdel = j_completion;
 };
 
-// We export the Constructor function
+Completion._jclass = utils.getJavaClass("io.vertx.ext.unit.Completion");
+Completion._jtype = {
+  accept: function(obj) {
+    return Completion._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(Completion.prototype, {});
+    Completion.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+Completion._create = function(jdel) {
+  var obj = Object.create(Completion.prototype, {});
+  Completion.apply(obj, arguments);
+  return obj;
+}
 module.exports = Completion;

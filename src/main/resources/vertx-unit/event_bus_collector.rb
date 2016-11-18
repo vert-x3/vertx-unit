@@ -17,6 +17,22 @@ module VertxUnit
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == EventBusCollector
+    end
+    def @@j_api_type.wrap(obj)
+      EventBusCollector.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtUnitCollect::EventBusCollector.java_class
+    end
     # @param [::Vertx::Vertx] vertx 
     # @yield 
     # @return [::VertxUnit::EventBusCollector]
@@ -26,7 +42,7 @@ module VertxUnit
       elsif vertx.class.method_defined?(:j_del) && block_given? && reporter == nil
         return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtUnitCollect::EventBusCollector.java_method(:create, [Java::IoVertxCore::Vertx.java_class,Java::IoVertxCore::Handler.java_class]).call(vertx.j_del,(Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxUnit::TestSuiteReport)) })),::VertxUnit::EventBusCollector)
       end
-      raise ArgumentError, "Invalid arguments when calling create(vertx,reporter)"
+      raise ArgumentError, "Invalid arguments when calling create(#{vertx},#{reporter})"
     end
     #  Register the collector as a consumer of the event bus with the specified address.
     # @param [String] address the registration address
@@ -35,7 +51,7 @@ module VertxUnit
       if address.class == String && !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:register, [Java::java.lang.String.java_class]).call(address),::Vertx::MessageConsumer)
       end
-      raise ArgumentError, "Invalid arguments when calling register(address)"
+      raise ArgumentError, "Invalid arguments when calling register(#{address})"
     end
   end
 end

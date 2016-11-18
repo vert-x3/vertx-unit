@@ -19,6 +19,22 @@ module VertxUnit
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == Failure
+    end
+    def @@j_api_type.wrap(obj)
+      Failure.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtUnitReport::Failure.java_class
+    end
     # @return [true,false] true if the failure is an error failure otherwise it is an assertion failure
     def error?
       if !block_given?

@@ -9,13 +9,29 @@ module VertxUnit
     # @private
     # @param j_del [::VertxUnit::TestCompletion] the java delegate
     def initialize(j_del)
-      super(j_del)
+      super(j_del, nil)
       @j_del = j_del
     end
     # @private
     # @return [::VertxUnit::TestCompletion] the underlying java delegate
     def j_del
       @j_del
+    end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == TestCompletion
+    end
+    def @@j_api_type.wrap(obj)
+      TestCompletion.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtUnit::TestCompletion.java_class
     end
     #  Completes the future upon completion, otherwise fails it.
     # @param [::Vertx::Future] future the future to resolve
@@ -24,7 +40,7 @@ module VertxUnit
       if future.class.method_defined?(:j_del) && !block_given?
         return @j_del.java_method(:resolve, [Java::IoVertxCore::Future.java_class]).call(future.j_del)
       end
-      raise ArgumentError, "Invalid arguments when calling resolve(future)"
+      raise ArgumentError, "Invalid arguments when calling resolve(#{future})"
     end
     # @return [true,false] true if this completion is completed
     def completed?
@@ -67,7 +83,7 @@ module VertxUnit
       elsif timeoutMillis.class == Fixnum && !block_given?
         return @j_del.java_method(:await, [Java::long.java_class]).call(timeoutMillis)
       end
-      raise ArgumentError, "Invalid arguments when calling await(timeoutMillis)"
+      raise ArgumentError, "Invalid arguments when calling await(#{timeoutMillis})"
     end
     #  Cause the current thread to wait until this completion completes and succeeds with a configurable timeout.<p/>
     # 
@@ -80,7 +96,7 @@ module VertxUnit
       elsif timeoutMillis.class == Fixnum && !block_given?
         return @j_del.java_method(:awaitSuccess, [Java::long.java_class]).call(timeoutMillis)
       end
-      raise ArgumentError, "Invalid arguments when calling await_success(timeoutMillis)"
+      raise ArgumentError, "Invalid arguments when calling await_success(#{timeoutMillis})"
     end
   end
 end

@@ -33,7 +33,7 @@ var TestCompletion = function(j_val) {
 
   var j_testCompletion = j_val;
   var that = this;
-  Completion.call(this, j_val);
+  Completion.call(this, j_val, undefined);
 
   /**
    Completes the future upon completion, otherwise fails it.
@@ -146,5 +146,23 @@ var TestCompletion = function(j_val) {
   this._jdel = j_testCompletion;
 };
 
-// We export the Constructor function
+TestCompletion._jclass = utils.getJavaClass("io.vertx.ext.unit.TestCompletion");
+TestCompletion._jtype = {
+  accept: function(obj) {
+    return TestCompletion._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(TestCompletion.prototype, {});
+    TestCompletion.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+TestCompletion._create = function(jdel) {
+  var obj = Object.create(TestCompletion.prototype, {});
+  TestCompletion.apply(obj, arguments);
+  return obj;
+}
 module.exports = TestCompletion;

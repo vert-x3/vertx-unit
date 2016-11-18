@@ -46,7 +46,7 @@ var EventBusCollector = function(j_val) {
   this.register = function(address) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
-      return utils.convReturnVertxGen(j_eventBusCollector["register(java.lang.String)"](address), MessageConsumer);
+      return utils.convReturnVertxGen(MessageConsumer, j_eventBusCollector["register(java.lang.String)"](address));
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -56,6 +56,25 @@ var EventBusCollector = function(j_val) {
   this._jdel = j_eventBusCollector;
 };
 
+EventBusCollector._jclass = utils.getJavaClass("io.vertx.ext.unit.collect.EventBusCollector");
+EventBusCollector._jtype = {
+  accept: function(obj) {
+    return EventBusCollector._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(EventBusCollector.prototype, {});
+    EventBusCollector.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+EventBusCollector._create = function(jdel) {
+  var obj = Object.create(EventBusCollector.prototype, {});
+  EventBusCollector.apply(obj, arguments);
+  return obj;
+}
 /**
 
  @memberof module:vertx-unit-js/event_bus_collector
@@ -66,13 +85,12 @@ var EventBusCollector = function(j_val) {
 EventBusCollector.create = function() {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-    return utils.convReturnVertxGen(JEventBusCollector["create(io.vertx.core.Vertx,io.vertx.ext.unit.report.ReportingOptions)"](__args[0]._jdel, __args[1] != null ? new ReportingOptions(new JsonObject(JSON.stringify(__args[1]))) : null), EventBusCollector);
+    return utils.convReturnVertxGen(EventBusCollector, JEventBusCollector["create(io.vertx.core.Vertx,io.vertx.ext.unit.report.ReportingOptions)"](__args[0]._jdel, __args[1] != null ? new ReportingOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
   }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'function') {
-    return utils.convReturnVertxGen(JEventBusCollector["create(io.vertx.core.Vertx,io.vertx.core.Handler)"](__args[0]._jdel, function(jVal) {
-    __args[1](utils.convReturnVertxGen(jVal, TestSuiteReport));
-  }), EventBusCollector);
+    return utils.convReturnVertxGen(EventBusCollector, JEventBusCollector["create(io.vertx.core.Vertx,io.vertx.core.Handler)"](__args[0]._jdel, function(jVal) {
+    __args[1](utils.convReturnVertxGen(TestSuiteReport, jVal));
+  }));
   } else throw new TypeError('function invoked with invalid arguments');
 };
 
-// We export the Constructor function
 module.exports = EventBusCollector;

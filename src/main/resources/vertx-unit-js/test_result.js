@@ -128,7 +128,7 @@ var TestResult = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       if (that.cachedfailure == null) {
-        that.cachedfailure = utils.convReturnVertxGen(j_testResult["failure()"](), Failure);
+        that.cachedfailure = utils.convReturnVertxGen(Failure, j_testResult["failure()"]());
       }
       return that.cachedfailure;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -140,5 +140,23 @@ var TestResult = function(j_val) {
   this._jdel = j_testResult;
 };
 
-// We export the Constructor function
+TestResult._jclass = utils.getJavaClass("io.vertx.ext.unit.report.TestResult");
+TestResult._jtype = {
+  accept: function(obj) {
+    return TestResult._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(TestResult.prototype, {});
+    TestResult.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+TestResult._create = function(jdel) {
+  var obj = Object.create(TestResult.prototype, {});
+  TestResult.apply(obj, arguments);
+  return obj;
+}
 module.exports = TestResult;

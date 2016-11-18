@@ -6,8 +6,9 @@ module VertxUnit
   class Completion
     # @private
     # @param j_del [::VertxUnit::Completion] the java delegate
-    def initialize(j_del)
+    def initialize(j_del, j_arg_T=nil)
       @j_del = j_del
+      @j_arg_T = j_arg_T != nil ? j_arg_T : ::Vertx::Util::unknown_type
     end
     # @private
     # @return [::VertxUnit::Completion] the underlying java delegate
@@ -21,7 +22,7 @@ module VertxUnit
       if future.class.method_defined?(:j_del) && !block_given?
         return @j_del.java_method(:resolve, [Java::IoVertxCore::Future.java_class]).call(future.j_del)
       end
-      raise ArgumentError, "Invalid arguments when calling resolve(future)"
+      raise ArgumentError, "Invalid arguments when calling resolve(#{future})"
     end
     # @return [true,false] true if this completion is completed
     def completed?
@@ -49,7 +50,7 @@ module VertxUnit
     # @return [void]
     def handler
       if block_given?
-        return @j_del.java_method(:handler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |ar| yield(ar.failed ? ar.cause : nil, ar.succeeded ? ::Vertx::Util::Utils.from_object(ar.result) : nil) }))
+        return @j_del.java_method(:handler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |ar| yield(ar.failed ? ar.cause : nil, ar.succeeded ? @j_arg_T.wrap(ar.result) : nil) }))
       end
       raise ArgumentError, "Invalid arguments when calling handler()"
     end
@@ -64,7 +65,7 @@ module VertxUnit
       elsif timeoutMillis.class == Fixnum && !block_given?
         return @j_del.java_method(:await, [Java::long.java_class]).call(timeoutMillis)
       end
-      raise ArgumentError, "Invalid arguments when calling await(timeoutMillis)"
+      raise ArgumentError, "Invalid arguments when calling await(#{timeoutMillis})"
     end
     #  Cause the current thread to wait until this completion completes and succeeds with a configurable timeout.<p/>
     # 
@@ -77,7 +78,7 @@ module VertxUnit
       elsif timeoutMillis.class == Fixnum && !block_given?
         return @j_del.java_method(:awaitSuccess, [Java::long.java_class]).call(timeoutMillis)
       end
-      raise ArgumentError, "Invalid arguments when calling await_success(timeoutMillis)"
+      raise ArgumentError, "Invalid arguments when calling await_success(#{timeoutMillis})"
     end
   end
 end

@@ -92,5 +92,23 @@ var Failure = function(j_val) {
   this._jdel = j_failure;
 };
 
-// We export the Constructor function
+Failure._jclass = utils.getJavaClass("io.vertx.ext.unit.report.Failure");
+Failure._jtype = {
+  accept: function(obj) {
+    return Failure._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(Failure.prototype, {});
+    Failure.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+Failure._create = function(jdel) {
+  var obj = Object.create(Failure.prototype, {});
+  Failure.apply(obj, arguments);
+  return obj;
+}
 module.exports = Failure;

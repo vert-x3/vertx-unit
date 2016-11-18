@@ -38,6 +38,25 @@ var TestCase = function(j_val) {
   this._jdel = j_testCase;
 };
 
+TestCase._jclass = utils.getJavaClass("io.vertx.ext.unit.TestCase");
+TestCase._jtype = {
+  accept: function(obj) {
+    return TestCase._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(TestCase.prototype, {});
+    TestCase.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+TestCase._create = function(jdel) {
+  var obj = Object.create(TestCase.prototype, {});
+  TestCase.apply(obj, arguments);
+  return obj;
+}
 /**
  Create a test case.
 
@@ -49,11 +68,10 @@ var TestCase = function(j_val) {
 TestCase.create = function(name, testCase) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-    return utils.convReturnVertxGen(JTestCase["create(java.lang.String,io.vertx.core.Handler)"](name, function(jVal) {
-    testCase(utils.convReturnVertxGen(jVal, TestContext));
-  }), TestCase);
+    return utils.convReturnVertxGen(TestCase, JTestCase["create(java.lang.String,io.vertx.core.Handler)"](name, function(jVal) {
+    testCase(utils.convReturnVertxGen(TestContext, jVal));
+  }));
   } else throw new TypeError('function invoked with invalid arguments');
 };
 
-// We export the Constructor function
 module.exports = TestCase;

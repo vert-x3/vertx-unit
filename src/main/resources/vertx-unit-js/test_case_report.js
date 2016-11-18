@@ -59,7 +59,7 @@ var TestCaseReport = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_testCaseReport["endHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, TestResult));
+      handler(utils.convReturnVertxGen(TestResult, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -71,5 +71,23 @@ var TestCaseReport = function(j_val) {
   this._jdel = j_testCaseReport;
 };
 
-// We export the Constructor function
+TestCaseReport._jclass = utils.getJavaClass("io.vertx.ext.unit.report.TestCaseReport");
+TestCaseReport._jtype = {
+  accept: function(obj) {
+    return TestCaseReport._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(TestCaseReport.prototype, {});
+    TestCaseReport.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+TestCaseReport._create = function(jdel) {
+  var obj = Object.create(TestCaseReport.prototype, {});
+  TestCaseReport.apply(obj, arguments);
+  return obj;
+}
 module.exports = TestCaseReport;
