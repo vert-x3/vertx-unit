@@ -20,7 +20,7 @@ var Failure = require('vertx-unit-js/failure');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestResult = io.vertx.ext.unit.report.TestResult;
+var JTestResult = Java.type('io.vertx.ext.unit.report.TestResult');
 
 /**
  The result of a test.

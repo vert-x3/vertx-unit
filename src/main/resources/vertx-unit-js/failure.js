@@ -19,7 +19,7 @@ var utils = require('vertx-js/util/utils');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JFailure = io.vertx.ext.unit.report.Failure;
+var JFailure = Java.type('io.vertx.ext.unit.report.Failure');
 
 /**
  A failure provides the details of a failure that happened during the execution of a test case.<p/>

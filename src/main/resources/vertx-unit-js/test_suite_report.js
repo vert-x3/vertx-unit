@@ -21,7 +21,7 @@ var TestCaseReport = require('vertx-unit-js/test_case_report');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestSuiteReport = io.vertx.ext.unit.report.TestSuiteReport;
+var JTestSuiteReport = Java.type('io.vertx.ext.unit.report.TestSuiteReport');
 
 /**
  The test suite reports is basically a stream of events reporting the test suite execution.

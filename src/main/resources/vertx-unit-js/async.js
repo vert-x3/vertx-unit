@@ -21,7 +21,7 @@ var Future = require('vertx-js/future');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JAsync = io.vertx.ext.unit.Async;
+var JAsync = Java.type('io.vertx.ext.unit.Async');
 
 /**
  An asynchronous exit point for a test.<p/>

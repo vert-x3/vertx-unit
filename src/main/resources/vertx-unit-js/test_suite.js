@@ -22,8 +22,8 @@ var TestCompletion = require('vertx-unit-js/test_completion');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestSuite = io.vertx.ext.unit.TestSuite;
-var TestOptions = io.vertx.ext.unit.TestOptions;
+var JTestSuite = Java.type('io.vertx.ext.unit.TestSuite');
+var TestOptions = Java.type('io.vertx.ext.unit.TestOptions');
 
 /**
  A named suite of test cases that are executed altogether. The suite suite is created with
@@ -143,11 +143,11 @@ var TestSuite = function(j_val) {
     if (__args.length === 0) {
       return utils.convReturnVertxGen(TestCompletion, j_testSuite["run()"]());
     }  else if (__args.length === 1 && (typeof __args[0] === 'object' && __args[0] != null)) {
-      return utils.convReturnVertxGen(TestCompletion, j_testSuite["run(io.vertx.ext.unit.TestOptions)"](__args[0] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[0]))) : null));
+      return utils.convReturnVertxGen(TestCompletion, j_testSuite["run(io.vertx.ext.unit.TestOptions)"](__args[0] != null ? new TestOptions(new JsonObject(Java.asJSONCompatible(__args[0]))) : null));
     }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
       return utils.convReturnVertxGen(TestCompletion, j_testSuite["run(io.vertx.core.Vertx)"](__args[0]._jdel));
     }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-      return utils.convReturnVertxGen(TestCompletion, j_testSuite["run(io.vertx.core.Vertx,io.vertx.ext.unit.TestOptions)"](__args[0]._jdel, __args[1] != null ? new TestOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
+      return utils.convReturnVertxGen(TestCompletion, j_testSuite["run(io.vertx.core.Vertx,io.vertx.ext.unit.TestOptions)"](__args[0]._jdel, __args[1] != null ? new TestOptions(new JsonObject(Java.asJSONCompatible(__args[1]))) : null));
     } else throw new TypeError('function invoked with invalid arguments');
   };
 

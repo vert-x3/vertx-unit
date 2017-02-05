@@ -20,7 +20,7 @@ var Future = require('vertx-js/future');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JCompletion = io.vertx.ext.unit.Completion;
+var JCompletion = Java.type('io.vertx.ext.unit.Completion');
 
 /**
  A completion object that emits completion notifications either <i>succeeded</i> or <i>failed</i>.

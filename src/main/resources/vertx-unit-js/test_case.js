@@ -20,7 +20,7 @@ var TestContext = require('vertx-unit-js/test_context');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestCase = io.vertx.ext.unit.TestCase;
+var JTestCase = Java.type('io.vertx.ext.unit.TestCase');
 
 /**
  A test case object can be used to create a single test.

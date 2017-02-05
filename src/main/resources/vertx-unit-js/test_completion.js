@@ -21,7 +21,7 @@ var Future = require('vertx-js/future');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestCompletion = io.vertx.ext.unit.TestCompletion;
+var JTestCompletion = Java.type('io.vertx.ext.unit.TestCompletion');
 
 /**
  This object provides callback-ability for the end of a test suite, the completion <i>succeeds</i>

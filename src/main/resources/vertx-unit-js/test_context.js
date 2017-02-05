@@ -20,7 +20,7 @@ var Async = require('vertx-unit-js/async');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestContext = io.vertx.ext.unit.TestContext;
+var JTestContext = Java.type('io.vertx.ext.unit.TestContext');
 
 /**
  The test context is used for performing test assertions and manage the completion of the test. This context

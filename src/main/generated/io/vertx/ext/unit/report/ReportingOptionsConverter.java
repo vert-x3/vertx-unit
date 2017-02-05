@@ -37,11 +37,9 @@ public class ReportingOptionsConverter {
 
   public static void toJson(ReportingOptions obj, JsonObject json) {
     if (obj.getReporters() != null) {
-      json.put("reporters", new JsonArray(
-          obj.getReporters().
-              stream().
-              map(item -> item.toJson()).
-              collect(java.util.stream.Collectors.toList())));
+      JsonArray array = new JsonArray();
+      obj.getReporters().forEach(item -> array.add(item.toJson()));
+      json.put("reporters", array);
     }
   }
 }

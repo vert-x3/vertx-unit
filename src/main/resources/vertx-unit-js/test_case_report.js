@@ -20,7 +20,7 @@ var TestResult = require('vertx-unit-js/test_result');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JTestCaseReport = io.vertx.ext.unit.report.TestCaseReport;
+var JTestCaseReport = Java.type('io.vertx.ext.unit.report.TestCaseReport');
 
 /**
  Report the execution of a test case.
