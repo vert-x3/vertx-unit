@@ -19,7 +19,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 <dependency>
   <groupId>io.vertx</groupId>
   <artifactId>vertx-unit</artifactId>
-  <version>3.4.0.Beta1</version>
+  <version>3.4.0-SNAPSHOT</version>
   <scope>test</scope>
 </dependency>
 ----
@@ -28,7 +28,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 
 [source,groovy,subs="+attributes"]
 ----
-testCompile io.vertx:vertx-unit:3.4.0.Beta1
+testCompile io.vertx:vertx-unit:3.4.0-SNAPSHOT
 ----
 
 Vert.x unit can be used in different ways and run anywhere your code runs, it is just a matter of reporting
@@ -36,7 +36,6 @@ the results the right way, this example shows the bare minimum test suite:
 
 [source,groovy]
 ----
-import io.vertx.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
 suite.test("my_test_case", { context ->
   def s = "value"
@@ -52,7 +51,6 @@ of the test result.
 
 [source,groovy]
 ----
-import io.vertx.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
 suite.test("my_test_case", { context ->
   def s = "value"
@@ -88,7 +86,6 @@ initializing or disposing services used by the test suite.
 
 [source,groovy]
 ----
-import io.vertx.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
 suite.test("my_test_case_1", { context ->
   // Test 1
@@ -106,7 +103,6 @@ The API is fluent and therefore the test cases can be chained:
 
 [source,groovy]
 ----
-import io.vertx.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
 suite.test("my_test_case_1", { context ->
   // Test 1
@@ -125,7 +121,6 @@ Vertx Unit provides _before_ and _after_ callbacks for doing global setup or cle
 
 [source,groovy]
 ----
-import io.vertx.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
 suite.before({ context ->
   // Test suite setup
@@ -154,7 +149,6 @@ for each test case:
 
 [source,groovy]
 ----
-import io.vertx.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
 suite.beforeEach({ context ->
   // Test case setup
@@ -539,7 +533,6 @@ test multiple times to increase the failure likelihood of the test.
 .Repeating a test
 [source,groovy]
 ----
-import io.vertx.ext.unit.TestSuite
 TestSuite.create("my_suite").test("my_test", 1000, { context ->
   // This will be executed 1000 times
 })
@@ -560,7 +553,6 @@ a copy of the shared state, so updates will only be visible for a test case.
 .Sharing state between callbacks
 [source,groovy]
 ----
-import io.vertx.ext.unit.TestSuite
 TestSuite.create("my_suite").before({ context ->
 
   // host is available for all test cases
@@ -651,7 +643,6 @@ example:
 
 [source,groovy]
 ----
-import io.vertx.ext.unit.TestSuite
 def suite = TestSuite.create("the_test_suite")
 suite.test("my_test_case", { context ->
   def s = "value"
@@ -869,7 +860,6 @@ and achieve custom reporting:
 
 [source,groovy]
 ----
-import io.vertx.ext.unit.collect.EventBusCollector
 def collector = EventBusCollector.create(vertx, [
   reporters:[
     [
