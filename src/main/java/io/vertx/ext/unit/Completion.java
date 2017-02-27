@@ -26,7 +26,7 @@ public interface Completion<T> {
   boolean isCompleted();
 
   /**
-   * @return true if the this completion is completed succeeded
+   * @return true if this completion is completed and succeeded
    */
   boolean isSucceeded();
 
@@ -43,7 +43,7 @@ public interface Completion<T> {
   void handler(Handler<AsyncResult<T>> completionHandler);
 
   /**
-   * Cause the current thread to wait until thi completion completes.<p/>
+   * Cause the current thread to wait until this completion completes.<p/>
    *
    * If the current thread is interrupted, an exception will be thrown.
    */
