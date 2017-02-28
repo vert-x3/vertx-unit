@@ -22,7 +22,7 @@ public interface Async extends Completion<Void> {
 
   /**
    * Signals the asynchronous operation is done, this method must be called with a count greater than {@code 0},
-   * otherwise it throw an {@code IllegalStateException} to signal the error.
+   * otherwise it throws an {@code IllegalStateException} to signal the error.
    */
   void complete();
 
