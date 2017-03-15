@@ -163,7 +163,6 @@
  *
  * The {@link io.vertx.ext.unit.TestContext#assertInRange} targets real numbers.
  *
- * [source,$lang]
  * ----
  * {@link examples.Examples#asserting_06}
  * ----

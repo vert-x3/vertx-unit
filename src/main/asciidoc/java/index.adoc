@@ -220,7 +220,6 @@ suite.test("my_test_case", context -> {
 
 The `link:../../apidocs/io/vertx/ext/unit/TestContext.html#assertInRange-double-double-double-[assertInRange]` targets real numbers.
 
-[source,java]
 ----
 suite.test("my_test_case", context -> {
 
