@@ -243,6 +243,7 @@ suite.test("my_test_case", function (context) {
 
 The `link:../../jsdoc/module-vertx-unit-js_test_context-TestContext.html#assertInRange[assertInRange]` targets real numbers.
 
+[source,js]
 ----
 suite.test("my_test_case", function (context) {
 

@@ -243,6 +243,7 @@ suite.test("my_test_case") { |context|
 
 The `link:../../yardoc/VertxUnit/TestContext.html#assert_in_range-instance_method[assertInRange]` targets real numbers.
 
+[source,ruby]
 ----
 suite.test("my_test_case") { |context|
 
