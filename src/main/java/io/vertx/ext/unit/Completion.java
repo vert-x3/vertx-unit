@@ -1,5 +1,6 @@
 package io.vertx.ext.unit;
 
+import io.vertx.codegen.annotations.Nullable;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -40,7 +41,7 @@ public interface Completion<T> {
    *
    * @param completionHandler the completion handler
    */
-  void handler(Handler<AsyncResult<T>> completionHandler);
+  void handler(Handler<AsyncResult<@Nullable T>> completionHandler);
 
   /**
    * Cause the current thread to wait until this completion completes.<p/>
