@@ -20,7 +20,7 @@
   <parent>
     <groupId>io.vertx</groupId>
     <artifactId>vertx-ext-parent</artifactId>
-    <version>26</version>
+    <version>27</version>
   </parent>
 
   <artifactId>vertx-unit</artifactId>
@@ -144,15 +144,10 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <failIfNoTests>false</failIfNoTests>
           <systemPropertyVariables>
             <vertx.test.timeout>60</vertx.test.timeout>
             <io.netty.leakDetectionLevel>PARANOID</io.netty.leakDetectionLevel>
           </systemPropertyVariables>
-          <argLine>-server -Xms128m -Xmx1024m -XX:NewRatio=2</argLine>
-          <excludes>
-            <exclude>**/ScratchPad.java</exclude>
-          </excludes>
         </configuration>
       </plugin>
 
@@ -201,6 +196,27 @@
   </build>
 
   <profiles>
+    <profile>
+      <id>java-9</id>
+      <activation>
+        <jdk>9</jdk>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <configuration>
+                <excludes>
+                  <exclude>**/LangTest.java</exclude>
+                </excludes>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
     <profile>
       <id>coverage</id>
       <build>
