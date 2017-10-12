@@ -1,6 +1,6 @@
 package verticle
 
-import io.vertx.groovy.ext.unit.TestSuite;
+import io.vertx.ext.unit.TestSuite;
 
 def suite = TestSuite.create("the_suite");
 

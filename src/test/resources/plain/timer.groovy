@@ -1,7 +1,7 @@
 package plain;
 
-import io.vertx.groovy.core.Vertx
-import io.vertx.groovy.ext.unit.TestSuite
+import io.vertx.core.Vertx
+import io.vertx.ext.unit.TestSuite
 
 def vertx = Vertx.vertx()
 

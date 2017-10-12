@@ -1,7 +1,7 @@
 package verticle
 
-import io.vertx.groovy.core.Future
-import io.vertx.groovy.ext.unit.TestSuite
+import io.vertx.core.Future
+import io.vertx.ext.unit.TestSuite
 
 def vertxStart(Future future) {
   def suite = TestSuite.create("my_suite").beforeEach({ context ->
