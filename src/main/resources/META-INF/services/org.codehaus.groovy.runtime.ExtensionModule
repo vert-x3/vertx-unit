@@ -1,4 +1,0 @@
-moduleName = io.vertx.ext.unit.report.TestSuiteReport-module
-moduleVersion = 1.0
-extensionClasses = io.vertx.groovy.ext.unit.Completion_GroovyExtension, io.vertx.groovy.ext.unit.TestContext_GroovyExtension, io.vertx.groovy.ext.unit.TestSuite_GroovyExtension
-staticExtensionClasses = io.vertx.groovy.ext.unit.collect.EventBusCollector_GroovyStaticExtension
