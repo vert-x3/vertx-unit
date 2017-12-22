@@ -373,8 +373,8 @@ public class TestContextImpl implements TestContext {
   public TestContext verify(Handler<Void> block) {
     try {
       block.handle(null);
-    } catch (AssertionError err) {
-      fail(err);
+    } catch (Throwable t) {
+      fail(t);
     }
     return this;
   }
