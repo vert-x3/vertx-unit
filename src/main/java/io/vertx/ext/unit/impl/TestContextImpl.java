@@ -370,6 +370,16 @@ public class TestContextImpl implements TestContext {
   }
 
   @Override
+  public TestContext verify(Handler<Void> block) {
+    try {
+      block.handle(null);
+    } catch (AssertionError err) {
+      fail(err);
+    }
+    return this;
+  }
+
+  @Override
   public <T> Handler<AsyncResult<T>> asyncAssertSuccess() {
     return asyncAssertSuccess(result -> {
     });

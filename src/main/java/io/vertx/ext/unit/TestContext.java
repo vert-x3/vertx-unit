@@ -201,6 +201,17 @@ public interface TestContext {
   TestContext assertNotEquals(Object first, Object second, String message);
 
   /**
+   * Execute the provided handler, which may contain assertions, possibly from any third-party assertion framework.
+   * Any {@link AssertionError} thrown will be caught (and propagated) in order to fulfill potential expected async
+   * completeness.
+   *
+   * @param block block of code to be executed
+   * @return a reference to this, so the API can be used fluently
+   */
+  @Fluent
+  TestContext verify(Handler<Void> block);
+
+  /**
    * Throw a failure.
    */
   void fail();
