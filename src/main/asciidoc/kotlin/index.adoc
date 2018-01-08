@@ -5,7 +5,9 @@ Asynchronous polyglot unit testing.
 == Introduction
 
 Vertx Unit is designed for writing asynchronous unit tests with a polyglot API and running these tests
-in the JVM. Vertx Unit Api borrows from existing test frameworks like http://junit.org[JUnit] or http://qunitjs.com[QUnit]
+in the JVM.
+
+Vertx Unit Api borrows from existing test frameworks like http://junit.org[JUnit] or http://qunitjs.com[QUnit]
 and follows the Vert.x practices.
 
 As a consequence Vertx Unit is the natural choice for testing Vert.x applications.
@@ -19,7 +21,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 <dependency>
   <groupId>io.vertx</groupId>
   <artifactId>vertx-unit</artifactId>
-  <version>3.5.0</version>
+  <version>3.5.1-SNAPSHOT</version>
   <scope>test</scope>
 </dependency>
 ----
@@ -28,7 +30,7 @@ To use vert.x unit, add the following dependency to the _dependencies_ section o
 
 [source,groovy,subs="+attributes"]
 ----
-testCompile io.vertx:vertx-unit:3.5.0
+testCompile io.vertx:vertx-unit:3.5.1-SNAPSHOT
 ----
 
 Vert.x unit can be used in different ways and run anywhere your code runs, it is just a matter of reporting
@@ -272,6 +274,26 @@ suite.test("my_test_case", { context ->
 The failure can either be a _string_ as seen previously or an _error_. The _error_ object depends
 on the target language, for Java or Groovy it can be any class extending _Throwable- , for
 JavaScript it is an _error_, for Ruby it is an _Exception_.
+
+=== Using third-party assertion framework
+
+It is also possible to use any other assertion framework, like the popular _harmcrest_ and _assertj_.
+The recommended way to go is to use `link:../../apidocs/io/vertx/ext/unit/TestContext.html#verify-io.vertx.core.Handler-[verify]`
+and perform the assertions within the supplied _Handler_. This way, asynchronous testing termination
+will be correctly handled.
+
+[source,kotlin]
+----
+suite.test("my_test_case", { context ->
+  context.verify({ v ->
+    // Using here Assert from junit, could be assertj, harmcrest or any other
+    // Even manually throwing an AssertionError.
+    org.junit.Assert.assertNotNull("not null!")
+    org.junit.Assert.assertEquals(10, callbackCount)
+  })
+})
+
+----
 
 == Asynchronous testing
 

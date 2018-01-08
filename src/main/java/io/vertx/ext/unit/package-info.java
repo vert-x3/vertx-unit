@@ -189,6 +189,18 @@
  * on the target language, for Java or Groovy it can be any class extending _Throwable- , for
  * JavaScript it is an _error_, for Ruby it is an _Exception_.
  *
+ * === Using third-party assertion framework
+ *
+ * It is also possible to use any other assertion framework, like the popular _harmcrest_ and _assertj_.
+ * The recommended way to go is to use {@link io.vertx.ext.unit.TestContext#verify(io.vertx.core.Handler)}
+ * and perform the assertions within the supplied _Handler_. This way, asynchronous testing termination
+ * will be correctly handled.
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.Examples#asserting_09}
+ * ----
+ *
  * == Asynchronous testing
  *
  * The previous examples supposed that test cases were terminated after their respective callbacks, this is the

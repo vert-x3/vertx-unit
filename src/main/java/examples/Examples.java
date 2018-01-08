@@ -14,6 +14,7 @@ import io.vertx.ext.unit.*;
 import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.ext.unit.report.ReportOptions;
 import io.vertx.ext.unit.report.ReportingOptions;
+import org.junit.Assert;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -145,6 +146,15 @@ public class Examples {
       context.fail("That should never happen");
       // Following statements won't be executed
     });
+  }
+
+  public static void asserting_09(io.vertx.ext.unit.TestSuite suite, int callbackCount) {
+    suite.test("my_test_case", context -> context.verify(v -> {
+      // Using here Assert from junit, could be assertj, harmcrest or any other
+      // Even manually throwing an AssertionError.
+      Assert.assertNotNull("not null!");
+      Assert.assertEquals(10, callbackCount);
+    }));
   }
 
   public static void async_01(io.vertx.ext.unit.TestSuite suite, EventBus eventBus) {
