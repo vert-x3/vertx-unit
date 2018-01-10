@@ -3,7 +3,6 @@ package io.vertx.ext.unit;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.unit.junit.Repeat;
 import io.vertx.ext.unit.junit.RepeatRule;
@@ -1039,5 +1038,63 @@ public class JUnitTest {
     assertEquals(1, HttpRequestFailure.requestCount.get());
     assertEquals(1, result.getRunCount());
     assertEquals(1, result.getFailureCount());
+  }
+
+  public static class ThirdPartyAssertSuccess {
+    static final AtomicInteger count = new AtomicInteger();
+    @Test
+    public void success(TestContext context) {
+      context.verify(v -> {
+        count.incrementAndGet();
+        assertTrue(true);
+      });
+    }
+  }
+
+  @org.junit.Test
+  public void testThirdPartyAssertSuccess() {
+    Result result = run(ThirdPartyAssertSuccess.class);
+    assertEquals(1, ThirdPartyAssertSuccess.count.get());
+    assertEquals(1, result.getRunCount());
+    assertEquals(0, result.getFailureCount());
+  }
+
+  public static class ThirdPartyAssertSimpleFailure {
+    @Test
+    public void simpleFail(TestContext context) {
+      context.verify(v -> fail("Testing failure"));
+    }
+  }
+
+  @org.junit.Test
+  public void testThirdPartyAssertSimpleFailure() {
+    Result result = run(ThirdPartyAssertSimpleFailure.class);
+    assertEquals(1, result.getRunCount());
+    assertEquals(1, result.getFailureCount());
+    assertEquals("Testing failure", result.getFailures().get(0).getMessage());
+  }
+
+  public static class ThirdPartyAssertAsyncFailure {
+    @Test
+    public void failWithAsync(TestContext context) {
+      Vertx vertx = Vertx.vertx();
+      Async async = context.async();
+      vertx.runOnContext(v -> {
+        try {
+          context.verify(v2 -> fail("Testing async failure"));
+        } finally {
+          async.complete();
+        }
+      });
+      async.await();
+    }
+  }
+
+  @org.junit.Test
+  public void testThirdPartyAssertAsyncFailure() {
+    Result result = run(ThirdPartyAssertAsyncFailure.class);
+    assertEquals(1, result.getRunCount());
+    assertEquals(1, result.getFailureCount());
+    assertEquals("Testing async failure", result.getFailures().get(0).getMessage());
   }
 }
