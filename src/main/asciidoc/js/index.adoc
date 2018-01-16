@@ -287,7 +287,7 @@ JavaScript it is an _error_, for Ruby it is an _Exception_.
 
 === Using third-party assertion framework
 
-It is also possible to use any other assertion framework, like the popular _harmcrest_ and _assertj_.
+It is also possible to use any other assertion framework, like the popular _hamcrest_ and _assertj_.
 The recommended way to go is to use `link:../../jsdoc/module-vertx-unit-js_test_context-TestContext.html#verify[verify]`
 and perform the assertions within the supplied _Handler_. This way, asynchronous testing termination
 will be correctly handled.
@@ -296,7 +296,7 @@ will be correctly handled.
 ----
 suite.test("my_test_case", function (context) {
   context.verify(function (v) {
-    // Using here Assert from junit, could be assertj, harmcrest or any other
+    // Using here Assert from junit, could be assertj, hamcrest or any other
     // Even manually throwing an AssertionError.
     Java.type("org.junit.Assert").assertNotNull("not null!");
     Java.type("org.junit.Assert").assertEquals(10, callbackCount);

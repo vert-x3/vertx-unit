@@ -150,7 +150,7 @@ public class Examples {
 
   public static void asserting_09(io.vertx.ext.unit.TestSuite suite, int callbackCount) {
     suite.test("my_test_case", context -> context.verify(v -> {
-      // Using here Assert from junit, could be assertj, harmcrest or any other
+      // Using here Assert from junit, could be assertj, hamcrest or any other
       // Even manually throwing an AssertionError.
       Assert.assertNotNull("not null!");
       Assert.assertEquals(10, callbackCount);
