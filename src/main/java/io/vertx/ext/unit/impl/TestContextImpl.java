@@ -75,6 +75,7 @@ public class TestContextImpl implements TestContext {
         }
         if (failure == null) {
           failure = t;
+          running = false;
         }
       }
       tryEnd();
