@@ -257,8 +257,8 @@ public interface TestContext {
 
   /**
    * Create and returns a new async object, the returned async controls the completion of the test.
-   * This async operation completes when the {@link Async#countDown()} is called {@code count} times.
-   * If {@link Async#countDown()} is called more than {@code count} times and {@code strict} is true, an {@link IllegalStateException} is thrown.<p/>
+   * This async operation completes when the {@link Async#countDown()} is called {@code count} times.<p/>
+   * If {@link Async#countDown()} is called more than {@code count} times, an {@link IllegalStateException} is thrown.<p/>
    *
    * The test case will complete when all the async objects have their {@link io.vertx.ext.unit.Async#complete()}
    * method called at least once.<p/>
@@ -267,7 +267,7 @@ public interface TestContext {
    *
    * @return the async instance
    */
-  Async async(int count, boolean strict);
+  Async strictAsync(int count);
 
   /**
    * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>

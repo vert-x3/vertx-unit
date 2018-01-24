@@ -256,7 +256,11 @@ public class TestContextImpl implements TestContext {
   }
 
   @Override
-  public Async async(int count, boolean strict) {
+  public Async strictAsync(int count) {
+    return async(count, true);
+  }
+
+  private Async async(int count, boolean strict) {
     if (count < 1) {
       throw new IllegalArgumentException("Async completion count must be > 0");
     }

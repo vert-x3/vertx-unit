@@ -334,7 +334,7 @@ public abstract class TestSuiteTestBase {
   public void runTestWithStrictAsyncCountingDown() throws Exception {
     TestSuite suite = TestSuite.create("my_suite").
       test("my_test", context -> {
-        Async async = context.async(1, true);
+        Async async = context.strictAsync(1);
         async.countDown();
         async.countDown();
       });
