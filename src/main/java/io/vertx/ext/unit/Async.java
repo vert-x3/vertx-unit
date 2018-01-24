@@ -17,6 +17,8 @@ public interface Async extends Completion<Void> {
 
   /**
    * Count down the async.
+   *
+   * @throws IllegalStateException in strict mode if invoked more than the initial count
    */
   void countDown();
 

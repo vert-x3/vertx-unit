@@ -1,7 +1,6 @@
 package io.vertx.ext.unit;
 
 import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -255,6 +254,20 @@ public interface TestContext {
    * @return the async instance
    */
   Async async(int count);
+
+  /**
+   * Create and returns a new async object, the returned async controls the completion of the test.
+   * This async operation completes when the {@link Async#countDown()} is called {@code count} times.
+   * If {@link Async#countDown()} is called more than {@code count} times and {@code strict} is true, an {@link IllegalStateException} is thrown.<p/>
+   *
+   * The test case will complete when all the async objects have their {@link io.vertx.ext.unit.Async#complete()}
+   * method called at least once.<p/>
+   *
+   * This method shall be used for creating asynchronous exit points for the executed test.<p/>
+   *
+   * @return the async instance
+   */
+  Async async(int count, boolean strict);
 
   /**
    * Creates and returns a new async handler, the returned handler controls the completion of the test.<p/>
