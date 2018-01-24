@@ -31,20 +31,19 @@ public class TestContextImpl implements TestContext {
 
     private final Handler<Throwable> endHandler;
     private final LinkedList<AsyncImpl> asyncs = new LinkedList<>();
-    private boolean running = true;
     private boolean complete;
     private Throwable failure;
 
-    public Step(Handler<Throwable> endHandler, Throwable failure) {
+    Step(Handler<Throwable> endHandler) {
       this.endHandler = endHandler;
-      this.failure = failure;
     }
 
     private void tryEnd() {
       List<AsyncImpl> copy;
       boolean end = false;
+      Throwable f;
       synchronized (this) {
-        if ((asyncs.isEmpty() || failure != null) && !complete && !running) {
+        if ((asyncs.isEmpty() || failure != null) && !complete) {
           complete = true;
           end = true;
         }
@@ -59,12 +58,13 @@ public class TestContextImpl implements TestContext {
         } else {
           copy = Collections.emptyList();
         }
+        f = failure;
       }
       if (end) {
         for (AsyncImpl a : copy) {
-          a.release();
+          a.release(f);
         }
-        endHandler.handle(failure);
+        endHandler.handle(f);
       }
     }
 
@@ -87,6 +87,10 @@ public class TestContextImpl implements TestContext {
           AsyncImpl async = new AsyncImpl(count);
           if (failure == null) {
             asyncs.add(async);
+            async.completable.whenComplete((v, err) -> {
+              asyncs.remove(async);
+              tryEnd();
+            });
           }
           return async;
         } else {
@@ -107,7 +111,6 @@ public class TestContextImpl implements TestContext {
               if (complete) {
                 return;
               }
-              running = false;
             }
             failed(new TimeoutException());
           } catch (InterruptedException e) {
@@ -118,70 +121,54 @@ public class TestContextImpl implements TestContext {
         timeoutThread.setName("vert.x-unit-timeout-thread-" + threadCount.incrementAndGet());
         timeoutThread.start();
       }
+      Async async = async(1);
       try {
         test.handle(TestContextImpl.this);
+        async.complete();
       } catch (Throwable t) {
         failed(t);
-      } finally {
-        synchronized (this) {
-          running = false;
-        }
-        tryEnd();
+      }
+    }
+  }
+
+  class AsyncImpl extends CompletionImpl<Void> implements Async {
+
+    private final int initialCount;
+    private final AtomicInteger current;
+
+    public AsyncImpl(int initialCount) {
+      this.initialCount = initialCount;
+      this.current = new AtomicInteger(initialCount);
+    }
+
+    @Override
+    public int count() {
+      return current.get();
+    }
+
+    @Override
+    public void countDown() {
+      int value = current.updateAndGet(v -> v > 0 ? v - 1 : 0);
+      if (value == 0) {
+        release(null);
       }
     }
 
-    class AsyncImpl extends CompletionImpl<Void> implements Async {
-
-      private final int initialCount;
-      private final AtomicInteger current;
-
-      public AsyncImpl(int initialCount) {
-        this.initialCount = initialCount;
-        this.current = new AtomicInteger(initialCount);
+    @Override
+    public void complete() {
+      int value = current.getAndSet(0);
+      if (value > 0) {
+        release(null);
+      } else {
+        throw new IllegalStateException("The Async complete method has been called more than " + initialCount + " times, check your test.");
       }
+    }
 
-      @Override
-      public int count() {
-        return current.get();
-      }
-
-      @Override
-      public void countDown() {
-        int value = current.updateAndGet(v -> v > 0 ? v - 1 : 0);
-        if (value == 0) {
-          completable.complete(null);
-          internalComplete();
-        }
-      }
-
-      @Override
-      public void complete() {
-        int value = current.getAndSet(0);
-        if (value > 0) {
-          completable.complete(null);
-          internalComplete();
-        } else {
-          throw new IllegalStateException("The Async complete method has been called more than " + initialCount + " times, check your test.");
-        }
-      }
-
-      private void release() {
-        if (Step.this.failure != null) {
-          completable.completeExceptionally(Step.this.failure);
-        } else {
-          completable.complete(null);
-        }
-      }
-
-      void internalComplete() {
-        boolean complete;
-        synchronized (Step.this) {
-          complete = asyncs.remove(this);
-        }
-        if (complete) {
-          tryEnd();
-        }
-        release();
+    void release(Throwable failure) {
+      if (failure != null) {
+        completable.completeExceptionally(failure);
+      } else {
+        completable.complete(null);
       }
     }
   }
@@ -216,7 +203,13 @@ public class TestContextImpl implements TestContext {
       if (current != null) {
         throw new IllegalStateException("Wrong status");
       }
-      current = step = new Step(endHandler, failed);
+      current = step = new Step(err -> {
+        if (failed != null) {
+          endHandler.handle(failed);
+        } else {
+          endHandler.handle(err);
+        }
+      });
     }
     step.run(timeout, test);
   }
@@ -245,7 +238,7 @@ public class TestContextImpl implements TestContext {
       if (current != null) {
         return current.async(count);
       } else {
-        throw new IllegalStateException();
+        return new AsyncImpl(count);
       }
     }
   }
