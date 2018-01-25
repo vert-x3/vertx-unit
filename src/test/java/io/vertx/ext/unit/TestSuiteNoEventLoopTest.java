@@ -48,7 +48,8 @@ public class TestSuiteNoEventLoopTest extends TestSuiteTestBase {
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
     reporter.await();
-    assertTrue(ok.get());
+    assertFalse(ok.get());
+    assertTrue(after.get());
     assertTrue(reporter.completed());
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());

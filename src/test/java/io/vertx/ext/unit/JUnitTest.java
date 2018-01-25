@@ -784,6 +784,32 @@ public class JUnitTest {
     assertEquals(Arrays.asList("before", "interrupt", "interrupted"), AwaitAsyncTestSuite.test4);
   }
 
+  public static class AwaitAsyncOnFailure {
+
+    public static AtomicBoolean RUN_AFTER_FAILURE = new AtomicBoolean(false);
+
+    @Test
+    public void testAsyncFinishesAfterFailureOnContext(TestContext context) {
+      Vertx vertx = Vertx.vertx();
+      Async async = context.async();
+      vertx.setTimer(1000, t -> {
+        context.fail("Should stop async.await");
+        RUN_AFTER_FAILURE.set(true);
+      });
+      async.await();
+    }
+
+  }
+
+  @Test
+  public void testAwaitAsyncOnFailure() {
+    Result result = run(AwaitAsyncOnFailure.class);
+    assertEquals(1, result.getRunCount());
+    assertEquals(1, result.getFailureCount());
+    assertFalse(AwaitAsyncOnFailure.RUN_AFTER_FAILURE.get());
+  }
+
+
   public static class RepeatRuleTestSuite {
 
     static final List<String> events = Collections.synchronizedList(new ArrayList<>());

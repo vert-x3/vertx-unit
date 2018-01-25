@@ -207,13 +207,10 @@ public abstract class TestSuiteTestBase {
           } catch (AssertionError e) {
             failure.set(e);
           }
-          queue.add(context.async());
         });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
     reporter.await();
-    Async async = queue.poll(2, TimeUnit.SECONDS);
-    async.complete();
     assertTrue(reporter.completed());
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
