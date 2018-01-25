@@ -28,6 +28,7 @@ public class TestSuiteNoEventLoopTest extends TestSuiteTestBase {
     return Vertx.currentContext() == null;
   }
 
+  /*
   @org.junit.Test
   public void testEndsAfterCallback() throws Exception {
     AtomicBoolean ok = new AtomicBoolean();
@@ -55,5 +56,5 @@ public class TestSuiteNoEventLoopTest extends TestSuiteTestBase {
     assertEquals("my_test", result.name());
     assertTrue(result.failed());
   }
-
+  */
 }
