@@ -13,13 +13,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -1075,5 +1073,38 @@ public abstract class TestSuiteTestBase {
     assertEquals(1, reporter.results.size());
     assertEquals("my_test", reporter.results.get(0).name());
     assertTrue(reporter.results.get(0).failed());
+  }
+
+  @Test
+  public void testConcurrentAsyncCompletions() throws Exception {
+    int numAsync = 5;
+    int concurrency = 30;
+    TestSuite suite = TestSuite.create("my_suite").test("my_test", context -> {
+      Async done = context.async(concurrency);
+      LongAdder la = new LongAdder();
+      for (int i = 0; i < concurrency; i++) {
+        ForkJoinPool.commonPool().execute(() -> {
+          for (int j = 0; j < numAsync; j++) {
+            Async async = context.async();
+            async.complete();
+            la.increment();
+            try {
+              Thread.sleep(30);
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+          }
+          done.countDown();
+        });
+      }
+      done.awaitSuccess();
+    });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    assertEquals("my_test", reporter.results.get(0).name());
+    assertFalse(reporter.results.get(0).failed());
   }
 }

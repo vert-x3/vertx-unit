@@ -5,9 +5,7 @@ Asynchronous polyglot unit testing.
 == Introduction
 
 Vertx Unit is designed for writing asynchronous unit tests with a polyglot API and running these tests
-in the JVM.
-
-Vertx Unit Api borrows from existing test frameworks like http://junit.org[JUnit] or http://qunitjs.com[QUnit]
+in the JVM. Vertx Unit Api borrows from existing test frameworks like http://junit.org[JUnit] or http://qunitjs.com[QUnit]
 and follows the Vert.x practices.
 
 As a consequence Vertx Unit is the natural choice for testing Vert.x applications.

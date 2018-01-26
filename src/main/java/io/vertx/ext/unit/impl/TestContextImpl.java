@@ -88,7 +88,9 @@ public class TestContextImpl implements TestContext {
           if (failure == null) {
             asyncs.add(async);
             async.completable.whenComplete((v, err) -> {
-              asyncs.remove(async);
+              synchronized (Step.this) {
+                asyncs.remove(async);
+              }
               tryEnd();
             });
           }
