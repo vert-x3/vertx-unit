@@ -81,10 +81,10 @@ public class TestContextImpl implements TestContext {
       return true;
     }
 
-    private AsyncImpl async(int count) {
+    private AsyncImpl async(int count, boolean strict) {
       synchronized (this) {
         if (!complete) {
-          AsyncImpl async = new AsyncImpl(count);
+          AsyncImpl async = new AsyncImpl(count, strict);
           if (failure == null) {
             asyncs.add(async);
             async.completable.whenComplete((v, err) -> {
@@ -121,7 +121,7 @@ public class TestContextImpl implements TestContext {
         timeoutThread.setName("vert.x-unit-timeout-thread-" + threadCount.incrementAndGet());
         timeoutThread.start();
       }
-      Async async = async(1);
+      Async async = async(1, false);
       try {
         test.handle(TestContextImpl.this);
         async.complete();
@@ -135,9 +135,11 @@ public class TestContextImpl implements TestContext {
 
     private final int initialCount;
     private final AtomicInteger current;
+    private final boolean strict;
 
-    public AsyncImpl(int initialCount) {
+    public AsyncImpl(int initialCount, boolean strict) {
       this.initialCount = initialCount;
+      this.strict = strict;
       this.current = new AtomicInteger(initialCount);
     }
 
@@ -148,8 +150,27 @@ public class TestContextImpl implements TestContext {
 
     @Override
     public void countDown() {
-      int value = current.updateAndGet(v -> v > 0 ? v - 1 : 0);
-      if (value == 0) {
+      int oldValue, newValue;
+      do {
+        oldValue = current.get();
+        if (oldValue == 0) {
+          newValue = 0;
+          if (strict) {
+            String msg;
+            if (initialCount == 1) {
+              msg = "Countdown invoked more than once";
+            } else if (initialCount == 2) {
+              msg = "Countdown invoked more than twice";
+            } else {
+              msg = "Countdown invoked more than " + initialCount + " times";
+            }
+            throw new IllegalStateException(msg);
+          }
+        } else {
+          newValue = oldValue - 1;
+        }
+      } while (!current.compareAndSet(oldValue, newValue));
+      if (newValue == 0) {
         release(null);
       }
     }
@@ -231,14 +252,23 @@ public class TestContextImpl implements TestContext {
 
   @Override
   public Async async(int count) {
+    return async(count, false);
+  }
+
+  @Override
+  public Async strictAsync(int count) {
+    return async(count, true);
+  }
+
+  private Async async(int count, boolean strict) {
     if (count < 1) {
       throw new IllegalArgumentException("Async completion count must be > 0");
     }
     synchronized (this) {
       if (current != null) {
-        return current.async(count);
+        return current.async(count, strict);
       } else {
-        return new AsyncImpl(count);
+        return new AsyncImpl(count, strict);
       }
     }
   }

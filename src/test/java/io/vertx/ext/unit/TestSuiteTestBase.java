@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
@@ -327,6 +328,27 @@ public abstract class TestSuiteTestBase {
     TestResult result = reporter.results.get(0);
     assertEquals("my_test", result.name());
     assertTrue(result.succeeded());
+  }
+
+  @Test
+  public void runTestWithStrictAsyncCountingDown() throws Exception {
+    TestSuite suite = TestSuite.create("my_suite").
+      test("my_test", context -> {
+        Async async = context.strictAsync(1);
+        async.countDown();
+        async.countDown();
+      });
+    TestReporter reporter = new TestReporter();
+    run(suite, reporter);
+    reporter.await();
+    assertTrue(reporter.completed());
+    assertEquals(0, reporter.exceptions.size());
+    assertEquals(1, reporter.results.size());
+    TestResult result = reporter.results.get(0);
+    assertEquals("my_test", result.name());
+    assertTrue(result.failed());
+    assertTrue(result.failure().isError());
+    assertThat(result.failure().cause(), instanceOf(IllegalStateException.class));
   }
 
   @Test
