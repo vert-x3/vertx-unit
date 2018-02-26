@@ -6,7 +6,7 @@ Async polyglot unit testing for Vert.x.
 
 ## Documentation
 
-See https://github.com/vert-x3/vertx-unit/blob/master/src/main/asciidoc/java/index.adoc
+See https://github.com/vert-x3/vertx-unit/blob/master/src/main/asciidoc/index.adoc
 
 ## Todo
 
