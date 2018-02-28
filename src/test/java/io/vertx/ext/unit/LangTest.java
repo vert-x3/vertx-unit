@@ -1,6 +1,5 @@
 package io.vertx.ext.unit;
 
-import groovy.lang.GroovyShell;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.test.core.VertxTestBase;
@@ -12,23 +11,8 @@ import org.junit.Test;
 public class LangTest extends VertxTestBase {
 
   @org.junit.Test
-  public void testGroovy() throws Exception {
-    GroovyShell shell = new GroovyShell();
-    shell.setVariable("done", (Runnable) () -> {
-      testComplete();
-    });
-    shell.evaluate(LangTest.class.getResource("/plain/timer.groovy").toURI());
-    await();
-  }
-
-  @org.junit.Test
   public void testAssertionsJs() throws Exception {
     testAssertions("js:verticle/assertions");
-  }
-
-  @org.junit.Test
-  public void testAssertionsGroovy() throws Exception {
-    testAssertions("groovy:verticle/assertions.groovy");
   }
 
   @org.junit.Test
@@ -78,40 +62,11 @@ public class LangTest extends VertxTestBase {
     await();
   }
 
-  @Test
-  public void testGroovyTimer() {
-    vertx.deployVerticle("verticle/timer.groovy", ar -> {
-      assertTrue(ar.succeeded());
-      testComplete();
-    });
-    await();
-  }
-
-  @Test
-  public void testGroovyFailure() {
-    vertx.deployVerticle("verticle/failing.groovy", ar -> {
-      assertTrue(ar.failed());
-      assertEquals("the_failure", ar.cause().getMessage());
-      testComplete();
-    });
-    await();
-  }
-
   @org.junit.Test
   public void testRubyFailure() {
     vertx.deployVerticle("verticle/failing.rb", ar -> {
       assertTrue(ar.failed());
       assertEquals("(Exception) the_failure", ar.cause().getMessage());
-      testComplete();
-    });
-    await();
-  }
-
-  @Test
-  public void testGroovyExceptionHandler() {
-    vertx.deployVerticle("verticle/exceptionHandler.groovy", ar -> {
-      assertTrue(ar.failed());
-      assertEquals("the_failure", ar.cause().getMessage());
       testComplete();
     });
     await();

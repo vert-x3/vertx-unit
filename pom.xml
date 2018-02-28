@@ -52,11 +52,6 @@
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>vertx-lang-groovy</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
       <artifactId>vertx-lang-js</artifactId>
       <optional>true</optional>
     </dependency>
@@ -110,21 +105,6 @@
   <build>
 
     <plugins>
-
-      <plugin>
-        <groupId>org.codehaus.gmavenplus</groupId>
-        <artifactId>gmavenplus-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-
       <!-- Copy resources after compilation phase as we generate JS in src/main/resources -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
