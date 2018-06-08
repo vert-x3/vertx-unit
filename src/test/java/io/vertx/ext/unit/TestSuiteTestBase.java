@@ -197,14 +197,14 @@ public abstract class TestSuiteTestBase {
 
   @Test
   public void runTestWithFailBeforeAsync() throws Exception {
-    AtomicReference<AssertionError> failure = new AtomicReference<>();
+    CompletableFuture<AssertionError> failure = new CompletableFuture<>();
     BlockingQueue<Async> queue = new ArrayBlockingQueue<>(1);
     TestSuite suite = TestSuite.create("my_suite").
         test("my_test", context -> {
           try {
             context.fail();
           } catch (AssertionError e) {
-            failure.set(e);
+            failure.complete(e);
           }
           queue.add(context.async());
         });
@@ -221,19 +221,19 @@ public abstract class TestSuiteTestBase {
     assertFalse(result.succeeded());
     assertTrue(result.failed());
     assertNotNull(result.failure());
-    assertSame(failure.get(), result.failure().cause());
+    assertSame(failure.get(10, TimeUnit.SECONDS), result.failure().cause());
   }
 
   @Test
   public void runTestWithAwaitAsyncAfterFailure() throws Exception {
-    AtomicReference<AssertionError> failure = new AtomicReference<>();
+    CompletableFuture<AssertionError> failure = new CompletableFuture<>();
     TestSuite suite = TestSuite.create("my_suite").
       test("my_test", context -> {
         Async async = context.async();
         try {
           context.fail();
         } catch (AssertionError e) {
-          failure.set(e);
+          failure.complete(e);
         }
         async.await();
       });
@@ -248,12 +248,12 @@ public abstract class TestSuiteTestBase {
     assertFalse(result.succeeded());
     assertTrue(result.failed());
     assertNotNull(result.failure());
-    assertSame(failure.get(), result.failure().cause());
+    assertSame(failure.get(10, TimeUnit.SECONDS), result.failure().cause());
   }
 
   @Test
   public void runTestWithAsyncCompletionCompletedInTest() throws Exception {
-    AtomicBoolean ok = new AtomicBoolean();
+    CompletableFuture<Boolean> ok = new CompletableFuture<>();
     TestSuite suite = TestSuite.create("my_suite").
         test("my_test", context -> {
           Async async = context.async();
@@ -262,12 +262,12 @@ public abstract class TestSuiteTestBase {
             async.complete();
           } catch (IllegalStateException ignore) {
           }
-          ok.set(true);
+          ok.complete(true);
         });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
     reporter.await();
-    assertTrue(ok.get());
+    assertTrue(ok.get(10, TimeUnit.SECONDS));
     assertTrue(reporter.completed());
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
@@ -280,7 +280,7 @@ public abstract class TestSuiteTestBase {
 
   @Test
   public void runTestWithAsyncCompletionAfterFailureInTest() throws Exception {
-    AtomicBoolean completed = new AtomicBoolean();
+    CompletableFuture<Boolean> completed = new CompletableFuture<>();
     TestSuite suite = TestSuite.create("my_suite").
         test("my_test", context -> {
           Async async = context.async();
@@ -289,12 +289,12 @@ public abstract class TestSuiteTestBase {
           } catch (AssertionError ignore) {
           }
           async.complete();
-          completed.set(true);
+          completed.complete(true);
         });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
     reporter.await();
-    assertTrue(completed.get());
+    assertTrue(completed.get(10, TimeUnit.SECONDS));
     assertTrue(reporter.completed());
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
@@ -305,7 +305,7 @@ public abstract class TestSuiteTestBase {
 
   @Test
   public void runTestWithAsyncCompletedTwice() throws Exception {
-    AtomicBoolean failed = new AtomicBoolean();
+    CompletableFuture<Boolean> failed = new CompletableFuture<>();
     TestSuite suite = TestSuite.create("my_suite").
         test("my_test", context -> {
           Async async = context.async();
@@ -313,13 +313,13 @@ public abstract class TestSuiteTestBase {
           try {
             async.complete();
           } catch (IllegalStateException e) {
-            failed.set(true);
+            failed.complete(true);
           }
         });
     TestReporter reporter = new TestReporter();
     run(suite, reporter);
     reporter.await();
-    assertTrue(failed.get());
+    assertTrue(failed.get(10, TimeUnit.SECONDS));
     assertTrue(reporter.completed());
     assertEquals(0, reporter.exceptions.size());
     assertEquals(1, reporter.results.size());
@@ -350,28 +350,28 @@ public abstract class TestSuiteTestBase {
   }
 
   @Test
-  public void runTestWithAssertionError() {
+  public void runTestWithAssertionError() throws Exception {
     failTest(context -> context.fail("message_failure"));
   }
 
   @Test
-  public void runTestWithEmptyRuntimeException() {
+  public void runTestWithEmptyRuntimeException() throws Exception  {
     failTest(context -> { throw new RuntimeException(); });
   }
 
   @Test
-  public void runTestWithRuntimeException() {
+  public void runTestWithRuntimeException() throws Exception {
     failTest(context -> { throw new RuntimeException("message_failure"); });
   }
 
-  private void failTest(Handler<TestContext> thrower) {
-    AtomicReference<Throwable> failure = new AtomicReference<>();
+  private void failTest(Handler<TestContext> thrower) throws Exception {
+    CompletableFuture<Throwable> failure = new CompletableFuture<>();
     TestSuite suite = TestSuite.create("my_suite").
         test("my_test", context -> {
           try {
             thrower.handle(context);
           } catch (Error | RuntimeException e) {
-            failure.set(e);
+            failure.complete(e);
             throw e;
           }
         });
@@ -385,12 +385,8 @@ public abstract class TestSuiteTestBase {
     assertFalse(result.succeeded());
     assertTrue(result.failed());
     assertNotNull(result.failure());
-    long now = System.currentTimeMillis();
-    while (failure.get() == null) {
-      assertTrue(System.currentTimeMillis() - now < 10000);
-    }
-    assertSame(failure.get().getMessage(), result.failure().message());
-    assertSame(failure.get(), result.failure().cause());
+    assertSame(failure.get(10, TimeUnit.SECONDS).getMessage(), result.failure().message());
+    assertSame(failure.get(10, TimeUnit.SECONDS), result.failure().cause());
   }
 
   @Test

@@ -1,19 +1,3 @@
-/*
- * Copyright (c) 2014 Red Hat, Inc. and others
- *
- * Red Hat licenses this file to you under the Apache License, version 2.0
- * (the "License"); you may not use this file except in compliance with the
- * License.  You may obtain a copy of the License at:
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations
- * under the License.
- */
-
 package io.vertx.ext.unit.report;
 
 import io.vertx.core.json.JsonObject;
@@ -21,23 +5,32 @@ import io.vertx.core.json.JsonArray;
 
 /**
  * Converter for {@link io.vertx.ext.unit.report.ReportingOptions}.
- *
- * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.report.ReportingOptions} original class using Vert.x codegen.
+ * NOTE: This class has been automatically generated from the {@link "io.vertx.ext.unit.report.ReportingOptions} original class using Vert.x codegen.
  */
 public class ReportingOptionsConverter {
 
-  public static void fromJson(JsonObject json, ReportingOptions obj) {
-    if (json.getValue("reporters") instanceof JsonArray) {
-      java.util.ArrayList<io.vertx.ext.unit.report.ReportOptions> list = new java.util.ArrayList<>();
-      json.getJsonArray("reporters").forEach( item -> {
-        if (item instanceof JsonObject)
-          list.add(new io.vertx.ext.unit.report.ReportOptions((JsonObject)item));
-      });
-      obj.setReporters(list);
+  public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ReportingOptions obj) {
+    for (java.util.Map.Entry<String, Object> member : json) {
+      switch (member.getKey()) {
+        case "reporters":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<io.vertx.ext.unit.report.ReportOptions> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof JsonObject)
+                list.add(new io.vertx.ext.unit.report.ReportOptions((JsonObject)item));
+            });
+            obj.setReporters(list);
+          }
+          break;
+      }
     }
   }
 
   public static void toJson(ReportingOptions obj, JsonObject json) {
+    toJson(obj, json.getMap());
+  }
+
+  public static void toJson(ReportingOptions obj, java.util.Map<String, Object> json) {
     if (obj.getReporters() != null) {
       JsonArray array = new JsonArray();
       obj.getReporters().forEach(item -> array.add(item.toJson()));
