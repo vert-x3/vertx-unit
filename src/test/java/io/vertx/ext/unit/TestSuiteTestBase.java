@@ -385,6 +385,10 @@ public abstract class TestSuiteTestBase {
     assertFalse(result.succeeded());
     assertTrue(result.failed());
     assertNotNull(result.failure());
+    long now = System.currentTimeMillis();
+    while (failure.get() == null) {
+      assertTrue(System.currentTimeMillis() - now < 10000);
+    }
     assertSame(failure.get().getMessage(), result.failure().message());
     assertSame(failure.get(), result.failure().cause());
   }
