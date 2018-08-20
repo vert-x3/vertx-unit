@@ -2,10 +2,12 @@ package io.vertx.ext.unit;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Converter for {@link io.vertx.ext.unit.TestOptions}.
- * NOTE: This class has been automatically generated from the {@link "io.vertx.ext.unit.TestOptions} original class using Vert.x codegen.
+ * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.TestOptions} original class using Vert.x codegen.
  */
 public class TestOptionsConverter {
 

@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.streams.ReadStream;
 import io.vertx.ext.unit.collect.EventBusCollector;
 import io.vertx.ext.unit.impl.FailureImpl;
 import io.vertx.ext.unit.impl.TestResultImpl;
@@ -51,6 +52,10 @@ public class EventBusCollectorImpl implements EventBusCollector, Handler<Message
           @Override
           public TestSuiteReport handler(Handler<TestCaseReport> handler) {
             testCaseRunnerHandler = handler;
+            return this;
+          }
+          @Override
+          public ReadStream<TestCaseReport> fetch(long amount) {
             return this;
           }
           @Override

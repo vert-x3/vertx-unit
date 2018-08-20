@@ -8,16 +8,14 @@
 ++++
 '''
 
-[cols=">25%,^25%,50%"]
+[cols=">25%,75%"]
 [frame="topbot"]
 |===
 ^|Name | Type ^| Description
-|[[format]]`format`|`String`|
-+++
+|[[format]]`@format`|`String`|+++
 Set the current reporter format.
 +++
-|[[to]]`to`|`String`|
-+++
+|[[to]]`@to`|`String`|+++
 Set the current reporter name.
 +++
 |===
@@ -34,12 +32,11 @@ Set the current reporter name.
 ++++
 '''
 
-[cols=">25%,^25%,50%"]
+[cols=">25%,75%"]
 [frame="topbot"]
 |===
 ^|Name | Type ^| Description
-|[[reporters]]`reporters`|`Array of link:dataobjects.html#ReportOptions[ReportOptions]`|
-+++
+|[[reporters]]`@reporters`|`Array of link:dataobjects.html#ReportOptions[ReportOptions]`|+++
 Replace the current list of reporters with a new one.
 +++
 |===
@@ -65,20 +62,17 @@ Replace the current list of reporters with a new one.
 ++++
 '''
 
-[cols=">25%,^25%,50%"]
+[cols=">25%,75%"]
 [frame="topbot"]
 |===
 ^|Name | Type ^| Description
-|[[reporters]]`reporters`|`Array of link:dataobjects.html#ReportOptions[ReportOptions]`|
-+++
+|[[reporters]]`@reporters`|`Array of link:dataobjects.html#ReportOptions[ReportOptions]`|+++
 Replace the current list of reporters with a new one.
 +++
-|[[timeout]]`timeout`|`Number (long)`|
-+++
+|[[timeout]]`@timeout`|`Number (long)`|+++
 Set the test timeout.
 +++
-|[[useEventLoop]]`useEventLoop`|`Boolean`|
-+++
+|[[useEventLoop]]`@useEventLoop`|`Boolean`|+++
 Configure the execution to use an event loop when there is no one existing.
 +++
 |===

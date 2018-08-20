@@ -3,6 +3,7 @@ package io.vertx.ext.unit.impl;
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.streams.ReadStream;
 import io.vertx.ext.unit.report.TestSuiteReport;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.report.TestCaseReport;
@@ -62,6 +63,11 @@ class TestSuiteReportImpl implements TestSuiteReport {
 
   @Override
   public TestSuiteReport resume() {
+    return this;
+  }
+
+  @Override
+  public ReadStream<TestCaseReport> fetch(long amount) {
     return this;
   }
 
