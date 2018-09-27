@@ -1,7 +1,6 @@
 ## Asynchronous Unit Test
 
-[![Build Status](https://vertx.ci.cloudbees.com/buildStatus/icon?job=vert.x3-unit)](https://vertx.ci.cloudbees.com/view/vert.x-3/job/vert.x3-unit/)
-
+[![Build Status](https://travis-ci.org/vert-x3/vertx-unit.svg?branch=master?branch=master)](https://travis-ci.org/vert-x3/vertx-unit)
 Async unit testing for Vert.x.
 
 ## Documentation
