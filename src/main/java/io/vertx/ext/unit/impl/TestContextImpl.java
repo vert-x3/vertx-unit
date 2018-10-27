@@ -6,10 +6,10 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,182 +19,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TestContextImpl implements TestContext {
 
   private static final AtomicInteger threadCount = new AtomicInteger(0);
+  private static final Throwable SUCCESS = new Throwable();
 
   private final Map<String, Object> attributes;
   private final Handler<Throwable> unhandledFailureHandler;
-  private Step current;
-
-  /**
-   * A step in the test.
-   */
-  private class Step {
-
-    private final Handler<Throwable> endHandler;
-    private final LinkedList<AsyncImpl> asyncs = new LinkedList<>();
-    private boolean complete;
-    private Throwable failure;
-
-    Step(Handler<Throwable> endHandler) {
-      this.endHandler = endHandler;
-    }
-
-    private void tryEnd() {
-      List<AsyncImpl> copy;
-      boolean end = false;
-      Throwable f;
-      synchronized (this) {
-        if ((asyncs.isEmpty() || failure != null) && !complete) {
-          complete = true;
-          end = true;
-        }
-        if (end) {
-          // Stack contention to avoid CME.
-          copy = new ArrayList<>(asyncs);
-          asyncs.clear();
-          synchronized (TestContextImpl.this) {
-            current = null;
-          }
-          this.notify();
-        } else {
-          copy = Collections.emptyList();
-        }
-        f = failure;
-      }
-      if (end) {
-        for (AsyncImpl a : copy) {
-          a.release(f);
-        }
-        endHandler.handle(f);
-      }
-    }
-
-    private boolean failed(Throwable t) {
-      synchronized (this) {
-        if (complete) {
-          return false;
-        }
-        if (failure == null) {
-          failure = t;
-        }
-      }
-      tryEnd();
-      return true;
-    }
-
-    private AsyncImpl async(int count, boolean strict) {
-      synchronized (this) {
-        if (!complete) {
-          AsyncImpl async = new AsyncImpl(count, strict);
-          if (failure == null) {
-            asyncs.add(async);
-            async.completable.whenComplete((v, err) -> {
-              synchronized (Step.this) {
-                asyncs.remove(async);
-              }
-              tryEnd();
-            });
-          }
-          return async;
-        } else {
-          throw new IllegalStateException("Test already completed");
-        }
-      }
-    }
-
-    private void run(long timeout, Handler<TestContext> test) {
-      if (timeout > 0) {
-        Runnable cancel = () -> {
-          try {
-            synchronized (this) {
-              if (complete) {
-                return;
-              }
-              wait(timeout);
-              if (complete) {
-                return;
-              }
-            }
-            failed(new TimeoutException());
-          } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-          }
-        };
-        Thread timeoutThread = new Thread(cancel);
-        timeoutThread.setName("vert.x-unit-timeout-thread-" + threadCount.incrementAndGet());
-        timeoutThread.start();
-      }
-      Async async = async(1, false);
-      try {
-        test.handle(TestContextImpl.this);
-        async.complete();
-      } catch (Throwable t) {
-        failed(t);
-      }
-    }
-  }
-
-  class AsyncImpl extends CompletionImpl<Void> implements Async {
-
-    private final int initialCount;
-    private final AtomicInteger current;
-    private final boolean strict;
-
-    public AsyncImpl(int initialCount, boolean strict) {
-      this.initialCount = initialCount;
-      this.strict = strict;
-      this.current = new AtomicInteger(initialCount);
-    }
-
-    @Override
-    public int count() {
-      return current.get();
-    }
-
-    @Override
-    public void countDown() {
-      int oldValue, newValue;
-      do {
-        oldValue = current.get();
-        if (oldValue == 0) {
-          newValue = 0;
-          if (strict) {
-            String msg;
-            if (initialCount == 1) {
-              msg = "Countdown invoked more than once";
-            } else if (initialCount == 2) {
-              msg = "Countdown invoked more than twice";
-            } else {
-              msg = "Countdown invoked more than " + initialCount + " times";
-            }
-            throw new IllegalStateException(msg);
-          }
-        } else {
-          newValue = oldValue - 1;
-        }
-      } while (!current.compareAndSet(oldValue, newValue));
-      if (newValue == 0) {
-        release(null);
-      }
-    }
-
-    @Override
-    public void complete() {
-      int value = current.getAndSet(0);
-      if (value > 0) {
-        release(null);
-      } else {
-        throw new IllegalStateException("The Async complete method has been called more than " + initialCount + " times, check your test.");
-      }
-    }
-
-    void release(Throwable failure) {
-      if (failure != null) {
-        completable.completeExceptionally(failure);
-      } else {
-        completable.complete(null);
-      }
-    }
-  }
+  private CountDownLatch completionLatch;
+  private Handler<Throwable> completionHandler;
+  private List<AsyncImpl> asyncs = new ArrayList<>();
+  private Throwable completionResult;
+  private boolean running;
 
   public TestContextImpl(Map<String, Object> attributes, Handler<Throwable> unhandledFailureHandler) {
     this.attributes = attributes;
@@ -220,31 +53,81 @@ public class TestContextImpl implements TestContext {
     return (T) attributes.remove(key);
   }
 
-  public void run(Throwable failed, long timeout, Handler<TestContext> test, Handler<Throwable> endHandler) {
-    Step step;
+  public void run(Throwable failed, long timeout, Handler<TestContext> test, Handler<Throwable> eh) {
+    CountDownLatch latch = new CountDownLatch(1);
     synchronized (this) {
-      if (current != null) {
-        throw new IllegalStateException("Wrong status");
+      if (running) {
+        throw new IllegalStateException("Already running");
       }
-      current = step = new Step(err -> {
+      running = true;
+      completionLatch = latch;
+      completionResult = null;
+      completionHandler = err -> {
         if (failed != null) {
-          endHandler.handle(failed);
+          eh.handle(failed);
         } else {
-          endHandler.handle(err);
+          eh.handle(err);
         }
-      });
+      };
     }
-    step.run(timeout, test);
+    if (timeout > 0) {
+      Runnable cancel = () -> {
+        try {
+          if (latch.await(timeout, TimeUnit.MILLISECONDS)) {
+            return;
+          }
+          tryFail(new TimeoutException());
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt(); // Should fail as interrupted ?
+        }
+      };
+      Thread timeoutThread = new Thread(cancel);
+      timeoutThread.setName("vert.x-unit-timeout-thread-" + threadCount.incrementAndGet());
+      timeoutThread.start();
+    }
+    Async async = async(1, false);
+    try {
+      test.handle(TestContextImpl.this);
+      async.complete();
+    } catch (Throwable t) {
+      tryFail(t);
+    }
   }
 
   public void failed(Throwable t) {
     boolean reported;
     synchronized (this) {
-      reported = current != null && current.failed(t);
+      reported = running && tryFail(t);
     }
     if (!reported && unhandledFailureHandler != null) {
       unhandledFailureHandler.handle(t);
     }
+  }
+
+  private boolean tryFail(Throwable t) {
+    return tryEnd(t);
+  }
+
+  private boolean tryEnd(Throwable cause) {
+    List<AsyncImpl> copy;
+    Handler<Throwable> handler;
+    synchronized (TestContextImpl.this) {
+      if (completionResult != null || (asyncs.size() > 0 && cause == null)) {
+        return false;
+      }
+      completionResult = cause == null ? SUCCESS : cause;
+      // Stack contention to avoid CME.
+      copy = new ArrayList<>(asyncs);
+      asyncs.clear();
+      running = false;
+      handler = completionHandler;
+      completionLatch.countDown();
+    }
+    for (AsyncImpl a : copy) {
+      a.release(cause);
+    }
+    handler.handle(cause);
+    return true;
   }
 
   @Override
@@ -267,8 +150,20 @@ public class TestContextImpl implements TestContext {
       throw new IllegalArgumentException("Async completion count must be > 0");
     }
     synchronized (this) {
-      if (current != null) {
-        return current.async(count, strict);
+      if (running) {
+        if (completionResult == null) {
+          AsyncImpl async = new AsyncImpl(count, strict);
+          asyncs.add(async);
+          async.completable.whenComplete((v, err) -> {
+            synchronized (TestContextImpl.this) {
+              asyncs.remove(async);
+            }
+            tryEnd(null);
+          });
+          return async;
+        } else {
+          throw new IllegalStateException("Test already completed");
+        }
       } else {
         return new AsyncImpl(count, strict);
       }
