@@ -39,7 +39,7 @@ the results the right way, this example shows the bare minimum test suite:
 {@link examples.Examples#test_01}
 ----
 
-The {@code run} method will execute the suite and go through all the
+The `run` method will execute the suite and go through all the
 tests of the suite. The suite can fail or pass, this does not matter if the outer world is not aware
 of the test result.
 
@@ -57,7 +57,7 @@ Passed my_test
 End test suite the_test_suite , run: 1, Failures: 0, Errors: 0
 ----
 
-The {@code reporters} option configures the reporters used by the suite runner for reporting the execution
+The `reporters` option configures the reporters used by the suite runner for reporting the execution
 of the tests, see the <<reporting>> section for more info.
 
 == Writing a test suite
@@ -692,7 +692,7 @@ https://github.com/vert-x3/vertx-examples/tree/master/unit-examples[vertx-exampl
 The Java language provides classes and it is possible to create test suites directly from Java classes with the
 following mapping rules:
 
-The {@code testSuiteObject} argument methods are inspected and the public, non static methods
+The `testSuiteObject` argument methods are inspected and the public, non static methods
 with {@link io.vertx.ext.unit.TestContext} parameter are retained and mapped to a Vertx Unit test suite
 via the method name:
 
