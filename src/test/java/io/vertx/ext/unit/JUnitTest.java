@@ -2,6 +2,7 @@ package io.vertx.ext.unit;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.unit.junit.Repeat;
@@ -1096,5 +1097,39 @@ public class JUnitTest {
     assertEquals(1, result.getRunCount());
     assertEquals(1, result.getFailureCount());
     assertEquals("Testing async failure", result.getFailures().get(0).getMessage());
+  }
+
+  public static class FutureFailure {
+    @Test
+    public Future failWithFuture() {
+      return Future.failedFuture("Testing future failure");
+    }
+  }
+
+  @org.junit.Test
+  public void testFutureAssertFailure() {
+    Result result = run(FutureFailure.class);
+    assertEquals(1, result.getRunCount());
+    assertEquals(1, result.getFailureCount());
+    assertEquals("Testing future failure", result.getFailures().get(0).getMessage());
+  }
+
+  public static class FutureSuccess {
+    @Test
+    public Future successWithFuture(TestContext context) {
+      Vertx vertx = Vertx.vertx().exceptionHandler(context.exceptionHandler());
+      Future<String> future = Future.future();
+      vertx.runOnContext(v -> {
+        future.complete("Testing future success");
+      });
+      return future;
+    }
+  }
+
+  @org.junit.Test
+  public void testFutureAssertSuccess() {
+    Result result = run(FutureSuccess.class);
+    assertEquals(1, result.getRunCount());
+    assertEquals(0, result.getFailureCount());
   }
 }
