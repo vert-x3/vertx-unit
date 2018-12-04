@@ -171,19 +171,14 @@ public class Examples {
   public static void async_02(io.vertx.ext.unit.TestSuite suite, Vertx vertx) {
     suite.test("my_test_case", context -> {
 
-      Async async1 = context.async();
       HttpClient client = vertx.createHttpClient();
-      HttpClientRequest req = client.get(8080, "localhost", "/");
-      req.exceptionHandler(err -> context.fail(err.getMessage()));
-      req.handler(resp -> {
+      client.getNow(8080, "localhost", "/", context.asyncAssertSuccess(resp -> {
         context.assertEquals(200, resp.statusCode());
-        async1.complete();
-      });
-      req.end();
+      }));
 
-      Async async2 = context.async();
+      Async async = context.async();
       vertx.eventBus().consumer("the-address", msg -> {
-        async2.complete();
+        async.complete();
       });
     });
   }
@@ -373,13 +368,9 @@ public class Examples {
 
       // Do request
       HttpClient client = vertx.createHttpClient();
-      HttpClientRequest req = client.get(port, host, "/resource");
-      Async async = context.async();
-      req.handler(resp -> {
+      client.getNow(port, host, "/resource", context.asyncAssertSuccess(resp -> {
         context.assertEquals(200, resp.statusCode());
-        async.complete();
-      });
-      req.end();
+      }));
     });
   }
 
