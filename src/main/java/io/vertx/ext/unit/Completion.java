@@ -1,10 +1,12 @@
 package io.vertx.ext.unit;
 
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.Nullable;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 
 /**
  * A completion object that emits completion notifications either <i>succeeded</i> or <i>failed</i>.
@@ -19,7 +21,7 @@ public interface Completion<T> {
    *
    * @param future the future to resolve
    */
-  void resolve(Future<T> future);
+  void resolve(Promise<T> future);
 
   /**
    * @return true if this completion is completed
