@@ -3,6 +3,7 @@ package io.vertx.ext.unit.impl;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.ext.unit.Completion;
 
 import java.util.concurrent.CompletableFuture;
@@ -16,6 +17,17 @@ import java.util.concurrent.TimeoutException;
 public class CompletionImpl<T> implements Completion<T> {
 
   protected final CompletableFuture<T> completable = new CompletableFuture<>();
+
+  @Override
+  public void resolve(Promise<T> future) {
+    completable.whenComplete((done, err) -> {
+      if (err != null) {
+        future.fail(err);
+      } else {
+        future.complete();
+      }
+    });
+  }
 
   @Override
   public void resolve(Future future) {
@@ -45,8 +57,8 @@ public class CompletionImpl<T> implements Completion<T> {
 
   @Override
   public void handler(Handler<AsyncResult<T>> completionHandler) {
-    Future<T> completion = Future.future();
-    completion.setHandler(completionHandler);
+    Promise<T> completion = Promise.promise();
+    completion.future().setHandler(completionHandler);
     resolve(completion);
   }
 

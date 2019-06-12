@@ -405,9 +405,9 @@ after the test suite, it should either be in the test suite _after_ callback or 
 ----
 
 The {@link io.vertx.ext.unit.Completion} object provides also a {@link io.vertx.ext.unit.Completion#resolve} method that
-takes a `Future` object, this `Future` will be notified of the test suite execution:
+takes a `Promise` object, this `Promise` will be notified of the test suite execution:
 
-.Resolving the start Future with the test suite
+.Resolving the start Promise with the test suite
 [source,$lang]
 ----
 {@link examples.Examples#completion_02}
