@@ -28,7 +28,7 @@ public class ReportingOptionsConverter implements JsonCodec<ReportingOptions, Js
             java.util.ArrayList<io.vertx.ext.unit.report.ReportOptions> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(io.vertx.ext.unit.report.ReportOptionsConverter.INSTANCE.decode((JsonObject)item));
+                list.add(new io.vertx.ext.unit.report.ReportOptions((JsonObject)item));
             });
             obj.setReporters(list);
           }
@@ -44,7 +44,7 @@ public class ReportingOptionsConverter implements JsonCodec<ReportingOptions, Js
   public static void toJson(ReportingOptions obj, java.util.Map<String, Object> json) {
     if (obj.getReporters() != null) {
       JsonArray array = new JsonArray();
-      obj.getReporters().forEach(item -> array.add(io.vertx.ext.unit.report.ReportOptionsConverter.INSTANCE.encode(item)));
+      obj.getReporters().forEach(item -> array.add(item.toJson()));
       json.put("reporters", array);
     }
   }
