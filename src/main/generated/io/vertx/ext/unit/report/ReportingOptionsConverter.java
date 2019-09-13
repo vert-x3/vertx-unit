@@ -4,21 +4,13 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import io.vertx.core.spi.json.JsonCodec;
 
 /**
- * Converter and Codec for {@link io.vertx.ext.unit.report.ReportingOptions}.
+ * Converter and mapper for {@link io.vertx.ext.unit.report.ReportingOptions}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.report.ReportingOptions} original class using Vert.x codegen.
  */
-public class ReportingOptionsConverter implements JsonCodec<ReportingOptions, JsonObject> {
+public class ReportingOptionsConverter {
 
-  public static final ReportingOptionsConverter INSTANCE = new ReportingOptionsConverter();
-
-  @Override public JsonObject encode(ReportingOptions value) { return (value != null) ? value.toJson() : null; }
-
-  @Override public ReportingOptions decode(JsonObject value) { return (value != null) ? new ReportingOptions(value) : null; }
-
-  @Override public Class<ReportingOptions> getTargetClass() { return ReportingOptions.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ReportingOptions obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

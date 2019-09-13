@@ -4,21 +4,13 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import io.vertx.core.spi.json.JsonCodec;
 
 /**
- * Converter and Codec for {@link io.vertx.ext.unit.TestOptions}.
+ * Converter and mapper for {@link io.vertx.ext.unit.TestOptions}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.ext.unit.TestOptions} original class using Vert.x codegen.
  */
-public class TestOptionsConverter implements JsonCodec<TestOptions, JsonObject> {
+public class TestOptionsConverter {
 
-  public static final TestOptionsConverter INSTANCE = new TestOptionsConverter();
-
-  @Override public JsonObject encode(TestOptions value) { return (value != null) ? value.toJson() : null; }
-
-  @Override public TestOptions decode(JsonObject value) { return (value != null) ? new TestOptions(value) : null; }
-
-  @Override public Class<TestOptions> getTargetClass() { return TestOptions.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, TestOptions obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
