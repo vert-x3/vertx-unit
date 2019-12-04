@@ -1,6 +1,5 @@
 package io.vertx.ext.unit;
 
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.impl.TestCompletionImpl;
 import io.vertx.ext.unit.impl.TestSuiteImpl;
@@ -17,7 +16,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.ParsePosition;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
@@ -96,12 +96,9 @@ public class JunitXmlReporterTest extends AsyncTestBase {
     latch.await(10, TimeUnit.SECONDS);
     Element testsuiteElt = doc.getDocumentElement();
     assertEquals("testsuite", testsuiteElt.getTagName());
-    try {
-      Date result2 = ISO8601Utils.parse(testsuiteElt.getAttribute("timestamp"), new ParsePosition(0));
-      assertTrue(Math.abs(result2.getTime() - now) <= 2000);
-    } catch (ParseException e) {
-      fail(e.getMessage());
-    }
+    ZonedDateTime result2 = ZonedDateTime.parse(testsuiteElt.getAttribute("timestamp"), DateTimeFormatter.ISO_DATE_TIME);
+    Date date = Date.from(result2.toInstant());
+    assertTrue(Math.abs(date.getTime() - now) <= 2000);
     assertTrue(parseTime(testsuiteElt.getAttribute("time")) >= 0.010);
     assertEquals("4", testsuiteElt.getAttribute("tests"));
     assertEquals("2", testsuiteElt.getAttribute("errors"));

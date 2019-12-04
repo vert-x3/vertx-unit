@@ -1,6 +1,5 @@
 package io.vertx.ext.unit.report.impl;
 
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.report.TestResult;
 import io.vertx.ext.unit.impl.TestResultImpl;
@@ -16,10 +15,13 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
@@ -88,7 +90,10 @@ public class JunitXmlFormatter implements Reporter<JunitXmlFormatter.XmlReport> 
       writer.writeStartDocument("UTF-8", "1.0");
       writer.writeStartElement("testsuite");
       writer.writeAttribute("name", report.name);
-      writer.writeAttribute("timestamp", ISO8601Utils.format(report.timestamp));
+      SimpleDateFormat sdf;
+      sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+      sdf.setTimeZone(TimeZone.getTimeZone("CET"));
+      writer.writeAttribute("timestamp", sdf.format(report.timestamp));
       writer.writeAttribute("time", "" + formatTimeMillis(report.time.get()));
       writer.writeAttribute("tests", "" + report.results.size());
       writer.writeAttribute("errors", "" + report.errors.get());
