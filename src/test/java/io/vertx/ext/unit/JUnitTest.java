@@ -3,6 +3,7 @@ package io.vertx.ext.unit;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
@@ -11,6 +12,7 @@ import io.vertx.ext.unit.junit.RepeatRule;
 import io.vertx.ext.unit.junit.RunTestOnContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.test.fakecluster.FakeClusterManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -995,6 +997,48 @@ public class JUnitTest {
     assertSame(LazyCreateVertx.before.get(0), LazyCreateVertx.after.get(0));
     assertSame(LazyCreateVertx.before.get(1), LazyCreateVertx.methods.get(1));
     assertSame(LazyCreateVertx.before.get(1), LazyCreateVertx.after.get(1));
+  }
+
+  public static class ClusteredVertxRunOnContextRule {
+    static final ConcurrentMap<String, Context> before = new ConcurrentHashMap<>();
+    static final ConcurrentMap<String, Context> method = new ConcurrentHashMap<>();
+    static final ConcurrentMap<String, Context> after = new ConcurrentHashMap<>();
+    @Rule
+    public final TestName testName = new TestName();
+    @Rule
+    public final RunTestOnContext rule = new RunTestOnContext(h -> Vertx.clusteredVertx(new VertxOptions().setClusterManager(new FakeClusterManager()), h));
+    @Before
+    public void before() {
+      before.put(testName.getMethodName(), Vertx.currentContext());
+    }
+    @Test
+    public void testMethod1() {
+      method.put(testName.getMethodName(), Vertx.currentContext());
+    }
+    @Test
+    public void testMethod2() {
+      method.put(testName.getMethodName(), Vertx.currentContext());
+    }
+    @After
+    public void after() {
+      after.put(testName.getMethodName(), Vertx.currentContext());
+    }
+  }
+
+  @Test
+  public void testClusteredRunTestOnContext() throws Exception {
+    Result result = run(ClusteredVertxRunOnContextRule.class);
+    assertEquals(2, result.getRunCount());
+    assertEquals(0, result.getFailureCount());
+    for (String name : Arrays.asList("testMethod1","testMethod2")) {
+      Context methodCtx = ClusteredVertxRunOnContextRule.method.get(name);
+      Context beforeCtx = ClusteredVertxRunOnContextRule.before.get(name);
+      Context afterCtx = ClusteredVertxRunOnContextRule.after.get(name);
+      assertNotNull(methodCtx);
+      assertSame(methodCtx, beforeCtx);
+      assertSame(methodCtx, afterCtx);
+    }
+    assertNotSame(ClusteredVertxRunOnContextRule.method.get("testMethod1"), ClusteredVertxRunOnContextRule.method.get("testMethod2"));
   }
 
   public static class FailOnContext {

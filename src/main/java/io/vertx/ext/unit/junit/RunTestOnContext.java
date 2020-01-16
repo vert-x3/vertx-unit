@@ -1,8 +1,6 @@
 package io.vertx.ext.unit.junit;
 
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
+import io.vertx.core.*;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import org.junit.rules.TestRule;
@@ -29,7 +27,7 @@ import java.util.function.Supplier;
 public class RunTestOnContext implements TestRule {
 
   private volatile Vertx vertx;
-  private final Supplier<Vertx> createVertx;
+  private final Consumer<Handler<AsyncResult<Vertx>>> createVertx;
   private final BiConsumer<Vertx, CountDownLatch> closeVertx;
 
   /**
@@ -47,19 +45,9 @@ public class RunTestOnContext implements TestRule {
    * @param options the vertx options
    */
   public RunTestOnContext(VertxOptions options) {
-    this(() -> Vertx.vertx(options));
-  }
-
-  /**
-   * Create a new rule with supplier/consumer for creating/closing a Vert.x instance. The lambda are invoked for each
-   * test. The {@code closeVertx} lambda should invoke the consumer with null when the {@code vertx} instance is closed.
-   *
-   * @param createVertx the create Vert.x supplier
-   * @param closeVertx the close Vert.x consumer
-   */
-  public RunTestOnContext(Supplier<Vertx> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
-    this.createVertx = createVertx;
-    this.closeVertx = (vertx, latch) -> closeVertx.accept(vertx, v -> latch.countDown());
+    this(options.getClusterManager() != null ?
+      h -> Vertx.clusteredVertx(options, h)
+      : h -> h.handle(Future.succeededFuture(Vertx.vertx(options))));
   }
 
   /**
@@ -69,7 +57,41 @@ public class RunTestOnContext implements TestRule {
    * @param createVertx the create Vert.x supplier
    */
   public RunTestOnContext(Supplier<Vertx> createVertx) {
+    this(h -> h.handle(Future.succeededFuture(createVertx.get())));
+  }
+
+  /**
+   * Create a new rule with supplier/consumer for creating/closing a Vert.x instance. The lambda are invoked for each
+   * test. The {@code closeVertx} lambda should invoke the consumer with null when the {@code vertx} instance is closed.
+   *
+   * @param createVertx the create Vert.x supplier
+   * @param closeVertx  the close Vert.x consumer
+   */
+  public RunTestOnContext(Supplier<Vertx> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
+    this(h -> h.handle(Future.succeededFuture(createVertx.get())), closeVertx);
+  }
+
+  /**
+   * Create a new rule with an asynchronous supplier for creating a Vert.x instance. The lambda are invoked for each
+   * test.
+   *
+   * @param createVertx the asynchronous create Vert.x supplier
+   */
+  public RunTestOnContext(Consumer<Handler<AsyncResult<Vertx>>> createVertx) {
     this(createVertx, (vertx, latch) -> vertx.close(ar -> latch.accept(null)));
+  }
+
+  /**
+   * Create a new rule with an asynchronous supplier and consumer for creating and closing a Vert.x instance. The
+   * lambda are invoked for each test. The {@code closeVertx} lambda should invoke the consumer with null when the
+   * {@code vertx} instance is closed.
+   *
+   * @param createVertx the asynchronous Vert.x supplier
+   * @param closeVertx the close Vert.x consumer
+   */
+  public RunTestOnContext(Consumer<Handler<AsyncResult<Vertx>>> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
+    this.createVertx = createVertx;
+    this.closeVertx = (vertx, latch) -> closeVertx.accept(vertx, v -> latch.countDown());
   }
 
   /**
@@ -86,7 +108,24 @@ public class RunTestOnContext implements TestRule {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        vertx = createVertx.get();
+        CountDownLatch vertxInit = new CountDownLatch(1);
+        createVertx.accept(r -> {
+          if (r.succeeded()) {
+            vertx = r.result();
+          } else {
+            Logger logger = LoggerFactory.getLogger(description.getTestClass());
+            logger.error("Failed to initialize Vert.x", r.cause());
+          }
+          vertxInit.countDown();
+        });
+        try {
+          if (!vertxInit.await(30 * 1000, TimeUnit.MILLISECONDS)) {
+            Logger logger = LoggerFactory.getLogger(description.getTestClass());
+            logger.warn("Could not initialize Vert.x in time");
+          }
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
         try {
           Context context = vertx != null ? vertx.getOrCreateContext() : null;
           VertxUnitRunner.pushContext(context);
