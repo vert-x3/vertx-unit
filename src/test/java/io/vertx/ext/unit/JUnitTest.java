@@ -1026,7 +1026,7 @@ public class JUnitTest {
     public void testMethod(TestContext context) {
       requestCount.set(0);
       Async async = context.async();
-      vertx.createHttpClient().getNow(8080, "localhost", "/", resp -> {
+      vertx.createHttpClient().get(8080, "localhost", "/", resp -> {
         async.complete();
       });
     }

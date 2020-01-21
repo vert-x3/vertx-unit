@@ -173,7 +173,7 @@ public class Examples {
     suite.test("my_test_case", context -> {
 
       HttpClient client = vertx.createHttpClient();
-      client.getNow(8080, "localhost", "/", context.asyncAssertSuccess(resp -> {
+      client.get(8080, "localhost", "/", context.asyncAssertSuccess(resp -> {
         context.assertEquals(200, resp.statusCode());
       }));
 
@@ -369,7 +369,7 @@ public class Examples {
 
       // Do request
       HttpClient client = vertx.createHttpClient();
-      client.getNow(port, host, "/resource", context.asyncAssertSuccess(resp -> {
+      client.get(port, host, "/resource", context.asyncAssertSuccess(resp -> {
         context.assertEquals(200, resp.statusCode());
       }));
     });
