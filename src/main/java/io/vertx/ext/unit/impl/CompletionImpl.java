@@ -46,7 +46,7 @@ public class CompletionImpl<T> implements Completion<T> {
   @Override
   public void handler(Handler<AsyncResult<T>> completionHandler) {
     Promise<T> completion = Promise.promise();
-    completion.future().setHandler(completionHandler);
+    completion.future().onComplete(completionHandler);
     resolve(completion);
   }
 

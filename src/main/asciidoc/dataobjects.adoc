@@ -36,9 +36,6 @@ Set the current reporter name.
 [frame="topbot"]
 |===
 ^|Name | Type ^| Description
-|[[reporters]]`@reporters`|`Array of link:dataobjects.html#ReportOptions[ReportOptions]`|+++
-Replace the current list of reporters with a new one.
-+++
 |===
 
 [[TestOptions]]
@@ -66,9 +63,6 @@ Replace the current list of reporters with a new one.
 [frame="topbot"]
 |===
 ^|Name | Type ^| Description
-|[[reporters]]`@reporters`|`Array of link:dataobjects.html#ReportOptions[ReportOptions]`|+++
-Replace the current list of reporters with a new one.
-+++
 |[[timeout]]`@timeout`|`Number (long)`|+++
 Set the test timeout.
 +++
