@@ -20,7 +20,7 @@
   <parent>
     <groupId>io.vertx</groupId>
     <artifactId>vertx-ext-parent</artifactId>
-    <version>34</version>
+    <version>35</version>
   </parent>
 
   <artifactId>vertx-unit</artifactId>
@@ -181,7 +181,7 @@
                 <vertx.test.timeout>60</vertx.test.timeout>
                 <io.netty.leakDetectionLevel>PARANOID</io.netty.leakDetectionLevel>
               </systemPropertyVariables>
-              <argLine>-server -Xms128m -Xmx1024m -XX:NewRatio=2 @{surefireArgLine}</argLine>
+              <argLine>-server -Xms128m -Xmx1024m -XX:NewRatio=2</argLine>
               <excludes>
                 <exclude>**/ScratchPad.java</exclude>
               </excludes>
