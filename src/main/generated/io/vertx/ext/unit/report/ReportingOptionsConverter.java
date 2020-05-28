@@ -20,7 +20,7 @@ public class ReportingOptionsConverter {
             java.util.ArrayList<io.vertx.ext.unit.report.ReportOptions> list =  new java.util.ArrayList<>();
             ((Iterable<Object>)member.getValue()).forEach( item -> {
               if (item instanceof JsonObject)
-                list.add(new io.vertx.ext.unit.report.ReportOptions((JsonObject)item));
+                list.add(new io.vertx.ext.unit.report.ReportOptions((io.vertx.core.json.JsonObject)item));
             });
             obj.setReporters(list);
           }
