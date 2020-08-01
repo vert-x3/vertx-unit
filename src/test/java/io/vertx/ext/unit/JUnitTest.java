@@ -3,6 +3,8 @@ package io.vertx.ext.unit;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.unit.junit.Repeat;
 import io.vertx.ext.unit.junit.RepeatRule;
@@ -1026,9 +1028,17 @@ public class JUnitTest {
     public void testMethod(TestContext context) {
       requestCount.set(0);
       Async async = context.async();
-      vertx.createHttpClient().get(8080, "localhost", "/", resp -> {
-        async.complete();
-      });
+      vertx.createHttpClient()
+        .request(HttpMethod.GET, 8080, "localhost", "/", ar1-> {
+          if (ar1.succeeded()) {
+            HttpClientRequest req = ar1.result();
+            req.send(ar2 -> {
+              if (ar2.succeeded()) {
+                async.complete();
+              }
+            });
+          }
+        });
     }
   }
 

@@ -8,6 +8,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.docgen.Source;
@@ -173,9 +174,11 @@ public class Examples {
     suite.test("my_test_case", context -> {
 
       HttpClient client = vertx.createHttpClient();
-      client.get(8080, "localhost", "/", context.asyncAssertSuccess(resp -> {
-        context.assertEquals(200, resp.statusCode());
-      }));
+      client.request(HttpMethod.GET, 8080, "localhost", "/", context.asyncAssertSuccess(req -> {
+          req.send(context.asyncAssertSuccess(resp -> {
+            context.assertEquals(200, resp.statusCode());
+          }));
+        }));
 
       Async async = context.async();
       vertx.eventBus().consumer("the-address", msg -> {
@@ -369,8 +372,10 @@ public class Examples {
 
       // Do request
       HttpClient client = vertx.createHttpClient();
-      client.get(port, host, "/resource", context.asyncAssertSuccess(resp -> {
-        context.assertEquals(200, resp.statusCode());
+      client.request(HttpMethod.GET, port, host, "/resource", context.asyncAssertSuccess(req -> {
+        req.send(context.asyncAssertSuccess(resp -> {
+          context.assertEquals(200, resp.statusCode());
+        }));
       }));
     });
   }
