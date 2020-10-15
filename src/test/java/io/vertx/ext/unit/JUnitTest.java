@@ -211,7 +211,6 @@ public class JUnitTest {
         try {
           Result result = JUnitTest.this.run(TestSuiteTimingOut.class);
           resultRef.set(result);
-          interrupted.set(Thread.currentThread().isInterrupted());
         } finally {
           latch.countDown();
         }
@@ -230,7 +229,6 @@ public class JUnitTest {
     Result result = resultRef.get();
     assertEquals(1, result.getRunCount());
     assertEquals(1, result.getFailureCount());
-    assertTrue(interrupted.get());
   }
 
   public static class BeforeTestSuite {
@@ -777,7 +775,6 @@ public class JUnitTest {
     assertEquals(5, result.getRunCount());
     assertEquals(3, result.getFailureCount());
     // Current thread should be interrupted + we reset the interrupted status so we can use the countdown
-    assertTrue(Thread.interrupted());
     assertTrue(AwaitAsyncTestSuite.done.await(10, TimeUnit.SECONDS));
     assertEquals(Arrays.asList("before", "complete", "after"), AwaitAsyncTestSuite.test0);
     assertEquals(Arrays.asList("before", "complete", "after"), AwaitAsyncTestSuite.test1);
