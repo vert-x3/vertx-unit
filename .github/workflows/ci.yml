@@ -21,8 +21,12 @@ jobs:
     steps:
       - uses: actions/cache@v2
         with:
-          path: ~/.m2/repository
-          key: maven-java-${{ matrix.jdk }}
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/**/*-SNAPSHOT/**
+          key: maven-java
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install JDK
@@ -42,8 +46,10 @@ jobs:
     steps:
       - uses: actions/cache@v2
         with:
-          path: ~/.m2/repository
-          key: maven-java-${{ matrix.jdk }}
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/**/*-SNAPSHOT/**
+          key: maven-java
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install JDK
