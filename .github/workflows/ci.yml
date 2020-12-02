@@ -26,7 +26,7 @@ jobs:
             !~/.m2/repository/io/vertx
           key: maven-java-another-key
       - name: print-cache
-        run: [ -d ~/.m2/repository/ ] && ls -lR ~/.m2/repository/ | grep SNAPSHOT
+        run: '[ -d ~/.m2/repository/ ] && ls -lR ~/.m2/repository/ | grep SNAPSHOT'
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install JDK
