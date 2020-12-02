@@ -19,14 +19,6 @@ jobs:
         jdk: [8, 11]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/io/vertx/**
-          key: maven-java-another-key-3
-      - name: print-cache
-        run: (test -d ~/.m2/repository && ls -LR ~/.m2/repository | grep SNAPSHOT ) || echo No repo found
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install JDK
