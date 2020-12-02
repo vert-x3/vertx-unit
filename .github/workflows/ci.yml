@@ -23,7 +23,7 @@ jobs:
         with:
           path: |
             ~/.m2/repository
-            !~/.m2/repository/**/*-SNAPSHOT/**
+            !~/.m2/repository/io/vertx
           key: maven-java
       - name: print-cache
         run: ls -lR ~/.m2/repository/ | grep SNAPSHOT
