@@ -21,8 +21,6 @@ jobs:
     steps:
       - uses: actions/cache@v2
         with:
-      - uses: actions/cache@v2
-        with:
           path: |
             ~/.m2/repository
             !~/.m2/repository/**/*-SNAPSHOT/**
