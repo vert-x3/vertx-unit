@@ -24,9 +24,9 @@ jobs:
           path: |
             ~/.m2/repository
             !~/.m2/repository/io/vertx
-          key: maven-java
+          key: maven-java-another-key
       - name: print-cache
-        run: ls -lR ~/.m2/repository/ | grep SNAPSHOT
+        run: [ -d ~/.m2/repository/ ] && ls -lR ~/.m2/repository/ | grep SNAPSHOT
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install JDK
@@ -44,12 +44,6 @@ jobs:
       SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
       SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
     steps:
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/**/*-SNAPSHOT/**
-          key: maven-java
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install JDK
