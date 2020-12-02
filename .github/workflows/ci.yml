@@ -24,9 +24,9 @@ jobs:
           path: |
             ~/.m2/repository
             !~/.m2/repository/io/vertx
-          key: maven-java-another-key
+          key: maven-java-another-key-2
       - name: print-cache
-        run: (test -d ~/.m2/repository && ls ~/.m2/repository ) || echo No repo found
+        run: (test -d ~/.m2/repository && ls -LR ~/.m2/repository | grep SNAPSHOT ) || echo No repo found
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install JDK
