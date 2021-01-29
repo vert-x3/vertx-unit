@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 public class RunTestOnContext implements TestRule {
 
   private volatile Vertx vertx;
-  private final Consumer<Handler<AsyncResult<Vertx>>> createVertx;
+  private final Future<Vertx> createVertx;
   private final BiConsumer<Vertx, CountDownLatch> closeVertx;
 
   /**
@@ -46,8 +46,7 @@ public class RunTestOnContext implements TestRule {
    */
   public RunTestOnContext(VertxOptions options) {
     this(options.getClusterManager() != null ?
-      h -> Vertx.clusteredVertx(options, h)
-      : h -> h.handle(Future.succeededFuture(Vertx.vertx(options))));
+      Vertx.clusteredVertx(options) : Future.succeededFuture(Vertx.vertx(options)));
   }
 
   /**
@@ -57,7 +56,7 @@ public class RunTestOnContext implements TestRule {
    * @param createVertx the create Vert.x supplier
    */
   public RunTestOnContext(Supplier<Vertx> createVertx) {
-    this(h -> h.handle(Future.succeededFuture(createVertx.get())));
+    this(Future.succeededFuture(createVertx.get()));
   }
 
   /**
@@ -68,7 +67,7 @@ public class RunTestOnContext implements TestRule {
    * @param closeVertx  the close Vert.x consumer
    */
   public RunTestOnContext(Supplier<Vertx> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
-    this(h -> h.handle(Future.succeededFuture(createVertx.get())), closeVertx);
+    this(Future.succeededFuture(createVertx.get()), closeVertx);
   }
 
   /**
@@ -77,7 +76,7 @@ public class RunTestOnContext implements TestRule {
    *
    * @param createVertx the asynchronous create Vert.x supplier
    */
-  public RunTestOnContext(Consumer<Handler<AsyncResult<Vertx>>> createVertx) {
+  public RunTestOnContext(Future<Vertx> createVertx) {
     this(createVertx, (vertx, latch) -> vertx.close(ar -> latch.accept(null)));
   }
 
@@ -89,7 +88,7 @@ public class RunTestOnContext implements TestRule {
    * @param createVertx the asynchronous Vert.x supplier
    * @param closeVertx the close Vert.x consumer
    */
-  public RunTestOnContext(Consumer<Handler<AsyncResult<Vertx>>> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
+  public RunTestOnContext(Future<Vertx> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
     this.createVertx = createVertx;
     this.closeVertx = (vertx, latch) -> closeVertx.accept(vertx, v -> latch.countDown());
   }
@@ -109,7 +108,7 @@ public class RunTestOnContext implements TestRule {
       @Override
       public void evaluate() throws Throwable {
         CountDownLatch vertxInit = new CountDownLatch(1);
-        createVertx.accept(r -> {
+        createVertx.onComplete(r -> {
           if (r.succeeded()) {
             vertx = r.result();
           } else {

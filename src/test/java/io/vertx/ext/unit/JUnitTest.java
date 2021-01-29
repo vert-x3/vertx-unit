@@ -1006,7 +1006,7 @@ public class JUnitTest {
     @Rule
     public final TestName testName = new TestName();
     @Rule
-    public final RunTestOnContext rule = new RunTestOnContext(h -> Vertx.clusteredVertx(new VertxOptions().setClusterManager(new FakeClusterManager()), h));
+    public final RunTestOnContext rule = new RunTestOnContext(Vertx.clusteredVertx(new VertxOptions().setClusterManager(new FakeClusterManager())));
     @Before
     public void before() {
       before.put(testName.getMethodName(), Vertx.currentContext());
