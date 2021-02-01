@@ -941,6 +941,62 @@ public class JUnitTest {
     assertSame(StaticUseRunOnContextRule.afterClass, StaticUseRunOnContextRule.method.get("testMethod1"));
   }
 
+  public static class LazyCreateVertx {
+    static final List<Vertx> before = new ArrayList<>();
+    static final List<Vertx> methods = new ArrayList<>();
+    static final List<Vertx> after = new ArrayList<>();
+    private static Vertx current;
+
+    // Cached rule instance
+    private static final RunTestOnContext ruleInstance = new RunTestOnContext(() -> {
+      Vertx vertx = Vertx.vertx();
+      current = vertx;
+      return vertx;
+    });
+
+    @Rule
+    public final RunTestOnContext rule = ruleInstance;
+    @Before
+    public void before() {
+      if (current == Vertx.currentContext().owner()) {
+        before.add(Vertx.currentContext().owner());
+      }
+    }
+    @Test
+    public void testMethod1() {
+      if (current == Vertx.currentContext().owner()) {
+        methods.add(Vertx.currentContext().owner());
+      }
+    }
+    @Test
+    public void testMethod2() {
+      if (current == Vertx.currentContext().owner()) {
+        methods.add(Vertx.currentContext().owner());
+      }
+    }
+    @After
+    public void after() {
+      if (current == Vertx.currentContext().owner()) {
+        after.add(Vertx.currentContext().owner());
+      }
+    }
+  }
+
+  @Test
+  public void testLazyCreateVertx() {
+    Result result = run(LazyCreateVertx.class);
+    assertEquals(2, result.getRunCount());
+    assertEquals(0, result.getFailureCount());
+    assertEquals(2, LazyCreateVertx.before.size());
+    assertEquals(2, LazyCreateVertx.methods.size());
+    assertEquals(2, LazyCreateVertx.after.size());
+    assertNotSame(LazyCreateVertx.before.get(0), LazyCreateVertx.before.get(1));
+    assertSame(LazyCreateVertx.before.get(0), LazyCreateVertx.methods.get(0));
+    assertSame(LazyCreateVertx.before.get(0), LazyCreateVertx.after.get(0));
+    assertSame(LazyCreateVertx.before.get(1), LazyCreateVertx.methods.get(1));
+    assertSame(LazyCreateVertx.before.get(1), LazyCreateVertx.after.get(1));
+  }
+
   public static class FailOnContext {
 
     static final AtomicInteger count = new AtomicInteger();
