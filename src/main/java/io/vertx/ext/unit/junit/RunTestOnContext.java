@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 public class RunTestOnContext implements TestRule {
 
   private volatile Vertx vertx;
-  private final Future<Vertx> createVertx;
+  private final Supplier<Vertx> createVertx;
   private final BiConsumer<Vertx, CountDownLatch> closeVertx;
 
   /**
@@ -56,7 +56,7 @@ public class RunTestOnContext implements TestRule {
    * @param createVertx the create Vert.x supplier
    */
   public RunTestOnContext(Supplier<Vertx> createVertx) {
-    this(Future.succeededFuture(createVertx.get()));
+    this(createVertx, (vertx, latch) -> vertx.close(ar -> latch.accept(null)));
   }
 
   /**
@@ -67,7 +67,8 @@ public class RunTestOnContext implements TestRule {
    * @param closeVertx  the close Vert.x consumer
    */
   public RunTestOnContext(Supplier<Vertx> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
-    this(Future.succeededFuture(createVertx.get()), closeVertx);
+    this.createVertx = createVertx;
+    this.closeVertx = (vertx, latch) -> closeVertx.accept(vertx, v -> latch.countDown());
   }
 
   /**
@@ -89,7 +90,13 @@ public class RunTestOnContext implements TestRule {
    * @param closeVertx the close Vert.x consumer
    */
   public RunTestOnContext(Future<Vertx> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
-    this.createVertx = createVertx;
+    this.createVertx = () -> {
+      try {
+        return createVertx.toCompletionStage().toCompletableFuture().get(60, TimeUnit.SECONDS);
+      } catch (Exception e) {
+        throw new AssertionError(e);
+      }
+    };
     this.closeVertx = (vertx, latch) -> closeVertx.accept(vertx, v -> latch.countDown());
   }
 
@@ -107,24 +114,7 @@ public class RunTestOnContext implements TestRule {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        CountDownLatch vertxInit = new CountDownLatch(1);
-        createVertx.onComplete(r -> {
-          if (r.succeeded()) {
-            vertx = r.result();
-          } else {
-            Logger logger = LoggerFactory.getLogger(description.getTestClass());
-            logger.error("Failed to initialize Vert.x", r.cause());
-          }
-          vertxInit.countDown();
-        });
-        try {
-          if (!vertxInit.await(30 * 1000, TimeUnit.MILLISECONDS)) {
-            Logger logger = LoggerFactory.getLogger(description.getTestClass());
-            logger.warn("Could not initialize Vert.x in time");
-          }
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-        }
+        vertx = createVertx.get();
         try {
           Context context = vertx != null ? vertx.getOrCreateContext() : null;
           VertxUnitRunner.pushContext(context);
