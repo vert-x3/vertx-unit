@@ -1,8 +1,6 @@
 package io.vertx.ext.unit.junit;
 
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
+import io.vertx.core.*;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import org.junit.rules.TestRule;
@@ -47,19 +45,8 @@ public class RunTestOnContext implements TestRule {
    * @param options the vertx options
    */
   public RunTestOnContext(VertxOptions options) {
-    this(() -> Vertx.vertx(options));
-  }
-
-  /**
-   * Create a new rule with supplier/consumer for creating/closing a Vert.x instance. The lambda are invoked for each
-   * test. The {@code closeVertx} lambda should invoke the consumer with null when the {@code vertx} instance is closed.
-   *
-   * @param createVertx the create Vert.x supplier
-   * @param closeVertx the close Vert.x consumer
-   */
-  public RunTestOnContext(Supplier<Vertx> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
-    this.createVertx = createVertx;
-    this.closeVertx = (vertx, latch) -> closeVertx.accept(vertx, v -> latch.countDown());
+    this(options.getClusterManager() != null ?
+      Vertx.clusteredVertx(options) : Future.succeededFuture(Vertx.vertx(options)));
   }
 
   /**
@@ -70,6 +57,47 @@ public class RunTestOnContext implements TestRule {
    */
   public RunTestOnContext(Supplier<Vertx> createVertx) {
     this(createVertx, (vertx, latch) -> vertx.close(ar -> latch.accept(null)));
+  }
+
+  /**
+   * Create a new rule with supplier/consumer for creating/closing a Vert.x instance. The lambda are invoked for each
+   * test. The {@code closeVertx} lambda should invoke the consumer with null when the {@code vertx} instance is closed.
+   *
+   * @param createVertx the create Vert.x supplier
+   * @param closeVertx  the close Vert.x consumer
+   */
+  public RunTestOnContext(Supplier<Vertx> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
+    this.createVertx = createVertx;
+    this.closeVertx = (vertx, latch) -> closeVertx.accept(vertx, v -> latch.countDown());
+  }
+
+  /**
+   * Create a new rule with an asynchronous supplier for creating a Vert.x instance. The lambda are invoked for each
+   * test.
+   *
+   * @param createVertx the asynchronous create Vert.x supplier
+   */
+  public RunTestOnContext(Future<Vertx> createVertx) {
+    this(createVertx, (vertx, latch) -> vertx.close(ar -> latch.accept(null)));
+  }
+
+  /**
+   * Create a new rule with an asynchronous supplier and consumer for creating and closing a Vert.x instance. The
+   * lambda are invoked for each test. The {@code closeVertx} lambda should invoke the consumer with null when the
+   * {@code vertx} instance is closed.
+   *
+   * @param createVertx the asynchronous Vert.x supplier
+   * @param closeVertx the close Vert.x consumer
+   */
+  public RunTestOnContext(Future<Vertx> createVertx, BiConsumer<Vertx, Consumer<Void>> closeVertx) {
+    this.createVertx = () -> {
+      try {
+        return createVertx.toCompletionStage().toCompletableFuture().get(60, TimeUnit.SECONDS);
+      } catch (Exception e) {
+        throw new AssertionError(e);
+      }
+    };
+    this.closeVertx = (vertx, latch) -> closeVertx.accept(vertx, v -> latch.countDown());
   }
 
   /**
