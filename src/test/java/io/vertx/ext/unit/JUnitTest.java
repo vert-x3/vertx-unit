@@ -206,7 +206,6 @@ public class JUnitTest {
   public void testSuiteInterrupted() throws Exception {
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<Result> resultRef = new AtomicReference<>();
-    AtomicBoolean interrupted = new AtomicBoolean();
     Thread t = new Thread() {
       @Override
       public void run() {
