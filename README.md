@@ -1,6 +1,7 @@
 ## Asynchronous Unit Test
 
-[![Build Status](https://travis-ci.org/vert-x3/vertx-unit.svg?branch=master?branch=master)](https://travis-ci.org/vert-x3/vertx-unit)
+[![Build Status](https://github.com/vert-x3/vertx-unit/workflows/CI/badge.svg?branch=3.9)](https://github.com/vert-x3/vertx-unit/actions?query=workflow%3ACI)
+
 Async unit testing for Vert.x.
 
 ## Documentation
