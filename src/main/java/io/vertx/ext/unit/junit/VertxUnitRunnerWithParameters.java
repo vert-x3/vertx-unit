@@ -77,11 +77,6 @@ public class VertxUnitRunnerWithParameters extends VertxUnitRunner {
   }
 
   @Override
-  protected String testName(FrameworkMethod method) {
-    return method.getName() + getName();
-  }
-
-  @Override
   protected void validateConstructor(List<Throwable> errors) {
     validateOnlyOneConstructor(errors);
     if (fieldsAreAnnotated()) {
