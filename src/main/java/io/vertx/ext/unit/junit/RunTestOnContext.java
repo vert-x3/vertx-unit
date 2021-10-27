@@ -126,7 +126,7 @@ public class RunTestOnContext implements TestRule {
           try {
             if (!latch.await(30 * 1000, TimeUnit.MILLISECONDS)) {
               Logger logger = LoggerFactory.getLogger(description.getTestClass());
-              logger.warn("Could not close Vert.x in tme");
+              logger.warn("Could not close Vert.x in time.");
             }
           } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
