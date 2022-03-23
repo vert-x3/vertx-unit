@@ -74,18 +74,22 @@ public class JUnitTest {
 //    assertNotNull(SimpleTestSuite.current.get().vertx());
   }
 
+  private static void sleep(TestContext context, long milliseconds) {
+    Async async = context.async();
+    new Thread(() -> {
+      try {
+        Thread.sleep(milliseconds);
+      } catch (InterruptedException ignore) {
+      } finally {
+        async.complete();
+      }
+    }).start();
+  }
+
   public static class AsyncTestSuite {
     @Test
     public void testMethod1(TestContext context) {
-      Async async = context.async();
-      new Thread(() -> {
-        try {
-          Thread.sleep(250);
-        } catch (InterruptedException ignore) {
-        } finally {
-          async.complete();
-        }
-      }).start();
+      sleep(context, 100L);
     }
   }
 
@@ -157,7 +161,7 @@ public class JUnitTest {
   public static class TestSuiteTimingOut {
     @Test(timeout = 100L)
     public void testTimingOut(TestContext context) {
-      context.async();
+      sleep(context, 200L);
     }
   }
 
@@ -166,32 +170,48 @@ public class JUnitTest {
     testTimeout(TestSuiteTimingOut.class);
   }
 
-  public static class TestSuiteTimoutRule {
+  public static class TestSuiteTimeoutRule {
     @Rule
-    public final Timeout timeout = new Timeout(100, TimeUnit.MILLISECONDS);
+    public final Timeout timeout = new Timeout(100L, TimeUnit.MILLISECONDS);
     @Test
     public void testTimingOut(TestContext context) {
-      context.async();
+      sleep(context, 200L);
     }
   }
 
   @org.junit.Test
   public void testTimeoutRule() {
-    testTimeout(TestSuiteTimoutRule.class);
+    testTimeout(TestSuiteTimeoutRule.class);
   }
 
-  public static class TestSuiteTimoutClassRule {
+  public static class TestSuiteTimeoutClassRule {
     @ClassRule
-    public static final Timeout timeout = new Timeout(100, TimeUnit.MILLISECONDS);
+    public static final Timeout timeout = new Timeout(100L, TimeUnit.MILLISECONDS);
     @Test
     public void testTimingOut(TestContext context) {
-      context.async();
+      sleep(context, 200L);
     }
   }
 
   @org.junit.Test
   public void testTimeoutClassRule() {
-    testTimeout(TestSuiteTimoutClassRule.class);
+    testTimeout(TestSuiteTimeoutClassRule.class);
+  }
+
+  public static class TestSuiteTimeoutOverwritesRules {
+    @ClassRule
+    public static final Timeout classTimeout = new Timeout(300L, TimeUnit.MILLISECONDS);
+    @Rule
+    public final Timeout timeout = new Timeout(300L, TimeUnit.MILLISECONDS);
+    @Test(timeout = 100L)
+    public void testTimingOut(TestContext context) {
+      sleep(context, 200L);
+    }
+  }
+
+  @org.junit.Test
+  public void testTimeoutOverwritesRules() {
+    testTimeout(TestSuiteTimeoutOverwritesRules.class);
   }
 
   private void testTimeout(Class<?> testClass) {
