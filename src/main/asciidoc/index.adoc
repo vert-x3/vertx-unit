@@ -642,7 +642,18 @@ For a more global configuration, the {@link io.vertx.ext.unit.junit.Timeout} rul
 {@link examples.junit.TimeoutTestSuite}
 ----
 
-NOTE: the `@Test` timeout overrides the the {@link io.vertx.ext.unit.junit.Timeout} rule.
+NOTE: Use `io.vertx.ext.unit.junit.Timeout`, not `org.junit.rules.Timeout`.
+
+The method level timeout overwrites the class level timeout:
+
+.Combine the class level rule with a method level timeout
+[source,java]
+----
+{@link examples.junit.TimeoutOverwriteTestSuite}
+----
+
+NOTE: The `@Test` timeout overrides the `io.vertx.ext.unit.junit.Timeout` rule but not the
+`org.junit.rules.Timeout` rule.
 
 === Parameterized tests
 
