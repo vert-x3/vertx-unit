@@ -132,7 +132,7 @@ public class ReportingTest extends VertxTestBase {
         testComplete();
       }
     });
-    consumer.completionHandler(ar -> {
+    consumer.completion().onComplete(ar -> {
       assertTrue(ar.succeeded());
       suite.run(vertx, new TestOptions().addReporter(new ReportOptions().setTo("bus:the_address")));
     });

@@ -1100,7 +1100,7 @@ public class JUnitTest {
     public void before(TestContext context) {
       Async async = context.async();
       Vertx vertx = Vertx.vertx().exceptionHandler(context.exceptionHandler());
-      vertx.deployVerticle(VerticleFailStart.class.getName(), ar -> {
+      vertx.deployVerticle(VerticleFailStart.class.getName()).onComplete(ar -> {
         assertTrue(ar.succeeded());
         async.complete();
       });
@@ -1131,13 +1131,13 @@ public class JUnitTest {
           requestHandler(req -> {
             requestCount.incrementAndGet();
             fail("Don't freak out");
-          }).listen(8080, "localhost", context.asyncAssertSuccess(s -> {
+          }).listen(8080, "localhost").onComplete(context.asyncAssertSuccess(s -> {
       }));
     }
 
     @After
     public void after(TestContext context) {
-      vertx.close(context.asyncAssertSuccess());
+      vertx.close().onComplete(context.asyncAssertSuccess());
     }
 
     @Test
@@ -1145,10 +1145,10 @@ public class JUnitTest {
       requestCount.set(0);
       Async async = context.async();
       vertx.createHttpClient()
-        .request(HttpMethod.GET, 8080, "localhost", "/", ar1-> {
+        .request(HttpMethod.GET, 8080, "localhost", "/").onComplete(ar1-> {
           if (ar1.succeeded()) {
             HttpClientRequest req = ar1.result();
-            req.send(ar2 -> {
+            req.send().onComplete(ar2 -> {
               if (ar2.succeeded()) {
                 async.complete();
               }

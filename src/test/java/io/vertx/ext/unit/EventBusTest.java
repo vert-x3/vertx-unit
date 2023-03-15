@@ -96,7 +96,7 @@ public class EventBusTest extends VertxTestBase {
       }
       status.incrementAndGet();
     });
-    consumer.completionHandler(ar -> {
+    consumer.completion().onComplete(ar -> {
       assertTrue(ar.succeeded());
       TestSuite.create(testSuiteName).test(testCaseName1, context -> {
         try {
@@ -159,7 +159,7 @@ public class EventBusTest extends VertxTestBase {
       }
       status.incrementAndGet();
     });
-    consumer.completionHandler(ar -> {
+    consumer.completion().onComplete(ar -> {
       assertTrue(ar.succeeded());
       TestSuite.create(testSuiteName).test(testCaseName, context -> {
         // Ok
@@ -223,7 +223,7 @@ public class EventBusTest extends VertxTestBase {
         testComplete();
       });
     }).asMessageHandler();
-    consumer.completionHandler(ar -> {
+    consumer.completion().onComplete(ar -> {
       assertTrue(ar.succeeded());
       vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_SUITE_BEGIN).put("name", testSuiteName));
       vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_BEGIN).put("name", testCaseName1));
@@ -273,7 +273,7 @@ public class EventBusTest extends VertxTestBase {
         testComplete();
       });
     }).asMessageHandler();
-    consumer.completionHandler(ar -> {
+    consumer.completion().onComplete(ar -> {
       assertTrue(ar.succeeded());
       vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_SUITE_BEGIN).put("name", testSuiteName));
       vertx.eventBus().publish(address, new JsonObject().put("type", EventBusCollector.EVENT_TEST_CASE_BEGIN).put("name", testCaseName));
@@ -295,7 +295,7 @@ public class EventBusTest extends VertxTestBase {
     TestReporter testReporter = new TestReporter();
     EventBusCollector collector = EventBusCollector.create(vertx, testReporter);
     MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer("the-address", collector.asMessageHandler());
-    consumer.completionHandler(ar -> {
+    consumer.completion().onComplete(ar -> {
       assertTrue(ar.succeeded());
       TestSuite suite = TestSuite.create(testSuiteName).
           test(testCaseName1, context -> {
@@ -324,7 +324,7 @@ public class EventBusTest extends VertxTestBase {
     TestReporter testReporter = new TestReporter();
     MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer(address, EventBusCollector.create(vertx, testReporter).asMessageHandler());
     RuntimeException error = new RuntimeException("the_runtime_exception");
-    consumer.completionHandler(ar -> {
+    consumer.completion().onComplete(ar -> {
       assertTrue(ar.succeeded());
       TestSuite suite = TestSuite.create(testSuiteName).
           test(testCaseName, context -> {

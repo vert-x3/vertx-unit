@@ -56,7 +56,7 @@ public class RunTestOnContext implements TestRule {
    * @param createVertx the create Vert.x supplier
    */
   public RunTestOnContext(Supplier<Vertx> createVertx) {
-    this(createVertx, (vertx, latch) -> vertx.close(ar -> latch.accept(null)));
+    this(createVertx, (vertx, latch) -> vertx.close().onComplete(ar -> latch.accept(null)));
   }
 
   /**
@@ -78,7 +78,7 @@ public class RunTestOnContext implements TestRule {
    * @param createVertx the asynchronous create Vert.x supplier
    */
   public RunTestOnContext(Future<Vertx> createVertx) {
-    this(createVertx, (vertx, latch) -> vertx.close(ar -> latch.accept(null)));
+    this(createVertx, (vertx, latch) -> vertx.close().onComplete(ar -> latch.accept(null)));
   }
 
   /**

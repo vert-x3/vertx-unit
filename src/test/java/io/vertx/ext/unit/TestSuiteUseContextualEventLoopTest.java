@@ -54,7 +54,7 @@ public class TestSuiteUseContextualEventLoopTest extends TestSuiteTestBase {
   public void tearDown() throws Exception {
     CountDownLatch latch = new CountDownLatch(1);
     if (vertx != null) {
-      vertx.close(ar -> {
+      vertx.close().onComplete(ar -> {
         latch.countDown();
       });
       vertx = null;

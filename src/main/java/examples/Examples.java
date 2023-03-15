@@ -174,8 +174,8 @@ public class Examples {
     suite.test("my_test_case", context -> {
 
       HttpClient client = vertx.createHttpClient();
-      client.request(HttpMethod.GET, 8080, "localhost", "/", context.asyncAssertSuccess(req -> {
-          req.send(context.asyncAssertSuccess(resp -> {
+      client.request(HttpMethod.GET, 8080, "localhost", "/").onComplete(context.asyncAssertSuccess(req -> {
+          req.send().onComplete(context.asyncAssertSuccess(resp -> {
             context.assertEquals(200, resp.statusCode());
           }));
         }));
@@ -192,7 +192,7 @@ public class Examples {
       Async async = context.async();
       HttpServer server = vertx.createHttpServer();
       server.requestHandler(requestHandler);
-      server.listen(8080, ar -> {
+      server.listen(8080).onComplete(ar -> {
         context.assertTrue(ar.succeeded());
         async.complete();
       });
@@ -203,7 +203,7 @@ public class Examples {
     Async async = context.async();
     HttpServer server = vertx.createHttpServer();
     server.requestHandler(requestHandler);
-    server.listen(8080, ar -> {
+    server.listen(8080).onComplete(ar -> {
       context.assertTrue(ar.succeeded());
       async.complete();
     });
@@ -218,7 +218,7 @@ public class Examples {
     Async async = context.async(2);
     HttpServer server = vertx.createHttpServer();
     server.requestHandler(requestHandler);
-    server.listen(8080, ar -> {
+    server.listen(8080).onComplete(ar -> {
       context.assertTrue(ar.succeeded());
       async.countDown();
     });
@@ -236,7 +236,7 @@ public class Examples {
   @Source(translate = false)
   public static void asyncAssertSuccess_01(Vertx vertx, TestContext context) {
     Async async = context.async();
-    vertx.deployVerticle("my.verticle", ar -> {
+    vertx.deployVerticle("my.verticle").onComplete(ar -> {
       if (ar.succeeded()) {
         async.complete();
       } else {
@@ -246,7 +246,7 @@ public class Examples {
 
     // Can be replaced by
 
-    vertx.deployVerticle("my.verticle", context.asyncAssertSuccess());
+    vertx.deployVerticle("my.verticle").onComplete(context.asyncAssertSuccess());
   }
 
   @Source(translate = false)
@@ -257,7 +257,7 @@ public class Examples {
       public void start() throws Exception {
         started.set(true);
       }
-    }, ar -> {
+    }).onComplete(ar -> {
       if (ar.succeeded()) {
         context.assertTrue(started.get());
         async.complete();
@@ -268,7 +268,7 @@ public class Examples {
 
     // Can be replaced by
 
-    vertx.deployVerticle("my.verticle", context.asyncAssertSuccess(id -> {
+    vertx.deployVerticle("my.verticle").onComplete(context.asyncAssertSuccess(id -> {
       context.assertTrue(started.get());
     }));
   }
@@ -276,9 +276,9 @@ public class Examples {
   @Source(translate = false)
   public static void asyncAssertSuccess_03(Vertx vertx, TestContext context) {
     Async async = context.async();
-    vertx.deployVerticle("my.verticle", ar1 -> {
+    vertx.deployVerticle("my.verticle").onComplete(ar1 -> {
       if (ar1.succeeded()) {
-        vertx.deployVerticle("my.otherverticle", ar2 -> {
+        vertx.deployVerticle("my.otherverticle").onComplete(ar2 -> {
           if (ar2.succeeded()) {
             async.complete();
           } else {
@@ -292,15 +292,15 @@ public class Examples {
 
     // Can be replaced by
 
-    vertx.deployVerticle("my.verticle", context.asyncAssertSuccess(id ->
-            vertx.deployVerticle("my_otherverticle", context.asyncAssertSuccess())
+    vertx.deployVerticle("my.verticle").onComplete(context.asyncAssertSuccess(id ->
+            vertx.deployVerticle("my_otherverticle").onComplete(context.asyncAssertSuccess())
     ));
   }
 
   @Source(translate = false)
   public static void asyncAssertFailure_01(Vertx vertx, TestContext context) {
     Async async = context.async();
-    vertx.deployVerticle("my.verticle", ar -> {
+    vertx.deployVerticle("my.verticle").onComplete(ar -> {
       if (ar.succeeded()) {
         context.fail();
       } else {
@@ -310,13 +310,13 @@ public class Examples {
 
     // Can be replaced by
 
-    vertx.deployVerticle("my.verticle", context.asyncAssertFailure());
+    vertx.deployVerticle("my.verticle").onComplete(context.asyncAssertFailure());
   }
 
   @Source(translate = false)
   public static void asyncAssertFailure_02(Vertx vertx, TestContext context) {
     Async async = context.async();
-    vertx.deployVerticle("my.verticle", ar -> {
+    vertx.deployVerticle("my.verticle").onComplete(ar -> {
       if (ar.succeeded()) {
         context.fail();
       } else {
@@ -327,7 +327,7 @@ public class Examples {
 
     // Can be replaced by
 
-    vertx.deployVerticle("my.verticle", context.asyncAssertFailure(cause -> {
+    vertx.deployVerticle("my.verticle").onComplete(context.asyncAssertFailure(cause -> {
       context.assertTrue(cause instanceof IllegalArgumentException);
     }));
   }
@@ -358,7 +358,7 @@ public class Examples {
       server.requestHandler(req -> {
         req.response().setStatusCode(200).end();
       });
-      server.listen(port, host, ar -> {
+      server.listen(port, host).onComplete(ar -> {
         context.assertTrue(ar.succeeded());
         context.put("port", port);
         async.complete();
@@ -372,8 +372,8 @@ public class Examples {
 
       // Do request
       HttpClient client = vertx.createHttpClient();
-      client.request(HttpMethod.GET, port, host, "/resource", context.asyncAssertSuccess(req -> {
-        req.send(context.asyncAssertSuccess(resp -> {
+      client.request(HttpMethod.GET, port, host, "/resource").onComplete(context.asyncAssertSuccess(req -> {
+        req.send().onComplete(context.asyncAssertSuccess(resp -> {
           context.assertEquals(200, resp.statusCode());
         }));
       }));
