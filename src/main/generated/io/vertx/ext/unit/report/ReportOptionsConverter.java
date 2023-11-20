@@ -20,14 +20,14 @@ public class ReportOptionsConverter {
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ReportOptions obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
-        case "format":
-          if (member.getValue() instanceof String) {
-            obj.setFormat((String)member.getValue());
-          }
-          break;
         case "to":
           if (member.getValue() instanceof String) {
             obj.setTo((String)member.getValue());
+          }
+          break;
+        case "format":
+          if (member.getValue() instanceof String) {
+            obj.setFormat((String)member.getValue());
           }
           break;
       }
@@ -39,11 +39,11 @@ public class ReportOptionsConverter {
   }
 
   public static void toJson(ReportOptions obj, java.util.Map<String, Object> json) {
-    if (obj.getFormat() != null) {
-      json.put("format", obj.getFormat());
-    }
     if (obj.getTo() != null) {
       json.put("to", obj.getTo());
+    }
+    if (obj.getFormat() != null) {
+      json.put("format", obj.getFormat());
     }
   }
 }

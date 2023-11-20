@@ -45,8 +45,7 @@ public class RunTestOnContext implements TestRule {
    * @param options the vertx options
    */
   public RunTestOnContext(VertxOptions options) {
-    this(options.getClusterManager() != null ?
-      Vertx.clusteredVertx(options) : Future.succeededFuture(Vertx.vertx(options)));
+    this(Future.succeededFuture(Vertx.vertx(options)));
   }
 
   /**

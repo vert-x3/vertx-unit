@@ -7,6 +7,7 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.impl.VertxBuilder;
 import io.vertx.ext.unit.junit.Repeat;
 import io.vertx.ext.unit.junit.RepeatRule;
 import io.vertx.ext.unit.junit.RunTestOnContext;
@@ -1025,7 +1026,7 @@ public class JUnitTest {
     @Rule
     public final TestName testName = new TestName();
     @Rule
-    public final RunTestOnContext rule = new RunTestOnContext(Vertx.clusteredVertx(new VertxOptions().setClusterManager(new FakeClusterManager())));
+    public final RunTestOnContext rule = new RunTestOnContext(Vertx.builder().withClusterManager(new FakeClusterManager()).buildClustered());
     @Before
     public void before() {
       before.put(testName.getMethodName(), Vertx.currentContext());
