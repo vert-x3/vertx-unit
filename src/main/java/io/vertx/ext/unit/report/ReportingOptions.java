@@ -2,6 +2,7 @@ package io.vertx.ext.unit.report;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.Fluent;
+import io.vertx.codegen.json.annotations.JsonGen;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -17,7 +18,8 @@ import java.util.List;
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-@DataObject(generateConverter = true)
+@DataObject
+@JsonGen(publicConverter = false)
 public class ReportingOptions {
 
   private List<ReportOptions> reporters = new ArrayList<>();

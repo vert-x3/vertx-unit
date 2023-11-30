@@ -17,7 +17,7 @@ public class ReportingOptionsConverter {
   private static final Base64.Decoder BASE64_DECODER = JsonUtil.BASE64_DECODER;
   private static final Base64.Encoder BASE64_ENCODER = JsonUtil.BASE64_ENCODER;
 
-  public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ReportingOptions obj) {
+   static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, ReportingOptions obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
         case "reporters":
@@ -34,11 +34,11 @@ public class ReportingOptionsConverter {
     }
   }
 
-  public static void toJson(ReportingOptions obj, JsonObject json) {
+   static void toJson(ReportingOptions obj, JsonObject json) {
     toJson(obj, json.getMap());
   }
 
-  public static void toJson(ReportingOptions obj, java.util.Map<String, Object> json) {
+   static void toJson(ReportingOptions obj, java.util.Map<String, Object> json) {
     if (obj.getReporters() != null) {
       JsonArray array = new JsonArray();
       obj.getReporters().forEach(item -> array.add(item.toJson()));
