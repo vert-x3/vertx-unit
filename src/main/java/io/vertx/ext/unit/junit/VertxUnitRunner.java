@@ -1,7 +1,6 @@
 package io.vertx.ext.unit.junit;
 
-import io.vertx.core.Context;
-import io.vertx.core.Handler;
+import io.vertx.core.*;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.impl.Helper;
 import io.vertx.ext.unit.impl.TestContextImpl;
@@ -55,15 +54,32 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
         annotation == BeforeClass.class || annotation == AfterClass.class) {
       List<FrameworkMethod> fMethods = getTestClass().getAnnotatedMethods(annotation);
       for (FrameworkMethod fMethod : fMethods) {
-        fMethod.validatePublicVoid(isStatic, errors);
-        try {
-          validateTestMethod(fMethod);
-        } catch (Exception e) {
-          errors.add(e);
-        }
+        validateAnnotatedMethod(fMethod, isStatic, errors);
       }
     } else {
       super.validatePublicVoidNoArgMethods(annotation, isStatic, errors);
+    }
+  }
+
+  protected void validateAnnotatedMethod(FrameworkMethod fMethod, boolean isStatic, List<Throwable> errors) {
+    if (fMethod.isStatic() != isStatic) {
+      String state = isStatic ? "should" : "should not";
+      errors.add(new Exception("Method " + fMethod.getMethod().getName() + "() " + state + " be static"));
+    }
+    if (!fMethod.isPublic()) {
+      errors.add(new Exception("Method " + fMethod.getMethod().getName() + "() should be public"));
+    }
+
+    Class<?> returnType = fMethod.getMethod().getReturnType();
+    if ((returnType != Void.TYPE) && (returnType != Future.class)) {
+      errors.add(new Exception("Method " + fMethod.getName() + "() should have return type void or " +
+        Future.class.getName()));
+    }
+
+    try {
+      validateTestMethod(fMethod);
+    } catch (Exception e) {
+      errors.add(e);
     }
   }
 
@@ -89,10 +105,17 @@ public class VertxUnitRunner extends BlockJUnit4ClassRunner {
   protected void invokeTestMethod(FrameworkMethod fMethod, Object test, TestContext context) throws InvocationTargetException, IllegalAccessException {
     Method method = fMethod.getMethod();
     Class<?>[] paramTypes = method.getParameterTypes();
+
+    Object result;
     if (paramTypes.length == 0) {
-      method.invoke(test);
+      result = method.invoke(test);
     } else {
-      method.invoke(test, context);
+      result = method.invoke(test, context);
+    }
+
+    if (result instanceof Future) {
+      Future<?> future = (Future<?>) result;
+      future.setHandler(context.asyncAssertSuccess());
     }
   }
 
