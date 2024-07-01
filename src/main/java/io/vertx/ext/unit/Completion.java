@@ -43,6 +43,7 @@ public interface Completion<T> {
    *
    * @param completionHandler the completion handler
    */
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   void handler(Handler<AsyncResult<@Nullable T>> completionHandler);
 
   /**

@@ -1,6 +1,7 @@
 package io.vertx.ext.unit;
 
 import io.vertx.codegen.annotations.Fluent;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -278,6 +279,7 @@ public interface TestContext {
    *
    * @return the async result handler
    */
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   <T> Handler<AsyncResult<T>> asyncAssertSuccess();
 
   /**
@@ -294,6 +296,7 @@ public interface TestContext {
    * @param resultHandler the result handler
    * @return the async result handler
    */
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   <T> Handler<AsyncResult<T>> asyncAssertSuccess(Handler<T> resultHandler);
 
   /**
@@ -305,6 +308,7 @@ public interface TestContext {
    *
    * @return the async result handler
    */
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   <T> Handler<AsyncResult<T>> asyncAssertFailure();
 
   /**
@@ -317,6 +321,7 @@ public interface TestContext {
    * @param causeHandler the cause handler
    * @return the async result handler
    */
+  @GenIgnore(GenIgnore.PERMITTED_TYPE)
   <T> Handler<AsyncResult<T>> asyncAssertFailure(Handler<Throwable> causeHandler);
 
   /**
