@@ -35,12 +35,6 @@ public class Examples {
   }
 
   public static void test_02() {
-    TestSuite suite = TestSuite.create("the_test_suite");
-    suite.test("my_test_case", context -> {
-      String s = "value";
-      context.assertEquals("value", s);
-    });
-    suite.run(new TestOptions().addReporter(new ReportOptions().setTo("console")));
   }
 
   public static void writing_test_suite_01() {
