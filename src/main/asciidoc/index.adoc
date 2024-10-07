@@ -232,7 +232,7 @@ the test.
 Async objects can also be used in _before_ or _after_ callbacks, it can be very convenient in a _before_ callback
 to implement a setup that depends on one or several asynchronous results:
 
-.Async starts an http server before test cases
+.Async starts an HTTP server before test cases
 [source,$lang]
 ----
 {@link examples.Examples#async_03}
@@ -264,7 +264,7 @@ Calling `complete()` on an async completes the async as usual, it actually sets 
 
 {@link io.vertx.ext.unit.TestContext} provides useful methods that provides powerful constructs for async testing:
 
-The {@link io.vertx.ext.unit.TestContext#asyncAssertSuccess()} method returns an `Handler<AsyncResult<T>>`
+The {@link io.vertx.ext.unit.TestContext#asyncAssertSuccess()} method returns a `Handler<AsyncResult<T>>`
 instance that acts like {@link io.vertx.ext.unit.Async}, resolving the `Async` on success and failing the test
 on failure with the failure cause.
 
@@ -273,7 +273,7 @@ on failure with the failure cause.
 {@link examples.Examples#asyncAssertSuccess_01}
 ----
 
-The {@link io.vertx.ext.unit.TestContext#asyncAssertSuccess(io.vertx.core.Handler)} method returns an `Handler<AsyncResult<T>>`
+The {@link io.vertx.ext.unit.TestContext#asyncAssertSuccess(io.vertx.core.Handler)} method returns a `Handler<AsyncResult<T>>`
 instance that acts like {@link io.vertx.ext.unit.Async}, invoking the delegating `Handler<T>` on success
 and failing the test on failure with the failure cause.
 
