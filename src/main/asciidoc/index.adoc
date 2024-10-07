@@ -264,7 +264,7 @@ Calling `complete()` on an async completes the async as usual, it actually sets 
 
 {@link io.vertx.ext.unit.TestContext} provides useful methods that provides powerful constructs for async testing:
 
-The {@link io.vertx.ext.unit.TestContext#asyncAssertSuccess()} method returns an {@literal Handler<AsyncResult<T>>}
+The {@link io.vertx.ext.unit.TestContext#asyncAssertSuccess()} method returns an `Handler<AsyncResult<T>>`
 instance that acts like {@link io.vertx.ext.unit.Async}, resolving the `Async` on success and failing the test
 on failure with the failure cause.
 
@@ -273,8 +273,8 @@ on failure with the failure cause.
 {@link examples.Examples#asyncAssertSuccess_01}
 ----
 
-The {@link io.vertx.ext.unit.TestContext#asyncAssertSuccess(io.vertx.core.Handler)} method returns an {@literal Handler<AsyncResult<T>>}
-instance that acts like {@link io.vertx.ext.unit.Async}, invoking the delegating {@literal Handler<T>} on success
+The {@link io.vertx.ext.unit.TestContext#asyncAssertSuccess(io.vertx.core.Handler)} method returns an `Handler<AsyncResult<T>>`
+instance that acts like {@link io.vertx.ext.unit.Async}, invoking the delegating `Handler<T>` on success
 and failing the test on failure with the failure cause.
 
 [source,java]
@@ -290,7 +290,7 @@ can be handy to _chain_ asynchronous behaviors:
 {@link examples.Examples#asyncAssertSuccess_03}
 ----
 
-The {@link io.vertx.ext.unit.TestContext#asyncAssertFailure()} method returns an {@literal Handler<AsyncResult<T>>}
+The {@link io.vertx.ext.unit.TestContext#asyncAssertFailure()} method returns a `Handler<AsyncResult<T>>`
 instance that acts like {@link io.vertx.ext.unit.Async}, resolving the `Async` on failure and failing the test
 on success.
 
@@ -299,8 +299,8 @@ on success.
 {@link examples.Examples#asyncAssertFailure_01(io.vertx.core.Vertx,io.vertx.ext.unit.TestContext)}
 ----
 
-The {@link io.vertx.ext.unit.TestContext#asyncAssertFailure(io.vertx.core.Handler)} method returns an {@literal Handler<AsyncResult<T>>}
-instance that acts like {@link io.vertx.ext.unit.Async}, invoking the delegating {@literal Handler<Throwable>} on
+The {@link io.vertx.ext.unit.TestContext#asyncAssertFailure(io.vertx.core.Handler)} method returns a `Handler<AsyncResult<T>>`
+instance that acts like {@link io.vertx.ext.unit.Async}, invoking the delegating `Handler<Throwable>` on
 failure and failing the test on success.
 
 [source,java]
@@ -591,7 +591,7 @@ instance as well.
 {@link examples.junit.RunOnContextJUnitTestSuite}
 ----
 
-The rule can be annotated by {@literal @Rule} or {@literal @ClassRule}, the former manages a Vert.x instance
+The rule can be annotated by `@Rule` or `@ClassRule`, the former manages a Vert.x instance
 per test, the later a single Vert.x for the test methods of the class.
 
 WARNING: keep in mind that you cannot block the event loop when using this rule. Usage of classes like
