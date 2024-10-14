@@ -162,6 +162,7 @@ The counter part of _assertNull_.
 
 The {@link io.vertx.ext.unit.TestContext#assertInRange} targets real numbers.
 
+[source,$lang]
 ----
 {@link examples.Examples#asserting_06}
 ----
