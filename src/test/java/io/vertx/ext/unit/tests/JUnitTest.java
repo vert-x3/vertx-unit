@@ -3,6 +3,7 @@ package io.vertx.ext.unit.tests;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
@@ -1124,11 +1125,13 @@ public class JUnitTest {
   public static class HttpRequestFailure {
 
     Vertx vertx;
+    HttpClient client;
     static AtomicInteger requestCount = new AtomicInteger();
 
     @Before
     public void before(TestContext context) {
       vertx = Vertx.vertx().exceptionHandler(context.exceptionHandler());
+      client = vertx.createHttpClient();
       vertx.createHttpServer(new HttpServerOptions().setReuseAddress(true)).
           requestHandler(req -> {
             requestCount.incrementAndGet();
@@ -1146,7 +1149,7 @@ public class JUnitTest {
     public void testMethod(TestContext context) {
       requestCount.set(0);
       Async async = context.async();
-      vertx.createHttpClient()
+      client
         .request(HttpMethod.GET, 8080, "localhost", "/").onComplete(ar1-> {
           if (ar1.succeeded()) {
             HttpClientRequest req = ar1.result();
