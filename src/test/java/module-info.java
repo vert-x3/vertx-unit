@@ -5,4 +5,5 @@ open module io.vertx.testing.unit.tests {
   requires java.logging;
   requires java.xml;
   requires junit;
+  requires hamcrest.core;
 }
