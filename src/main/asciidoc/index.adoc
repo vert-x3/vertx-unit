@@ -224,6 +224,23 @@ NOTE: When the `complete` callback is not invoked, the test case fails after a c
 Several `Async` objects can be created during the same test case, all of them must be _completed_ to terminate
 the test.
 
+[WARNING]
+====
+Vert.x 5 uses the JVM `Cleaner` mechanism as a safety net to cleanup certain resources (clients, executors, etc.)
+when they become *unreachable* (older versions used Java finalizers).
+
+Because `Cleaner` execution depends on garbage collection, cleanup timing is *non-deterministic* and can be
+more eager than finalization was. In asynchronous tests this matters because the test callback may return
+while async operations are still in progress.
+
+If a client (e.g. `HttpClient` / `WebClient`) is created as a local variable and no strong reference is kept
+until the async callbacks complete, the JVM may reclaim it and Vert.x may close the underlying pool,
+leading to intermittent failures (for example `VertxException: Pool closed`), especially in CI environments.
+
+To avoid this, keep clients strongly reachable for the duration of the asynchronous work (e.g. store them in a field),
+and prefer explicit `close()` when appropriate.
+====
+
 .Several Async objects provide coordination
 [source,$lang]
 ----
