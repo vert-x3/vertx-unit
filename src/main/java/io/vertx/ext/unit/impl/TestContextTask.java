@@ -3,7 +3,6 @@ package io.vertx.ext.unit.impl;
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.TestContext;
 
-import java.util.Map;
 import java.util.function.Function;
 
 /**

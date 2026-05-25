@@ -4,5 +4,4 @@
 @Source
 package examples;
 
-import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.docgen.Source;

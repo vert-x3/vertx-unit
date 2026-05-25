@@ -1,6 +1,5 @@
 package io.vertx.ext.unit.impl;
 
-import java.util.Map;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
